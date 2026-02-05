@@ -1,9 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { DpmoInput, DpmoResult } from './types.js';
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Approximation of the inverse normal CDF (probit function)

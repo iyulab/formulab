@@ -1,9 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { PpmInput, PpmResult } from './types.js';
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));

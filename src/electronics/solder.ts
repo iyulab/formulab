@@ -1,12 +1,9 @@
 import type { SolderInput, SolderResult } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Calculate solder paste consumption for SMT production

@@ -1,12 +1,9 @@
 import type { TraceInput, TraceResult } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * IPC-2221 constants for trace width calculation

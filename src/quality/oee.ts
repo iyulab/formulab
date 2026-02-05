@@ -7,10 +7,23 @@ import type { OeeInput, OeeResult } from './types.js';
  *
  * @param input - OEE input parameters with raw production data
  * @returns OEE result with factors (0-1) and percentages (0-100)
+ * @throws Error if goodCount > totalCount
  */
 export function oee(input: OeeInput): OeeResult {
   const { rawData } = input;
   const { plannedTime, runTime, totalCount, goodCount, idealCycleTime } = rawData;
+
+  // Validate: goodCount cannot exceed totalCount
+  if (goodCount > totalCount) {
+    throw new Error(
+      `Invalid input: goodCount (${goodCount}) cannot exceed totalCount (${totalCount})`
+    );
+  }
+
+  // Validate: no negative values allowed
+  if (goodCount < 0) {
+    throw new Error(`Invalid input: goodCount (${goodCount}) cannot be negative`);
+  }
 
   // Handle edge cases - return zeros for invalid inputs
   if (plannedTime <= 0 || runTime <= 0 || idealCycleTime <= 0 || totalCount < 0) {

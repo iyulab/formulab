@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { CuttingInput, CuttingResult } from './types.js';
 
 /**
@@ -54,9 +55,4 @@ export function cutting(input: CuttingInput): CuttingResult {
     feedRate: roundTo(feedRate, 1),
     mrr: roundTo(mrr, 2),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

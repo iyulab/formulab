@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { ToleranceInput, ToleranceResult } from './types.js';
 
 // Size ranges [min, max] in mm
@@ -111,9 +112,4 @@ export function tolerance(input: ToleranceInput): ToleranceResult | null {
     minSize: roundTo(minSize, 4),
     toleranceBand: roundTo(Math.abs(upperDev - lowerDev), 1),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

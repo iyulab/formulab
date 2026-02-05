@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { HardnessScale, HardnessInput, HardnessResult } from './types.js';
 
 interface ConversionRow {
@@ -90,9 +91,4 @@ export function hardness(input: HardnessInput): HardnessResult {
     HV: row.HV,
     Shore: row.Shore,
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

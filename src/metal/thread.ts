@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { ThreadInput, ThreadResult } from './types.js';
 
 const METRIC_THREADS: Record<string, { majorDiameter: number; pitch: number; tapDrill: number }> = {
@@ -76,9 +77,4 @@ export function thread(input: ThreadInput): ThreadResult | null {
     minorDiameter,
     pitchDiameter,
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

@@ -1,9 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { LineBalancingInput, LineBalancingResult, WorkStation, PositionalWeight, BalancingTask } from './types.js';
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 function detectCycle(tasks: BalancingTask[]): boolean {
   const taskMap = new Map(tasks.map(t => [t.id, t]));

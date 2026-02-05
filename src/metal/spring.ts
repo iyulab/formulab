@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { SpringInput, SpringMaterial, SpringResult } from './types.js';
 
 // Shear modulus (G) in MPa for common spring materials
@@ -63,9 +64,4 @@ export function spring(input: SpringInput): SpringResult {
   }
 
   return result;
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

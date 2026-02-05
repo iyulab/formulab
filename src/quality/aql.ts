@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { AqlInput, AqlResult, InspectionLevel } from './types.js';
 
 // Sample size code letters based on lot size and inspection level (ISO 2859-1 / ANSI Z1.4)
@@ -71,11 +72,6 @@ function getAcceptReject(sampleCode: string, aqlLevel: number): [number, number]
   }
 
   return codeTable[selectedAql] ?? [0, 1];
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }
 
 /**

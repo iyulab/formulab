@@ -1,9 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { MtbfInput, MtbfResult } from './types.js';
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Calculate MTBF (Mean Time Between Failures) and related reliability metrics

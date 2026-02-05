@@ -20,8 +20,8 @@ export type {
   FuelInput,
   FuelResult,
   // Gear ratio types
-  GearInput,
-  GearResult,
+  GearRatioInput,
+  GearRatioResult,
   // Tire comparison types
   TireSpec,
   TireInput,

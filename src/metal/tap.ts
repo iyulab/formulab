@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { TapInput, TapResult } from './types.js';
 
 /**
@@ -65,9 +66,4 @@ export function tap(input: TapInput): TapResult {
     threadPercentage: roundTo(threadPercentage, 0),
     threadHeight: roundTo(H, 3),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

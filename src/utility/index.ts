@@ -1,6 +1,6 @@
 // Utility domain formulas
 export { solveAssignment } from './assignment.js';
-export { calculateUnit, getCategories, getUnitsForCategory } from './unit.js';
+export { calculateUnit, getUnitCategories, getUnitsForCategory } from './unit.js';
 
 // Note: QR code generation requires the 'qrcode' npm package.
 // Types are exported here, but the actual implementation should be

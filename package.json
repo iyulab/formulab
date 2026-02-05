@@ -1,6 +1,6 @@
 {
   "name": "formulab",
-  "version": "0.1.0",
+  "version": "0.1.11",
   "description": "Manufacturing & Engineering calculation formulas library - 100+ industrial calculations for OEE, Cpk, metal weight, logistics, and more",
   "type": "module",
   "main": "./dist/index.js",
@@ -64,7 +64,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
@@ -111,6 +112,7 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   }

@@ -1,12 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { AssignmentInput, AssignmentResult, AssignmentPair } from './types.js';
-
-/**
- * Round to specified decimal places
- */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Hungarian algorithm (Jonker-Volgenant variant)

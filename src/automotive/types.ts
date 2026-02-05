@@ -54,7 +54,7 @@ export interface FuelResult {
 /**
  * Gear Ratio Calculator Types
  */
-export interface GearInput {
+export interface GearRatioInput {
   drivingTeeth: number;
   drivenTeeth: number;
   inputSpeed: number;       // RPM
@@ -62,7 +62,7 @@ export interface GearInput {
   efficiency: number;       // 0-1, default 0.95
 }
 
-export interface GearResult {
+export interface GearRatioResult {
   gearRatio: number;        // :1
   outputSpeed: number;      // RPM
   outputTorque: number;     // Nm

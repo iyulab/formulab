@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { VibrationInput, VibrationResult, VibrationMaterial, FrequencyMode } from './types.js';
 
 interface MaterialVibrationProps {
@@ -167,9 +168,4 @@ export function vibration(input: VibrationInput): VibrationResult {
     crossSectionalArea: roundTo(A, 2),
     materialProps,
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { RoughnessInput, RoughnessResult } from './types.js';
 
 const ISO_1302_TABLE = [
@@ -60,9 +61,4 @@ export function roughness(input: RoughnessInput): RoughnessResult {
     nClass: entry.n,
     rms: roundTo(entry.ra * 1.11, 3),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

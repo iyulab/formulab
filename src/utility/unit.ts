@@ -1,12 +1,5 @@
+import { roundTo } from '../utils.js';
 import type { UnitCategory, UnitDef, UnitInput, UnitResult } from './types.js';
-
-/**
- * Round to specified decimal places
- */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Helper to create linear conversion functions
@@ -98,7 +91,7 @@ const UNITS: Record<UnitCategory, UnitDef[]> = {
  *
  * @returns Array of category names
  */
-export function getCategories(): UnitCategory[] {
+export function getUnitCategories(): UnitCategory[] {
   return Object.keys(UNITS) as UnitCategory[];
 }
 

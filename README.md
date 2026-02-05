@@ -35,28 +35,35 @@ import { oee, metalWeight, cbm } from 'formulab';
 
 // Calculate OEE (Overall Equipment Effectiveness)
 const result = oee({
-  availability: 0.90,
-  performance: 0.95,
-  quality: 0.99
+  rawData: {
+    plannedTime: 480,      // minutes (8 hours)
+    runTime: 432,          // minutes (90% availability)
+    totalCount: 1000,
+    goodCount: 990,        // 99% quality
+    idealCycleTime: 0.456, // minutes per piece (95% performance)
+  },
 });
-console.log(result.oee); // 0.846 (84.6%)
+console.log(result.percentages.oee); // 84.6%
 
 // Calculate metal weight
 const weight = metalWeight({
-  material: 'steel',
   shape: 'plate',
-  dimensions: { length: 1000, width: 500, thickness: 10 },
+  materialName: 'steel',
+  length: 1000,    // mm
+  width: 500,      // mm
+  thickness: 10,   // mm
 });
 console.log(weight.weight); // 39.25 kg
 
-// Calculate CBM
+// Calculate CBM (Cubic Meter)
 const volume = cbm({
   length: 120,
   width: 80,
   height: 100,
-  unit: 'cm'
+  quantity: 1,
+  unit: 'cm',
 });
-console.log(volume.cbm); // 0.96 m³
+console.log(volume.totalCbm); // 0.96 m³
 ```
 
 ## Domains
@@ -261,7 +268,7 @@ import { solveAssignment, calculateUnit } from 'formulab/utility';
 |----------|-------------|
 | `solveAssignment()` | Hungarian algorithm optimization |
 | `calculateUnit()` | Unit conversion |
-| `getCategories()` | Get unit categories |
+| `getUnitCategories()` | Get unit categories |
 
 ## API Examples
 
@@ -271,19 +278,19 @@ import { solveAssignment, calculateUnit } from 'formulab/utility';
 import { oee } from 'formulab/quality';
 
 const result = oee({
-  plannedTime: 480,      // minutes
-  operatingTime: 420,
-  totalPieces: 1000,
-  goodPieces: 990,
-  idealCycleTime: 0.5,
+  rawData: {
+    plannedTime: 480,      // minutes
+    runTime: 420,          // actual running time
+    totalCount: 1000,      // total pieces produced
+    goodCount: 990,        // good pieces
+    idealCycleTime: 0.4,   // minutes per piece
+  },
 });
 
 console.log(result);
 // {
-//   oee: 0.846,
-//   availability: 0.875,
-//   performance: 0.952,
-//   quality: 0.99,
+//   factors: { availability: 0.875, performance: 0.952, quality: 0.99, oee: 0.825 },
+//   percentages: { availability: 87.5, performance: 95.2, quality: 99, oee: 82.5 }
 // }
 ```
 
@@ -293,22 +300,22 @@ console.log(result);
 import { nioshLifting } from 'formulab/safety';
 
 const result = nioshLifting({
-  loadWeight: 23,
-  horizontalDistance: 25,
-  verticalLocation: 75,
-  verticalTravel: 25,
-  asymmetryAngle: 0,
-  couplingQuality: 'good',
-  frequency: 1,
-  duration: 'moderate',
+  loadWeight: 23,           // kg
+  horizontalDistance: 25,   // cm
+  verticalDistance: 75,     // cm (height at lift origin)
+  verticalTravel: 25,       // cm (vertical travel distance)
+  asymmetryAngle: 0,        // degrees
+  coupling: 'good',         // 'good' | 'fair' | 'poor'
+  frequency: 1,             // lifts per minute
+  duration: 'short',        // 'short' | 'medium' | 'long'
 });
 
 console.log(result);
 // {
-//   rwl: 23.0,              // Recommended Weight Limit (kg)
-//   liftingIndex: 1.0,      // LI = Load / RWL
-//   riskLevel: 'low',
-//   multipliers: { hm: 1.0, vm: 1.0, dm: 0.93, am: 1.0, fm: 0.94, cm: 1.0 }
+//   rwl: 21.62,             // Recommended Weight Limit (kg)
+//   liftingIndex: 1.06,     // LI = Load / RWL
+//   riskLevel: 'moderate',
+//   hm: 1.0, vm: 1.0, dm: 1.0, am: 1.0, fm: 0.94, cm: 1.0
 // }
 ```
 

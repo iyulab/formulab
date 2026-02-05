@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { GearInput, GearResult } from './types.js';
 
 // Standard pressure angle for spur gears (degrees)
@@ -84,9 +85,4 @@ function createEmptyResult(): GearResult {
     circularPitch: 0,
     baseCircleDiameter1: 0,
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

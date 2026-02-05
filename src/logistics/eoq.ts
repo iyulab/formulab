@@ -19,6 +19,18 @@ import type { EoqInput, EoqResult } from './types.js';
 export function eoq(input: EoqInput): EoqResult {
   const { annualDemand, orderCost, holdingCost } = input;
 
+  // Input validation
+  if (annualDemand <= 0 || orderCost <= 0 || holdingCost <= 0) {
+    return {
+      eoq: 0,
+      ordersPerYear: 0,
+      orderCycleDays: 0,
+      annualOrderingCost: 0,
+      annualHoldingCost: 0,
+      totalAnnualCost: 0,
+    };
+  }
+
   // Calculate EOQ using the classic formula
   // EOQ = sqrt(2DS/H)
   const eoqValue = Math.sqrt((2 * annualDemand * orderCost) / holdingCost);

@@ -101,7 +101,12 @@ export interface PressTonnageInput {
   bendType?: BendType;
   // Drawing
   punchDiameter?: number;   // mm
-  drawRatio?: number;       // 0.6-1.2
+  blankDiameter?: number;   // mm (for calculating draw ratio)
+  drawRatio?: number;       // 0.6-1.2 (d/D ratio)
+  frictionCoefficient?: number; // 0.05-0.15, default 0.1
+  blankHolderPressure?: number; // MPa (2-5 MPa typical)
+  dieRadius?: number;       // mm (die corner radius)
+  reductionPercent?: number; // % reduction per draw (for multi-draw)
   // Combined (array of operations)
   operations?: PressOperation[];
 }
@@ -110,13 +115,18 @@ export interface PressTonnageResult {
   blankingForce: number;    // kN
   bendingForce: number;     // kN
   drawingForce: number;     // kN
+  blankHolderForce: number; // kN
   totalForce: number;       // kN
   recommendedPress: number; // tons (with safety factor)
+  drawRatio: number;        // Actual d/D ratio used
+  numberOfDraws: number;    // Estimated draws needed
   breakdown: {
     operation: string;
     force: number;
   }[];
+  warnings: string[];
 }
+
 
 /**
  * Bearing Types
@@ -523,9 +533,13 @@ export interface WeldHeatResult {
   heatInput: number;           // kJ/mm
   efficiency: number;          // 0-1
   carbonEquivalent: number;    // CE (IIW)
+  carbonEquivalentPcm: number; // CE (Pcm) for low-alloy steels
+  coolingTime_t85: number;     // seconds - time to cool from 800°C to 500°C
+  coolingRate: number;         // °C/s - average cooling rate in critical range
   preheatTemp: {
     min: number;               // C
     max: number;               // C
+    source: string;            // Reference standard used
   };
   interpassTemp: {
     min: number;               // C
@@ -533,6 +547,7 @@ export interface WeldHeatResult {
   };
   hazHardnessMax: number;      // HV
   crackingRisk: CrackingRisk;
+  hydrogenLevel: 'low' | 'medium' | 'high'; // Required hydrogen control
   recommendations: string[];
 }
 

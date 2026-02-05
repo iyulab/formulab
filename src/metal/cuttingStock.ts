@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './types.js';
 
 /**
@@ -88,9 +89,4 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult | nul
     utilizationPercent: roundTo(((totalMaterial - totalWaste) / totalMaterial) * 100, 1),
     patterns,
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

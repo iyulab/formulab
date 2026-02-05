@@ -1,4 +1,5 @@
 import type { PhInput, PhResult, BufferSystem } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * pKa values at 25C for common buffer systems
@@ -88,7 +89,3 @@ export function ph(input: PhInput): PhResult {
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}

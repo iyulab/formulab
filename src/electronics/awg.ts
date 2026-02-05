@@ -1,12 +1,9 @@
 import type { AwgInput, AwgResult, AwgMaterial } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 // Resistivity at 20°C in Ω·mm²/m
 const RESISTIVITY_20C: Record<AwgMaterial, number> = {

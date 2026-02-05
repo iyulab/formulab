@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { PressFitInput, PressFitResult } from './types.js';
 
 /**
@@ -112,9 +113,4 @@ export function pressFit(input: PressFitInput): PressFitResult {
     hubHoopStress: roundTo(hubHoopStress, 2),
     shaftRadialStress: roundTo(shaftRadialStress, 2),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

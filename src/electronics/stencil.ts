@@ -1,12 +1,9 @@
 import type { StencilInput, StencilResult, ComponentType } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 // Recommended minimums by component type (IPC-7525B guidelines)
 const RECOMMENDATIONS: Record<ComponentType, { areaRatio: number; aspectRatio: number }> = {

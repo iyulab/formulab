@@ -1,12 +1,9 @@
 import type { CapacitorCodeInput, CapacitorCodeResult } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 /**
  * Decode a 3-digit capacitor code to capacitance values

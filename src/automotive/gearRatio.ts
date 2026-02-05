@@ -1,5 +1,5 @@
 import { roundTo } from '../utils.js';
-import type { GearInput, GearResult } from './types.js';
+import type { GearRatioInput, GearRatioResult } from './types.js';
 
 /**
  * Calculate gear ratio and output characteristics
@@ -13,7 +13,7 @@ import type { GearInput, GearResult } from './types.js';
  * @param input - Gear parameters
  * @returns Gear result with ratio, speed, and torque
  */
-export function gearRatio(input: GearInput): GearResult {
+export function gearRatio(input: GearRatioInput): GearRatioResult {
   const { drivingTeeth, drivenTeeth, inputSpeed, inputTorque, efficiency } = input;
 
   // Handle edge case - zero driving teeth
@@ -31,7 +31,7 @@ export function gearRatio(input: GearInput): GearResult {
   const outputSpeed = inputSpeed / ratio;
   const outputTorque = inputTorque * ratio * efficiency;
   const speedReduction = ratio > 1;
-  const mechanicalAdvantage = outputTorque / inputTorque;
+  const mechanicalAdvantage = inputTorque === 0 ? 0 : outputTorque / inputTorque;
 
   return {
     gearRatio: roundTo(ratio, 2),

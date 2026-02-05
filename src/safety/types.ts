@@ -1,17 +1,23 @@
 // Fall Clearance Types
 export interface FallClearanceInput {
-  lanyardLength: number;       // m
-  decelerationDistance: number; // m
-  harnessStretch: number;      // m
-  workerHeight: number;        // m
-  safetyFactor: number;        // m
-  anchorHeight: number;        // m (above feet)
+  lanyardLength: number;       // m - length of lanyard/SRL
+  decelerationDistance: number; // m - deceleration device activation distance
+  harnessStretch: number;      // m - harness/body stretch under load
+  workerHeight: number;        // m - D-ring to feet distance (~1.5m typical)
+  safetyFactor: number;        // m - additional safety buffer (ANSI recommends 0.9m)
+  anchorHeight: number;        // m - anchor point height above feet level
+  rescueClearance?: number;    // m - clearance for rescue operations (default 0.9m per ANSI Z359.4)
+  obstacleHeight?: number;     // m - height of lowest obstacle/ground level (default 0)
 }
 
 export interface FallClearanceResult {
-  totalFallDistance: number;
-  minimumHeight: number;
+  totalFallDistance: number;   // m - total vertical distance of fall
+  minimumHeight: number;       // m - minimum required anchor height
+  rescueClearance: number;     // m - rescue operation clearance used
+  freeSpaceRequired: number;   // m - total space needed below anchor
+  clearanceAboveObstacle: number; // m - space between worker and obstacle (positive = safe)
   isAdequate: boolean | null;
+  warnings: string[];
 }
 
 // NIOSH Lifting Types

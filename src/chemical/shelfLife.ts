@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { ShelfLifeInput, ShelfLifeResult } from './types.js';
 
 /**
@@ -31,12 +32,4 @@ export function shelfLife(input: ShelfLifeInput): ShelfLifeResult {
     targetTemp,
     tempDifference,
   };
-}
-
-/**
- * Round to specified decimal places
- */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

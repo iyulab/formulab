@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { BoltInput, BoltResult } from './types.js';
 
 /**
@@ -161,9 +162,4 @@ export function getStandardPitch(diameter: number): number {
     48: 5.0,
   };
   return pitches[diameter] ?? (diameter >= 6 ? diameter * 0.125 : 0.5);
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }

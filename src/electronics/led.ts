@@ -1,12 +1,9 @@
 import type { LedResistorInput, LedResistorResult } from './types.js';
+import { roundTo } from '../utils.js';
 
 /**
  * Round to specified decimal places
  */
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
 
 // E24 standard resistor series (5% tolerance)
 const E24_SERIES = [

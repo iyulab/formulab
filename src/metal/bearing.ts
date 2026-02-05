@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { BearingInput, BearingResult } from './types.js';
 
 /**
@@ -31,9 +32,4 @@ export function bearing(input: BearingInput): BearingResult {
     l10h: roundTo(l10h, 0),
     lifeExponent: roundTo(lifeExponent, 3),
   };
-}
-
-function roundTo(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
 }
