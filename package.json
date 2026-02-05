@@ -1,0 +1,80 @@
+{
+  "name": "formulab",
+  "version": "0.1.0",
+  "description": "Manufacturing & Engineering calculation formulas library",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./quality": {
+      "types": "./dist/quality/index.d.ts",
+      "import": "./dist/quality/index.js"
+    },
+    "./metal": {
+      "types": "./dist/metal/index.d.ts",
+      "import": "./dist/metal/index.js"
+    },
+    "./chemical": {
+      "types": "./dist/chemical/index.d.ts",
+      "import": "./dist/chemical/index.js"
+    },
+    "./electronics": {
+      "types": "./dist/electronics/index.d.ts",
+      "import": "./dist/electronics/index.js"
+    },
+    "./construction": {
+      "types": "./dist/construction/index.d.ts",
+      "import": "./dist/construction/index.js"
+    },
+    "./automotive": {
+      "types": "./dist/automotive/index.d.ts",
+      "import": "./dist/automotive/index.js"
+    },
+    "./logistics": {
+      "types": "./dist/logistics/index.d.ts",
+      "import": "./dist/logistics/index.js"
+    },
+    "./energy": {
+      "types": "./dist/energy/index.d.ts",
+      "import": "./dist/energy/index.js"
+    },
+    "./safety": {
+      "types": "./dist/safety/index.d.ts",
+      "import": "./dist/safety/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "manufacturing",
+    "engineering",
+    "calculator",
+    "formulas",
+    "quality",
+    "oee",
+    "cpk"
+  ],
+  "author": "iyulab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iyulab/formulab.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
