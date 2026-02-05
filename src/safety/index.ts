@@ -3,6 +3,8 @@ export { fallClearance } from './fallClearance.js';
 export { nioshLifting } from './nioshLifting.js';
 export { noiseExposure } from './noiseExposure.js';
 export { wbgtCalculate } from './wbgtCalculate.js';
+export { havsCalculate } from './havsCalculate.js';
+export { respiratorCalculate } from './respiratorCalculate.js';
 
 // Types
 export type {
@@ -22,4 +24,12 @@ export type {
   WorkloadIntensity,
   WbgtInput,
   WbgtResult,
+  // HAVS types
+  ToolExposure,
+  HavsInput,
+  HavsResult,
+  // Respirator types
+  RespiratorType,
+  RespiratorInput,
+  RespiratorResult,
 } from './types.js';

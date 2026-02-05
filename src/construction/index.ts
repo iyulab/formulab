@@ -24,6 +24,27 @@ export type {
   SlopeUnit,
   SlopeInput,
   SlopeResult,
+  // Aggregate
+  AggregateType,
+  AggregateDensity,
+  AggregateInput,
+  AggregateResult,
+  // Brick
+  BrickSize,
+  BrickDimensions,
+  BrickInput,
+  BrickResult,
+  // PERT
+  PertTask,
+  PertInput,
+  PertTaskResult,
+  PertResult,
+  // Roof
+  RoofInput,
+  RoofResult,
+  // Stair
+  StairInput,
+  StairResult,
 } from './types.js';
 
 // Functions
@@ -33,3 +54,8 @@ export { earthwork } from './earthwork.js';
 export { formwork } from './formwork.js';
 export { rebarWeight, getRebarUnitWeight } from './rebar.js';
 export { slope } from './slope.js';
+export { aggregate, aggregateCoverage, getAggregateDensity, AGGREGATE_DENSITIES } from './aggregate.js';
+export { brick, BRICK_SIZES } from './brick.js';
+export { pert } from './pert.js';
+export { roof } from './roof.js';
+export { stair } from './stair.js';

@@ -111,3 +111,140 @@ export interface SlopeResult {
   ratio: number;      // 1:N
   risePerMeter: number; // mm rise per 1m horizontal
 }
+
+/**
+ * Aggregate Calculation Types
+ */
+export type AggregateType = 'gravel' | 'sand' | 'crushed_stone' | 'topsoil' | 'mulch' | 'custom';
+
+export interface AggregateDensity {
+  type: AggregateType;
+  density: number; // kg/m³
+  label: string;
+}
+
+export interface AggregateInput {
+  length: number;       // m
+  width: number;        // m
+  depth: number;        // m (or cm, will be converted)
+  depthUnit: 'meters' | 'centimeters';
+  aggregateType: AggregateType;
+  customDensity?: number; // kg/m³, used when aggregateType is 'custom'
+}
+
+export interface AggregateResult {
+  volume: number;       // m³
+  weight: number;       // kg
+  weightTonnes: number; // metric tonnes
+  coverageArea: number; // m² for the given depth
+  density: number;      // kg/m³ used
+  bags20kg: number;     // number of 20kg bags needed
+  bags25kg: number;     // number of 25kg bags needed
+}
+
+/**
+ * Brick Calculation Types
+ */
+export type BrickSize = 'modular' | 'standard' | 'queen' | 'king' | 'custom';
+
+export interface BrickDimensions {
+  length: number;  // mm
+  height: number;  // mm
+}
+
+export interface BrickInput {
+  wallArea: number;         // m²
+  brickSize: BrickSize;
+  customLength?: number;    // mm (for custom size)
+  customHeight?: number;    // mm (for custom size)
+  mortarThickness: number;  // mm (typically 10mm)
+  wasteFactor: number;      // percentage (e.g., 5 for 5%)
+}
+
+export interface BrickResult {
+  bricksPerSqMeter: number;   // bricks per m²
+  totalBricks: number;        // total bricks needed (with waste)
+  bricksWithoutWaste: number; // bricks without waste
+  wastedBricks: number;       // extra bricks for waste
+}
+
+/**
+ * PERT (Program Evaluation and Review Technique) Types
+ */
+export interface PertTask {
+  id: string;
+  name: string;
+  predecessors: string[];
+  optimistic: number;
+  mostLikely: number;
+  pessimistic: number;
+}
+
+export interface PertInput {
+  tasks: PertTask[];
+  deadline?: number;
+}
+
+export interface PertTaskResult {
+  id: string;
+  name: string;
+  duration: number;
+  variance: number;
+  es: number;
+  ef: number;
+  ls: number;
+  lf: number;
+  totalFloat: number;
+  freeFloat: number;
+  isCritical: boolean;
+}
+
+export interface PertResult {
+  tasks: PertTaskResult[];
+  criticalPath: string[];
+  projectDuration: number;
+  projectVariance: number;
+  projectStdDev: number;
+  zScore?: number;
+  completionProbability?: number;
+}
+
+/**
+ * Roof Calculation Types
+ */
+export interface RoofInput {
+  rise: number;        // vertical rise (in same unit as run)
+  run: number;         // horizontal run (in same unit as rise)
+  footprintLength: number;  // roof footprint length (m)
+  footprintWidth: number;   // roof footprint width (m)
+}
+
+export interface RoofResult {
+  slopeRatio: string;     // e.g., "4:12"
+  slopeDegrees: number;   // angle in degrees
+  slopePercent: number;   // slope as percentage
+  rafterLength: number;   // length of rafter for the given rise/run (m)
+  slopeFactor: number;    // multiplier for roof area
+  roofArea: number;       // total roof area (m²)
+  pitchDescription: string; // descriptive pitch category
+}
+
+/**
+ * Stair Calculation Types
+ */
+export interface StairInput {
+  totalRise: number;      // mm - total vertical height
+  totalRun: number;       // mm - total horizontal length
+  riserHeight?: number;   // mm - optional desired riser height (default: auto-calculate)
+}
+
+export interface StairResult {
+  numberOfRisers: number;       // count of risers
+  numberOfTreads: number;       // count of treads (risers - 1)
+  actualRiserHeight: number;    // mm - actual riser height
+  treadDepth: number;           // mm - depth of each tread
+  stringerLength: number;       // mm - length of stair stringer
+  twoRPlusT: number;            // 2R + T comfort formula result (mm)
+  codeCompliant: boolean;       // true if 2R + T is between 600-650mm
+  totalAngle: number;           // degrees - stair angle
+}

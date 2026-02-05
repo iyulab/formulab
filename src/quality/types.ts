@@ -79,3 +79,208 @@ export interface TaktTimeResult {
   taktTime: number;       // time per unit (in same unit as input)
   maxRatePerHour: number; // maximum units per hour
 }
+
+/**
+ * AQL (Acceptable Quality Level) Types
+ */
+export type InspectionLevel = 'I' | 'II' | 'III' | 'S-1' | 'S-2' | 'S-3' | 'S-4';
+
+export interface AqlInput {
+  /** Lot size (number of units in the batch) */
+  lotSize: number;
+  /** Acceptable Quality Level (e.g., 0.065, 0.1, 0.25, 0.4, 0.65, 1.0, 1.5, 2.5, 4.0, 6.5) */
+  aqlLevel: number;
+  /** Inspection level (I, II, III for general; S-1 to S-4 for special) */
+  inspectionLevel: InspectionLevel;
+}
+
+export interface AqlResult {
+  /** Sample size code letter */
+  sampleCode: string;
+  /** Number of samples to inspect */
+  sampleSize: number;
+  /** Accept number (max defects to accept) */
+  acceptNumber: number;
+  /** Reject number (min defects to reject) */
+  rejectNumber: number;
+  /** Sampling percentage of lot */
+  samplingPercent: number;
+}
+
+/**
+ * Downtime Cost Types
+ */
+export interface DowntimeInput {
+  hourlyRate: number;            // $/hr equipment cost
+  laborCostPerHour: number;      // $/hr labor
+  downtimeMinutes: number;       // minutes
+  plannedProductionUnits: number; // units/hr
+  unitPrice: number;             // $/unit revenue
+}
+
+export interface DowntimeResult {
+  downtimeHours: number;
+  lostUnits: number;
+  laborCost: number;       // $
+  equipmentCost: number;   // $
+  lostRevenue: number;     // $
+  totalCost: number;       // $
+}
+
+/**
+ * DPMO (Defects Per Million Opportunities) Types
+ */
+export interface DpmoInput {
+  defects: number;        // number of defects
+  units: number;          // number of units inspected
+  opportunities: number;  // defect opportunities per unit
+}
+
+export interface DpmoResult {
+  dpmo: number;         // defects per million opportunities
+  sigmaLevel: number;   // process sigma level
+  yield: number;        // yield percentage (0-100)
+  dpu: number;          // defects per unit
+  defectRate: number;   // defect rate percentage
+}
+
+/**
+ * Line Balancing Types
+ */
+export interface BalancingTask {
+  id: string;
+  name: string;
+  time: number;
+  predecessors: string[];
+}
+
+export interface LineBalancingInput {
+  tasks: BalancingTask[];
+  cycleTime: number;
+}
+
+export interface WorkStation {
+  id: number;
+  tasks: { id: string; name: string; time: number }[];
+  totalTime: number;
+  idleTime: number;
+}
+
+export interface PositionalWeight {
+  id: string;
+  name: string;
+  time: number;
+  weight: number;
+}
+
+export interface LineBalancingResult {
+  stations: WorkStation[];
+  numStations: number;
+  theoreticalMin: number;
+  lineEfficiency: number;
+  balanceDelay: number;
+  smoothnessIndex: number;
+  positionalWeights: PositionalWeight[];
+}
+
+/**
+ * MTBF (Mean Time Between Failures) Types
+ */
+export interface MtbfInput {
+  /** Total operating time in hours */
+  totalOperatingTime: number;
+  /** Total repair/downtime in hours */
+  totalRepairTime: number;
+  /** Number of failures */
+  numberOfFailures: number;
+}
+
+export interface MtbfResult {
+  /** Mean Time Between Failures (hours) */
+  mtbf: number;
+  /** Mean Time To Repair (hours) */
+  mttr: number;
+  /** Availability (0-100 %) */
+  availability: number;
+  /** Failure rate (failures per hour) */
+  failureRate: number;
+  /** Reliability at time T (using exponential distribution), where T = MTBF */
+  reliabilityAtMtbf: number;
+}
+
+/**
+ * Ppk (Process Performance Index) Types
+ */
+export interface PpkInput {
+  usl: number;     // upper spec limit
+  lsl: number;     // lower spec limit
+  mean: number;    // overall process mean
+  stdDev: number;  // overall (long-term) standard deviation
+}
+
+export interface PpkResult {
+  pp: number;               // process performance (spread)
+  ppk: number;              // process performance index
+  ppUpper: number;          // upper process performance (Ppu)
+  ppLower: number;          // lower process performance (Ppl)
+  withinSpecPercent: number; // percentage within spec
+  sigma: number;            // sigma level
+}
+
+/**
+ * PPM (Parts Per Million) Conversion Types
+ */
+export type ConvertFrom = 'defectRate' | 'ppm' | 'sigma';
+
+export interface PpmInput {
+  convertFrom: ConvertFrom;
+  value: number;
+}
+
+export interface PpmResult {
+  defectRate: number;   // percentage (0-100)
+  ppm: number;          // parts per million
+  dpmo: number;         // defects per million opportunities
+  sigma: number;        // sigma level
+  yieldRate: number;    // percentage (0-100)
+}
+
+/**
+ * RPN (Risk Priority Number) Types
+ */
+export interface RpnInput {
+  severity: number;    // 1-10 scale
+  occurrence: number;  // 1-10 scale
+  detection: number;   // 1-10 scale
+}
+
+export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
+
+export interface RpnResult {
+  rpn: number;          // 1-1000
+  riskLevel: RiskLevel;
+  severityScore: number;
+  occurrenceScore: number;
+  detectionScore: number;
+}
+
+/**
+ * Yield (FPY/RTY) Types
+ */
+export interface YieldInput {
+  /** Array of process steps, each containing [goodUnits, totalUnits] */
+  steps: Array<{ good: number; total: number }>;
+}
+
+export interface YieldResult {
+  /** First Pass Yield for each step (0-100 %) */
+  fpyPerStep: number[];
+  /** Average FPY across all steps (0-100 %) */
+  averageFpy: number;
+  /** Rolled Throughput Yield = product of all FPYs (0-100 %) */
+  rty: number;
+  /** Total input units (first step) */
+  totalInput: number;
+  /** Expected output after all steps */
+  expectedOutput: number;
+}

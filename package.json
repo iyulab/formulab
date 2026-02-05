@@ -45,6 +45,14 @@
     "./safety": {
       "types": "./dist/safety/index.d.ts",
       "import": "./dist/safety/index.js"
+    },
+    "./utility": {
+      "types": "./dist/utility/index.d.ts",
+      "import": "./dist/utility/index.js"
+    },
+    "./food": {
+      "types": "./dist/food/index.d.ts",
+      "import": "./dist/food/index.js"
     }
   },
   "files": [
