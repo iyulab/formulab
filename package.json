@@ -1,10 +1,11 @@
 {
   "name": "formulab",
   "version": "0.1.0",
-  "description": "Manufacturing & Engineering calculation formulas library",
+  "description": "Manufacturing & Engineering calculation formulas library - 100+ industrial calculations for OEE, Cpk, metal weight, logistics, and more",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -46,40 +47,68 @@
       "types": "./dist/safety/index.d.ts",
       "import": "./dist/safety/index.js"
     },
-    "./utility": {
-      "types": "./dist/utility/index.d.ts",
-      "import": "./dist/utility/index.js"
-    },
     "./food": {
       "types": "./dist/food/index.d.ts",
       "import": "./dist/food/index.js"
+    },
+    "./utility": {
+      "types": "./dist/utility/index.d.ts",
+      "import": "./dist/utility/index.js"
     }
   },
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "clean": "rm -rf dist"
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
   },
   "keywords": [
     "manufacturing",
     "engineering",
+    "industrial",
     "calculator",
     "formulas",
-    "quality",
     "oee",
-    "cpk"
+    "cpk",
+    "quality",
+    "six-sigma",
+    "lean",
+    "metal",
+    "machining",
+    "logistics",
+    "supply-chain",
+    "cbm",
+    "eoq",
+    "safety-stock",
+    "construction",
+    "automotive",
+    "electronics",
+    "smt",
+    "pcb",
+    "energy",
+    "safety",
+    "niosh",
+    "haccp"
   ],
   "author": "iyulab",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iyulab/formulab.git"
+    "url": "git+https://github.com/iyulab/formulab.git"
+  },
+  "homepage": "https://github.com/iyulab/formulab#readme",
+  "bugs": {
+    "url": "https://github.com/iyulab/formulab/issues"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "typescript": "^5.7.0",
