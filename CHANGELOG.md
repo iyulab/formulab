@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All domains now have 95%+ line coverage
 - **Milestone**: 100% function coverage achieved, 98%+ line coverage, library fully tested
 
-## [0.1.9] - 2025-02-05
+## [0.1.9] - 2026-02-05
 
 ### Added
 - **Test suites (Cycle 13)**: 25개 함수 대규모 테스트 추가 (488 test cases)
@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - construction 도메인: 83.30% lines
 - **Milestone**: Line coverage 60% 돌파, 6개 도메인 90%+ 커버리지 달성
 
-## [0.1.8] - 2025-02-05
+## [0.1.8] - 2026-02-05
 
 ### Added
 - **Test suites (Cycle 11)**: `yieldCalc`, `rpn`, `ppm` (quality), `safetyStock`, `kanban` (logistics)
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - energy 도메인: 26.45% → 100% lines
 - **Milestone**: Line coverage 35% 돌파, 4개 도메인 100% 커버리지 달성
 
-## [0.1.7] - 2025-02-05
+## [0.1.7] - 2026-02-05
 
 ### Added
 - **Test suites**: `cutting`, `bearing`, `hardness` (metal domain, 45 test cases)
@@ -102,7 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - metal 도메인: 4.78% → 11.54% lines
 - **Milestone**: Line coverage 20% 돌파
 
-## [0.1.6] - 2025-02-05
+## [0.1.6] - 2026-02-05
 
 ### Added
 - **Test suites**: `calculateUnit`, `getUnitCategories`, `getUnitsForCategory` (unit conversion, 29 test cases)
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - utility 도메인: 0% → 78.83% lines
 - Branches coverage: 76.89% → 80.96%
 
-## [0.1.5] - 2025-02-05
+## [0.1.5] - 2026-02-05
 
 ### Added
 - **Test suites**: `ledResistor`, `awgProperties` (electronics domain, 33 test cases)
@@ -126,7 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - electronics 도메인: 0% → 18.77% lines
 - food 도메인: 0% → 45.45% lines
 
-## [0.1.4] - 2025-02-05
+## [0.1.4] - 2026-02-05
 
 ### Added
 - **Test suites**: `slope`, `earthwork` (construction domain, 27 test cases)
@@ -138,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - construction 도메인: 0% → 7.73% lines
 - energy 도메인: 0% → 26.45% lines
 
-## [0.1.3] - 2025-02-05
+## [0.1.3] - 2026-02-05
 
 ### Added
 - **Test suites**: `dilution`, `batch` (chemical domain, 25 test cases)
@@ -152,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Coverage improved: 8.8% → 10.38% lines
 
-## [0.1.2] - 2025-02-05
+## [0.1.2] - 2026-02-05
 
 ### Added
 - **Test suites**: `eoq`, `dimWeight`, `gearRatio` (40 additional test cases)
@@ -166,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Coverage thresholds**: Adjusted to realistic baseline (lines: 5%, functions: 50%, branches: 50%)
 - Current coverage metrics: 8.8% lines, 62.38% functions, 72.25% branches
 
-## [0.1.1] - 2025-02-05
+## [0.1.1] - 2026-02-05
 
 ### Fixed
 - **Main entry point**: Added missing exports for 5 domains (metal, chemical, electronics, construction, energy)
@@ -189,7 +189,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Vitest coverage configuration with thresholds
 - `test:coverage` npm script
 
-## [0.1.0] - 2025-02-05
+## [0.1.0] - 2026-02-05
 
 ### Added
 
