@@ -122,17 +122,26 @@ function getCouplingMultiplier(
 /**
  * Calculate NIOSH Recommended Weight Limit (RWL) and Lifting Index (LI)
  *
- * RWL = LC x HM x VM x DM x AM x FM x CM
- * LI = Load Weight / RWL
+ * @formula RWL = LC × HM × VM × DM × AM × FM × CM
+ *   - LC  = 23 kg (Load Constant)
+ *   - HM  = 25 / H  (Horizontal Multiplier, max 1.0)
+ *   - VM  = 1 − 0.003|V − 75|  (Vertical Multiplier)
+ *   - DM  = 0.82 + 4.5 / D  (Distance Multiplier, D ≥ 25 cm)
+ *   - AM  = 1 − 0.0032A  (Asymmetric Multiplier)
+ *   - FM  = lookup(frequency, duration)
+ *   - CM  = lookup(coupling, V)
+ *   - LI  = Load Weight / RWL
  *
- * Where:
- * - LC = Load Constant (23 kg)
- * - HM = Horizontal Multiplier = 25/H
- * - VM = Vertical Multiplier = 1 - 0.003|V - 75|
- * - DM = Distance Multiplier = 0.82 + 4.5/D
- * - AM = Asymmetric Multiplier = 1 - 0.0032A
- * - FM = Frequency Multiplier (from table)
- * - CM = Coupling Multiplier (from table)
+ * @reference NIOSH (1994). "Applications Manual for the Revised NIOSH Lifting Equation",
+ *   Publication No. 94-110. U.S. Dept. of Health and Human Services.
+ * @reference Waters, T.R., Putz-Anderson, V., Garg, A. (1993). "Revised NIOSH equation
+ *   for the design and evaluation of manual lifting tasks". Ergonomics, 36(7), 749-776.
+ *
+ * @units H, V, D: cm; A: degrees; frequency: lifts/min; loadWeight: kg; RWL: kg
+ *
+ * @validation
+ *   - Ideal conditions (all multipliers = 1.0): RWL = LC = 23 kg
+ *   - Risk: low (LI ≤ 1), moderate (1 < LI ≤ 2), high (LI > 2)
  *
  * @param input - NIOSH lifting parameters
  * @returns NIOSH results including RWL, LI, multipliers, and risk level

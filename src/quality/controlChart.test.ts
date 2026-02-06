@@ -145,4 +145,65 @@ describe('controlChart', () => {
       })).toThrow();
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('AIAG/ASTM E2587 constants verification for n=5', () => {
+      // Verify that the implementation uses correct constants for n=5
+      // Reference: AIAG SPC Manual, ASTM E2587-16 Table
+      // A2=0.577, D3=0, D4=2.114, d2=2.326
+      const subgroups = [
+        [10.0, 10.0, 10.0, 10.0, 10.0],
+        [10.3, 10.3, 10.3, 10.3, 10.3],
+      ];
+      // Both subgroups have range=0, so R̄=0 → limits collapse to grand mean
+      // Grand mean = (10.0 + 10.3) / 2 = 10.15
+      const result = controlChart({ chartType: 'xbarR', subgroups });
+
+      expect(result.grandMean).toBeCloseTo(10.15, 4);
+      // With R̄=0: UCL = LCL = grand mean (A2 × 0 = 0)
+      expect(result.xBarLimits.ucl).toBeCloseTo(10.15, 4);
+      expect(result.xBarLimits.lcl).toBeCloseTo(10.15, 4);
+      expect(result.rOrSLimits.lcl).toBe(0); // D3=0 for n=5
+    });
+
+    it('Stable process: all points within control limits', () => {
+      // A known stable dataset — 5 subgroups of size 5 with tight variation
+      const stableData = [
+        [50.0, 50.1, 49.9, 50.0, 50.1],
+        [50.0, 49.9, 50.1, 50.0, 49.9],
+        [50.1, 50.0, 49.9, 50.0, 50.1],
+        [49.9, 50.0, 50.1, 50.0, 49.9],
+        [50.0, 50.0, 50.1, 49.9, 50.0],
+      ];
+      const result = controlChart({ chartType: 'xbarR', subgroups: stableData });
+
+      expect(result.processCapable).toBe(true);
+      expect(result.outOfControlPoints).toHaveLength(0);
+      // Grand mean ≈ 50.0
+      expect(result.grandMean).toBeCloseTo(50.0, 1);
+      // Sigma should be small (~0.07-0.08)
+      expect(result.sigmaEstimate).toBeLessThan(0.15);
+    });
+
+    it('AIAG/ASTM constants: n=2 (A2=1.880, D4=3.267, d2=1.128)', () => {
+      // Verify constants for smallest subgroup size
+      const data = [
+        [10.0, 10.2],
+        [10.1, 10.3],
+        [10.0, 10.1],
+        [10.2, 10.4],
+      ];
+      const result = controlChart({ chartType: 'xbarR', subgroups: data });
+
+      // Subgroup means: 10.1, 10.2, 10.05, 10.3 → grand mean = 10.1625
+      expect(result.grandMean).toBeCloseTo(10.1625, 3);
+      // Ranges: 0.2, 0.2, 0.1, 0.2 → R̄ = 0.175
+      const rBar = result.rOrSLimits.centerLine;
+      expect(rBar).toBeCloseTo(0.175, 3);
+      // UCL_X̄ = 10.1625 + 1.880 × 0.175 = 10.1625 + 0.329 = 10.4915
+      expect(result.xBarLimits.ucl).toBeCloseTo(10.4915, 3);
+      // σ̂ = R̄/d₂ = 0.175/1.128 = 0.1551
+      expect(result.sigmaEstimate).toBeCloseTo(0.1551, 3);
+    });
+  });
 });

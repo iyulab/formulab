@@ -100,6 +100,20 @@ export type {
   WeldingInput,
   WeldingRod,
   WeldingResult,
+  // Material Grade Converter
+  MaterialStandard,
+  MaterialGradeConverterInput,
+  MaterialGradeConverterResult,
+  // Pipe Spec
+  PipeStandard,
+  PipeSchedule,
+  PipeSpecInput,
+  PipeSpecResult,
+  // Flange Spec
+  FlangeStandard,
+  PressureClass,
+  FlangeSpecInput,
+  FlangeSpecResult,
 } from './types.js';
 
 // Functions
@@ -125,3 +139,6 @@ export { tolerance } from './tolerance.js';
 export { vibration } from './vibration.js';
 export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';
+export { materialGradeConverter } from './materialGradeConverter.js';
+export { pipeSpec } from './pipeSpec.js';
+export { flangeSpec } from './flangeSpec.js';

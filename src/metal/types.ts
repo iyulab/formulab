@@ -576,3 +576,69 @@ export interface WeldingResult {
   currentRange: { min: number; max: number };  // Amps
   notes: string[];
 }
+
+/**
+ * Material Grade Converter Types
+ */
+export type MaterialStandard = 'ASTM' | 'EN' | 'JIS' | 'GB' | 'KS';
+
+export interface MaterialGradeConverterInput {
+  standard: MaterialStandard;
+  grade: string;
+}
+
+export interface MaterialGradeConverterResult {
+  astm: string | null;
+  en: string | null;
+  jis: string | null;
+  gb: string | null;
+  ks: string | null;
+  category: string;
+  notes: string;
+}
+
+/**
+ * Pipe Spec Types
+ */
+export type PipeStandard = 'ANSI' | 'DN';
+export type PipeSchedule = 'SCH5' | 'SCH10' | 'SCH40' | 'SCH80' | 'SCH160' | 'XXS';
+
+export interface PipeSpecInput {
+  standard: PipeStandard;
+  nominalSize: string;
+  schedule: PipeSchedule;
+}
+
+export interface PipeSpecResult {
+  nominalSize: string;
+  outerDiameter: number;      // mm
+  wallThickness: number;      // mm
+  innerDiameter: number;      // mm
+  weightPerMeter: number;     // kg/m (steel)
+  crossSectionArea: number;   // mm²
+  internalArea: number;       // mm²
+}
+
+/**
+ * Flange Spec Types
+ */
+export type FlangeStandard = 'ASME_B16_5' | 'EN_1092_1';
+export type PressureClass = '150' | '300' | '600' | '900' | '1500' | '2500';
+
+export interface FlangeSpecInput {
+  standard: FlangeStandard;
+  pressureClass: PressureClass;
+  nominalSize: string;
+}
+
+export interface FlangeSpecResult {
+  nominalSize: string;
+  pressureClass: string;
+  outerDiameter: number;      // mm
+  thickness: number;          // mm
+  boltCircleDiameter: number; // mm
+  boltHoles: number;
+  boltSize: string;
+  raisedFaceDiameter: number; // mm
+  weight: number;             // kg (approx)
+}

@@ -78,11 +78,22 @@ function stdDev(arr: number[]): number {
 /**
  * SPC Control Chart Calculator (X-bar/R and X-bar/S)
  *
- * Builds control chart with limits from subgroup data.
- * Supports subgroup sizes 2-25 per AIAG/ASTM E2587.
+ * @formula X-bar/R method:
+ *   - σ̂ = R̄ / d₂
+ *   - UCL_X̄ = X̿ + A₂R̄,  LCL_X̄ = X̿ − A₂R̄
+ *   - UCL_R  = D₄R̄,       LCL_R  = D₃R̄
  *
- * X-bar/R: Uses range to estimate σ (best for n ≤ 10)
- * X-bar/S: Uses standard deviation to estimate σ (better for n > 10)
+ * @formula X-bar/S method:
+ *   - σ̂ = S̄ / c₄
+ *   - UCL_X̄ = X̿ + A₃S̄,  LCL_X̄ = X̿ − A₃S̄
+ *   - UCL_S  = B₄S̄,       LCL_S  = B₃S̄
+ *
+ * @reference AIAG (2005). "Statistical Process Control (SPC)", 2nd Ed.
+ * @reference ASTM E2587-16. Standard Practice for Use of Control Charts.
+ * @reference Wheeler, D. J. & Chambers, D. S. (1992). "Understanding Statistical Process Control".
+ *
+ * @validation Constants verified against AIAG/ASTM tables for n = 2..25:
+ *   n=5: A₂=0.577, D₃=0, D₄=2.114, d₂=2.326
  *
  * @param input - chart type and subgroup data
  * @returns control limits, subgroup statistics, out-of-control points

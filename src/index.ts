@@ -12,3 +12,6 @@ export * from './energy/index.js';
 export * from './safety/index.js';
 export * from './food/index.js';
 export * from './utility/index.js';
+export * from './battery/index.js';
+export * from './environmental/index.js';
+export * from './machining/index.js';

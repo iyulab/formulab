@@ -176,4 +176,63 @@ describe('cpk', () => {
       expect(result.cp).toBeGreaterThan(result.cpk);
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('Six Sigma process: Cpk = 2.0 (centered, σ = specWidth/12)', () => {
+      // Montgomery 7th Ed: For Cpk=2.0, need 6σ on each side of mean
+      // specWidth = USL - LSL = 120, σ = 120/12 = 10, mean = centered at 60
+      const result = cpk({
+        usl: 120,
+        lsl: 0,
+        mean: 60,
+        stdDev: 10,
+      });
+
+      // Cp = 120 / (6 × 10) = 2.0
+      expect(result.cp).toBeCloseTo(2.0, 4);
+      // Centered → Cpk = Cp = 2.0
+      expect(result.cpk).toBeCloseTo(2.0, 4);
+      // Sigma level = 3 × 2.0 = 6.0
+      expect(result.sigmaLevel).toBeCloseTo(6.0, 4);
+    });
+
+    it('Minimum capable: Cpk ≈ 1.33 (centered, σ = specWidth/8)', () => {
+      // ISO 22514-2: Cpk ≥ 1.33 is generally considered capable
+      // specWidth = 80, σ = 80/8 = 10, mean = 50
+      const result = cpk({
+        usl: 90,
+        lsl: 10,
+        mean: 50,
+        stdDev: 10,
+      });
+
+      // Cp = 80 / (6 × 10) = 1.333...
+      expect(result.cp).toBeCloseTo(1.333, 2);
+      expect(result.cpk).toBeCloseTo(1.333, 2);
+      // Sigma level = 3 × 1.333 = 4.0
+      expect(result.sigmaLevel).toBeCloseTo(4.0, 1);
+    });
+
+    it('Off-center process: Cpk < Cp demonstrates centering effect', () => {
+      // Same spec & stdDev as above, but mean shifted by 1σ
+      // specWidth = 80, σ = 10, mean = 60 (shifted 1σ from center)
+      const result = cpk({
+        usl: 90,
+        lsl: 10,
+        mean: 60,
+        stdDev: 10,
+      });
+
+      // Cp = 80 / 60 = 1.333 (unchanged — Cp ignores centering)
+      expect(result.cp).toBeCloseTo(1.333, 2);
+      // Cpu = (90 - 60) / 30 = 1.0
+      expect(result.cpu).toBeCloseTo(1.0, 4);
+      // Cpl = (60 - 10) / 30 = 1.667
+      expect(result.cpl).toBeCloseTo(1.667, 2);
+      // Cpk = min(1.0, 1.667) = 1.0
+      expect(result.cpk).toBeCloseTo(1.0, 4);
+      // Cpk < Cp confirms off-center penalty
+      expect(result.cpk).toBeLessThan(result.cp);
+    });
+  });
 });

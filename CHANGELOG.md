@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-02-07
+
+### Added
+
+- **Machining** (new domain, 12 functions):
+  - `truePosition()` — GD&T True Position with MMC bonus tolerance (ASME Y14.5)
+  - `boltCircle()` — Bolt hole pattern coordinate calculation
+  - `sineBarHeight()` — Sine bar gauge block height with rounding error analysis
+  - `radialChipThinning()` — Radial chip thinning compensation for light cuts
+  - `toolDeflection()` — End mill cantilever deflection (carbide/HSS)
+  - `cuspHeight()` — Ball end mill scallop height and surface roughness
+  - `effectiveDiameter()` — Ball end mill effective cutting diameter at depth
+  - `boringBarDeflection()` — Boring bar deflection with L/D ratio guidance
+  - `threadOverWires()` — 3-wire thread measurement (60°/55°/29°/30° angles)
+  - `gaugeBlockStack()` — Gauge block combination using successive subtraction (47/88/81-pc sets)
+  - `triangleSolver()` — Triangle solver (SSS/SAS/ASA/AAS/SSA with law of cosines/sines)
+  - `cycleTimeEstimator()` — CNC cycle time estimation with operation breakdown
+
+## [0.4.0] - 2026-02-07
+
+### Added
+
+- **Battery** (new domain, 10 functions):
+  - `energyDensity()` — Wh/kg and Wh/L energy density calculation
+  - `cRate()` — C-rate ↔ current/time bidirectional conversion
+  - `stateOfHealth()` — SOH % with degradation status thresholds (IEEE 1188)
+  - `batteryPackConfig()` — Series/parallel cell configuration calculator
+  - `cycleLife()` — Cycle life estimation with chemistry (7 types), DOD, and temperature factors
+  - `internalResistance()` — DCIR calculation from OCV and load voltage (IEC 61960)
+  - `selfDischarge()` — Self-discharge rate (daily and monthly %)
+  - `thermalRunaway()` — Thermal safety margin analysis (SAE J2464)
+  - `bmsBalancing()` — BMS passive cell balancing time estimation
+  - `chargingProfile()` — CC-CV charging profile timing with phase breakdown
+
+- **Environmental** (new domain, 10 functions):
+  - `scope1Emissions()` — Direct combustion emissions with 6 fuel types (EPA/IPCC 2006 factors)
+  - `scope2Emissions()` — Purchased electricity emissions for 12 grid regions (IEA 2023 factors)
+  - `scope3Emissions()` — Supply chain spend-based emissions for 8 Scope 3 categories (EPA EEIO)
+  - `vocEmissions()` — VOC emissions with capture/destruction efficiency
+  - `productCarbonFootprint()` — Product lifecycle carbon footprint with stage breakdown (ISO 14067)
+  - `gwpCalculator()` — GWP conversion for 8 GHG gases × 3 time horizons (IPCC AR6)
+  - `energyIntensity()` — Energy intensity per unit/revenue (ISO 50001)
+  - `waterFootprint()` — Water footprint blue/green/grey breakdown (ISO 14046)
+  - `emissionsIntensity()` — Emissions intensity per unit/revenue/employee
+  - `esgSummary()` — ESG reduction tracking with projections (TCFD/CDP/SBTi)
+
+- **Metal** (3 new functions, 22 → 25):
+  - `materialGradeConverter()` — ASTM/EN/JIS/GB/KS grade cross-reference (20 grades × 5 standards)
+  - `pipeSpec()` — ANSI/ASME B36.10 pipe dimensions lookup (15 sizes × 6 schedules)
+  - `flangeSpec()` — ASME B16.5 WN flange dimensions lookup (8 sizes × 3 pressure classes)
+
+### Changed
+
+- Total domains: 11 → 13
+- Total function count: 111 → 134 (+23)
+- Total test count: 1705 → 1887 (+182)
+
 ## [0.3.0] - 2026-02-06
 
 ### Added

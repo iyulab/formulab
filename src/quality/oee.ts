@@ -4,7 +4,18 @@ import type { OeeInput, OeeResult } from './types.js';
 /**
  * Calculate OEE (Overall Equipment Effectiveness)
  *
- * OEE = Availability x Performance x Quality
+ * @formula OEE = Availability × Performance × Quality
+ *   - Availability = Run Time / Planned Production Time
+ *   - Performance = (Ideal Cycle Time × Total Count) / Run Time
+ *   - Quality = Good Count / Total Count
+ *
+ * @reference JIPM (1999). "TPM for Workshop Leaders", 3rd Ed.
+ * @reference ISO 22400-2:2014. Key performance indicators for manufacturing operations.
+ * @reference Nakajima, S. (1988). "Introduction to TPM". Productivity Press.
+ *
+ * @units plannedTime: minutes, runTime: minutes, idealCycleTime: minutes/piece
+ *
+ * @validation World-class benchmarks: A ≥ 90%, P ≥ 95%, Q ≥ 99.9% → OEE ≈ 85%
  *
  * @param input - OEE input parameters with raw production data
  * @returns OEE result with factors (0-1) and percentages (0-100)

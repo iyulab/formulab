@@ -154,4 +154,68 @@ describe('oee', () => {
       ).toThrow('goodCount (-10) cannot be negative');
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('JIPM handbook example: typical production line', () => {
+      // JIPM TPM handbook scenario:
+      // Shift: 480 min, Downtime: 48 min → RunTime=432
+      // Ideal cycle: 0.456 min/piece, Total produced: 1000
+      // Good: 990
+      const result = oee({
+        rawData: {
+          plannedTime: 480,
+          runTime: 432,
+          totalCount: 1000,
+          goodCount: 990,
+          idealCycleTime: 0.456,
+        },
+      });
+
+      // Availability = 432/480 = 0.9
+      expect(result.factors.availability).toBeCloseTo(0.9, 4);
+      // Performance = (0.456 × 1000) / 432 = 1.0556 (exceeds 100% due to faster cycle)
+      expect(result.factors.performance).toBeCloseTo(1.0556, 3);
+      // Quality = 990/1000 = 0.99
+      expect(result.factors.quality).toBeCloseTo(0.99, 4);
+      // OEE = 0.9 × 1.0556 × 0.99 ≈ 0.9405
+      expect(result.percentages.oee).toBeCloseTo(94.1, 0);
+    });
+
+    it('World-class benchmark: A≥90%, P≥95%, Q≥99.9%', () => {
+      // World-class OEE targets per JIPM/Nakajima
+      const result = oee({
+        rawData: {
+          plannedTime: 480,
+          runTime: 432,          // A = 90%
+          totalCount: 950,
+          goodCount: 949,        // Q ≈ 99.89%
+          idealCycleTime: 0.432, // P = (0.432 × 950) / 432 = 0.9500
+        },
+      });
+
+      expect(result.factors.availability).toBeCloseTo(0.9, 4);
+      expect(result.factors.performance).toBeCloseTo(0.95, 2);
+      expect(result.factors.quality).toBeCloseTo(0.9989, 3);
+      // OEE ≈ 0.9 × 0.95 × 0.9989 ≈ 0.854
+      expect(result.percentages.oee).toBeCloseTo(85.4, 0);
+    });
+
+    it('Perfect production: all factors 100%', () => {
+      const result = oee({
+        rawData: {
+          plannedTime: 480,
+          runTime: 480,
+          totalCount: 1000,
+          goodCount: 1000,
+          idealCycleTime: 0.48, // exactly 1000 pieces in 480 min
+        },
+      });
+
+      expect(result.factors.availability).toBe(1);
+      expect(result.factors.performance).toBe(1);
+      expect(result.factors.quality).toBe(1);
+      expect(result.factors.oee).toBe(1);
+      expect(result.percentages.oee).toBe(100);
+    });
+  });
 });

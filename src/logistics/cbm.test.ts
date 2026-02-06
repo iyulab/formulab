@@ -174,4 +174,46 @@ describe('cbm', () => {
       expect(result.totalCbm).toBe(0);
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('20ft container internal volume ≈ 33.2 m³ (industry standard)', () => {
+      // Standard 20ft dry container internal: 5.898m × 2.352m × 2.393m
+      // Expected: 5.898 × 2.352 × 2.393 = 33.18 m³ (≈33.2 m³ published)
+      const result = cbm({
+        length: 5.898,
+        width: 2.352,
+        height: 2.393,
+        quantity: 1,
+        unit: 'm',
+      });
+
+      expect(result.cbmPerUnit).toBeCloseTo(33.18, 0);
+    });
+
+    it('1m³ cube: 100×100×100cm = 1.0 m³', () => {
+      const result = cbm({
+        length: 100,
+        width: 100,
+        height: 100,
+        quantity: 1,
+        unit: 'cm',
+      });
+
+      expect(result.cbmPerUnit).toBe(1.0);
+      expect(result.totalCbm).toBe(1.0);
+    });
+
+    it('Small parcel: 30×20×15cm = 0.009 m³', () => {
+      // Manual: 0.3 × 0.2 × 0.15 = 0.009 m³
+      const result = cbm({
+        length: 30,
+        width: 20,
+        height: 15,
+        quantity: 1,
+        unit: 'cm',
+      });
+
+      expect(result.cbmPerUnit).toBe(0.009);
+    });
+  });
 });

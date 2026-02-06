@@ -2,7 +2,9 @@ import { roundTo } from '../utils.js';
 import type { MetalWeightInput, MetalWeightResult, MaterialName } from './types.js';
 
 /**
- * Material densities in g/cm3
+ * Material densities in g/cm³
+ *
+ * @reference Oberg, E. et al. "Machinery's Handbook", 31st Ed. Industrial Press. (Density table)
  */
 const MATERIAL_DENSITIES: Record<MaterialName, number> = {
   steel: 7.85,
@@ -16,8 +18,19 @@ const MATERIAL_DENSITIES: Record<MaterialName, number> = {
 /**
  * Calculate metal weight based on shape, material, dimensions, and length.
  *
+ * @formula Weight = Volume × Density
+ *   - plate: Volume = width × thickness × length
+ *   - round: Volume = π(d/2)² × length
+ *   - pipe:  Volume = π(R² − r²) × length
+ *   - angle: Volume = (w×t + h×t − t²) × length
+ *   - All dimensions in mm → Volume converted mm³ → cm³ (÷1000) → kg (×density/1000)
+ *
+ * @reference Oberg, E. et al. "Machinery's Handbook", 31st Ed. Industrial Press.
+ *
+ * @units dimensions: mm, density: g/cm³, weight: kg
+ *
  * @param input - Metal weight input parameters (discriminated by shape)
- * @returns MetalWeightResult with weight (kg), volume (cm3), and density (g/cm3)
+ * @returns MetalWeightResult with weight (kg), volume (cm³), and density (g/cm³)
  */
 export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   const { shape, length, materialName } = input;

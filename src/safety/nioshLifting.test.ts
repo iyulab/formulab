@@ -315,4 +315,88 @@ describe('nioshLifting', () => {
       expect(result.rwl).toBeDefined();
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('NIOSH ideal conditions: RWL = LC = 23 kg', () => {
+      // NIOSH Publication 94-110: Under ideal conditions all multipliers = 1.0
+      // H=25cm, V=75cm, D=25cm, A=0°, F=0.2/min, short, good coupling
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 0.2,
+        duration: 'short',
+        coupling: 'good',
+        loadWeight: 23,
+      });
+
+      // All multipliers should be 1.0
+      expect(result.hm).toBe(1.0);
+      expect(result.vm).toBe(1.0);
+      expect(result.dm).toBe(1.0);
+      expect(result.am).toBe(1.0);
+      expect(result.fm).toBe(1.0);
+      expect(result.cm).toBe(1.0);
+      // RWL = 23 × 1 × 1 × 1 × 1 × 1 × 1 = 23 kg
+      expect(result.rwl).toBeCloseTo(23, 4);
+      // LI = 23/23 = 1.0 → low risk
+      expect(result.liftingIndex).toBeCloseTo(1.0, 4);
+      expect(result.riskLevel).toBe('low');
+    });
+
+    it('LC verification: Load Constant = 23 kg', () => {
+      // The NIOSH Load Constant (LC) = 23 kg (51 lb)
+      // This is the maximum recommended weight under ideal conditions
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 0.2,
+        duration: 'short',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+
+      // RWL should equal LC=23 exactly under ideal conditions
+      expect(result.rwl).toBeCloseTo(23, 4);
+    });
+
+    it('FM table verification: frequency=1, duration=short → FM=0.94', () => {
+      // NIOSH 94-110 Table 5: FM for freq=1/min, short duration = 0.94
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 1,
+        duration: 'short',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+
+      expect(result.fm).toBe(0.94);
+      // RWL = 23 × 1 × 1 × 1 × 1 × 0.94 × 1 = 21.62
+      expect(result.rwl).toBeCloseTo(21.62, 1);
+    });
+
+    it('CM table verification: coupling=fair, V≥75 → CM=0.95', () => {
+      // NIOSH 94-110 Table 7: CM for fair coupling, V ≥ 75cm = 0.95
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,   // V ≥ 75 → use "high" column
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 0.2,
+        duration: 'short',
+        coupling: 'fair',
+        loadWeight: 10,
+      });
+
+      expect(result.cm).toBe(0.95);
+      // RWL = 23 × 1 × 1 × 1 × 1 × 1 × 0.95 = 21.85
+      expect(result.rwl).toBeCloseTo(21.85, 1);
+    });
+  });
 });

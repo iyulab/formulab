@@ -10,13 +10,35 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **110+ industrial calculations** — OEE, Cpk, SPC control charts, metal weight, pipe flow, CBM, NIOSH lifting, and more
-- **11 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility
+- **146 industrial calculations** — OEE, Cpk, SPC control charts, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, battery SOH, GHG emissions, and more
+- **14 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
 - **Well tested** — Comprehensive test coverage
 - **Research-based** — Built on industry standards (ISO, OSHA, NIOSH, IPC)
+
+## Verification Status
+
+| Domain | Functions | Golden Tests | Key References |
+|--------|-----------|-------------|----------------|
+| Quality | 14 | oee, cpk, controlChart | ISO 22400-2, AIAG/ASTM E2587, JIPM |
+| Metal | 25 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
+| Logistics | 14 | cbm | Physical formula |
+| Safety | 7 | nioshLifting | NIOSH 94-110 |
+| Chemical | 9 | — | Darcy-Weisbach, Fourier |
+| Electronics | 11 | — | IPC-2221 |
+| Construction | 12 | — | AISC, Timoshenko |
+| Automotive | 8 | — | AASHTO |
+| Energy | 7 | — | NREL PVWatts |
+| Food | 4 | — | HACCP |
+| Utility | 3 | — | — |
+| Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
+| Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
+| Machining | 12 | — | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
+
+> Functions with golden reference tests have been verified against authoritative engineering sources.
+> See each function's JSDoc for specific references.
 
 ## Installation
 
@@ -91,7 +113,7 @@ import { oee, cpk, taktTime, dpmo, controlChart } from 'formulab/quality';
 | `rpn()` | Risk Priority Number (FMEA) |
 | `yieldCalc()` | First Pass Yield / RTY |
 
-### Metal & Machining (22 functions)
+### Metal & Machining (25 functions)
 
 ```typescript
 import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
@@ -121,6 +143,9 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `vibration()` | Natural frequency analysis |
 | `weldHeat()` | Weld heat input calculation |
 | `welding()` | Welding parameters |
+| `materialGradeConverter()` | ASTM/EN/JIS/GB/KS grade cross-reference |
+| `pipeSpec()` | ANSI/ASME pipe dimensions lookup |
+| `flangeSpec()` | ASME B16.5 flange dimensions lookup |
 
 ### Chemical & Process (9 functions)
 
@@ -277,6 +302,65 @@ import { solveAssignment, calculateUnit } from 'formulab/utility';
 | `solveAssignment()` | Hungarian algorithm optimization |
 | `calculateUnit()` | Unit conversion |
 | `getUnitCategories()` | Get unit categories |
+
+### Battery (10 functions)
+
+```typescript
+import { energyDensity, cRate, stateOfHealth, cycleLife } from 'formulab/battery';
+```
+
+| Function | Description |
+|----------|-------------|
+| `energyDensity()` | Wh/kg and Wh/L energy density |
+| `cRate()` | C-rate ↔ current/time conversion |
+| `stateOfHealth()` | SOH % with degradation status |
+| `batteryPackConfig()` | Series/parallel cell configuration |
+| `cycleLife()` | Cycle life estimation (chemistry/DOD/temp) |
+| `internalResistance()` | DCIR from OCV and load voltage |
+| `selfDischarge()` | Self-discharge rate calculation |
+| `thermalRunaway()` | Thermal safety margin analysis |
+| `bmsBalancing()` | BMS cell balancing time estimation |
+| `chargingProfile()` | CC-CV charging profile timing |
+
+### Environmental (10 functions)
+
+```typescript
+import { scope1Emissions, scope2Emissions, gwpCalculator, esgSummary } from 'formulab/environmental';
+```
+
+| Function | Description |
+|----------|-------------|
+| `scope1Emissions()` | Fuel combustion direct emissions (6 fuels) |
+| `scope2Emissions()` | Purchased electricity emissions (12 regions) |
+| `scope3Emissions()` | Supply chain spend-based emissions (8 categories) |
+| `vocEmissions()` | VOC emissions with capture/destruction |
+| `productCarbonFootprint()` | Product lifecycle carbon footprint |
+| `gwpCalculator()` | GWP conversion (8 gases × 3 time horizons) |
+| `energyIntensity()` | Energy intensity (MJ/unit, kWh/unit) |
+| `waterFootprint()` | Water footprint (blue/green/grey) |
+| `emissionsIntensity()` | Emissions intensity per unit/revenue/employee |
+| `esgSummary()` | ESG reduction tracking and projections |
+
+### Machining & CNC (12 functions)
+
+```typescript
+import { truePosition, boltCircle, toolDeflection, threadOverWires } from 'formulab/machining';
+```
+
+| Function | Description |
+|----------|-------------|
+| `truePosition()` | GD&T True Position (diametral, MMC bonus) |
+| `boltCircle()` | Bolt hole pattern coordinates |
+| `sineBarHeight()` | Sine bar gauge block height |
+| `radialChipThinning()` | Chip load compensation for light radial cuts |
+| `toolDeflection()` | End mill cantilever deflection |
+| `cuspHeight()` | Ball mill scallop height |
+| `effectiveDiameter()` | Ball mill effective cutting diameter |
+| `boringBarDeflection()` | Boring bar deflection with L/D guidance |
+| `threadOverWires()` | 3-wire thread measurement |
+| `gaugeBlockStack()` | Gauge block combination (47/88/81-pc sets) |
+| `triangleSolver()` | Triangle solver (SSS/SAS/ASA/SSA) |
+| `cycleTimeEstimator()` | CNC cycle time estimation |
 
 ## API Examples
 

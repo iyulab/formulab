@@ -143,4 +143,58 @@ describe('metalWeight', () => {
       }
     });
   });
+
+  describe('Golden Reference Tests', () => {
+    it('Steel plate 1000×500×10mm → 39.25 kg (Machinery\'s Handbook)', () => {
+      // Manual calculation:
+      // Volume = 1000 × 500 × 10 = 5,000,000 mm³ = 5000 cm³
+      // Weight = 5000 × 7.85 / 1000 = 39.25 kg
+      const result = metalWeight({
+        shape: 'plate',
+        materialName: 'steel',
+        length: 1000,
+        width: 500,
+        thickness: 10,
+      });
+
+      expect(result.volume).toBe(5000);
+      expect(result.weight).toBe(39.25);
+      expect(result.density).toBe(7.85);
+    });
+
+    it('Aluminum round bar Ø50×1000mm → 5.301 kg', () => {
+      // Manual calculation:
+      // Cross section = π × 25² = 1963.4954 mm²
+      // Volume = 1963.4954 × 1000 = 1,963,495.4 mm³ = 1963.495 cm³
+      // Weight = 1963.495 × 2.70 / 1000 = 5.301 kg
+      const result = metalWeight({
+        shape: 'round',
+        materialName: 'aluminum',
+        length: 1000,
+        diameter: 50,
+      });
+
+      expect(result.weight).toBeCloseTo(5.301, 2);
+      expect(result.density).toBe(2.70);
+    });
+
+    it('Copper pipe Ø60/Ø50×1000mm → 7.743 kg', () => {
+      // Manual calculation:
+      // Outer area = π × 30² = 2827.433 mm²
+      // Inner area = π × 25² = 1963.495 mm²
+      // Cross section = 863.938 mm²
+      // Volume = 863.938 × 1000 = 863,938 mm³ = 863.938 cm³
+      // Weight = 863.938 × 8.96 / 1000 = 7.741 kg
+      const result = metalWeight({
+        shape: 'pipe',
+        materialName: 'copper',
+        length: 1000,
+        outerDiameter: 60,
+        innerDiameter: 50,
+      });
+
+      expect(result.weight).toBeCloseTo(7.741, 1);
+      expect(result.density).toBe(8.96);
+    });
+  });
 });
