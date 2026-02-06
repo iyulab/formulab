@@ -26,25 +26,6 @@ export interface AssignmentResult {
 }
 
 /**
- * QR Code Types
- */
-export type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
-
-export interface QrcodeInput {
-  text: string;
-  errorCorrection: ErrorCorrectionLevel;
-  size: number;       // pixels
-  margin: number;
-  darkColor: string;  // hex e.g. '#000000'
-  lightColor: string; // hex e.g. '#ffffff'
-}
-
-export interface QrcodeResult {
-  dataUrl: string;
-  characterCount: number;
-}
-
-/**
  * Unit Conversion Types
  */
 export type UnitCategory = 'length' | 'weight' | 'volume' | 'temperature' | 'pressure' | 'area' | 'speed';

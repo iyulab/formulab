@@ -115,6 +115,24 @@ export interface TorqueResult {
 }
 
 /**
+ * Braking Distance Calculator Types (AASHTO)
+ */
+export interface BrakingDistanceInput {
+  speed: number;             // km/h
+  friction: number;          // coefficient of friction (0.7 = dry asphalt typical)
+  reactionTime: number;      // seconds (AASHTO default 2.5s for design, 1.5s typical)
+  grade: number;             // % grade (positive = uphill, negative = downhill)
+}
+
+export interface BrakingDistanceResult {
+  reactionDistance: number;      // m
+  brakingDistance: number;       // m
+  totalStoppingDistance: number; // m
+  speedMps: number;              // speed in m/s
+  deceleration: number;          // m/s²
+}
+
+/**
  * Power Converter Types
  */
 export type PowerUnit = 'kW' | 'HP' | 'PS';

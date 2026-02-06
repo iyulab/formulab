@@ -10,60 +10,55 @@ import type { DilutionInput, DilutionResult } from './types.js';
  * @throws Error if division by zero would occur
  */
 export function dilution(input: DilutionInput): DilutionResult {
-  const { solveFor, c1, v1, c2, v2 } = input;
-
   let resultC1: number;
   let resultV1: number;
   let resultC2: number;
   let resultV2: number;
 
-  switch (solveFor) {
+  switch (input.solveFor) {
     case 'c2':
       // C2 = C1 * V1 / V2
-      if (v2 === undefined || v2 === 0) {
+      if (input.v2 === 0) {
         throw new Error('Cannot solve for c2: v2 must be non-zero');
       }
-      resultC1 = c1!;
-      resultV1 = v1!;
-      resultV2 = v2;
-      resultC2 = (c1! * v1!) / v2;
+      resultC1 = input.c1;
+      resultV1 = input.v1;
+      resultV2 = input.v2;
+      resultC2 = (input.c1 * input.v1) / input.v2;
       break;
 
     case 'v2':
       // V2 = C1 * V1 / C2
-      if (c2 === undefined || c2 === 0) {
+      if (input.c2 === 0) {
         throw new Error('Cannot solve for v2: c2 must be non-zero');
       }
-      resultC1 = c1!;
-      resultV1 = v1!;
-      resultC2 = c2;
-      resultV2 = (c1! * v1!) / c2;
+      resultC1 = input.c1;
+      resultV1 = input.v1;
+      resultC2 = input.c2;
+      resultV2 = (input.c1 * input.v1) / input.c2;
       break;
 
     case 'c1':
       // C1 = C2 * V2 / V1
-      if (v1 === undefined || v1 === 0) {
+      if (input.v1 === 0) {
         throw new Error('Cannot solve for c1: v1 must be non-zero');
       }
-      resultV1 = v1;
-      resultC2 = c2!;
-      resultV2 = v2!;
-      resultC1 = (c2! * v2!) / v1;
+      resultV1 = input.v1;
+      resultC2 = input.c2;
+      resultV2 = input.v2;
+      resultC1 = (input.c2 * input.v2) / input.v1;
       break;
 
     case 'v1':
       // V1 = C2 * V2 / C1
-      if (c1 === undefined || c1 === 0) {
+      if (input.c1 === 0) {
         throw new Error('Cannot solve for v1: c1 must be non-zero');
       }
-      resultC1 = c1;
-      resultC2 = c2!;
-      resultV2 = v2!;
-      resultV1 = (c2! * v2!) / c1;
+      resultC1 = input.c1;
+      resultC2 = input.c2;
+      resultV2 = input.v2;
+      resultV1 = (input.c2 * input.v2) / input.c1;
       break;
-
-    default:
-      throw new Error(`Unknown solveFor value: ${solveFor}`);
   }
 
   return {

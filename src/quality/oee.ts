@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { OeeInput, OeeResult } from './types.js';
 
 /**
@@ -48,16 +49,16 @@ export function oee(input: OeeInput): OeeResult {
 
   return {
     factors: {
-      availability,
-      performance,
-      quality,
-      oee: oeeValue,
+      availability: roundTo(availability, 4),
+      performance: roundTo(performance, 4),
+      quality: roundTo(quality, 4),
+      oee: roundTo(oeeValue, 4),
     },
     percentages: {
-      availability: availability * 100,
-      performance: performance * 100,
-      quality: quality * 100,
-      oee: oeeValue * 100,
+      availability: roundTo(availability * 100, 1),
+      performance: roundTo(performance * 100, 1),
+      quality: roundTo(quality * 100, 1),
+      oee: roundTo(oeeValue * 100, 1),
     },
   };
 }

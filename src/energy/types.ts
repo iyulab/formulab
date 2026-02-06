@@ -101,6 +101,28 @@ export interface PfCorrectionResult {
 }
 
 /**
+ * Solar Output Calculator Types (PVWatts-based)
+ */
+export interface SolarOutputInput {
+  panelWattage: number;      // W (per panel)
+  panelCount: number;        // number of panels
+  peakSunHours: number;      // hours/day (PSH)
+  systemEfficiency: number;  // 0-1 (default ~0.80, accounts for inverter, wiring, soiling, degradation)
+  tiltAngle: number;         // degrees from horizontal
+  latitude: number;          // degrees (for optimal tilt estimation)
+  azimuthOffset: number;     // degrees from south (0 = due south)
+}
+
+export interface SolarOutputResult {
+  systemSizeKw: number;       // total system wattage in kW
+  dailyOutputKwh: number;     // kWh per day
+  monthlyOutputKwh: number;   // kWh per month (30 days)
+  annualOutputKwh: number;    // kWh per year (365 days)
+  capacityFactor: number;     // actual / theoretical ratio (0-1)
+  tiltEfficiency: number;     // efficiency based on tilt/orientation (0-1)
+}
+
+/**
  * VFD (Variable Frequency Drive) Savings Calculator Types
  */
 export interface VfdSavingsInput {

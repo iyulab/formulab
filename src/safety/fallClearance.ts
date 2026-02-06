@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
 
 /**
@@ -97,11 +98,11 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
   }
 
   return {
-    totalFallDistance: Math.round(totalFallDistance * 1000) / 1000,
-    minimumHeight: Math.round(minimumHeight * 1000) / 1000,
+    totalFallDistance: roundTo(totalFallDistance, 3),
+    minimumHeight: roundTo(minimumHeight, 3),
     rescueClearance,
-    freeSpaceRequired: Math.round(freeSpaceRequired * 1000) / 1000,
-    clearanceAboveObstacle: Math.round(clearanceAboveObstacle * 1000) / 1000,
+    freeSpaceRequired: roundTo(freeSpaceRequired, 3),
+    clearanceAboveObstacle: roundTo(clearanceAboveObstacle, 3),
     isAdequate,
     warnings,
   };

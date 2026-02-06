@@ -12,6 +12,7 @@ export { ppk } from './ppk.js';
 export { ppm } from './ppm.js';
 export { rpn } from './rpn.js';
 export { yieldCalc } from './yield.js';
+export { controlChart } from './controlChart.js';
 
 // Types
 export type {
@@ -62,4 +63,10 @@ export type {
   // Yield types
   YieldInput,
   YieldResult,
+  // Control Chart types
+  ControlChartType,
+  ControlChartInput,
+  ControlLimit,
+  SubgroupStat,
+  ControlChartResult,
 } from './types.js';

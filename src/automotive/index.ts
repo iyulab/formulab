@@ -1,4 +1,5 @@
 // Automotive domain formulas
+export { brakingDistance } from './brakingDistance.js';
 export { batteryRuntime } from './batteryRuntime.js';
 export { evCharging } from './evCharging.js';
 export { fuelEconomy } from './fuelEconomy.js';
@@ -9,6 +10,9 @@ export { power } from './power.js';
 
 // Types
 export type {
+  // Braking Distance types
+  BrakingDistanceInput,
+  BrakingDistanceResult,
   // Battery types
   BatteryInput,
   BatteryResult,

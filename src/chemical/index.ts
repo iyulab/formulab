@@ -1,5 +1,13 @@
 // Types
 export type {
+  // Heat Transfer
+  HeatTransferMode,
+  HeatTransferInput,
+  HeatTransferResult,
+  // Pipe Flow
+  PipeMaterial,
+  PipeFlowInput,
+  PipeFlowResult,
   // Batch
   BatchIngredient,
   BatchInput,
@@ -32,6 +40,8 @@ export type {
 } from './types.js';
 
 // Functions
+export { heatTransfer } from './heatTransfer.js';
+export { pipeFlow } from './pipeFlow.js';
 export { batch } from './batch.js';
 export { concentration } from './concentration.js';
 export { dilution } from './dilution.js';

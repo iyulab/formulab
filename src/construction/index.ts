@@ -1,5 +1,9 @@
 // Types
 export type {
+  // Moment of Inertia
+  SectionShape,
+  MomentOfInertiaInput,
+  MomentOfInertiaResult,
   // Beam Load
   LoadType,
   BeamSupport,
@@ -48,6 +52,7 @@ export type {
 } from './types.js';
 
 // Functions
+export { momentOfInertia } from './momentOfInertia.js';
 export { beamLoad } from './beamLoad.js';
 export { concreteMix } from './concreteMix.js';
 export { earthwork } from './earthwork.js';

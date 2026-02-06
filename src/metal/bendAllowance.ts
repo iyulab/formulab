@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { BendAllowanceInput, BendAllowanceResult, BendingMaterial } from './types.js';
 
 /**
@@ -49,7 +50,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
   const minBendRadius = MIN_BEND_RADIUS_MULTIPLIER[material] * thickness;
 
   // Calculate recommended V-die opening
-  const recommendedVDie = Math.round(V_DIE_MULTIPLIER * thickness);
+  const recommendedVDie = roundTo(V_DIE_MULTIPLIER * thickness, 0);
 
   // Warn if inside radius is less than minimum
   if (insideRadius < minBendRadius) {

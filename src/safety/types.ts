@@ -101,6 +101,29 @@ export interface HavsResult {
   maxDailyExposure: number;    // Maximum safe exposure time at current level (hours)
 }
 
+// Ventilation Rate Types (OSHA/ACGIH/ASHRAE)
+export type VentilationActivityLevel = 'sedentary' | 'light' | 'moderate' | 'heavy';
+export type SpaceType = 'office' | 'classroom' | 'retail' | 'restaurant' | 'industrial' | 'warehouse' | 'gym' | 'custom';
+
+export interface VentilationRateInput {
+  roomLength: number;       // m
+  roomWidth: number;        // m
+  roomHeight: number;       // m
+  occupants: number;        // number of people
+  activityLevel: VentilationActivityLevel;
+  spaceType: SpaceType;
+  customAch?: number;       // custom ACH for 'custom' space type
+}
+
+export interface VentilationRateResult {
+  roomVolume: number;       // m³
+  requiredAch: number;      // air changes per hour
+  cfm: number;              // cubic feet per minute
+  m3PerHour: number;        // m³/h
+  litersPerSecond: number;  // L/s
+  cfmPerPerson: number;     // CFM per occupant
+}
+
 // Respirator MUC Types
 export type RespiratorType =
   | 'filtering-facepiece'      // APF = 10 (N95, P100)

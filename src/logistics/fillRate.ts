@@ -1,30 +1,11 @@
 import { roundTo } from '../utils.js';
+import { normalCDF } from '../math.js';
 import type {
   FillRateInput,
   FillRateResult,
   ServiceLevelInput,
   ServiceLevelResult
 } from './types.js';
-
-/**
- * Cumulative Distribution Function for standard normal distribution
- * Uses the Horner form of the rational approximation
- */
-function normalCDF(z: number): number {
-  const a1 = 0.254829592;
-  const a2 = -0.284496736;
-  const a3 = 1.421413741;
-  const a4 = -1.453152027;
-  const a5 = 1.061405429;
-  const p = 0.3275911;
-
-  const sign = z < 0 ? -1 : 1;
-  const x = Math.abs(z) / Math.SQRT2;
-  const t = 1 / (1 + p * x);
-  const erf = 1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-
-  return 0.5 * (1 + sign * erf);
-}
 
 /**
  * Calculate Fill Rate

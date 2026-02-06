@@ -42,7 +42,7 @@ export function roughness(input: RoughnessInput): RoughnessResult {
   let entry;
 
   if (fromScale === 'N') {
-    const n = Math.round(value);
+    const n = roundTo(value, 0);
     entry = ISO_1302_TABLE.find(e => e.n === n);
     if (!entry) {
       // clamp to valid range

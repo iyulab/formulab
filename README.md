@@ -10,7 +10,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **100+ industrial calculations** — OEE, Cpk, metal weight, CBM, NIOSH lifting, and more
+- **110+ industrial calculations** — OEE, Cpk, SPC control charts, metal weight, pipe flow, CBM, NIOSH lifting, and more
 - **11 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -68,16 +68,17 @@ console.log(volume.totalCbm); // 0.96 m³
 
 ## Domains
 
-### Quality & Production (13 functions)
+### Quality & Production (14 functions)
 
 ```typescript
-import { oee, cpk, taktTime, dpmo } from 'formulab/quality';
+import { oee, cpk, taktTime, dpmo, controlChart } from 'formulab/quality';
 ```
 
 | Function | Description |
 |----------|-------------|
 | `oee()` | Overall Equipment Effectiveness |
 | `cpk()` | Process Capability Index |
+| `controlChart()` | SPC X-bar/R and X-bar/S charts |
 | `cycleTime()` | Cycle Time analysis |
 | `taktTime()` | Takt Time calculation |
 | `aql()` | AQL sampling inspection |
@@ -121,10 +122,10 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `weldHeat()` | Weld heat input calculation |
 | `welding()` | Welding parameters |
 
-### Chemical & Process (7 functions)
+### Chemical & Process (9 functions)
 
 ```typescript
-import { dilution, concentration, ph, reactor } from 'formulab/chemical';
+import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer } from 'formulab/chemical';
 ```
 
 | Function | Description |
@@ -132,19 +133,22 @@ import { dilution, concentration, ph, reactor } from 'formulab/chemical';
 | `batch()` | Batch scaling calculation |
 | `concentration()` | Concentration conversion |
 | `dilution()` | Dilution (C1V1 = C2V2) |
+| `heatTransfer()` | Conduction/convection/radiation heat transfer |
 | `ph()` | pH and buffer calculations |
+| `pipeFlow()` | Darcy-Weisbach pipe flow pressure drop |
 | `reactor()` | Reactor sizing |
 | `shelfLife()` | Shelf life prediction (Arrhenius) |
 | `injectionCycle()` | Injection molding cycle time |
 
-### Electronics & SMT (10 functions)
+### Electronics & SMT (11 functions)
 
 ```typescript
-import { traceWidth, solderPaste, resistorDecode } from 'formulab/electronics';
+import { traceWidth, solderPaste, resistorDecode, ohmsLaw } from 'formulab/electronics';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `ohmsLaw()` | Ohm's Law V/I/R/P calculator |
 | `reflowProfile()` | Reflow temperature profile |
 | `resistorDecode()` | Resistor color code decoder |
 | `smtTakt()` | SMT line takt time |
@@ -156,14 +160,15 @@ import { traceWidth, solderPaste, resistorDecode } from 'formulab/electronics';
 | `stencilAperture()` | Stencil aperture design |
 | `viaCurrent()` | Via current capacity |
 
-### Construction (11 functions)
+### Construction (12 functions)
 
 ```typescript
-import { concreteMix, rebarWeight, slope, stair } from 'formulab/construction';
+import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formulab/construction';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `momentOfInertia()` | Section properties (Ix, Sx, rx) for 7 shapes |
 | `beamLoad()` | Beam load calculation |
 | `concreteMix()` | Concrete mix ratio |
 | `earthwork()` | Earthwork volume |
@@ -176,14 +181,15 @@ import { concreteMix, rebarWeight, slope, stair } from 'formulab/construction';
 | `roof()` | Roof calculation |
 | `stair()` | Stair dimension calculation |
 
-### Automotive (7 functions)
+### Automotive (8 functions)
 
 ```typescript
-import { batteryRuntime, evCharging, torque } from 'formulab/automotive';
+import { batteryRuntime, evCharging, torque, brakingDistance } from 'formulab/automotive';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `brakingDistance()` | Stopping distance (AASHTO method) |
 | `batteryRuntime()` | Battery capacity/runtime |
 | `evCharging()` | EV charging time estimation |
 | `fuelEconomy()` | Fuel economy conversion |
@@ -215,14 +221,15 @@ import { cbm, eoq, safetyStock, kanban } from 'formulab/logistics';
 | `shipping()` | Shipping cost estimation |
 | `tsp()` | Traveling salesman problem |
 
-### Energy & Utilities (6 functions)
+### Energy & Utilities (7 functions)
 
 ```typescript
-import { powerCost, motorEfficiency, carbonFootprint } from 'formulab/energy';
+import { powerCost, motorEfficiency, carbonFootprint, solarOutput } from 'formulab/energy';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `solarOutput()` | Solar panel output estimation (PVWatts-based) |
 | `carbonFootprint()` | Scope 2 emissions |
 | `compressedAirCost()` | Compressed air cost |
 | `motorEfficiency()` | Motor upgrade ROI |
@@ -230,14 +237,15 @@ import { powerCost, motorEfficiency, carbonFootprint } from 'formulab/energy';
 | `powerCost()` | Electricity cost with demand |
 | `vfdSavings()` | VFD energy savings |
 
-### Safety & Ergonomics (6 functions)
+### Safety & Ergonomics (7 functions)
 
 ```typescript
-import { nioshLifting, noiseExposure, wbgtCalculate } from 'formulab/safety';
+import { nioshLifting, noiseExposure, wbgtCalculate, ventilationRate } from 'formulab/safety';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `ventilationRate()` | Required ventilation ACH/CFM (ASHRAE/OSHA) |
 | `fallClearance()` | Fall protection clearance |
 | `nioshLifting()` | NIOSH lifting equation |
 | `noiseExposure()` | TWA/Dose calculation |

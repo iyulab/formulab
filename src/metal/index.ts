@@ -2,6 +2,7 @@
 export type {
   // Metal Weight
   MetalShape,
+  MaterialName,
   MetalWeightInput,
   MetalWeightResult,
   // Bending

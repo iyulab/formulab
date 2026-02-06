@@ -1,9 +1,10 @@
-import type { MetalWeightInput, MetalWeightResult } from './types.js';
+import { roundTo } from '../utils.js';
+import type { MetalWeightInput, MetalWeightResult, MaterialName } from './types.js';
 
 /**
  * Material densities in g/cm3
  */
-const MATERIAL_DENSITIES: Record<string, number> = {
+const MATERIAL_DENSITIES: Record<MaterialName, number> = {
   steel: 7.85,
   stainless304: 7.93,
   aluminum: 2.70,
@@ -15,59 +16,37 @@ const MATERIAL_DENSITIES: Record<string, number> = {
 /**
  * Calculate metal weight based on shape, material, dimensions, and length.
  *
- * @param input - Metal weight input parameters
+ * @param input - Metal weight input parameters (discriminated by shape)
  * @returns MetalWeightResult with weight (kg), volume (cm3), and density (g/cm3)
- * @throws Error if material is unknown
  */
 export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   const { shape, length, materialName } = input;
 
   const density = MATERIAL_DENSITIES[materialName];
-  if (density === undefined) {
-    throw new Error(`Unknown material: ${materialName}`);
-  }
 
   let crossSectionArea: number; // mm2
 
   switch (shape) {
     case 'plate': {
-      const { width, thickness } = input;
-      if (width === undefined || thickness === undefined) {
-        throw new Error('Plate requires width and thickness');
-      }
-      crossSectionArea = width * thickness;
+      crossSectionArea = input.width * input.thickness;
       break;
     }
     case 'round': {
-      const { diameter } = input;
-      if (diameter === undefined) {
-        throw new Error('Round requires diameter');
-      }
-      const radius = diameter / 2;
+      const radius = input.diameter / 2;
       crossSectionArea = Math.PI * radius * radius;
       break;
     }
     case 'pipe': {
-      const { outerDiameter, innerDiameter } = input;
-      if (outerDiameter === undefined || innerDiameter === undefined) {
-        throw new Error('Pipe requires outerDiameter and innerDiameter');
-      }
-      const outerRadius = outerDiameter / 2;
-      const innerRadius = innerDiameter / 2;
+      const outerRadius = input.outerDiameter / 2;
+      const innerRadius = input.innerDiameter / 2;
       crossSectionArea = Math.PI * (outerRadius * outerRadius - innerRadius * innerRadius);
       break;
     }
     case 'angle': {
-      const { width, height, thickness } = input;
-      if (width === undefined || height === undefined || thickness === undefined) {
-        throw new Error('Angle requires width, height, and thickness');
-      }
       // L-angle: two legs minus the corner overlap
-      crossSectionArea = (width * thickness) + (height * thickness) - (thickness * thickness);
+      crossSectionArea = (input.width * input.thickness) + (input.height * input.thickness) - (input.thickness * input.thickness);
       break;
     }
-    default:
-      throw new Error(`Unknown shape: ${shape}`);
   }
 
   // Volume in mm3
@@ -80,13 +59,9 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   // Weight in kg = weight (g) / 1000
   const weightKg = (volumeCm3 * density) / 1000;
 
-  // Round to precision matching test expectations
-  const roundedVolume = Math.round(volumeCm3 * 100) / 100;
-  const roundedWeight = Math.round(weightKg * 1000) / 1000;
-
   return {
-    weight: roundedWeight,
-    volume: roundedVolume,
+    weight: roundTo(weightKg, 3),
+    volume: roundTo(volumeCm3, 2),
     density,
   };
 }

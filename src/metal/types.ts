@@ -2,22 +2,19 @@
  * Metal Weight Types
  */
 export type MetalShape = 'plate' | 'round' | 'pipe' | 'angle';
+export type MaterialName = 'steel' | 'stainless304' | 'aluminum' | 'copper' | 'brass' | 'titanium';
 
-export interface MetalWeightInput {
-  shape: MetalShape;
+interface MetalWeightBase {
   length: number;           // mm
-  materialName: string;     // density key (steel, aluminum, etc.)
-  // Plate
-  width?: number;           // mm
-  thickness?: number;       // mm
-  // Round
-  diameter?: number;        // mm
-  // Pipe
-  outerDiameter?: number;   // mm
-  innerDiameter?: number;   // mm
-  // Angle
-  height?: number;          // mm
+  materialName: MaterialName;
 }
+
+export type MetalWeightInput = MetalWeightBase & (
+  | { shape: 'plate'; width: number; thickness: number }
+  | { shape: 'round'; diameter: number }
+  | { shape: 'pipe'; outerDiameter: number; innerDiameter: number }
+  | { shape: 'angle'; width: number; height: number; thickness: number }
+);
 
 export interface MetalWeightResult {
   weight: number;           // kg
@@ -152,15 +149,17 @@ export interface BearingResult {
 export type BoltCalculationMode = 'torqueToPreload' | 'preloadToTorque';
 export type LubricationCondition = 'dry' | 'oiled' | 'moly' | 'ptfe' | 'custom';
 
-export interface BoltInput {
-  mode: BoltCalculationMode;
+interface BoltBase {
   diameter: number;      // mm
   pitch: number;         // mm
-  torque?: number;       // N-m (for torqueToPreload)
-  preload?: number;      // kN (for preloadToTorque)
   kFactor: number;       // nut factor
   tensileStrength: number; // MPa
 }
+
+export type BoltInput = BoltBase & (
+  | { mode: 'torqueToPreload'; torque: number }
+  | { mode: 'preloadToTorque'; preload: number }
+);
 
 export interface BoltResult {
   torque: number;               // N-m

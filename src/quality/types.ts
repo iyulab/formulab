@@ -265,6 +265,42 @@ export interface RpnResult {
 }
 
 /**
+ * Control Chart (SPC) Types
+ */
+export type ControlChartType = 'xbarR' | 'xbarS';
+
+export interface ControlChartInput {
+  chartType: ControlChartType;
+  subgroups: number[][];     // each inner array is one subgroup of measurements
+}
+
+export interface ControlLimit {
+  centerLine: number;
+  ucl: number;
+  lcl: number;
+}
+
+export interface SubgroupStat {
+  index: number;
+  mean: number;
+  range?: number;
+  stdDev?: number;
+  outOfControl: boolean;
+}
+
+export interface ControlChartResult {
+  chartType: ControlChartType;
+  subgroupSize: number;
+  xBarLimits: ControlLimit;
+  rOrSLimits: ControlLimit;
+  subgroupStats: SubgroupStat[];
+  grandMean: number;
+  sigmaEstimate: number;
+  outOfControlPoints: number[];
+  processCapable: boolean;
+}
+
+/**
  * Yield (FPY/RTY) Types
  */
 export interface YieldInput {

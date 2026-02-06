@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { CarbonFootprintInput, CarbonFootprintResult } from './types.js';
 
 // Constants for environmental equivalents
@@ -35,7 +36,7 @@ export function carbonFootprint(input: CarbonFootprintInput): CarbonFootprintRes
   const co2Tonnes = co2Kg / 1000;
 
   // Calculate environmental equivalents
-  const treesEquivalent = Math.round(co2Kg / KG_CO2_PER_TREE_PER_YEAR);
+  const treesEquivalent = roundTo(co2Kg / KG_CO2_PER_TREE_PER_YEAR, 0);
   const carsEquivalent = co2Kg / KG_CO2_PER_CAR_PER_YEAR;
 
   return {

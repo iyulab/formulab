@@ -230,6 +230,31 @@ export interface RoofResult {
 }
 
 /**
+ * Moment of Inertia (Section Properties) Types
+ */
+export type SectionShape = 'rectangle' | 'circle' | 'hollowRectangle' | 'hollowCircle' | 'iBeam' | 'tSection' | 'cChannel';
+
+export type MomentOfInertiaInput =
+  | { shape: 'rectangle'; width: number; height: number }
+  | { shape: 'circle'; diameter: number }
+  | { shape: 'hollowRectangle'; outerWidth: number; outerHeight: number; innerWidth: number; innerHeight: number }
+  | { shape: 'hollowCircle'; outerDiameter: number; innerDiameter: number }
+  | { shape: 'iBeam'; flangeWidth: number; totalHeight: number; webThickness: number; flangeThickness: number }
+  | { shape: 'tSection'; flangeWidth: number; flangeThickness: number; webThickness: number; webHeight: number }
+  | { shape: 'cChannel'; flangeWidth: number; totalHeight: number; webThickness: number; flangeThickness: number };
+
+export interface MomentOfInertiaResult {
+  area: number;              // mm²
+  Ix: number;                // mm⁴ (strong axis)
+  Iy: number;                // mm⁴ (weak axis)
+  Sx: number;                // mm³ (section modulus, strong axis)
+  Sy: number;                // mm³ (section modulus, weak axis)
+  rx: number;                // mm (radius of gyration, strong axis)
+  ry: number;                // mm (radius of gyration, weak axis)
+  centroidY: number;         // mm (centroid from bottom)
+}
+
+/**
  * Stair Calculation Types
  */
 export interface StairInput {

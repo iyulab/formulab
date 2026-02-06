@@ -18,7 +18,7 @@ import { roundTo } from '../utils.js';
  * @returns Reactor volumes and surface area
  */
 export function reactor(input: ReactorInput): ReactorResult {
-  const { shape, diameter, height, fillRatio } = input;
+  const { shape, diameter, fillRatio } = input;
 
   const radius = diameter / 2;
   let totalVolume: number;
@@ -26,7 +26,7 @@ export function reactor(input: ReactorInput): ReactorResult {
 
   if (shape === 'cylindrical') {
     // Cylindrical reactor
-    const h = height!;
+    const h = input.height;
     // V = PI * r^2 * h
     totalVolume = Math.PI * radius * radius * h;
     // Surface Area = 2 * PI * r^2 (ends) + 2 * PI * r * h (lateral)

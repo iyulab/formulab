@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-02-06
+
+### Added
+
+- **Quality**: `controlChart()` — SPC X-bar/R and X-bar/S control charts with AIAG/ASTM E2587 constants (n=2..25)
+- **Chemical**: `pipeFlow()` — Darcy-Weisbach pipe flow calculator with Swamee-Jain friction factor (laminar/transitional/turbulent)
+- **Chemical**: `heatTransfer()` — Three modes: conduction (Fourier), convection (Newton), radiation (Stefan-Boltzmann)
+- **Construction**: `momentOfInertia()` — Section properties (A, Ix, Iy, Sx, Sy, rx, ry) for 7 cross-section shapes (rectangle, circle, hollow rectangle, hollow circle, I-beam, T-section, C-channel)
+- **Electronics**: `ohmsLaw()` — V/I/R/P calculator with discriminated union input
+- **Energy**: `solarOutput()` — Solar panel output estimation based on PVWatts methodology
+- **Safety**: `ventilationRate()` — Required ventilation rate (ACH/CFM/L/s) per ASHRAE 62.1 / OSHA guidelines
+- **Automotive**: `brakingDistance()` — Stopping distance calculator per AASHTO method with grade adjustment
+
+### Changed
+
+- Total function count: 103 → 111
+- Total test count: 1630 → 1705
+
+## [0.2.0] - 2026-02-06
+
+### Breaking Changes
+- **`MetalWeightInput`**: Now a discriminated union by `shape`. Each shape variant requires its specific fields (e.g., `shape: 'plate'` requires `width` and `thickness`). The `materialName` field is now a `MaterialName` literal union type instead of `string`.
+- **`DilutionInput`**: Now a discriminated union by `solveFor`. Each variant provides exactly the three known values, eliminating optional fields and `!` assertions.
+- **`ReactorInput`**: Now a discriminated union by `shape`. `shape: 'cylindrical'` requires `height`; `shape: 'spherical'` does not accept `height`.
+- **`BoltInput`**: Now a discriminated union by `mode`. `mode: 'torqueToPreload'` requires `torque`; `mode: 'preloadToTorque'` requires `preload`.
+- **QR code types removed**: `QrcodeInput`, `QrcodeResult`, `ErrorCorrectionLevel` types and `qrcode.ts` module removed from `formulab/utility` (was empty shell with no implementation).
+
+### Enhanced
+- **`roundTo()`**: Fixed negative number rounding (`-2.555` now correctly rounds to `-2.56` instead of `-2.55`). Uses sign-aware epsilon correction.
+- **`oee()`**: Results now consistently rounded via `roundTo()` (factors to 4 decimals, percentages to 1 decimal).
+
+### Fixed
+- **Duplicate code removal**: Consolidated `normalCDF()`, `normalInvCDF()`, and `clamp()` from 6 files into shared `math.ts` module.
+- **`Math.round` inconsistency**: Replaced manual `Math.round(x * N) / N` patterns with `roundTo()` in 8 files (`metalWeight`, `fallClearance`, `welding`, `carbonFootprint`, `powerCost`, `bendAllowance`, `weldHeat`, `roughness`).
+- **Duplicate test file**: Removed `src/metal/pressTonnage.test.ts` (14 duplicate tests); canonical version at `src/metal/__tests__/pressTonnage.test.ts` (19 tests) retained.
+
+### Changed
+- **Coverage thresholds**: Raised from baseline (5% lines) to realistic levels (90% lines, 95% functions, 85% branches, 90% statements).
+- Total test count: 1630 tests across 102 test files.
+
 ## [0.1.11] - 2026-02-06
 
 ### Enhanced

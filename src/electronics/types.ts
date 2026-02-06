@@ -162,6 +162,22 @@ export interface StencilResult {
   status: 'good' | 'marginal' | 'poor';
 }
 
+// Ohm's Law Calculator types
+export type OhmsLawSolveFor = 'voltage' | 'current' | 'resistance' | 'power';
+
+export type OhmsLawInput =
+  | { solveFor: 'voltage'; current: number; resistance: number }
+  | { solveFor: 'current'; voltage: number; resistance: number }
+  | { solveFor: 'resistance'; voltage: number; current: number }
+  | { solveFor: 'power'; voltage: number; current: number };
+
+export interface OhmsLawResult {
+  voltage: number;     // V
+  current: number;     // A
+  resistance: number;  // Ω
+  power: number;       // W
+}
+
 // Via current capacity types
 export interface ViaInput {
   holeDiameter: number;     // Via hole diameter in mm

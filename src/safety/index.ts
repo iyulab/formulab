@@ -1,4 +1,5 @@
 // Safety domain formulas
+export { ventilationRate } from './ventilationRate.js';
 export { fallClearance } from './fallClearance.js';
 export { nioshLifting } from './nioshLifting.js';
 export { noiseExposure } from './noiseExposure.js';
@@ -8,6 +9,11 @@ export { respiratorCalculate } from './respiratorCalculate.js';
 
 // Types
 export type {
+  // Ventilation Rate types
+  VentilationActivityLevel,
+  SpaceType,
+  VentilationRateInput,
+  VentilationRateResult,
   // Fall Clearance types
   FallClearanceInput,
   FallClearanceResult,

@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { PowerCostInput, PowerCostResult } from './types.js';
 
 /**
@@ -34,7 +35,7 @@ export function powerCost(input: PowerCostInput): PowerCostResult {
   let pfPenalty = 0;
   if (powerFactor < pfPenaltyThreshold && pfPenaltyRate > 0) {
     // Number of 0.01 steps below threshold
-    const stepsBelow = Math.round((pfPenaltyThreshold - powerFactor) / 0.01);
+    const stepsBelow = roundTo((pfPenaltyThreshold - powerFactor) / 0.01, 0);
     // Penalty is applied to energy + demand costs
     pfPenalty = stepsBelow * pfPenaltyRate * (energyCost + demandCost);
   }

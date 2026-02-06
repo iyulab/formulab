@@ -14,12 +14,11 @@ export default defineConfig({
         'src/**/index.ts',
       ],
       thresholds: {
-        // Current baseline: 7.47% lines, 59.63% funcs, 69.56% branches
-        // Increase thresholds as coverage improves
-        lines: 5,
-        functions: 50,
-        branches: 50,
-        statements: 5,
+        // Baseline: 98%+ lines, 100% functions, 90%+ branches (as of 0.2.0)
+        lines: 90,
+        functions: 95,
+        branches: 85,
+        statements: 90,
       },
     },
   },

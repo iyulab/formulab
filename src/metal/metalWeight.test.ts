@@ -128,62 +128,19 @@ describe('metalWeight', () => {
     });
   });
 
-  describe('error handling', () => {
-    it('should throw error for unknown material', () => {
-      expect(() =>
-        metalWeight({
+  describe('type safety', () => {
+    it('should work with all valid material names', () => {
+      const materials = ['steel', 'stainless304', 'aluminum', 'copper', 'brass', 'titanium'] as const;
+      for (const mat of materials) {
+        const result = metalWeight({
           shape: 'plate',
-          materialName: 'unknownMetal',
+          materialName: mat,
           length: 100,
           width: 100,
           thickness: 10,
-        })
-      ).toThrow('Unknown material: unknownMetal');
-    });
-
-    it('should throw error for plate without width', () => {
-      expect(() =>
-        metalWeight({
-          shape: 'plate',
-          materialName: 'steel',
-          length: 100,
-          // width missing
-          thickness: 10,
-        } as any)
-      ).toThrow('Plate requires width and thickness');
-    });
-
-    it('should throw error for round without diameter', () => {
-      expect(() =>
-        metalWeight({
-          shape: 'round',
-          materialName: 'steel',
-          length: 100,
-          // diameter missing
-        } as any)
-      ).toThrow('Round requires diameter');
-    });
-
-    it('should throw error for pipe without inner/outer diameter', () => {
-      expect(() =>
-        metalWeight({
-          shape: 'pipe',
-          materialName: 'steel',
-          length: 100,
-          outerDiameter: 50,
-          // innerDiameter missing
-        } as any)
-      ).toThrow('Pipe requires outerDiameter and innerDiameter');
-    });
-
-    it('should throw error for unknown shape', () => {
-      expect(() =>
-        metalWeight({
-          shape: 'hexagon' as any,
-          materialName: 'steel',
-          length: 100,
-        })
-      ).toThrow('Unknown shape: hexagon');
+        });
+        expect(result.weight).toBeGreaterThan(0);
+      }
     });
   });
 });

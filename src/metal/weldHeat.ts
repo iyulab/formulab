@@ -163,7 +163,7 @@ function calculateHAZHardness(
   const HV_max = HV_base * coolingFactor;
 
   // Clamp to realistic range (150-700 HV)
-  return Math.min(700, Math.max(150, Math.round(HV_max)));
+  return Math.min(700, Math.max(150, roundTo(HV_max, 0)));
 }
 
 /**

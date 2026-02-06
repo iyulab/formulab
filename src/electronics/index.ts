@@ -1,5 +1,9 @@
 // Types
 export type {
+  // Ohm's Law types
+  OhmsLawSolveFor,
+  OhmsLawInput,
+  OhmsLawResult,
   // Reflow types
   PasteType,
   ReflowInput,
@@ -40,6 +44,7 @@ export type {
 } from './types.js';
 
 // Functions
+export { ohmsLaw } from './ohmsLaw.js';
 export { reflowProfile, getPasteTypes } from './reflow.js';
 export { resistorDecode } from './resistor.js';
 export { smtTakt } from './smt-takt.js';

@@ -48,13 +48,11 @@ export interface ConcentrationResult {
  */
 export type DilutionSolveFor = 'c2' | 'v2' | 'c1' | 'v1';
 
-export interface DilutionInput {
-  solveFor: DilutionSolveFor;
-  c1?: number; // initial concentration
-  v1?: number; // initial volume
-  c2?: number; // final concentration
-  v2?: number; // final volume
-}
+export type DilutionInput =
+  | { solveFor: 'c1'; v1: number; c2: number; v2: number }
+  | { solveFor: 'v1'; c1: number; c2: number; v2: number }
+  | { solveFor: 'c2'; c1: number; v1: number; v2: number }
+  | { solveFor: 'v2'; c1: number; v1: number; c2: number };
 
 export interface DilutionResult {
   c1: number;
@@ -89,13 +87,16 @@ export interface PhResult {
  */
 export type ReactorShape = 'cylindrical' | 'spherical';
 
-export interface ReactorInput {
-  shape: ReactorShape;
+interface ReactorBase {
   diameter: number;      // m
-  height?: number;       // m (cylindrical only)
   fillRatio: number;     // 0-1 (e.g., 0.8 = 80%)
   agitatorType?: 'none' | 'anchor' | 'turbine' | 'propeller';
 }
+
+export type ReactorInput = ReactorBase & (
+  | { shape: 'cylindrical'; height: number }
+  | { shape: 'spherical' }
+);
 
 export interface ReactorResult {
   totalVolume: number;      // m^3
@@ -104,6 +105,49 @@ export interface ReactorResult {
   workingVolumeLiters: number;
   surfaceArea: number;      // m^2 (for heat transfer)
   volumeToSurfaceRatio: number;
+}
+
+/**
+ * Heat Transfer Calculator Types
+ */
+export type HeatTransferMode = 'conduction' | 'convection' | 'radiation';
+
+export type HeatTransferInput =
+  | { mode: 'conduction'; conductivity: number; area: number; thickness: number; tempHot: number; tempCold: number }
+  | { mode: 'convection'; coefficient: number; area: number; tempSurface: number; tempFluid: number }
+  | { mode: 'radiation'; emissivity: number; area: number; tempHot: number; tempCold: number };
+
+export interface HeatTransferResult {
+  heatRate: number;          // W (total heat transfer rate Q)
+  heatFluxDensity: number;   // W/m² (heat flux q)
+  tempDifference: number;    // K or °C
+  thermalResistance: number; // K/W
+}
+
+/**
+ * Pipe Flow Calculator Types (Darcy-Weisbach + Swamee-Jain)
+ */
+export type PipeMaterial = 'commercialSteel' | 'stainlessSteel' | 'castIron' | 'copper' | 'pvc' | 'concrete' | 'galvanizedSteel' | 'custom';
+
+export interface PipeFlowInput {
+  flowRate: number;          // L/min
+  pipeDiameter: number;      // mm (inner diameter)
+  pipeLength: number;         // m
+  pipeMaterial: PipeMaterial;
+  fluidDensity: number;       // kg/m³ (default 998.2 for water at 20°C)
+  fluidViscosity: number;     // Pa·s (default 0.001002 for water at 20°C)
+  customRoughness?: number;   // mm (for 'custom' material)
+}
+
+export interface PipeFlowResult {
+  velocity: number;            // m/s
+  reynoldsNumber: number;
+  flowRegime: 'laminar' | 'transitional' | 'turbulent';
+  frictionFactor: number;      // Darcy friction factor
+  pressureDrop: number;        // Pa
+  pressureDropKpa: number;     // kPa
+  pressureDropBar: number;     // bar
+  headLoss: number;            // m
 }
 
 /**

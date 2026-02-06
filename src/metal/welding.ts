@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type { WeldingInput, WeldingResult, WeldingRod, WeldingBaseMetal } from './types.js';
 
 // Electrode database by base metal
@@ -62,8 +63,8 @@ export function welding(input: WeldingInput): WeldingResult {
   const rodDiameter = getRodDiameter(thickness);
 
   // Current range: diameter x (25 to 45) A/mm
-  const currentMin = Math.round(rodDiameter * 25);
-  const currentMax = Math.round(rodDiameter * 45);
+  const currentMin = roundTo(rodDiameter * 25, 0);
+  const currentMax = roundTo(rodDiameter * 45, 0);
 
   const notes: string[] = [];
   if (baseMetal === 'aluminum') {

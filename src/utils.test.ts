@@ -18,7 +18,7 @@ describe('roundTo', () => {
 
     it('should handle negative numbers', () => {
       expect(roundTo(-3.14159, 2)).toBe(-3.14);
-      expect(roundTo(-2.555, 2)).toBe(-2.55); // Note: negative rounding behavior
+      expect(roundTo(-2.555, 2)).toBe(-2.56);
     });
   });
 

@@ -23,15 +23,7 @@ import type { BoltInput, BoltResult } from './types.js';
  * Reference: Machinery's Handbook, VDI 2230
  */
 export function bolt(input: BoltInput): BoltResult {
-  const {
-    mode,
-    diameter,
-    pitch,
-    torque: inputTorque,
-    preload: inputPreload,
-    kFactor,
-    tensileStrength,
-  } = input;
+  const { mode, diameter, pitch, kFactor, tensileStrength } = input;
 
   // Validate inputs
   if (diameter <= 0 || pitch <= 0 || kFactor <= 0 || tensileStrength <= 0) {
@@ -57,7 +49,7 @@ export function bolt(input: BoltInput): BoltResult {
 
   if (mode === 'torqueToPreload') {
     // Given torque, calculate preload
-    torque = inputTorque ?? 0;
+    torque = input.torque;
     if (torque <= 0) {
       return {
         torque: 0,
@@ -76,7 +68,7 @@ export function bolt(input: BoltInput): BoltResult {
     preloadN = (torque * 1000) / (kFactor * diameter);
   } else {
     // Given preload, calculate torque
-    const preloadKN = inputPreload ?? 0;
+    const preloadKN = input.preload;
     if (preloadKN <= 0) {
       return {
         torque: 0,

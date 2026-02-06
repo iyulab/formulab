@@ -1,4 +1,5 @@
 // Energy domain formulas
+export { solarOutput } from './solarOutput.js';
 export { carbonFootprint } from './carbonFootprint.js';
 export { compressedAirCost } from './compressedAirCost.js';
 export { motorEfficiency } from './motorEfficiency.js';
@@ -8,6 +9,9 @@ export { vfdSavings } from './vfdSavings.js';
 
 // Types
 export type {
+  // Solar output types
+  SolarOutputInput,
+  SolarOutputResult,
   // Carbon footprint types
   CarbonFootprintInput,
   CarbonFootprintResult,
