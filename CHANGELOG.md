@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-02-07
+
+### Added
+
+- **Quality** (+4 functions, 14 → 18):
+  - `gageRR()` — Gage R&R repeatability/reproducibility analysis (AIAG MSA 4th Edition)
+  - `cmk()` — Machine capability index Cm/Cmk (threshold ≥ 1.67)
+  - `weibull()` — Weibull reliability analysis with median rank regression
+  - `paretoAnalysis()` — Pareto 80/20 ABC classification
+
+- **Safety** (+5 functions, 9 → 14):
+  - `thermalComfort()` — PMV/PPD thermal comfort (ISO 7730 Fanger model)
+  - `ergonomicRisk()` — REBA ergonomic risk assessment scoring
+  - `arcFlash()` — Arc flash incident energy & PPE category (IEEE 1584/NFPA 70E)
+  - `confinedSpace()` — Confined space atmospheric assessment (OSHA 29 CFR 1910.146)
+  - `lel()` — Lower explosive limit for mixed gases (Le Chatelier's rule)
+
+- **Energy** (+4 functions, 11 → 15):
+  - `heatPump()` — Heat pump COP & Carnot efficiency with annual savings
+  - `degreeDay()` — Heating/Cooling degree day calculation (HDD/CDD)
+  - `windOutput()` — Wind turbine output with Rayleigh capacity factor
+  - `cusum()` — CUSUM energy anomaly detection (Page's algorithm)
+
+- **Chemical** (+3 functions, 9 → 12):
+  - `flowControl()` — Control valve Cv/Kv sizing (ISA/IEC 60534)
+  - `reliefValve()` — Safety relief valve sizing (API 520/526)
+  - `pid()` — PID controller tuning (Ziegler-Nichols / Cohen-Coon)
+
+- **Logistics** (+1 function, 16 → 17):
+  - `abcAnalysis()` — ABC inventory classification by annual value
+
+- **Food** (+2 functions, 4 → 6):
+  - `waterActivity()` — Water activity microbial growth risk (HACCP)
+  - `stabilityStudy()` — Accelerated stability study with Arrhenius regression (ICH Q1A)
+
+- **Automotive** (+1 function, 8 → 9):
+  - `chargingLoss()` — EV charging loss/efficiency with temperature derating
+
+### Changed
+
+- Total function count: 154 → 174 (+20)
+- Total domains: 14 (unchanged)
+
+## [0.6.0] - 2026-02-07
+
+### Added
+
+- **Energy** (+4 functions, 7 → 11):
+  - `boilerEfficiency()` — Boiler thermal efficiency (direct input-output method)
+  - `transformerLoss()` — Transformer loss calculation with optimal load point
+  - `insulationRoi()` — Insulation ROI with payback period
+  - `ledRoi()` — LED lighting retrofit ROI with CO2 savings
+
+- **Safety** (+2 functions, 7 → 9):
+  - `ladderAngle()` — Ladder safety angle calculation (OSHA 4:1 rule, 70°–80° compliance)
+  - `illuminance()` — Workplace illuminance calculation (Lumen Method with CU lookup)
+
+- **Logistics** (+2 functions, 14 → 16):
+  - `inventoryTurnover()` — Inventory turnover ratio, days/weeks of supply, GMROII
+  - `loadCapacity()` — Forklift load capacity derating with attachment loss
+
 ## [0.5.0] - 2026-02-07
 
 ### Added

@@ -345,3 +345,77 @@ export interface TspResult {
   optimalDistance?: number;
   optimalityGap?: number;
 }
+
+/**
+ * Inventory Turnover Types
+ */
+export interface InventoryTurnoverInput {
+  cogs: number;               // $ (cost of goods sold)
+  averageInventory: number;   // $ (avg inventory value)
+  periodDays?: number;        // default 365
+  grossMargin?: number;       // $ (for GMROII)
+}
+
+export interface InventoryTurnoverResult {
+  turnoverRatio: number;
+  daysOfSupply: number;       // days
+  weeksOfSupply: number;      // weeks
+  gmroii: number | null;      // % (Gross Margin Return on Inventory Investment)
+}
+
+/**
+ * Forklift Load Capacity Types
+ */
+export interface LoadCapacityInput {
+  ratedCapacity: number;       // kg
+  ratedLoadCenter: number;     // mm (typically 500 or 600)
+  actualLoadCenter: number;    // mm
+  actualLoad?: number;         // kg
+  attachmentWeightLoss?: number; // kg (side-shift, clamp etc.)
+}
+
+export interface LoadCapacityResult {
+  effectiveCapacity: number;    // kg
+  loadCenterDerating: number;   // %
+  netCapacity: number;          // kg (after attachment loss)
+  utilization: number | null;   // % (if actualLoad)
+  isOverloaded: boolean | null; // (if actualLoad)
+  safetyMargin: number | null;  // kg (if actualLoad)
+}
+
+/**
+ * ABC Inventory Analysis Types
+ */
+export interface AbcItem {
+  sku: string;
+  annualUsage: number;
+  unitCost: number;
+}
+
+export interface AbcInput {
+  items: AbcItem[];
+  thresholdA?: number;        // default 80
+  thresholdB?: number;        // default 95
+}
+
+export interface AbcClassification {
+  sku: string;
+  annualUsage: number;
+  unitCost: number;
+  annualValue: number;
+  percentage: number;
+  cumulative: number;
+  rank: number;
+  category: 'A' | 'B' | 'C';
+}
+
+export interface AbcResult {
+  items: AbcClassification[];
+  summary: {
+    a: { count: number; skuPercentage: number; valuePercentage: number };
+    b: { count: number; skuPercentage: number; valuePercentage: number };
+    c: { count: number; skuPercentage: number; valuePercentage: number };
+  };
+  totalItems: number;
+  totalValue: number;
+}

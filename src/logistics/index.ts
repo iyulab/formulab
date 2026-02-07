@@ -12,6 +12,9 @@ export { pickTime } from './pickTime.js';
 export { safetyStock } from './safetyStock.js';
 export { shipping } from './shipping.js';
 export { tsp } from './tsp.js';
+export { inventoryTurnover } from './inventoryTurnover.js';
+export { loadCapacity } from './loadCapacity.js';
+export { abcAnalysis } from './abcAnalysis.js';
 
 // Types
 export type {
@@ -72,4 +75,15 @@ export type {
   TspNode,
   TspInput,
   TspResult,
+  // Inventory Turnover types
+  InventoryTurnoverInput,
+  InventoryTurnoverResult,
+  // Load Capacity types
+  LoadCapacityInput,
+  LoadCapacityResult,
+  // ABC Analysis types
+  AbcItem,
+  AbcInput,
+  AbcClassification,
+  AbcResult,
 } from './types.js';

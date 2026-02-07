@@ -37,6 +37,15 @@ export type {
   InjectionCycleInput,
   InjectionCyclePhase,
   InjectionCycleResult,
+  // Flow Control types
+  FlowControlInput,
+  FlowControlResult,
+  // Relief Valve types
+  ReliefValveInput,
+  ReliefValveResult,
+  // PID types
+  PidInput,
+  PidResult,
 } from './types.js';
 
 // Functions
@@ -49,3 +58,6 @@ export { ph } from './ph.js';
 export { reactor } from './reactor.js';
 export { shelfLife } from './shelfLife.js';
 export { injectionCycle } from './injectionCycle.js';
+export { flowControl } from './flowControl.js';
+export { reliefValve } from './reliefValve.js';
+export { pid } from './pid.js';

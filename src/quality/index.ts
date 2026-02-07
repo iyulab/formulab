@@ -13,6 +13,10 @@ export { ppm } from './ppm.js';
 export { rpn } from './rpn.js';
 export { yieldCalc } from './yield.js';
 export { controlChart } from './controlChart.js';
+export { gageRR } from './gageRR.js';
+export { cmk } from './cmk.js';
+export { weibull } from './weibull.js';
+export { paretoAnalysis } from './paretoAnalysis.js';
 
 // Types
 export type {
@@ -69,4 +73,18 @@ export type {
   ControlLimit,
   SubgroupStat,
   ControlChartResult,
+  // Gage R&R types
+  GageRRInput,
+  GageRRResult,
+  // Cmk types
+  CmkInput,
+  CmkResult,
+  // Weibull types
+  WeibullInput,
+  WeibullResult,
+  // Pareto types
+  ParetoItem,
+  ParetoInput,
+  ParetoClassification,
+  ParetoResult,
 } from './types.js';

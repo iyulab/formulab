@@ -1,7 +1,7 @@
 {
   "name": "formulab",
-  "version": "0.5.1",
-  "description": "Manufacturing & Engineering calculation formulas library - 146 industrial calculations across 14 domains for OEE, Cpk, SPC, metal weight, CNC machining, GD&T, battery, environmental, pipe flow, logistics, and more",
+  "version": "0.7.0",
+  "description": "Manufacturing & Engineering calculation formulas library - 174 industrial calculations across 14 domains for OEE, Cpk, SPC, metal weight, CNC machining, GD&T, battery, environmental, pipe flow, logistics, and more",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

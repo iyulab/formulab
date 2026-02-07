@@ -147,3 +147,28 @@ export interface PowerResult {
   HP: number;
   PS: number;
 }
+
+/**
+ * EV Charging Loss Calculator Types
+ */
+export interface ChargingLossInput {
+  batteryCapacity: number;    // kWh
+  chargerPower: number;       // kW
+  chargerType: 'ac_l1' | 'ac_l2' | 'dc_fast';
+  chargerEfficiency?: number; // 0-1, default by type
+  batteryEfficiency?: number; // 0-1, default 0.95
+  soc: number;                // % starting SOC
+  targetSoc?: number;         // % target, default 80(DC)/100(AC)
+  ambientTemp?: number;       // °C (for derating)
+}
+
+export interface ChargingLossResult {
+  energyDelivered: number;    // kWh
+  energyConsumed: number;     // kWh
+  totalLoss: number;          // kWh
+  overallEfficiency: number;  // %
+  chargerLoss: number;        // kWh
+  batteryLoss: number;        // kWh
+  chargingTime: number;       // hours
+  effectivePower: number;     // kW (derated)
+}

@@ -115,3 +115,48 @@ export interface HaccpResult {
   category: HaccpCategory;
   items: HaccpCheckItem[];
 }
+
+/**
+ * Water Activity Types — HACCP Microbial Safety
+ */
+export interface WaterActivityInput {
+  aw: number;                 // 0-1 (direct measurement)
+  temperature?: number;       // °C, default 25
+}
+
+export interface WaterActivityResult {
+  aw: number;
+  isStable: boolean;          // aw < 0.6
+  riskLevel: 'safe' | 'low' | 'moderate' | 'high';
+  growthRisk: {
+    bacteria: boolean;
+    yeast: boolean;
+    mold: boolean;
+    xerophilic: boolean;
+  };
+  warnings: string[];
+}
+
+/**
+ * Stability Study Types — Arrhenius Regression (ICH Q1A)
+ */
+export interface StabilityDataPoint {
+  temperature: number;        // °C
+  time: number;               // months
+  degradation: number;        // %
+}
+
+export interface StabilityStudyInput {
+  dataPoints: StabilityDataPoint[];
+  shelfLifeCriterion: number; // % max degradation
+  storageTemp: number;        // °C
+}
+
+export interface StabilityStudyResult {
+  activationEnergy: number;   // kJ/mol
+  q10: number;
+  predictedShelfLife: number; // months
+  rateConstants: { temperature: number; rateConstant: number }[];
+  r2: number;
+  accelerationFactor: number;
+}

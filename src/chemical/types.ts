@@ -204,3 +204,72 @@ export interface InjectionCycleResult {
   partsPerHour: number;
   breakdown: InjectionCyclePhase[];
 }
+
+/**
+ * Control Valve Cv Calculator Types
+ */
+export interface FlowControlInput {
+  flowRate: number;           // m³/h
+  inletPressure: number;      // kPa
+  outletPressure: number;     // kPa
+  fluidDensity: number;       // kg/m³
+  fluidType: 'liquid' | 'gas' | 'steam';
+  temperature?: number;       // °C, default 20
+  molecularWeight?: number;   // for gas
+  specificHeatRatio?: number; // for gas, default 1.4
+}
+
+export interface FlowControlResult {
+  cv: number;                 // Flow coefficient (US)
+  kv: number;                 // Flow coefficient (metric)
+  pressureDrop: number;       // kPa
+  pressureRatio: number;      // ΔP/P1
+  isChoked: boolean;
+  velocity: number;           // m/s (estimated pipe velocity)
+}
+
+/**
+ * Relief Valve Sizing Types — API 520
+ */
+export interface ReliefValveInput {
+  requiredCapacity: number;   // kg/h
+  setPressure: number;        // kPa (gauge)
+  backPressure: number;       // kPa (gauge)
+  temperature: number;        // °C
+  fluidType: 'liquid' | 'gas' | 'steam';
+  molecularWeight?: number;
+  specificGravity?: number;   // for liquid, water=1.0
+  overpressure?: number;      // %, default 10
+  dischargeCoefficient?: number; // Kd
+}
+
+export interface ReliefValveResult {
+  requiredArea: number;       // mm²
+  selectedOrifice: string;    // API letter (D-T)
+  orificeArea: number;        // mm²
+  relievingPressure: number;  // kPa
+  capacityAtOrifice: number;  // kg/h
+  percentUtilized: number;    // %
+}
+
+/**
+ * PID Tuning Types — Ziegler-Nichols / Cohen-Coon
+ */
+export interface PidInput {
+  method: 'ziegler-nichols-step' | 'ziegler-nichols-ultimate' | 'cohen-coon';
+  processGain?: number;       // K (step response)
+  deadTime?: number;          // L (seconds)
+  timeConstant?: number;      // T (seconds)
+  ultimateGain?: number;      // Ku
+  ultimatePeriod?: number;    // Pu (seconds)
+  controllerType: 'P' | 'PI' | 'PID';
+}
+
+export interface PidResult {
+  kp: number;                 // Proportional gain
+  ki: number;                 // Integral gain (1/s)
+  kd: number;                 // Derivative gain (s)
+  ti: number;                 // Integral time (s)
+  td: number;                 // Derivative time (s)
+  method: string;
+}

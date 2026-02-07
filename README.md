@@ -11,7 +11,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **146 industrial calculations** — OEE, Cpk, SPC control charts, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, battery SOH, GHG emissions, and more
+- **174 industrial calculations** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **14 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -23,16 +23,16 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
-| Quality | 14 | oee, cpk, controlChart | ISO 22400-2, AIAG/ASTM E2587, JIPM |
+| Quality | 18 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
 | Metal | 25 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
-| Logistics | 14 | cbm | Physical formula |
-| Safety | 7 | nioshLifting | NIOSH 94-110 |
-| Chemical | 9 | — | Darcy-Weisbach, Fourier |
+| Logistics | 17 | cbm | Physical formula |
+| Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
+| Chemical | 12 | — | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 11 | — | IPC-2221 |
 | Construction | 12 | — | AISC, Timoshenko |
-| Automotive | 8 | — | AASHTO |
-| Energy | 7 | — | NREL PVWatts |
-| Food | 4 | — | HACCP |
+| Automotive | 9 | — | AASHTO, SAE J1772 |
+| Energy | 15 | — | NREL PVWatts, ISO 50001 |
+| Food | 6 | — | HACCP, ICH Q1A |
 | Utility | 3 | — | — |
 | Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
@@ -157,10 +157,10 @@ console.log(volume.totalCbm); // 0.96 m³
 
 ## Domains
 
-### Quality & Production (14 functions)
+### Quality & Production (18 functions)
 
 ```typescript
-import { oee, cpk, taktTime, dpmo, controlChart } from 'formulab/quality';
+import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formulab/quality';
 ```
 
 | Function | Description |
@@ -179,6 +179,10 @@ import { oee, cpk, taktTime, dpmo, controlChart } from 'formulab/quality';
 | `ppm()` | Parts Per Million conversion |
 | `rpn()` | Risk Priority Number (FMEA) |
 | `yieldCalc()` | First Pass Yield / RTY |
+| `gageRR()` | Gage R&R (AIAG MSA Average & Range) |
+| `cmk()` | Machine capability index Cm/Cmk |
+| `weibull()` | Weibull reliability analysis |
+| `paretoAnalysis()` | Pareto 80/20 ABC classification |
 
 ### Metal & Machining (25 functions)
 
@@ -214,10 +218,10 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `pipeSpec()` | ANSI/ASME pipe dimensions lookup |
 | `flangeSpec()` | ASME B16.5 flange dimensions lookup |
 
-### Chemical & Process (9 functions)
+### Chemical & Process (12 functions)
 
 ```typescript
-import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer } from 'formulab/chemical';
+import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer, flowControl, pid } from 'formulab/chemical';
 ```
 
 | Function | Description |
@@ -231,6 +235,9 @@ import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer } from 'fo
 | `reactor()` | Reactor sizing |
 | `shelfLife()` | Shelf life prediction (Arrhenius) |
 | `injectionCycle()` | Injection molding cycle time |
+| `flowControl()` | Control valve Cv/Kv sizing (ISA/IEC 60534) |
+| `reliefValve()` | Safety relief valve sizing (API 520/526) |
+| `pid()` | PID controller tuning (Z-N / Cohen-Coon) |
 
 ### Electronics & SMT (11 functions)
 
@@ -273,10 +280,10 @@ import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formula
 | `roof()` | Roof calculation |
 | `stair()` | Stair dimension calculation |
 
-### Automotive (8 functions)
+### Automotive (9 functions)
 
 ```typescript
-import { batteryRuntime, evCharging, torque, brakingDistance } from 'formulab/automotive';
+import { batteryRuntime, evCharging, torque, brakingDistance, chargingLoss } from 'formulab/automotive';
 ```
 
 | Function | Description |
@@ -289,22 +296,26 @@ import { batteryRuntime, evCharging, torque, brakingDistance } from 'formulab/au
 | `tireCompare()` | Tire size comparison |
 | `torque()` | Torque conversion |
 | `power()` | Power conversion (HP, kW) |
+| `chargingLoss()` | EV charging loss/efficiency |
 
-### Logistics & Inventory (14 functions)
+### Logistics & Inventory (17 functions)
 
 ```typescript
-import { cbm, eoq, safetyStock, kanban } from 'formulab/logistics';
+import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'formulab/logistics';
 ```
 
 | Function | Description |
 |----------|-------------|
+| `abcAnalysis()` | ABC inventory classification by annual value |
 | `cbm()` | Cubic meter calculation |
 | `containerFit()` | Container capacity estimation |
 | `dimWeight()` | Dimensional weight |
 | `eoq()` | Economic Order Quantity |
 | `fillRate()` | Fill rate calculation |
 | `freightClass()` | NMFC freight class |
+| `inventoryTurnover()` | Inventory turnover ratio & days of supply |
 | `kanban()` | Kanban quantity |
+| `loadCapacity()` | Forklift load capacity derating |
 | `pallet3d()` | 3D pallet loading heuristic (BLF + FFD) |
 | `palletStack()` | Pallet stacking calculation |
 | `pickTime()` | Picking time estimation |
@@ -313,42 +324,57 @@ import { cbm, eoq, safetyStock, kanban } from 'formulab/logistics';
 | `shipping()` | Shipping cost estimation |
 | `tsp()` | TSP heuristic (NN + 2-Opt; exact for n ≤ 10) |
 
-### Energy & Utilities (7 functions)
+### Energy & Utilities (15 functions)
 
 ```typescript
-import { powerCost, motorEfficiency, carbonFootprint, solarOutput } from 'formulab/energy';
+import { powerCost, motorEfficiency, carbonFootprint, solarOutput, boilerEfficiency, heatPump, cusum } from 'formulab/energy';
 ```
 
 | Function | Description |
 |----------|-------------|
-| `solarOutput()` | Solar panel output estimation (PVWatts-based) |
+| `boilerEfficiency()` | Boiler thermal efficiency (direct method) |
 | `carbonFootprint()` | Scope 2 emissions |
 | `compressedAirCost()` | Compressed air cost |
+| `cusum()` | CUSUM energy anomaly detection |
+| `degreeDay()` | Heating/Cooling degree days (HDD/CDD) |
+| `heatPump()` | Heat pump COP & Carnot efficiency |
+| `insulationRoi()` | Insulation ROI & payback |
+| `ledRoi()` | LED lighting retrofit ROI |
 | `motorEfficiency()` | Motor upgrade ROI |
 | `pfCorrection()` | Power factor correction |
 | `powerCost()` | Electricity cost with demand |
+| `solarOutput()` | Solar panel output estimation (PVWatts-based) |
+| `transformerLoss()` | Transformer loss & efficiency |
 | `vfdSavings()` | VFD energy savings |
+| `windOutput()` | Wind turbine output with Rayleigh CF |
 
-### Safety & Ergonomics (7 functions)
+### Safety & Ergonomics (14 functions)
 
 ```typescript
-import { nioshLifting, noiseExposure, wbgtCalculate, ventilationRate } from 'formulab/safety';
+import { nioshLifting, noiseExposure, wbgtCalculate, ventilationRate, thermalComfort, arcFlash, lel } from 'formulab/safety';
 ```
 
 | Function | Description |
 |----------|-------------|
-| `ventilationRate()` | Required ventilation ACH/CFM (ASHRAE/OSHA) |
+| `arcFlash()` | Arc flash incident energy & PPE (IEEE 1584) |
+| `confinedSpace()` | Confined space atmospheric assessment (OSHA) |
+| `ergonomicRisk()` | REBA ergonomic risk scoring |
 | `fallClearance()` | Fall protection clearance |
+| `havsCalculate()` | Hand-arm vibration exposure |
+| `illuminance()` | Workplace illuminance (Lumen Method) |
+| `ladderAngle()` | Ladder safety angle (OSHA 4:1) |
+| `lel()` | Mixed gas LEL (Le Chatelier's rule) |
 | `nioshLifting()` | NIOSH lifting equation |
 | `noiseExposure()` | TWA/Dose calculation |
-| `wbgtCalculate()` | WBGT heat stress index |
-| `havsCalculate()` | Hand-arm vibration exposure |
 | `respiratorCalculate()` | Respirator MUC calculation |
+| `thermalComfort()` | PMV/PPD thermal comfort (ISO 7730) |
+| `ventilationRate()` | Required ventilation ACH/CFM (ASHRAE/OSHA) |
+| `wbgtCalculate()` | WBGT heat stress index |
 
-### Food & HACCP (4 functions)
+### Food & HACCP (6 functions)
 
 ```typescript
-import { calorie, nutrition, haccp } from 'formulab/food';
+import { calorie, nutrition, haccp, waterActivity, stabilityStudy } from 'formulab/food';
 ```
 
 | Function | Description |
@@ -357,6 +383,8 @@ import { calorie, nutrition, haccp } from 'formulab/food';
 | `expiry()` | Expiry date calculation |
 | `nutrition()` | Nutrition facts calculation |
 | `haccp()` | HACCP checklist generation |
+| `waterActivity()` | Water activity microbial risk (HACCP) |
+| `stabilityStudy()` | Accelerated stability (Arrhenius, ICH Q1A) |
 
 ### Utility (3 functions)
 

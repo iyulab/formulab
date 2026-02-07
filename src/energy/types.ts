@@ -149,3 +149,187 @@ export interface VfdSavingsResult {
   paybackYears: number;        // Simple payback period (years)
   co2ReductionKg: number;      // Annual CO2 reduction (kg) - using avg 0.5 kg/kWh
 }
+
+/**
+ * Boiler Efficiency Calculator Types
+ */
+export interface BoilerEfficiencyInput {
+  fuelRate: number;            // kg/h or m³/h
+  fuelHeatValue: number;       // kJ/kg or kJ/m³ (GCV/HHV)
+  steamOutput: number;         // kg/h
+  steamEnthalpy: number;       // kJ/kg
+  feedwaterEnthalpy: number;   // kJ/kg
+  operatingHours?: number;     // h/year (for annual metrics)
+  fuelCost?: number;           // $/unit
+}
+
+export interface BoilerEfficiencyResult {
+  heatInput: number;           // kW
+  heatOutput: number;          // kW
+  heatLoss: number;            // kW
+  efficiency: number;          // %
+  annualFuelCost: number | null;  // $/year
+  annualHeatLoss: number | null;  // kWh/year
+}
+
+/**
+ * Transformer Loss Calculator Types
+ */
+export interface TransformerLossInput {
+  ratedCapacity: number;    // kVA
+  coreLoss: number;         // W (no-load loss)
+  copperLoss: number;       // W (full-load copper loss)
+  loadFraction: number;     // 0-1
+  powerFactor?: number;     // 0-1, default 0.85
+  operatingHours?: number;  // h/year
+  energyCost?: number;      // $/kWh
+}
+
+export interface TransformerLossResult {
+  outputPower: number;         // W
+  totalLoss: number;           // W
+  coreLossAtLoad: number;      // W (constant)
+  copperLossAtLoad: number;    // W
+  efficiency: number;          // %
+  optimalLoadFraction: number; // 0-1 (max efficiency point)
+  annualLossEnergy: number | null;  // kWh/year
+  annualLossCost: number | null;    // $/year
+}
+
+/**
+ * Insulation ROI Calculator Types
+ */
+export interface InsulationRoiInput {
+  surfaceArea: number;          // m²
+  tempDifference: number;       // K or °C
+  insulationK: number;          // W/(m·K) thermal conductivity
+  insulationThickness: number;  // mm
+  surfaceCoefficient?: number;  // W/(m²·K), default 10
+  operatingHours: number;       // h/year
+  energyCost: number;           // $/kWh
+  boilerEfficiency?: number;    // 0-1, default 0.8
+  installationCost?: number;    // $
+}
+
+export interface InsulationRoiResult {
+  bareHeatLoss: number;         // W
+  insulatedHeatLoss: number;    // W
+  heatSaved: number;            // W
+  heatLossReduction: number;    // %
+  annualEnergySaved: number;    // kWh
+  annualCostSaved: number;      // $
+  paybackPeriod: number | null; // years
+}
+
+/**
+ * LED ROI Calculator Types
+ */
+export interface LedRoiInput {
+  fixtureCount: number;
+  oldWatts: number;          // W per fixture
+  newWatts: number;          // W per fixture
+  operatingHours: number;    // h/year
+  electricityRate: number;   // $/kWh
+  fixtureCost?: number;      // $ per fixture
+  installationCost?: number; // $ total
+  co2Factor?: number;        // kg CO2/kWh, default 0.5
+}
+
+export interface LedRoiResult {
+  oldAnnualEnergy: number;    // kWh
+  newAnnualEnergy: number;    // kWh
+  annualEnergySaved: number;  // kWh
+  energyReduction: number;   // %
+  annualCostSaved: number;   // $
+  totalInvestment: number;   // $
+  paybackPeriod: number | null; // years
+  co2Saved: number;          // kg/year
+}
+
+/**
+ * Heat Pump COP Calculator Types
+ */
+export interface HeatPumpInput {
+  sourceTemp: number;         // °C
+  sinkTemp: number;           // °C
+  heatingCapacity: number;    // kW
+  compressorPower: number;    // kW
+  auxiliaryPower?: number;    // kW, default 0
+  operatingHours?: number;    // h/year
+  electricityRate?: number;   // $/kWh
+  boilerEfficiency?: number;  // 0-1, for comparison
+  fuelCost?: number;          // $/kWh (fuel energy cost)
+}
+
+export interface HeatPumpResult {
+  cop: number;
+  copCarnot: number;
+  efficiency: number;         // % of Carnot
+  annualElectricity: number | null;
+  annualElecCost: number | null;
+  annualFuelCost: number | null;
+  annualSavings: number | null;
+}
+
+/**
+ * Degree Day (HDD/CDD) Calculator Types
+ */
+export interface DegreeDayInput {
+  dailyTemps: number[];       // °C
+  baseHeating?: number;       // °C, default 18
+  baseCooling?: number;       // °C, default 24
+}
+
+export interface DegreeDayResult {
+  hdd: number;
+  cdd: number;
+  totalDays: number;
+  heatingDays: number;
+  coolingDays: number;
+  neutralDays: number;
+  avgTemp: number;
+}
+
+/**
+ * Wind Output Calculator Types
+ */
+export interface WindOutputInput {
+  ratedPower: number;         // kW
+  hubHeight: number;          // m
+  averageWindSpeed: number;   // m/s at reference height
+  referenceHeight?: number;   // m, default 10
+  cutInSpeed?: number;        // m/s, default 3
+  cutOutSpeed?: number;       // m/s, default 25
+  ratedSpeed?: number;        // m/s, default 12
+  rotorDiameter?: number;     // m
+  terrainRoughness?: number;  // Hellmann exponent, default 0.143
+}
+
+export interface WindOutputResult {
+  adjustedWindSpeed: number;  // m/s at hub height
+  capacityFactor: number;     // 0-1
+  annualOutput: number;       // kWh/year
+  monthlyOutput: number;      // kWh/month
+  dailyOutput: number;        // kWh/day
+  sweptArea: number | null;   // m²
+  betzLimit: number | null;   // kW (max theoretical)
+}
+
+/**
+ * CUSUM (Cumulative Sum) Energy Anomaly Detection Types
+ */
+export interface CusumInput {
+  values: number[];
+  target: number;             // μ₀
+  allowance?: number;         // K, default σ/2
+  decisionInterval?: number;  // H, default 5σ
+  stdDev?: number;            // σ (auto-calculated if omitted)
+}
+
+export interface CusumResult {
+  cusumPositive: number[];    // C⁺
+  cusumNegative: number[];    // C⁻
+  signals: number[];          // indices where signal detected
+  isOutOfControl: boolean;
+  shiftDetected: 'none' | 'positive' | 'negative' | 'both';
+}

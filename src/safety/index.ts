@@ -6,6 +6,13 @@ export { noiseExposure } from './noiseExposure.js';
 export { wbgtCalculate } from './wbgtCalculate.js';
 export { havsCalculate } from './havsCalculate.js';
 export { respiratorCalculate } from './respiratorCalculate.js';
+export { ladderAngle } from './ladderAngle.js';
+export { illuminance } from './illuminance.js';
+export { thermalComfort } from './thermalComfort.js';
+export { ergonomicRisk } from './ergonomicRisk.js';
+export { arcFlash } from './arcFlash.js';
+export { confinedSpace } from './confinedSpace.js';
+export { lel } from './lel.js';
 
 // Types
 export type {
@@ -38,4 +45,26 @@ export type {
   RespiratorType,
   RespiratorInput,
   RespiratorResult,
+  // Ladder Angle types
+  LadderAngleInput,
+  LadderAngleResult,
+  // Illuminance types
+  IlluminanceInput,
+  IlluminanceResult,
+  // Thermal Comfort types
+  ThermalComfortInput,
+  ThermalComfortResult,
+  // REBA types
+  RebaInput,
+  RebaResult,
+  // Arc Flash types
+  ArcFlashInput,
+  ArcFlashResult,
+  // Confined Space types
+  ConfinedSpaceInput,
+  ConfinedSpaceResult,
+  // LEL types
+  GasComponent,
+  LelInput,
+  LelResult,
 } from './types.js';

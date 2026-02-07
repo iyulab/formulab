@@ -7,6 +7,7 @@ export { gearRatio } from './gearRatio.js';
 export { tireCompare } from './tireCompare.js';
 export { torque } from './torque.js';
 export { power } from './power.js';
+export { chargingLoss } from './chargingLoss.js';
 
 // Types
 export type {
@@ -39,4 +40,7 @@ export type {
   PowerUnit,
   PowerInput,
   PowerResult,
+  // Charging Loss types
+  ChargingLossInput,
+  ChargingLossResult,
 } from './types.js';

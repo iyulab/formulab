@@ -320,3 +320,92 @@ export interface YieldResult {
   /** Expected output after all steps */
   expectedOutput: number;
 }
+
+/**
+ * Gage R&R (MSA) Types — AIAG MSA 4th Edition
+ */
+export interface GageRRInput {
+  measurements: number[][][]; // [part][operator][trial]
+  tolerance?: number;         // specification range (USL-LSL)
+}
+
+export interface GageRRResult {
+  ev: number;                 // Equipment Variation (Repeatability)
+  av: number;                 // Appraiser Variation (Reproducibility)
+  grr: number;                // GRR = √(EV² + AV²)
+  pv: number;                 // Part Variation
+  tv: number;                 // Total Variation
+  percentGRR: number;         // %GRR (of TV)
+  percentTolerance: number | null; // %GRR of tolerance
+  ndc: number;                // Number of distinct categories
+  status: 'acceptable' | 'marginal' | 'unacceptable';
+}
+
+/**
+ * Cmk (Machine Capability Index) Types
+ */
+export interface CmkInput {
+  measurements: number[];
+  lsl: number;
+  usl: number;
+}
+
+export interface CmkResult {
+  mean: number;
+  stdDev: number;
+  cm: number;              // Machine capability (= Cp)
+  cmk: number;             // Machine capability index (= Cpk)
+  isCapable: boolean;      // Cmk >= 1.67
+}
+
+/**
+ * Weibull Reliability Analysis Types
+ */
+export interface WeibullInput {
+  failureTimes: number[];
+  missionTime?: number;       // for reliability prediction
+}
+
+export interface WeibullResult {
+  beta: number;               // Shape parameter
+  eta: number;                // Scale parameter (characteristic life)
+  mttf: number;               // Mean Time To Failure
+  r2: number;                 // Regression R²
+  reliability: number | null; // R(missionTime)
+  b10Life: number;            // 10% failure life
+  b50Life: number;            // Median life
+  failureMode: 'infant' | 'random' | 'wearout';
+}
+
+/**
+ * Pareto Analysis Types
+ */
+export interface ParetoItem {
+  name: string;
+  value: number;
+}
+
+export interface ParetoInput {
+  items: ParetoItem[];
+  thresholdA?: number;        // default 80
+  thresholdB?: number;        // default 95
+}
+
+export interface ParetoClassification {
+  name: string;
+  value: number;
+  percentage: number;
+  cumulative: number;
+  rank: number;
+  category: 'A' | 'B' | 'C';
+}
+
+export interface ParetoResult {
+  items: ParetoClassification[];
+  summary: {
+    a: { count: number; totalValue: number; percentage: number };
+    b: { count: number; totalValue: number; percentage: number };
+    c: { count: number; totalValue: number; percentage: number };
+  };
+  totalValue: number;
+}
