@@ -3,6 +3,7 @@
 > Industrial & manufacturing calculation library for engineers
 
 [![npm version](https://img.shields.io/npm/v/formulab.svg)](https://www.npmjs.com/package/formulab)
+[![CI](https://github.com/iyulab/formulab/actions/workflows/ci.yml/badge.svg)](https://github.com/iyulab/formulab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
@@ -15,8 +16,8 @@ A comprehensive collection of engineering formulas and calculations for manufact
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **Well tested** — Comprehensive test coverage
-- **Research-based** — Built on industry standards (ISO, OSHA, NIOSH, IPC)
+- **1,956 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
 
@@ -39,6 +40,72 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 > Functions with golden reference tests have been verified against authoritative engineering sources.
 > See each function's JSDoc for specific references.
+
+## Numerical Accuracy & Testing
+
+### Floating-Point Handling
+
+All calculations use a sign-aware `roundTo()` utility with epsilon correction to avoid IEEE 754 rounding artifacts:
+
+```typescript
+roundTo(0.615, 2)   // → 0.62  (not 0.61)
+roundTo(-2.555, 2)  // → -2.56 (sign-aware)
+```
+
+Non-finite values (`NaN`, `Infinity`) pass through unchanged. Each function's JSDoc specifies output precision (typically 2-4 decimal places).
+
+### Golden Reference Tests
+
+The following functions include tests verified against published reference values:
+
+| Function | Standard / Source | What is verified |
+|----------|-------------------|------------------|
+| `nioshLifting()` | NIOSH Publication 94-110 | LC=23kg ideal, FM/CM table values, RWL calculation |
+| `oee()` | JIPM TPM Handbook | World-class OEE (A≥90%, P≥95%, Q≥99.9%), perfect 100% |
+| `cpk()` | ISO 22514-2 | Six Sigma Cpk=2.0, minimum capable Cpk≈1.33, off-center penalty |
+| `controlChart()` | AIAG/ASTM E2587-16 | A2, D3, D4, d2 constants for n=2, 3, 5 |
+| `cbm()` | Physical formula | 20ft container 33.2m³, 1m³ cube reference |
+| `metalWeight()` | Machinery's Handbook | Steel plate density 7.85 g/cm³ |
+| `flangeSpec()` | ASME B16.5 | Class 150/300/600 flange dimensions |
+| `pipeSpec()` | ASME B36.10 | SCH40/80/160 wall thickness |
+| `awgProperties()` | ANSI/AWG | AWG 0-40 diameter, resistance |
+
+### Edge Case Handling
+
+Functions validate or handle these boundary conditions:
+
+- **Division by zero**: `cpk()` with zero standard deviation, `oee()` with zero planned time
+- **Out-of-range inputs**: `tolerance()` rejects invalid IT grades, `aql()` validates lot sizes
+- **Physical impossibility**: `pressFit()` rejects negative interference, `nioshLifting()` clamps multipliers to [0, 1]
+- **Extreme values**: `aql()` handles 1M-unit lots, `awgProperties()` covers AWG 0-40
+
+### Optimization Functions — Algorithms & Limitations
+
+Three functions solve NP-hard combinatorial problems using **heuristic** algorithms. They provide good practical results but **do not guarantee optimal solutions**:
+
+| Function | Algorithm | Complexity | Optimality |
+|----------|-----------|-----------|-----------|
+| `tsp()` | Nearest Neighbor + 2-Opt local search; brute force for n ≤ 10 | O(n²) per NN start, O(n!) exact for n ≤ 10 | **Heuristic** — no approximation ratio guarantee; exact only for n ≤ 10 |
+| `pallet3d()` | Bottom-Left-Fill + First Fit Decreasing with AABB collision & stability checks | O(m² × n) where m = placed boxes | **Heuristic** — greedy placement; enforces physical constraints (80% support, weight limit) |
+| `cuttingStock()` | First Fit Decreasing (FFD) or Best Fit Decreasing (BFD), user-selectable | O(q²) worst case | **FFD: ≤ 11/9 × OPT + 1** (proven bound); not optimal |
+
+> For mission-critical optimization requiring proven-optimal solutions, use dedicated solvers (e.g., OR-Tools, Gurobi). These functions are designed for quick shop-floor estimates.
+
+### CI Pipeline
+
+GitHub Actions runs on every push to `main` and every pull request:
+
+- **Matrix**: Node.js 18, 20
+- **Steps**: `pnpm install` → `tsc` (type check) → `vitest run --coverage`
+- **Coverage enforcement**: Fails if below thresholds (lines 90%, functions 95%, branches 85%, statements 90%)
+
+```bash
+# Run tests locally
+pnpm test
+
+# Run with coverage report
+pnpm test:coverage
+```
 
 ## Installation
 
@@ -129,7 +196,7 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `bearing()` | L10 bearing life calculation |
 | `bolt()` | Bolt torque and preload |
 | `cutting()` | Cutting speed, feed rate, RPM |
-| `cuttingStock()` | 1D cutting optimization |
+| `cuttingStock()` | 1D cutting stock heuristic (FFD/BFD) |
 | `gear()` | Gear module calculation |
 | `hardness()` | Hardness conversion (HRC, HB, HV) |
 | `material()` | Material properties lookup |
@@ -238,13 +305,13 @@ import { cbm, eoq, safetyStock, kanban } from 'formulab/logistics';
 | `fillRate()` | Fill rate calculation |
 | `freightClass()` | NMFC freight class |
 | `kanban()` | Kanban quantity |
-| `pallet3d()` | 3D pallet optimization |
+| `pallet3d()` | 3D pallet loading heuristic (BLF + FFD) |
 | `palletStack()` | Pallet stacking calculation |
 | `pickTime()` | Picking time estimation |
 | `safetyStock()` | Safety stock calculation |
 | `serviceLevel()` | Service level calculation |
 | `shipping()` | Shipping cost estimation |
-| `tsp()` | Traveling salesman problem |
+| `tsp()` | TSP heuristic (NN + 2-Opt; exact for n ≤ 10) |
 
 ### Energy & Utilities (7 functions)
 
