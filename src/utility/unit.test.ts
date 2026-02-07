@@ -12,7 +12,14 @@ describe('getUnitCategories', () => {
     expect(categories).toContain('pressure');
     expect(categories).toContain('area');
     expect(categories).toContain('speed');
-    expect(categories).toHaveLength(7);
+    expect(categories).toContain('energy');
+    expect(categories).toContain('power');
+    expect(categories).toContain('force');
+    expect(categories).toContain('torque');
+    expect(categories).toContain('flowRate');
+    expect(categories).toContain('angle');
+    expect(categories).toContain('density');
+    expect(categories).toHaveLength(14);
   });
 });
 
@@ -281,6 +288,160 @@ describe('calculateUnit', () => {
       expect(result!.allConversions.find(c => c.unitId === 'm')?.value).toBe(1);
       expect(result!.allConversions.find(c => c.unitId === 'cm')?.value).toBe(100);
       expect(result!.allConversions.find(c => c.unitId === 'mm')?.value).toBe(1000);
+    });
+  });
+
+  describe('energy conversions', () => {
+    it('should convert kWh to BTU', () => {
+      const result = calculateUnit({
+        category: 'energy',
+        fromUnit: 'kWh',
+        toUnit: 'BTU',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(3412.14, 0);
+    });
+
+    it('should convert J to cal', () => {
+      const result = calculateUnit({
+        category: 'energy',
+        fromUnit: 'J',
+        toUnit: 'cal',
+        value: 4.184,
+      });
+      expect(result!.toValue).toBeCloseTo(1, 3);
+    });
+  });
+
+  describe('power conversions', () => {
+    it('should convert kW to hp', () => {
+      const result = calculateUnit({
+        category: 'power',
+        fromUnit: 'kW',
+        toUnit: 'hp',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(1.341, 2);
+    });
+
+    it('should convert hp to W', () => {
+      const result = calculateUnit({
+        category: 'power',
+        fromUnit: 'hp',
+        toUnit: 'W',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(745.7, 0);
+    });
+  });
+
+  describe('force conversions', () => {
+    it('should convert kN to lbf', () => {
+      const result = calculateUnit({
+        category: 'force',
+        fromUnit: 'kN',
+        toUnit: 'lbf',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(224.809, 0);
+    });
+
+    it('should convert kgf to N', () => {
+      const result = calculateUnit({
+        category: 'force',
+        fromUnit: 'kgf',
+        toUnit: 'N',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(9.80665, 4);
+    });
+  });
+
+  describe('torque conversions', () => {
+    it('should convert N·m to lb·ft', () => {
+      const result = calculateUnit({
+        category: 'torque',
+        fromUnit: 'Nm',
+        toUnit: 'lbft',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(0.7376, 3);
+    });
+
+    it('should convert kgf·m to N·m', () => {
+      const result = calculateUnit({
+        category: 'torque',
+        fromUnit: 'kgfm',
+        toUnit: 'Nm',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(9.80665, 4);
+    });
+  });
+
+  describe('flowRate conversions', () => {
+    it('should convert L/min to gpm', () => {
+      const result = calculateUnit({
+        category: 'flowRate',
+        fromUnit: 'Lmin',
+        toUnit: 'gpm',
+        value: 3.78541,
+      });
+      expect(result!.toValue).toBeCloseTo(1, 3);
+    });
+
+    it('should convert m³/h to L/min', () => {
+      const result = calculateUnit({
+        category: 'flowRate',
+        fromUnit: 'm3h',
+        toUnit: 'Lmin',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(16.6667, 3);
+    });
+  });
+
+  describe('angle conversions', () => {
+    it('should convert degrees to radians', () => {
+      const result = calculateUnit({
+        category: 'angle',
+        fromUnit: 'deg',
+        toUnit: 'rad',
+        value: 180,
+      });
+      expect(result!.toValue).toBeCloseTo(Math.PI, 4);
+    });
+
+    it('should convert revolutions to degrees', () => {
+      const result = calculateUnit({
+        category: 'angle',
+        fromUnit: 'rev',
+        toUnit: 'deg',
+        value: 1,
+      });
+      expect(result!.toValue).toBe(360);
+    });
+  });
+
+  describe('density conversions', () => {
+    it('should convert g/cm³ to kg/m³', () => {
+      const result = calculateUnit({
+        category: 'density',
+        fromUnit: 'gcm3',
+        toUnit: 'kgm3',
+        value: 1,
+      });
+      expect(result!.toValue).toBe(1000);
+    });
+
+    it('should convert lb/ft³ to kg/m³', () => {
+      const result = calculateUnit({
+        category: 'density',
+        fromUnit: 'lbft3',
+        toUnit: 'kgm3',
+        value: 1,
+      });
+      expect(result!.toValue).toBeCloseTo(16.0185, 2);
     });
   });
 

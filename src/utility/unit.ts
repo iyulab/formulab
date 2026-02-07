@@ -84,6 +84,57 @@ const UNITS: Record<UnitCategory, UnitDef[]> = {
     { id: 'kn', labelKey: 'knot', ...linear(0.514444) },
     { id: 'fts', labelKey: 'ft/s', ...linear(0.3048) },
   ],
+  energy: [
+    { id: 'J', labelKey: 'J', ...linear(1) },
+    { id: 'kJ', labelKey: 'kJ', ...linear(1000) },
+    { id: 'MJ', labelKey: 'MJ', ...linear(1000000) },
+    { id: 'Wh', labelKey: 'Wh', ...linear(3600) },
+    { id: 'kWh', labelKey: 'kWh', ...linear(3600000) },
+    { id: 'BTU', labelKey: 'BTU', ...linear(1055.06) },
+    { id: 'cal', labelKey: 'cal', ...linear(4.184) },
+    { id: 'kcal', labelKey: 'kcal', ...linear(4184) },
+  ],
+  power: [
+    { id: 'W', labelKey: 'W', ...linear(1) },
+    { id: 'kW', labelKey: 'kW', ...linear(1000) },
+    { id: 'MW', labelKey: 'MW', ...linear(1000000) },
+    { id: 'hp', labelKey: 'hp', ...linear(745.7) },
+    { id: 'BTUh', labelKey: 'BTU/h', ...linear(0.29307107) },
+  ],
+  force: [
+    { id: 'N', labelKey: 'N', ...linear(1) },
+    { id: 'kN', labelKey: 'kN', ...linear(1000) },
+    { id: 'lbf', labelKey: 'lbf', ...linear(4.44822) },
+    { id: 'kgf', labelKey: 'kgf', ...linear(9.80665) },
+    { id: 'tonf', labelKey: 'tonf', ...linear(9806.65) },
+  ],
+  torque: [
+    { id: 'Nm', labelKey: 'N·m', ...linear(1) },
+    { id: 'Nmm', labelKey: 'N·mm', ...linear(0.001) },
+    { id: 'lbft', labelKey: 'lb·ft', ...linear(1.35582) },
+    { id: 'lbin', labelKey: 'lb·in', ...linear(0.112985) },
+    { id: 'kgfm', labelKey: 'kgf·m', ...linear(9.80665) },
+  ],
+  flowRate: [
+    { id: 'Lmin', labelKey: 'L/min', ...linear(1) },
+    { id: 'Ls', labelKey: 'L/s', ...linear(60) },
+    { id: 'm3h', labelKey: 'm³/h', ...linear(16.6667) },
+    { id: 'm3s', labelKey: 'm³/s', ...linear(60000) },
+    { id: 'cfm', labelKey: 'cfm', ...linear(28.3168) },
+    { id: 'gpm', labelKey: 'gpm', ...linear(3.78541) },
+  ],
+  angle: [
+    { id: 'deg', labelKey: 'deg', ...linear(1) },
+    { id: 'rad', labelKey: 'rad', ...linear(180 / Math.PI) },
+    { id: 'rev', labelKey: 'rev', ...linear(360) },
+    { id: 'grad', labelKey: 'grad', ...linear(0.9) },
+  ],
+  density: [
+    { id: 'kgm3', labelKey: 'kg/m³', ...linear(1) },
+    { id: 'gcm3', labelKey: 'g/cm³', ...linear(1000) },
+    { id: 'lbft3', labelKey: 'lb/ft³', ...linear(16.0185) },
+    { id: 'gmL', labelKey: 'g/mL', ...linear(1000) },
+  ],
 };
 
 /**
