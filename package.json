@@ -137,6 +137,7 @@
   "bugs": {
     "url": "https://github.com/iyulab/formulab/issues"
   },
+  "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=18"
   },
