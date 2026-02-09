@@ -116,6 +116,9 @@ export type {
   FlangeSpecResult,
 } from './types.js';
 
+// Guards
+export { isMetalWeightInput, isBoltInput } from './guards.js';
+
 // Functions
 export { metalWeight } from './metalWeight.js';
 export { bendAllowance } from './bendAllowance.js';

@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-02-09
+
+### Added
+
+- **Type Guards** — 8 runtime type guard functions for discriminated union inputs ([#2](https://github.com/iyulab/formulab/issues/2)):
+  - `isCRateInput()` — battery domain (mode: currentToRate | rateToCurrent)
+  - `isDilutionInput()` — chemical domain (solveFor: c1 | v1 | c2 | v2)
+  - `isReactorInput()` — chemical domain (shape: cylindrical | spherical)
+  - `isHeatTransferInput()` — chemical domain (mode: conduction | convection | radiation)
+  - `isMomentOfInertiaInput()` — construction domain (shape: 7 variants)
+  - `isOhmsLawInput()` — electronics domain (solveFor: voltage | current | resistance | power)
+  - `isMetalWeightInput()` — metal domain (shape: plate | round | pipe | angle)
+  - `isBoltInput()` — metal domain (mode: torqueToPreload | preloadToTorque)
+
+- **Error Behavior Specification** — `ERRORS.md` documenting error policy and per-function error behavior ([#1](https://github.com/iyulab/formulab/issues/1)):
+  - Defined error policy: validation failures → throw RangeError
+  - Documented all 174 functions' error behavior (throw / NaN / Infinity / null / safe)
+  - Identified 6 legacy NaN/Infinity patterns with migration roadmap to v0.10.0
+
+### Changed
+
+- Total function count: 174 → 182 (+8 type guards)
+
 ## [0.7.0] - 2026-02-07
 
 ### Added

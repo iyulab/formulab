@@ -51,6 +51,9 @@ export type {
   StairResult,
 } from './types.js';
 
+// Guards
+export { isMomentOfInertiaInput } from './guards.js';
+
 // Functions
 export { momentOfInertia } from './momentOfInertia.js';
 export { beamLoad } from './beamLoad.js';

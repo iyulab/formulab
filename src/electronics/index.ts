@@ -43,6 +43,9 @@ export type {
   ViaResult,
 } from './types.js';
 
+// Guards
+export { isOhmsLawInput } from './guards.js';
+
 // Functions
 export { ohmsLaw } from './ohmsLaw.js';
 export { reflowProfile, getPasteTypes } from './reflow.js';

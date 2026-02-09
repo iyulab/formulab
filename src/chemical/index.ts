@@ -48,6 +48,9 @@ export type {
   PidResult,
 } from './types.js';
 
+// Guards
+export { isDilutionInput, isReactorInput, isHeatTransferInput } from './guards.js';
+
 // Functions
 export { heatTransfer } from './heatTransfer.js';
 export { pipeFlow } from './pipeFlow.js';

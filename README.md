@@ -527,6 +527,42 @@ console.log(result);
 // }
 ```
 
+## Type Guards for Discriminated Unions
+
+formulab provides runtime type guard functions for all [discriminated union](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions) input types. These enable type-safe integration when working with dynamic data (e.g., form inputs, API responses):
+
+```typescript
+import { isCRateInput, cRate } from 'formulab/battery';
+
+// Form data from user input (Record<string, unknown>)
+const formData: unknown = { mode: 'currentToRate', capacityAh: 100, currentA: 50 };
+
+if (isCRateInput(formData)) {
+  const result = cRate(formData); // Type-safe, no 'as any' needed
+}
+```
+
+### Available Type Guards
+
+| Guard | Domain | Discriminant | Variants |
+|-------|--------|-------------|----------|
+| `isCRateInput()` | battery | `mode` | currentToRate, rateToCurrent |
+| `isDilutionInput()` | chemical | `solveFor` | c1, v1, c2, v2 |
+| `isReactorInput()` | chemical | `shape` | cylindrical, spherical |
+| `isHeatTransferInput()` | chemical | `mode` | conduction, convection, radiation |
+| `isMomentOfInertiaInput()` | construction | `shape` | rectangle, circle, hollowRectangle, hollowCircle, iBeam, tSection, cChannel |
+| `isOhmsLawInput()` | electronics | `solveFor` | voltage, current, resistance, power |
+| `isMetalWeightInput()` | metal | `shape` | plate, round, pipe, angle |
+| `isBoltInput()` | metal | `mode` | torqueToPreload, preloadToTorque |
+
+## Error Handling
+
+See [ERRORS.md](./ERRORS.md) for the complete error behavior specification. Key points:
+
+- **Validation failures** throw `RangeError` with descriptive messages
+- **Legacy NaN/Infinity patterns** are documented and scheduled for migration
+- Each function's error behavior is documented in the specification
+
 ## Tree Shaking
 
 Import only what you need to minimize bundle size:

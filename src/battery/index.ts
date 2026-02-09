@@ -25,6 +25,9 @@ export type {
   ChargingProfileResult,
 } from './types.js';
 
+// Guards
+export { isCRateInput } from './guards.js';
+
 // Functions
 export { energyDensity } from './energyDensity.js';
 export { cRate } from './cRate.js';
