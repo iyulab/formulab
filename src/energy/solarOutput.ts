@@ -9,6 +9,10 @@ import type { SolarOutputInput, SolarOutputResult } from './types.js';
  *
  * Reference: NREL PVWatts Calculator methodology
  *
+ * @throws {RangeError} Panel wattage must be positive
+ * @throws {RangeError} Panel count must be positive
+ * @throws {RangeError} Peak sun hours must be positive
+ * @throws {RangeError} System efficiency must be between 0 and 1
  * @param input - panel specs, sun hours, orientation
  * @returns energy production estimates
  */

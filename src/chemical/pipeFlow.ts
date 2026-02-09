@@ -43,6 +43,12 @@ function swameeJainFriction(Re: number, epsilonM: number, diameterM: number): nu
  *
  * Darcy-Weisbach: ΔP = f × (L/D) × (ρv²/2)
  *
+ * @throws {RangeError} Flow rate must be positive
+ * @throws {RangeError} Pipe diameter must be positive
+ * @throws {RangeError} Pipe length must be positive
+ * @throws {RangeError} Fluid density must be positive
+ * @throws {RangeError} Fluid viscosity must be positive
+ * @throws {RangeError} Custom roughness must be provided and non-negative
  * @param input - flow rate, pipe geometry, fluid properties
  * @returns pressure drop, velocity, Reynolds number, flow regime
  */

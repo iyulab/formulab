@@ -18,9 +18,10 @@ const RAD = 180 / Math.PI;
  *   Law of sines: a/sin(A) = b/sin(B) = c/sin(C)
  *   Area (Heron): √(s(s−a)(s−b)(s−c)), s = (a+b+c)/2
  *
+ * @throws {RangeError} No valid triangle exists
+ * @throws {RangeError} Insufficient data to solve triangle
  * @param input - Triangle sides and/or angles (degrees)
  * @returns TriangleSolverResult with all sides, angles, area, and perimeter
- * @throws Error if insufficient or invalid input
  */
 export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult {
   let { a, b, c, A, B, C } = input;

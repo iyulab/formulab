@@ -12,6 +12,13 @@ import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
  * Formulas from: Timoshenko "Mechanics of Materials", AISC Steel Manual,
  * Roark's "Formulas for Stress and Strain"
  *
+ * @throws {RangeError} Dimensions must be positive
+ * @throws {RangeError} Diameter must be positive
+ * @throws {RangeError} Diameters must be positive
+ * @throws {RangeError} Inner dimensions must be smaller than outer
+ * @throws {RangeError} Inner diameter must be smaller than outer
+ * @throws {RangeError} Web thickness must be less than flange width
+ * @throws {RangeError} 2 x flange thickness must be less than total height
  * @param input - discriminated union by `shape`
  * @returns section properties
  */

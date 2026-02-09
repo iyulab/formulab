@@ -7,6 +7,9 @@ import type { OhmsLawInput, OhmsLawResult } from './types.js';
  * Solves for any one of voltage, current, resistance, or power
  * given the other two known quantities.
  *
+ * @throws {RangeError} Current must be positive
+ * @throws {RangeError} Resistance must be positive
+ * @throws {RangeError} Voltage must be non-negative
  * @param input - discriminated union by `solveFor`
  * @returns all four electrical quantities
  */

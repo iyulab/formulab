@@ -21,6 +21,9 @@ const ACH_TABLE: Record<Exclude<SpaceType, 'custom'>, number> = {
  * Calculates required ventilation airflow based on room dimensions,
  * occupancy, space type, and activity level.
  *
+ * @throws {RangeError} Room dimensions must be positive
+ * @throws {RangeError} Occupants must be positive
+ * @throws {RangeError} Custom ACH must be provided and positive for custom space type
  * @param input - room dimensions, occupants, space type
  * @returns ventilation requirements in multiple units
  */

@@ -25,6 +25,7 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  *
  * @formula CO2(kg) = kWh × gridFactor / 1000
  * @reference GHG Protocol Scope 2, IEA Emission Factors 2023
+ * @throws {RangeError} customFactor is required when region is "custom"
  * @param input - Electricity consumption and grid region
  * @returns CO2 emissions in kg and tonnes
  */

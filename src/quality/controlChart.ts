@@ -95,6 +95,9 @@ function stdDev(arr: number[]): number {
  * @validation Constants verified against AIAG/ASTM tables for n = 2..25:
  *   n=5: A₂=0.577, D₃=0, D₄=2.114, d₂=2.326
  *
+ * @throws {RangeError} At least 2 subgroups are required
+ * @throws {RangeError} Subgroup size must be between 2 and 25
+ * @throws {RangeError} Subgroup {i} has size {n}, expected {n}
  * @param input - chart type and subgroup data
  * @returns control limits, subgroup statistics, out-of-control points
  */

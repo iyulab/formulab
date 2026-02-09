@@ -99,25 +99,46 @@ describe('heatTransfer', () => {
   });
 
   describe('validation', () => {
-    it('should throw on zero conductivity', () => {
+    it('should throw RangeError on zero conductivity', () => {
       expect(() => heatTransfer({
         mode: 'conduction', conductivity: 0, area: 1, thickness: 0.1,
         tempHot: 100, tempCold: 50,
-      })).toThrow();
+      })).toThrow(RangeError);
     });
 
-    it('should throw on zero area', () => {
+    it('should throw RangeError on zero area', () => {
       expect(() => heatTransfer({
         mode: 'convection', coefficient: 10, area: 0,
         tempSurface: 100, tempFluid: 50,
-      })).toThrow();
+      })).toThrow(RangeError);
     });
 
-    it('should throw on invalid emissivity', () => {
+    it('should throw RangeError on invalid emissivity', () => {
       expect(() => heatTransfer({
         mode: 'radiation', emissivity: 1.5, area: 1,
         tempHot: 100, tempCold: 50,
-      })).toThrow();
+      })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError on zero thickness', () => {
+      expect(() => heatTransfer({
+        mode: 'conduction', conductivity: 50, area: 1, thickness: 0,
+        tempHot: 100, tempCold: 50,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError on zero convection coefficient', () => {
+      expect(() => heatTransfer({
+        mode: 'convection', coefficient: 0, area: 1,
+        tempSurface: 100, tempFluid: 50,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError on absolute zero violation', () => {
+      expect(() => heatTransfer({
+        mode: 'radiation', emissivity: 0.9, area: 1,
+        tempHot: -300, tempCold: -300,
+      })).toThrow(RangeError);
     });
   });
 });

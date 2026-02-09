@@ -9,13 +9,17 @@ import type { CRateInput, CRateResult } from './types.js';
  * @returns C-rate, current, and theoretical charge/discharge time
  */
 export function cRate(input: CRateInput): CRateResult {
+  if (input.capacityAh <= 0) throw new RangeError('capacityAh must be positive');
+
   let cRateValue: number;
   let currentA: number;
 
   if (input.mode === 'currentToRate') {
+    if (input.currentA <= 0) throw new RangeError('currentA must be positive');
     currentA = input.currentA;
     cRateValue = currentA / input.capacityAh;
   } else {
+    if (input.cRate <= 0) throw new RangeError('cRate must be positive');
     cRateValue = input.cRate;
     currentA = cRateValue * input.capacityAh;
   }

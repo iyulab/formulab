@@ -61,6 +61,9 @@ const ASME_B16_5: Record<string, Partial<Record<PressureClass, FlangeDimension>>
  * Look up flange specifications from ASME B16.5 standard
  *
  * @reference ASME B16.5 Pipe Flanges and Flanged Fittings
+ * @throws {RangeError} EN 1092-1 support not yet implemented. Use ASME_B16_5.
+ * @throws {RangeError} Unknown flange size: {nps}
+ * @throws {RangeError} Pressure class {pressureClass} not available for size {nps}
  * @param input - Flange standard, pressure class, nominal size
  * @returns Flange dimensions (OD, thickness, bolt pattern, weight)
  */

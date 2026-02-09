@@ -64,4 +64,26 @@ describe('boringBarDeflection', () => {
     expect(carbide.youngsModulus).toBe(550);
     expect(carbide.deflection).toBeLessThan(steel.deflection);
   });
+
+  it('should compute stiffness independently of force', () => {
+    const withForce = boringBarDeflection({ barDiameter: 20, overhang: 60, cuttingForce: 200 });
+    const zeroForce = boringBarDeflection({ barDiameter: 20, overhang: 60, cuttingForce: 0 });
+
+    expect(zeroForce.deflection).toBe(0);
+    expect(zeroForce.stiffness).toBe(withForce.stiffness);
+  });
+
+  describe('validation', () => {
+    it('should throw on zero barDiameter', () => {
+      expect(() => boringBarDeflection({ barDiameter: 0, overhang: 60, cuttingForce: 200 })).toThrow(RangeError);
+    });
+
+    it('should throw on zero overhang', () => {
+      expect(() => boringBarDeflection({ barDiameter: 20, overhang: 0, cuttingForce: 200 })).toThrow(RangeError);
+    });
+
+    it('should throw on negative cuttingForce', () => {
+      expect(() => boringBarDeflection({ barDiameter: 20, overhang: 60, cuttingForce: -1 })).toThrow(RangeError);
+    });
+  });
 });

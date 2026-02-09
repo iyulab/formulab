@@ -56,6 +56,9 @@ const STEEL_DENSITY = 7850; // kg/m³
  * Look up pipe specifications from ANSI/ASME standards
  *
  * @reference ASME B36.10M, ASME B36.19M
+ * @throws {RangeError} Unknown DN size: {nominalSize}
+ * @throws {RangeError} Unknown pipe size: {nps}
+ * @throws {RangeError} Schedule {schedule} not available for size {nps}
  * @param input - Pipe standard, nominal size, and schedule
  * @returns Pipe dimensions (OD, wall thickness, ID, weight, areas)
  */

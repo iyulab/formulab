@@ -27,12 +27,16 @@ const BAR_MODULUS: Record<BoringBarMaterial, number> = {
 export function boringBarDeflection(input: BoringBarDeflectionInput): BoringBarDeflectionResult {
   const { barDiameter, overhang, cuttingForce, material = 'steel' } = input;
 
+  if (barDiameter <= 0) throw new RangeError('barDiameter must be positive');
+  if (overhang <= 0) throw new RangeError('overhang must be positive');
+  if (cuttingForce < 0) throw new RangeError('cuttingForce must be non-negative');
+
   const E = input.youngsModulus ?? BAR_MODULUS[material];
   const E_MPa = E * 1000; // GPa → MPa
 
   const I = (Math.PI * Math.pow(barDiameter, 4)) / 64;
   const delta = (cuttingForce * Math.pow(overhang, 3)) / (3 * E_MPa * I);
-  const stiffness = delta > 0 ? cuttingForce / delta : Infinity;
+  const stiffness = (3 * E_MPa * I) / Math.pow(overhang, 3);
   const ldRatio = overhang / barDiameter;
 
   let recommendation: string;

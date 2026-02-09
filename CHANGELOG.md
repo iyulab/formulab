@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-02-09
+
+### Breaking Changes
+
+- **`awgProperties()` return type** — Changed from `AwgResult | null` to `AwgResult`. Invalid AWG range (< 0 or > 40) now throws `RangeError` instead of returning `null`.
+- **`metalWeight()`** — Now throws `RangeError` on non-positive dimensions (length, width, thickness, diameter) and when outerDiameter ≤ innerDiameter for pipes.
+- **`cRate()`** — Now throws `RangeError` when capacityAh ≤ 0, currentA ≤ 0, or cRate ≤ 0. Previously returned `Infinity`.
+- **`toolDeflection()`** — Now throws `RangeError` on non-positive toolDiameter/stickout or negative cuttingForce. Stiffness is computed as `3EI/L³` (beam property) instead of `F/δ`.
+- **`boringBarDeflection()`** — Same changes as `toolDeflection()`: validation + stiffness formula fix.
+- **`heatTransfer()`** — All `throw new Error()` changed to `throw new RangeError()`. Removed `Infinity` fallback in radiation thermal resistance.
+
+### Added
+
+- **`@throws` JSDoc annotations** for 14 functions across 10 domains — documents every throw condition for IDE/editor hints:
+  - automotive: `brakingDistance`
+  - chemical: `heatTransfer`, `pipeFlow`
+  - construction: `aggregate`, `momentOfInertia`
+  - electronics: `ohmsLaw`, `stencil`
+  - energy: `solarOutput`
+  - environmental: `scope2Emissions`
+  - machining: `triangleSolver`
+  - metal: `flangeSpec`, `pipeSpec`
+  - quality: `controlChart`
+  - safety: `ventilationRate`
+
+- **26 new validation tests** — error path coverage for `metalWeight`, `cRate`, `toolDeflection`, `boringBarDeflection`, `heatTransfer`, `awgProperties`
+
+### Changed
+
+- **ERRORS.md** — Removed legacy migration roadmap (all NaN/Infinity patterns resolved). Updated all 6 function entries to reflect `throw` behavior.
+- Total test count: 2468 → 2494 (+26)
+
 ## [0.9.0] - 2026-02-09
 
 ### Added

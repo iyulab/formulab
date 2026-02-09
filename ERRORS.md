@@ -14,7 +14,7 @@ This document defines formulab's error handling policy and documents the error b
 
 ### Current Status
 
-> **Migration in progress.** Some legacy functions still return `NaN` or `Infinity` for certain edge cases. These are documented below and will be migrated to throw in future minor versions.
+All public functions follow the error policy above. As of v0.10.0, no functions return `NaN` or `Infinity` for invalid inputs.
 
 ## Error Patterns by Domain
 
@@ -22,9 +22,7 @@ This document defines formulab's error handling policy and documents the error b
 
 | Symbol | Meaning |
 |--------|---------|
-| `throw` | Throws `RangeError` or `Error` |
-| `NaN` | Returns `NaN` in output fields (legacy, to be migrated) |
-| `Inf` | Returns `Infinity` in output fields (legacy, to be migrated) |
+| `throw` | Throws `RangeError` |
 | `null` | Returns `null` for optional/unavailable fields |
 | `safe` | No error edge cases; all inputs produce valid outputs |
 
@@ -55,7 +53,7 @@ This document defines formulab's error handling policy and documents the error b
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `metalWeight()` | `NaN` ⚠️ | Unknown material returns NaN density |
+| `metalWeight()` | `throw` | Non-positive dimensions, outerDiameter ≤ innerDiameter |
 | `bendAllowance()` | `throw` | thickness ≤ 0, bendAngle out of range |
 | `flatPattern()` | `throw` | Invalid dimensions |
 | `kFactorReverse()` | `throw` | Invalid dimensions |
@@ -88,7 +86,7 @@ This document defines formulab's error handling policy and documents the error b
 | `batch()` | `throw` | batchSize ≤ 0 |
 | `concentration()` | `throw` | molecularWeight ≤ 0 |
 | `dilution()` | `throw` | Division by zero (denominator value = 0) |
-| `heatTransfer()` | `throw` / `Inf` ⚠️ | conductivity ≤ 0 throws; radiation hRad=0 returns Infinity |
+| `heatTransfer()` | `throw` | conductivity ≤ 0, area ≤ 0, thickness ≤ 0, coefficient ≤ 0, emissivity out of range, absolute temp ≤ 0 |
 | `ph()` | `throw` | concentrations ≤ 0 |
 | `pipeFlow()` | `throw` | diameter ≤ 0, flowRate ≤ 0 |
 | `reactor()` | `throw` | diameter ≤ 0 |
@@ -108,7 +106,7 @@ This document defines formulab's error handling policy and documents the error b
 | `smtTakt()` | `throw` | placementRate ≤ 0 |
 | `solderPaste()` | `throw` | Negative dimensions |
 | `traceWidth()` | `throw` | current ≤ 0 |
-| `awgProperties()` | `NaN` ⚠️ / `null` | Unknown material → NaN; invalid AWG → null |
+| `awgProperties()` | `throw` | AWG not between 0 and 40 |
 | `capacitorDecode()` | `throw` | Invalid code format |
 | `ledResistor()` | `throw` | forwardVoltage ≥ supplyVoltage |
 | `stencilAperture()` | `throw` | Dimensions ≤ 0 |
@@ -150,7 +148,7 @@ This document defines formulab's error handling policy and documents the error b
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `energyDensity()` | `null` | Missing mass → null gravimetric |
-| `cRate()` | `Inf` ⚠️ | capacityAh = 0 → Infinity cRate/time |
+| `cRate()` | `throw` | capacityAh ≤ 0, currentA ≤ 0, cRate ≤ 0 |
 | `stateOfHealth()` | `throw` | ratedCapacity ≤ 0 |
 | `batteryPackConfig()` | `throw` | cellVoltage ≤ 0 |
 | `cycleLife()` | `throw` | Unknown chemistry |
@@ -168,10 +166,10 @@ This document defines formulab's error handling policy and documents the error b
 | `boltCircle()` | `throw` | diameter ≤ 0, holes ≤ 0 |
 | `sineBarHeight()` | `throw` | angle out of range |
 | `radialChipThinning()` | `throw` | toolDiameter ≤ 0 |
-| `toolDeflection()` | `Inf` ⚠️ | delta = 0 → stiffness = Infinity |
+| `toolDeflection()` | `throw` | toolDiameter ≤ 0, stickout ≤ 0, cuttingForce < 0 |
 | `cuspHeight()` | `throw` | toolDiameter ≤ 0 |
 | `effectiveDiameter()` | `throw` | Invalid depth |
-| `boringBarDeflection()` | `Inf` ⚠️ | delta = 0 → stiffness = Infinity |
+| `boringBarDeflection()` | `throw` | barDiameter ≤ 0, overhang ≤ 0, cuttingForce < 0 |
 | `threadOverWires()` | `throw` | Invalid thread parameters |
 | `gaugeBlockStack()` | `throw` | Target out of range |
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
@@ -181,42 +179,9 @@ This document defines formulab's error handling policy and documents the error b
 
 Most functions in these domains follow the `throw` pattern for invalid inputs. See individual function JSDoc for details.
 
-## Known Legacy Patterns (to be migrated)
-
-The following functions return `NaN` or `Infinity` instead of throwing. These will be migrated to `throw` in future minor versions:
-
-| Function | Current Behavior | Target | Migration Version |
-|----------|-----------------|--------|-------------------|
-| `metalWeight()` | `NaN` on unknown material | `throw RangeError` | 0.10.0 |
-| `awgProperties()` | `NaN` on unknown material | `throw RangeError` | 0.10.0 |
-| `cRate()` | `Infinity` when capacityAh=0 | `throw RangeError` | 0.10.0 |
-| `toolDeflection()` | `Infinity` when delta=0 | `throw RangeError` | 0.10.0 |
-| `boringBarDeflection()` | `Infinity` when delta=0 | `throw RangeError` | 0.10.0 |
-| `heatTransfer()` | `Infinity` when hRad=0 | `throw RangeError` | 0.10.0 |
-
 ## Consumer Guidance
 
-### Current recommendation
-
-Until migration is complete, consumers should handle all three error patterns:
-
-```typescript
-import { cRate } from 'formulab/battery';
-import type { CRateInput, CRateResult } from 'formulab/battery';
-
-function safeCRate(input: CRateInput): CRateResult | null {
-  try {
-    const result = cRate(input);
-    // Check for NaN/Infinity in legacy functions
-    if (!Number.isFinite(result.cRate)) return null;
-    return result;
-  } catch {
-    return null;
-  }
-}
-```
-
-### After migration (v0.10.0+)
+All functions follow the same error pattern: invalid inputs throw `RangeError`.
 
 ```typescript
 import { cRate } from 'formulab/battery';
@@ -226,7 +191,7 @@ try {
   // All values guaranteed finite
 } catch (e) {
   if (e instanceof RangeError) {
-    // Invalid input
+    // Invalid input — e.message describes the violated constraint
   }
 }
 ```

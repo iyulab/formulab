@@ -144,6 +144,68 @@ describe('metalWeight', () => {
     });
   });
 
+  describe('validation', () => {
+    it('should throw on zero length', () => {
+      expect(() => metalWeight({
+        shape: 'plate', materialName: 'steel', length: 0, width: 100, thickness: 10,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on negative length', () => {
+      expect(() => metalWeight({
+        shape: 'plate', materialName: 'steel', length: -1, width: 100, thickness: 10,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero width for plate', () => {
+      expect(() => metalWeight({
+        shape: 'plate', materialName: 'steel', length: 100, width: 0, thickness: 10,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero thickness for plate', () => {
+      expect(() => metalWeight({
+        shape: 'plate', materialName: 'steel', length: 100, width: 100, thickness: 0,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero diameter for round', () => {
+      expect(() => metalWeight({
+        shape: 'round', materialName: 'steel', length: 100, diameter: 0,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw when outerDiameter <= innerDiameter for pipe', () => {
+      expect(() => metalWeight({
+        shape: 'pipe', materialName: 'steel', length: 100, outerDiameter: 50, innerDiameter: 50,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on negative innerDiameter for pipe', () => {
+      expect(() => metalWeight({
+        shape: 'pipe', materialName: 'steel', length: 100, outerDiameter: 50, innerDiameter: -1,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero width for angle', () => {
+      expect(() => metalWeight({
+        shape: 'angle', materialName: 'steel', length: 100, width: 0, height: 50, thickness: 5,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero height for angle', () => {
+      expect(() => metalWeight({
+        shape: 'angle', materialName: 'steel', length: 100, width: 50, height: 0, thickness: 5,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on zero thickness for angle', () => {
+      expect(() => metalWeight({
+        shape: 'angle', materialName: 'steel', length: 100, width: 50, height: 50, thickness: 0,
+      })).toThrow(RangeError);
+    });
+  });
+
   describe('Golden Reference Tests', () => {
     it('Steel plate 1000×500×10mm → 39.25 kg (Machinery\'s Handbook)', () => {
       // Manual calculation:

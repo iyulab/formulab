@@ -46,4 +46,26 @@ describe('cRate', () => {
       expect(result.theoreticalTimeH).toBeCloseTo(20, 1);
     });
   });
+
+  describe('validation', () => {
+    it('should throw on zero capacityAh', () => {
+      expect(() => cRate({ mode: 'currentToRate', capacityAh: 0, currentA: 10 })).toThrow(RangeError);
+    });
+
+    it('should throw on negative capacityAh', () => {
+      expect(() => cRate({ mode: 'currentToRate', capacityAh: -1, currentA: 10 })).toThrow(RangeError);
+    });
+
+    it('should throw on zero currentA in currentToRate mode', () => {
+      expect(() => cRate({ mode: 'currentToRate', capacityAh: 100, currentA: 0 })).toThrow(RangeError);
+    });
+
+    it('should throw on zero cRate in rateToCurrent mode', () => {
+      expect(() => cRate({ mode: 'rateToCurrent', capacityAh: 100, cRate: 0 })).toThrow(RangeError);
+    });
+
+    it('should throw on negative cRate', () => {
+      expect(() => cRate({ mode: 'rateToCurrent', capacityAh: 100, cRate: -1 })).toThrow(RangeError);
+    });
+  });
 });

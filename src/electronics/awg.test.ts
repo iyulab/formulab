@@ -12,7 +12,7 @@ describe('awgProperties', () => {
 
       // AWG 22 is approximately 0.644 mm
       expect(result).not.toBeNull();
-      expect(result!.diameterMm).toBeCloseTo(0.644, 2);
+      expect(result.diameterMm).toBeCloseTo(0.644, 2);
     });
 
     it('should calculate AWG 10 diameter correctly', () => {
@@ -23,7 +23,7 @@ describe('awgProperties', () => {
       });
 
       // AWG 10 is approximately 2.588 mm
-      expect(result!.diameterMm).toBeCloseTo(2.588, 2);
+      expect(result.diameterMm).toBeCloseTo(2.588, 2);
     });
 
     it('should calculate AWG 0 diameter correctly', () => {
@@ -34,7 +34,7 @@ describe('awgProperties', () => {
       });
 
       // AWG 0 is approximately 8.252 mm
-      expect(result!.diameterMm).toBeCloseTo(8.252, 1);
+      expect(result.diameterMm).toBeCloseTo(8.252, 1);
     });
   });
 
@@ -47,7 +47,7 @@ describe('awgProperties', () => {
       });
 
       // Area = π × (0.644/2)² ≈ 0.326 mm²
-      expect(result!.areaMm2).toBeCloseTo(0.326, 2);
+      expect(result.areaMm2).toBeCloseTo(0.326, 2);
     });
 
     it('should calculate circular mils correctly', () => {
@@ -58,7 +58,7 @@ describe('awgProperties', () => {
       });
 
       // AWG 22 ≈ 642 circular mils
-      expect(result!.areaCircularMils).toBeCloseTo(642, -1);
+      expect(result.areaCircularMils).toBeCloseTo(642, -1);
     });
   });
 
@@ -71,7 +71,7 @@ describe('awgProperties', () => {
       });
 
       // ~52.9 mΩ/m for AWG 22 copper
-      expect(result!.resistancePerM).toBeCloseTo(0.0529, 3);
+      expect(result.resistancePerM).toBeCloseTo(0.0529, 3);
     });
 
     it('should calculate resistance per foot correctly', () => {
@@ -82,7 +82,7 @@ describe('awgProperties', () => {
       });
 
       // Resistance per ft = resistance per m × 0.3048
-      expect(result!.resistancePerFt).toBeCloseTo(result!.resistancePerM * 0.3048, 5);
+      expect(result.resistancePerFt).toBeCloseTo(result.resistancePerM * 0.3048, 5);
     });
 
     it('should increase resistance at higher temperature', () => {
@@ -161,29 +161,25 @@ describe('awgProperties', () => {
       });
 
       // AWG 14 copper: ~2.08 mm², capacity ≈ 11.4 A
-      expect(result!.currentCapacity).toBeCloseTo(11.4, 0);
+      expect(result.currentCapacity).toBeCloseTo(11.4, 0);
     });
   });
 
   describe('input validation', () => {
-    it('should return null for AWG less than 0', () => {
-      const result = awgProperties({
+    it('should throw RangeError for AWG less than 0', () => {
+      expect(() => awgProperties({
         awg: -1,
         material: 'copper',
         tempC: 20,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for AWG greater than 40', () => {
-      const result = awgProperties({
+    it('should throw RangeError for AWG greater than 40', () => {
+      expect(() => awgProperties({
         awg: 41,
         material: 'copper',
         tempC: 20,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
     it('should accept AWG 40 (boundary)', () => {
@@ -193,7 +189,7 @@ describe('awgProperties', () => {
         tempC: 20,
       });
 
-      expect(result).not.toBeNull();
+      expect(result.diameterMm).toBeGreaterThan(0);
     });
 
     it('should accept AWG 0 (boundary)', () => {
@@ -203,7 +199,7 @@ describe('awgProperties', () => {
         tempC: 20,
       });
 
-      expect(result).not.toBeNull();
+      expect(result.diameterMm).toBeGreaterThan(0);
     });
   });
 
@@ -216,7 +212,7 @@ describe('awgProperties', () => {
       });
 
       // AWG 14 is commonly used for 15A circuits
-      expect(result!.diameterMm).toBeCloseTo(1.628, 2);
+      expect(result.diameterMm).toBeCloseTo(1.628, 2);
     });
 
     it('should match typical appliance wire (AWG 12)', () => {
@@ -227,7 +223,7 @@ describe('awgProperties', () => {
       });
 
       // AWG 12 is commonly used for 20A circuits
-      expect(result!.diameterMm).toBeCloseTo(2.053, 2);
+      expect(result.diameterMm).toBeCloseTo(2.053, 2);
     });
   });
 });

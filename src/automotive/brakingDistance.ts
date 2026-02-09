@@ -11,6 +11,10 @@ import type { BrakingDistanceInput, BrakingDistanceResult } from './types.js';
  *
  * Reference: AASHTO "A Policy on Geometric Design of Highways and Streets"
  *
+ * @throws {RangeError} Speed must be positive
+ * @throws {RangeError} Friction coefficient must be positive
+ * @throws {RangeError} Reaction time must be non-negative
+ * @throws {RangeError} Effective friction (friction + grade) must be positive — vehicle cannot stop on this grade
  * @param input - speed, friction, reaction time, grade
  * @returns stopping distance components
  */

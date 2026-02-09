@@ -28,14 +28,14 @@ const CURRENT_DENSITY: Record<AwgMaterial, number> = {
  * Calculate AWG wire properties
  * AWG diameter formula: d(mm) = 0.127 × 92^((36-AWG)/39)
  * @param input - AWG gauge number, material, and temperature
- * @returns Wire properties or null if invalid input
+ * @returns Wire properties
+ * @throws {RangeError} If AWG is not between 0 and 40
  */
-export function awgProperties(input: AwgInput): AwgResult | null {
+export function awgProperties(input: AwgInput): AwgResult {
   const { awg, material, tempC } = input;
 
-  // Validate input range
   if (awg < 0 || awg > 40) {
-    return null;
+    throw new RangeError('AWG must be between 0 and 40');
   }
 
   // Calculate diameter using AWG formula

@@ -59,4 +59,26 @@ describe('toolDeflection', () => {
     const ratio = long.deflection / short.deflection;
     expect(ratio).toBeCloseTo(8, 0);
   });
+
+  it('should compute stiffness independently of force', () => {
+    const withForce = toolDeflection({ toolDiameter: 10, stickout: 50, cuttingForce: 100 });
+    const zeroForce = toolDeflection({ toolDiameter: 10, stickout: 50, cuttingForce: 0 });
+
+    expect(zeroForce.deflection).toBe(0);
+    expect(zeroForce.stiffness).toBe(withForce.stiffness);
+  });
+
+  describe('validation', () => {
+    it('should throw on zero toolDiameter', () => {
+      expect(() => toolDeflection({ toolDiameter: 0, stickout: 50, cuttingForce: 100 })).toThrow(RangeError);
+    });
+
+    it('should throw on zero stickout', () => {
+      expect(() => toolDeflection({ toolDiameter: 10, stickout: 0, cuttingForce: 100 })).toThrow(RangeError);
+    });
+
+    it('should throw on negative cuttingForce', () => {
+      expect(() => toolDeflection({ toolDiameter: 10, stickout: 50, cuttingForce: -1 })).toThrow(RangeError);
+    });
+  });
 });

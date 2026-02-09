@@ -35,27 +35,38 @@ const MATERIAL_DENSITIES: Record<MaterialName, number> = {
 export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   const { shape, length, materialName } = input;
 
+  if (length <= 0) throw new RangeError('length must be positive');
+
   const density = MATERIAL_DENSITIES[materialName];
 
   let crossSectionArea: number; // mm2
 
   switch (shape) {
     case 'plate': {
+      if (input.width <= 0) throw new RangeError('width must be positive');
+      if (input.thickness <= 0) throw new RangeError('thickness must be positive');
       crossSectionArea = input.width * input.thickness;
       break;
     }
     case 'round': {
+      if (input.diameter <= 0) throw new RangeError('diameter must be positive');
       const radius = input.diameter / 2;
       crossSectionArea = Math.PI * radius * radius;
       break;
     }
     case 'pipe': {
+      if (input.outerDiameter <= 0) throw new RangeError('outerDiameter must be positive');
+      if (input.innerDiameter < 0) throw new RangeError('innerDiameter must be non-negative');
+      if (input.outerDiameter <= input.innerDiameter) throw new RangeError('outerDiameter must be greater than innerDiameter');
       const outerRadius = input.outerDiameter / 2;
       const innerRadius = input.innerDiameter / 2;
       crossSectionArea = Math.PI * (outerRadius * outerRadius - innerRadius * innerRadius);
       break;
     }
     case 'angle': {
+      if (input.width <= 0) throw new RangeError('width must be positive');
+      if (input.height <= 0) throw new RangeError('height must be positive');
+      if (input.thickness <= 0) throw new RangeError('thickness must be positive');
       // L-angle: two legs minus the corner overlap
       crossSectionArea = (input.width * input.thickness) + (input.height * input.thickness) - (input.thickness * input.thickness);
       break;

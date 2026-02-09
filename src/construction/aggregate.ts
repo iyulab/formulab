@@ -27,6 +27,7 @@ export function getAggregateDensity(type: AggregateType): number {
 /**
  * Calculate how much area can be covered with a given volume at a specific depth
  *
+ * @throws {RangeError} Volume and depth must be greater than zero
  * @param volumeM3 - Volume in cubic meters
  * @param depthCm - Depth in centimeters
  * @returns Coverage area in square meters
@@ -47,6 +48,9 @@ export function aggregateCoverage(volumeM3: number, depthCm: number): number {
  * - Weight = volume × density
  * - Coverage area = length × width (footprint)
  *
+ * @throws {RangeError} All dimensions must be greater than zero
+ * @throws {RangeError} Custom density must be provided and greater than zero
+ * @throws {RangeError} Unknown aggregate type: {aggregateType}
  * @param input - Aggregate input parameters
  * @returns Aggregate calculation results
  */
