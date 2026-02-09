@@ -56,7 +56,7 @@ function roundResult(r: MomentOfInertiaResult): MomentOfInertiaResult {
 
 /** Solid Rectangle: I_x = bh³/12, I_y = hb³/12 */
 function calcRectangle(b: number, h: number): MomentOfInertiaResult {
-  if (b <= 0 || h <= 0) throw new Error('Dimensions must be positive');
+  if (b <= 0 || h <= 0) throw new RangeError('Dimensions must be positive');
   const area = b * h;
   const Ix = (b * h * h * h) / 12;
   const Iy = (h * b * b * b) / 12;
@@ -72,7 +72,7 @@ function calcRectangle(b: number, h: number): MomentOfInertiaResult {
 
 /** Solid Circle: I = πd⁴/64 */
 function calcCircle(d: number): MomentOfInertiaResult {
-  if (d <= 0) throw new Error('Diameter must be positive');
+  if (d <= 0) throw new RangeError('Diameter must be positive');
   const area = (Math.PI * d * d) / 4;
   const I = (Math.PI * d * d * d * d) / 64;
   const S = (Math.PI * d * d * d) / 32;
@@ -86,8 +86,8 @@ function calcCircle(d: number): MomentOfInertiaResult {
 
 /** Hollow Rectangle (Box): I_x = (BH³ - bh³)/12 */
 function calcHollowRectangle(B: number, H: number, b: number, h: number): MomentOfInertiaResult {
-  if (B <= 0 || H <= 0 || b <= 0 || h <= 0) throw new Error('Dimensions must be positive');
-  if (b >= B || h >= H) throw new Error('Inner dimensions must be smaller than outer');
+  if (B <= 0 || H <= 0 || b <= 0 || h <= 0) throw new RangeError('Dimensions must be positive');
+  if (b >= B || h >= H) throw new RangeError('Inner dimensions must be smaller than outer');
   const area = B * H - b * h;
   const Ix = (B * H * H * H - b * h * h * h) / 12;
   const Iy = (H * B * B * B - h * b * b * b) / 12;
@@ -103,8 +103,8 @@ function calcHollowRectangle(B: number, H: number, b: number, h: number): Moment
 
 /** Hollow Circle (Pipe): I = π(D⁴-d⁴)/64 */
 function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
-  if (D <= 0 || d <= 0) throw new Error('Diameters must be positive');
-  if (d >= D) throw new Error('Inner diameter must be smaller than outer');
+  if (D <= 0 || d <= 0) throw new RangeError('Diameters must be positive');
+  if (d >= D) throw new RangeError('Inner diameter must be smaller than outer');
   const area = (Math.PI * (D * D - d * d)) / 4;
   const I = (Math.PI * (D * D * D * D - d * d * d * d)) / 64;
   const S = I / (D / 2);
@@ -118,9 +118,9 @@ function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
 
 /** I-Beam (symmetric): I_x = (B×H³ - (B-tw)×(H-2tf)³) / 12 */
 function calcIBeam(B: number, H: number, tw: number, tf: number): MomentOfInertiaResult {
-  if (B <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new Error('Dimensions must be positive');
-  if (tw >= B) throw new Error('Web thickness must be less than flange width');
-  if (2 * tf >= H) throw new Error('2 × flange thickness must be less than total height');
+  if (B <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new RangeError('Dimensions must be positive');
+  if (tw >= B) throw new RangeError('Web thickness must be less than flange width');
+  if (2 * tf >= H) throw new RangeError('2 × flange thickness must be less than total height');
 
   const hw = H - 2 * tf; // clear web height
   const area = 2 * B * tf + tw * hw;
@@ -145,7 +145,7 @@ function calcIBeam(B: number, H: number, tw: number, tf: number): MomentOfInerti
  * Centroid measured from bottom of web
  */
 function calcTSection(bf: number, tf: number, tw: number, hw: number): MomentOfInertiaResult {
-  if (bf <= 0 || tf <= 0 || tw <= 0 || hw <= 0) throw new Error('Dimensions must be positive');
+  if (bf <= 0 || tf <= 0 || tw <= 0 || hw <= 0) throw new RangeError('Dimensions must be positive');
 
   const H = tf + hw; // total height
   const aFlange = bf * tf;
@@ -184,8 +184,8 @@ function calcTSection(bf: number, tf: number, tw: number, hw: number): MomentOfI
  * Strong axis (Ix) uses component method.
  */
 function calcCChannel(bf: number, H: number, tw: number, tf: number): MomentOfInertiaResult {
-  if (bf <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new Error('Dimensions must be positive');
-  if (2 * tf >= H) throw new Error('2 × flange thickness must be less than total height');
+  if (bf <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new RangeError('Dimensions must be positive');
+  if (2 * tf >= H) throw new RangeError('2 × flange thickness must be less than total height');
 
   const hw = H - 2 * tf; // clear web height
   const area = 2 * bf * tf + hw * tw;

@@ -53,10 +53,10 @@ export function ledResistor(input: LedResistorInput): LedResistorResult {
 
   // Validate inputs
   if (supplyVoltage <= forwardVoltage) {
-    throw new Error('Supply voltage must be greater than forward voltage');
+    throw new RangeError('Supply voltage must be greater than forward voltage');
   }
   if (forwardCurrent <= 0) {
-    throw new Error('Forward current must be positive');
+    throw new RangeError('Forward current must be positive');
   }
 
   // R = (Vs - Vf) / If

@@ -105,18 +105,18 @@ export function controlChart(input: ControlChartInput): ControlChartResult {
   const { chartType, subgroups } = input;
 
   if (subgroups.length < 2) {
-    throw new Error('At least 2 subgroups are required');
+    throw new RangeError('At least 2 subgroups are required');
   }
 
   const n = subgroups[0].length;
   if (n < 2 || n > 25) {
-    throw new Error('Subgroup size must be between 2 and 25');
+    throw new RangeError('Subgroup size must be between 2 and 25');
   }
 
   // Validate consistent subgroup size
   for (let i = 0; i < subgroups.length; i++) {
     if (subgroups[i].length !== n) {
-      throw new Error(`Subgroup ${i + 1} has size ${subgroups[i].length}, expected ${n}`);
+      throw new RangeError(`Subgroup ${i + 1} has size ${subgroups[i].length}, expected ${n}`);
     }
   }
 

@@ -55,17 +55,17 @@ function swameeJainFriction(Re: number, epsilonM: number, diameterM: number): nu
 export function pipeFlow(input: PipeFlowInput): PipeFlowResult {
   const { flowRate, pipeDiameter, pipeLength, pipeMaterial, fluidDensity, fluidViscosity, customRoughness } = input;
 
-  if (flowRate <= 0) throw new Error('Flow rate must be positive');
-  if (pipeDiameter <= 0) throw new Error('Pipe diameter must be positive');
-  if (pipeLength <= 0) throw new Error('Pipe length must be positive');
-  if (fluidDensity <= 0) throw new Error('Fluid density must be positive');
-  if (fluidViscosity <= 0) throw new Error('Fluid viscosity must be positive');
+  if (flowRate <= 0) throw new RangeError('Flow rate must be positive');
+  if (pipeDiameter <= 0) throw new RangeError('Pipe diameter must be positive');
+  if (pipeLength <= 0) throw new RangeError('Pipe length must be positive');
+  if (fluidDensity <= 0) throw new RangeError('Fluid density must be positive');
+  if (fluidViscosity <= 0) throw new RangeError('Fluid viscosity must be positive');
 
   // Get pipe roughness
   let roughnessMm: number;
   if (pipeMaterial === 'custom') {
     if (customRoughness == null || customRoughness < 0) {
-      throw new Error('Custom roughness must be provided and non-negative');
+      throw new RangeError('Custom roughness must be provided and non-negative');
     }
     roughnessMm = customRoughness;
   } else {

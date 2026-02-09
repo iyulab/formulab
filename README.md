@@ -11,12 +11,12 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **174 industrial calculations** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **174 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **14 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **1,956 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,494 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
@@ -33,7 +33,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Automotive | 9 | — | AASHTO, SAE J1772 |
 | Energy | 15 | — | NREL PVWatts, ISO 50001 |
 | Food | 6 | — | HACCP, ICH Q1A |
-| Utility | 3 | — | — |
+| Utility | 16 | — | — |
 | Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
 | Machining | 12 | — | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
@@ -52,7 +52,7 @@ roundTo(0.615, 2)   // → 0.62  (not 0.61)
 roundTo(-2.555, 2)  // → -2.56 (sign-aware)
 ```
 
-Non-finite values (`NaN`, `Infinity`) pass through unchanged. Each function's JSDoc specifies output precision (typically 2-4 decimal places).
+Non-finite values (`NaN`, `Infinity`) pass through unchanged. All validation errors throw `RangeError` — no function returns NaN or Infinity for invalid inputs. Each function's JSDoc specifies output precision (typically 2-4 decimal places) and `@throws` conditions.
 
 ### Golden Reference Tests
 
@@ -386,17 +386,31 @@ import { calorie, nutrition, haccp, waterActivity, stabilityStudy } from 'formul
 | `waterActivity()` | Water activity microbial risk (HACCP) |
 | `stabilityStudy()` | Accelerated stability (Arrhenius, ICH Q1A) |
 
-### Utility (3 functions)
+### Utility (16 functions)
 
 ```typescript
-import { solveAssignment, calculateUnit } from 'formulab/utility';
+import { solveAssignment, calculateUnit, statistics, regression, npv } from 'formulab/utility';
 ```
 
 | Function | Description |
 |----------|-------------|
 | `solveAssignment()` | Hungarian algorithm optimization |
-| `calculateUnit()` | Unit conversion |
+| `calculateUnit()` | Unit conversion (7 categories) |
 | `getUnitCategories()` | Get unit categories |
+| `statistics()` | Descriptive statistics (mean, median, stdDev, etc.) |
+| `percentile()` | Percentile/quantile calculation |
+| `correlation()` | Pearson correlation coefficient |
+| `regression()` | Simple linear regression |
+| `movingAverage()` | SMA/EMA/WMA moving average |
+| `linearInterpolation()` | 1D linear interpolation |
+| `bilinearInterpolation()` | 2D bilinear interpolation |
+| `roi()` | Return on Investment |
+| `npv()` | Net Present Value |
+| `depreciation()` | Asset depreciation (SL/DDB/SYD) |
+| `lcc()` | Life Cycle Cost analysis |
+| `normalize()` | Data normalization (min-max/z-score) |
+| `histogram()` | Frequency distribution histogram |
+| `weightedScore()` | Weighted scoring model |
 
 ### Battery (10 functions)
 
@@ -559,9 +573,21 @@ if (isCRateInput(formData)) {
 
 See [ERRORS.md](./ERRORS.md) for the complete error behavior specification. Key points:
 
-- **Validation failures** throw `RangeError` with descriptive messages
-- **Legacy NaN/Infinity patterns** are documented and scheduled for migration
-- Each function's error behavior is documented in the specification
+- **All validation failures** throw `RangeError` with descriptive messages
+- **No silent NaN/Infinity** — every function guarantees finite outputs for valid inputs
+- Every `@throws` condition is documented in each function's JSDoc
+
+```typescript
+import { metalWeight } from 'formulab/metal';
+
+try {
+  const result = metalWeight({ shape: 'plate', materialName: 'steel', length: 0, width: 100, thickness: 10 });
+} catch (e) {
+  if (e instanceof RangeError) {
+    console.log(e.message); // "length must be positive"
+  }
+}
+```
 
 ## Tree Shaking
 

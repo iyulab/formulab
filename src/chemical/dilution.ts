@@ -19,7 +19,7 @@ export function dilution(input: DilutionInput): DilutionResult {
     case 'c2':
       // C2 = C1 * V1 / V2
       if (input.v2 === 0) {
-        throw new Error('Cannot solve for c2: v2 must be non-zero');
+        throw new RangeError('Cannot solve for c2: v2 must be non-zero');
       }
       resultC1 = input.c1;
       resultV1 = input.v1;
@@ -30,7 +30,7 @@ export function dilution(input: DilutionInput): DilutionResult {
     case 'v2':
       // V2 = C1 * V1 / C2
       if (input.c2 === 0) {
-        throw new Error('Cannot solve for v2: c2 must be non-zero');
+        throw new RangeError('Cannot solve for v2: c2 must be non-zero');
       }
       resultC1 = input.c1;
       resultV1 = input.v1;
@@ -41,7 +41,7 @@ export function dilution(input: DilutionInput): DilutionResult {
     case 'c1':
       // C1 = C2 * V2 / V1
       if (input.v1 === 0) {
-        throw new Error('Cannot solve for c1: v1 must be non-zero');
+        throw new RangeError('Cannot solve for c1: v1 must be non-zero');
       }
       resultV1 = input.v1;
       resultC2 = input.c2;
@@ -52,7 +52,7 @@ export function dilution(input: DilutionInput): DilutionResult {
     case 'v1':
       // V1 = C2 * V2 / C1
       if (input.c1 === 0) {
-        throw new Error('Cannot solve for v1: c1 must be non-zero');
+        throw new RangeError('Cannot solve for v1: c1 must be non-zero');
       }
       resultC1 = input.c1;
       resultC2 = input.c2;

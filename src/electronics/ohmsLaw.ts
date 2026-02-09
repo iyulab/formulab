@@ -23,8 +23,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'voltage': {
       current = input.current;
       resistance = input.resistance;
-      if (current <= 0) throw new Error('Current must be positive');
-      if (resistance <= 0) throw new Error('Resistance must be positive');
+      if (current <= 0) throw new RangeError('Current must be positive');
+      if (resistance <= 0) throw new RangeError('Resistance must be positive');
       voltage = current * resistance;
       power = voltage * current;
       break;
@@ -32,8 +32,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'current': {
       voltage = input.voltage;
       resistance = input.resistance;
-      if (voltage < 0) throw new Error('Voltage must be non-negative');
-      if (resistance <= 0) throw new Error('Resistance must be positive');
+      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
+      if (resistance <= 0) throw new RangeError('Resistance must be positive');
       current = voltage / resistance;
       power = voltage * current;
       break;
@@ -41,8 +41,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'resistance': {
       voltage = input.voltage;
       current = input.current;
-      if (voltage < 0) throw new Error('Voltage must be non-negative');
-      if (current <= 0) throw new Error('Current must be positive');
+      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
+      if (current <= 0) throw new RangeError('Current must be positive');
       resistance = voltage / current;
       power = voltage * current;
       break;
@@ -50,8 +50,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'power': {
       voltage = input.voltage;
       current = input.current;
-      if (voltage < 0) throw new Error('Voltage must be non-negative');
-      if (current <= 0) throw new Error('Current must be positive');
+      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
+      if (current <= 0) throw new RangeError('Current must be positive');
       resistance = voltage / current;
       power = voltage * current;
       break;

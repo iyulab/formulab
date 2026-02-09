@@ -30,10 +30,10 @@ export function roof(input: RoofInput): RoofResult {
 
   // Validate inputs
   if (run <= 0) {
-    throw new Error('Run must be greater than zero');
+    throw new RangeError('Run must be greater than zero');
   }
   if (rise < 0) {
-    throw new Error('Rise must be non-negative');
+    throw new RangeError('Rise must be non-negative');
   }
 
   // Calculate slope ratio (normalized to 12-unit run for pitch notation)

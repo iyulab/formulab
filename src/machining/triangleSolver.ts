@@ -61,19 +61,19 @@ export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult
     // SSA (ambiguous): two sides + non-included angle
     else if (a !== undefined && b !== undefined && A !== undefined) {
       const sinB = (b * Math.sin(A * DEG)) / a;
-      if (sinB > 1) throw new Error('No valid triangle exists');
+      if (sinB > 1) throw new RangeError('No valid triangle exists');
       B = Math.asin(sinB) * RAD;
       C = 180 - A - B;
       c = (a * Math.sin(C * DEG)) / Math.sin(A * DEG);
     } else if (a !== undefined && c !== undefined && A !== undefined) {
       const sinC = (c * Math.sin(A * DEG)) / a;
-      if (sinC > 1) throw new Error('No valid triangle exists');
+      if (sinC > 1) throw new RangeError('No valid triangle exists');
       C = Math.asin(sinC) * RAD;
       B = 180 - A - C;
       b = (a * Math.sin(B * DEG)) / Math.sin(A * DEG);
     } else if (b !== undefined && c !== undefined && B !== undefined) {
       const sinC = (c * Math.sin(B * DEG)) / b;
-      if (sinC > 1) throw new Error('No valid triangle exists');
+      if (sinC > 1) throw new RangeError('No valid triangle exists');
       C = Math.asin(sinC) * RAD;
       A = 180 - B - C;
       a = (b * Math.sin(A * DEG)) / Math.sin(B * DEG);
@@ -97,7 +97,7 @@ export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult
 
   if (a === undefined || b === undefined || c === undefined ||
       A === undefined || B === undefined || C === undefined) {
-    throw new Error('Insufficient data to solve triangle');
+    throw new RangeError('Insufficient data to solve triangle');
   }
 
   // Heron's formula for area

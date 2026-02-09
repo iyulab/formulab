@@ -21,9 +21,9 @@ import type { BrakingDistanceInput, BrakingDistanceResult } from './types.js';
 export function brakingDistance(input: BrakingDistanceInput): BrakingDistanceResult {
   const { speed, friction, reactionTime, grade } = input;
 
-  if (speed <= 0) throw new Error('Speed must be positive');
-  if (friction <= 0) throw new Error('Friction coefficient must be positive');
-  if (reactionTime < 0) throw new Error('Reaction time must be non-negative');
+  if (speed <= 0) throw new RangeError('Speed must be positive');
+  if (friction <= 0) throw new RangeError('Friction coefficient must be positive');
+  if (reactionTime < 0) throw new RangeError('Reaction time must be non-negative');
 
   const g = 9.81; // m/s²
   const speedMps = speed / 3.6; // km/h → m/s
@@ -37,7 +37,7 @@ export function brakingDistance(input: BrakingDistanceInput): BrakingDistanceRes
   const effectiveFriction = friction + gradeDecimal;
 
   if (effectiveFriction <= 0) {
-    throw new Error('Effective friction (friction + grade) must be positive — vehicle cannot stop on this grade');
+    throw new RangeError('Effective friction (friction + grade) must be positive — vehicle cannot stop on this grade');
   }
 
   // Deceleration: a = g × (f ± G)

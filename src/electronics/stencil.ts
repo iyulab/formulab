@@ -26,10 +26,10 @@ export function stencilAperture(input: StencilInput): StencilResult {
 
   // Validate inputs
   if (apertureWidth <= 0 || stencilThickness <= 0) {
-    throw new Error('Aperture width and stencil thickness must be positive');
+    throw new RangeError('Aperture width and stencil thickness must be positive');
   }
   if (shape === 'rectangle' && apertureLength <= 0) {
-    throw new Error('Aperture length must be positive for rectangular apertures');
+    throw new RangeError('Aperture length must be positive for rectangular apertures');
   }
 
   let apertureArea: number;

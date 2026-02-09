@@ -35,7 +35,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
   let gridFactor: number;
   if (region === 'custom') {
     if (customFactor == null) {
-      throw new Error('customFactor is required when region is "custom"');
+      throw new RangeError('customFactor is required when region is "custom"');
     }
     gridFactor = customFactor;
   } else {

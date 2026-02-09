@@ -31,10 +31,10 @@ export function ventilationRate(input: VentilationRateInput): VentilationRateRes
   const { roomLength, roomWidth, roomHeight, occupants, activityLevel, spaceType, customAch } = input;
 
   if (roomLength <= 0 || roomWidth <= 0 || roomHeight <= 0) {
-    throw new Error('Room dimensions must be positive');
+    throw new RangeError('Room dimensions must be positive');
   }
   if (occupants <= 0) {
-    throw new Error('Occupants must be positive');
+    throw new RangeError('Occupants must be positive');
   }
 
   const roomVolume = roomLength * roomWidth * roomHeight; // m³
@@ -43,7 +43,7 @@ export function ventilationRate(input: VentilationRateInput): VentilationRateRes
   let baseAch: number;
   if (spaceType === 'custom') {
     if (customAch == null || customAch <= 0) {
-      throw new Error('Custom ACH must be provided and positive for custom space type');
+      throw new RangeError('Custom ACH must be provided and positive for custom space type');
     }
     baseAch = customAch;
   } else {

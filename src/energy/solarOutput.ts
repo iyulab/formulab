@@ -22,10 +22,10 @@ export function solarOutput(input: SolarOutputInput): SolarOutputResult {
     systemEfficiency, tiltAngle, latitude, azimuthOffset,
   } = input;
 
-  if (panelWattage <= 0) throw new Error('Panel wattage must be positive');
-  if (panelCount <= 0) throw new Error('Panel count must be positive');
-  if (peakSunHours <= 0) throw new Error('Peak sun hours must be positive');
-  if (systemEfficiency <= 0 || systemEfficiency > 1) throw new Error('System efficiency must be between 0 and 1');
+  if (panelWattage <= 0) throw new RangeError('Panel wattage must be positive');
+  if (panelCount <= 0) throw new RangeError('Panel count must be positive');
+  if (peakSunHours <= 0) throw new RangeError('Peak sun hours must be positive');
+  if (systemEfficiency <= 0 || systemEfficiency > 1) throw new RangeError('System efficiency must be between 0 and 1');
 
   // System size in kW
   const systemSizeKw = (panelWattage * panelCount) / 1000;

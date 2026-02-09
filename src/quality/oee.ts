@@ -27,14 +27,14 @@ export function oee(input: OeeInput): OeeResult {
 
   // Validate: goodCount cannot exceed totalCount
   if (goodCount > totalCount) {
-    throw new Error(
+    throw new RangeError(
       `Invalid input: goodCount (${goodCount}) cannot exceed totalCount (${totalCount})`
     );
   }
 
   // Validate: no negative values allowed
   if (goodCount < 0) {
-    throw new Error(`Invalid input: goodCount (${goodCount}) cannot be negative`);
+    throw new RangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`);
   }
 
   // Handle edge cases - return zeros for invalid inputs

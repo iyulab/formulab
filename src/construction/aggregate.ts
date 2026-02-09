@@ -34,7 +34,7 @@ export function getAggregateDensity(type: AggregateType): number {
  */
 export function aggregateCoverage(volumeM3: number, depthCm: number): number {
   if (volumeM3 <= 0 || depthCm <= 0) {
-    throw new Error('Volume and depth must be greater than zero');
+    throw new RangeError('Volume and depth must be greater than zero');
   }
   const depthM = depthCm / 100;
   return roundTo(volumeM3 / depthM, 2);
@@ -59,7 +59,7 @@ export function aggregate(input: AggregateInput): AggregateResult {
 
   // Validate inputs
   if (length <= 0 || width <= 0 || depth <= 0) {
-    throw new Error('All dimensions must be greater than zero');
+    throw new RangeError('All dimensions must be greater than zero');
   }
 
   // Convert depth to meters if in centimeters
@@ -69,13 +69,13 @@ export function aggregate(input: AggregateInput): AggregateResult {
   let density: number;
   if (aggregateType === 'custom') {
     if (customDensity === undefined || customDensity <= 0) {
-      throw new Error('Custom density must be provided and greater than zero');
+      throw new RangeError('Custom density must be provided and greater than zero');
     }
     density = customDensity;
   } else {
     const aggregateInfo = AGGREGATE_DENSITIES.find(a => a.type === aggregateType);
     if (!aggregateInfo) {
-      throw new Error(`Unknown aggregate type: ${aggregateType}`);
+      throw new RangeError(`Unknown aggregate type: ${aggregateType}`);
     }
     density = aggregateInfo.density;
   }

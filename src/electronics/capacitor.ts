@@ -16,7 +16,7 @@ export function capacitorDecode(input: CapacitorCodeInput): CapacitorCodeResult 
 
   // Validate: must be exactly 3 digits
   if (!/^\d{3}$/.test(code)) {
-    throw new Error('Invalid capacitor code: must be exactly 3 digits');
+    throw new RangeError('Invalid capacitor code: must be exactly 3 digits');
   }
 
   const digit1 = parseInt(code[0], 10);

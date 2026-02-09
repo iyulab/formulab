@@ -71,19 +71,19 @@ export function flangeSpec(input: FlangeSpecInput): FlangeSpecResult {
   const { standard, pressureClass, nominalSize } = input;
 
   if (standard === 'EN_1092_1') {
-    throw new Error('EN 1092-1 support not yet implemented. Use ASME_B16_5.');
+    throw new RangeError('EN 1092-1 support not yet implemented. Use ASME_B16_5.');
   }
 
   // Normalize nominal size (remove quotes)
   const nps = nominalSize.replace(/"/g, '').replace(/'/g, '').trim();
   const sizeData = ASME_B16_5[nps];
   if (!sizeData) {
-    throw new Error(`Unknown flange size: ${nps}`);
+    throw new RangeError(`Unknown flange size: ${nps}`);
   }
 
   const dim = sizeData[pressureClass];
   if (!dim) {
-    throw new Error(`Pressure class ${pressureClass} not available for size ${nps}`);
+    throw new RangeError(`Pressure class ${pressureClass} not available for size ${nps}`);
   }
 
   return {

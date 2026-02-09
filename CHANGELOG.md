@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2026-02-09
+
+### Fixed
+
+- **`throw new Error` → `throw new RangeError`** across all 18 remaining files — runtime error type now matches `@throws {RangeError}` JSDoc and ERRORS.md policy. Affected domains: automotive, chemical, construction, electronics, energy, environmental, machining, metal, quality, safety.
+
+### Changed
+
+- **README.md** — Updated test count (2,494), error handling section (no legacy NaN/Infinity), utility domain (3 → 16 functions).
+
 ## [0.10.0] - 2026-02-09
 
 ### Breaking Changes

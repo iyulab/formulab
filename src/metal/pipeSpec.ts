@@ -71,7 +71,7 @@ export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
     const dnKey = nominalSize.toUpperCase().replace(/\s/g, '');
     nps = DN_TO_NPS[dnKey];
     if (!nps) {
-      throw new Error(`Unknown DN size: ${nominalSize}`);
+      throw new RangeError(`Unknown DN size: ${nominalSize}`);
     }
   } else {
     // Remove quotes and clean up
@@ -80,12 +80,12 @@ export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
 
   const pipeData = PIPE_DATA[nps];
   if (!pipeData) {
-    throw new Error(`Unknown pipe size: ${nps}`);
+    throw new RangeError(`Unknown pipe size: ${nps}`);
   }
 
   const wallThickness = pipeData.schedules[schedule];
   if (wallThickness == null) {
-    throw new Error(`Schedule ${schedule} not available for size ${nps}`);
+    throw new RangeError(`Schedule ${schedule} not available for size ${nps}`);
   }
 
   const od = pipeData.od;
