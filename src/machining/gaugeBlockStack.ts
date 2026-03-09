@@ -6,20 +6,17 @@ import type { GaugeBlockStackInput, GaugeBlockStackResult } from './types.js';
  * Standard: Grade 1 metric set per ISO 3650
  */
 const METRIC_47_SET: number[] = [
-  // Series 1: 1.001–1.009 (9 blocks, 0.001 steps)
+  // Series 1: 0.001 step (9 blocks)
   1.001, 1.002, 1.003, 1.004, 1.005, 1.006, 1.007, 1.008, 1.009,
-  // Series 2: 1.01–1.49 (49 blocks → typically 1.01-1.09 step 0.01, then 1.10-1.49 step 0.10)
-  // Actually standard 47-set has:
-  // 9 × 0.001: 1.001-1.009
-  // 9 × 0.01: 1.01-1.09
-  // 9 × 0.10: 1.10-1.90 (but typically only up to 1.49 in some sets)
-  // Let's use the standard 47-piece metric set:
+  // Series 2: 0.01 step (9 blocks)
   1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.07, 1.08, 1.09,
-  // Series 3: 0.5 step
+  // Series 3: 0.10 step (9 blocks)
   1.10, 1.20, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90,
-  // Series 4: whole mm
+  // Series 4: 0.5 step — ISO 3650 half-mm blocks for sub-1mm remainders
+  0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5,
+  // Series 5: whole mm (9 blocks)
   1, 2, 3, 4, 5, 6, 7, 8, 9,
-  // Series 5: tens
+  // Series 6: tens (10 blocks)
   10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
 ];
 
@@ -27,17 +24,19 @@ const METRIC_47_SET: number[] = [
  * Metric 88-piece gauge block set (mm) — extended precision
  */
 const METRIC_88_SET: number[] = [
-  // 0.001 step: 1.001-1.009
+  // 0.001 step: 1.001-1.009 (9 blocks)
   1.001, 1.002, 1.003, 1.004, 1.005, 1.006, 1.007, 1.008, 1.009,
-  // 0.01 step: 1.01-1.49
+  // 0.01 step: 1.01-1.49 (49 blocks)
   1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.07, 1.08, 1.09,
   1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19,
   1.20, 1.21, 1.22, 1.23, 1.24, 1.25, 1.26, 1.27, 1.28, 1.29,
   1.30, 1.31, 1.32, 1.33, 1.34, 1.35, 1.36, 1.37, 1.38, 1.39,
   1.40, 1.41, 1.42, 1.43, 1.44, 1.45, 1.46, 1.47, 1.48, 1.49,
-  // whole mm: 1-9
+  // 0.5 step — ISO 3650 half-mm blocks for sub-1mm remainders
+  0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5,
+  // whole mm: 1-9 (9 blocks)
   1, 2, 3, 4, 5, 6, 7, 8, 9,
-  // tens: 10-100
+  // tens: 10-100 (10 blocks)
   10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
 ];
 

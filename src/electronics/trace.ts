@@ -29,9 +29,9 @@ const IPC2221_CONSTANTS = {
 const COPPER_THICKNESS_PER_OZ = 1.378;
 
 /**
- * Copper resistivity at 25C in ohm-mil
+ * Copper resistivity at 25C in ohm·mil²/inch (IPC-2221)
  */
-const COPPER_RESISTIVITY = 0.6787; // micro-ohm-inch = 0.6787 ohm-mil^2/inch
+const COPPER_RESISTIVITY = 0.6787;
 
 /**
  * Calculate PCB trace width using IPC-2221 formula
@@ -66,11 +66,8 @@ export function traceWidth(input: TraceInput): TraceResult {
   // Convert to mm (1 mil = 0.0254 mm)
   const widthMm = roundTo(widthMils * 0.0254, 4);
 
-  // Calculate resistance per inch at 25C
-  // R = resistivity / Area (where resistivity is in micro-ohm-inch)
-  // Area is in mil^2
-  // R = 0.6787 / Area (micro-ohm/inch) = 0.6787e-6 / Area (ohm/inch)
-  const resistance = roundTo(COPPER_RESISTIVITY / crossSection * 1e-6, 8);
+  // Resistance per inch at 25C: R = ρ / A (ohm·mil²/inch ÷ mil² = ohm/inch)
+  const resistance = roundTo(COPPER_RESISTIVITY / crossSection, 8);
 
   // Voltage drop per inch = I * R
   const voltageDrop = roundTo(current * resistance, 8);

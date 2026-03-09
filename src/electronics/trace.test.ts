@@ -116,7 +116,7 @@ describe('traceWidth', () => {
   });
 
   describe('resistance calculation', () => {
-    it('should calculate resistance per inch', () => {
+    it('should calculate resistance per inch in milliohm range', () => {
       const result = traceWidth({
         current: 2,
         tempRise: 10,
@@ -124,7 +124,9 @@ describe('traceWidth', () => {
         layer: 'external',
       });
 
-      expect(result.resistance).toBeGreaterThan(0);
+      // Typical PCB trace: milliohm to micro-ohm range per inch
+      expect(result.resistance).toBeGreaterThan(1e-4);
+      expect(result.resistance).toBeLessThan(1);
     });
 
     it('should show lower resistance for wider traces', () => {
