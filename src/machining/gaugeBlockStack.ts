@@ -84,7 +84,11 @@ export function gaugeBlockStack(input: GaugeBlockStackInput): GaugeBlockStackRes
   const setBlocks = SETS[availableSet];
   const used = new Set<number>();
   const blocks: number[] = [];
-  let remaining = roundTo(targetDimension, 4);
+  // Round target to block-set precision: metric blocks resolve to 0.001mm (3dp),
+  // inch blocks to 0.0001" (4dp). This ensures the trailing-zero scoring system
+  // can differentiate fine-digit-eliminating blocks from coarse ones.
+  const precision = availableSet.startsWith('inch') ? 4 : 3;
+  let remaining = roundTo(targetDimension, precision);
 
   // Successive subtraction algorithm (Machinery's Handbook method):
   // 1. Find a block that, when subtracted, eliminates the least significant non-zero digit

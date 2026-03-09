@@ -62,15 +62,13 @@ describe('gaugeBlockStack', () => {
     expect(result.blockCount).toBeGreaterThan(0);
   });
 
-  it('should stack 30.485mm with metric88', () => {
+  it('should stack 30.485mm with metric88 exactly', () => {
     const result = gaugeBlockStack({
       targetDimension: 30.485,
       availableSet: 'metric88',
     });
 
-    // 30.485 = 20 + 9.5 + 1.08 - 0.095? Or similar decomposition
-    // Greedy algorithm may not find optimal, but should do better with 0.5 blocks
-    expect(result.error).toBeLessThan(1);
+    expect(result.error).toBeCloseTo(0, 3);
     expect(result.blockCount).toBeGreaterThan(0);
   });
 
@@ -81,9 +79,28 @@ describe('gaugeBlockStack', () => {
     expect(result.totalDimension).toBeCloseTo(10.5, 4);
   });
 
-  it('should have correct block count for metric47 set', () => {
-    // ISO 3650: 47-piece set = 9+9+10+9+10 = 47
-    const set = gaugeBlockStack({ targetDimension: 1 }); // just to access the function
-    expect(set).toBeDefined();
+  it('should handle 4dp target by rounding to block-set precision', () => {
+    // 25.4567mm → rounds to 25.457 (metric 3dp precision)
+    // Optimal: 1.007 + 1.05 + 1.40 + 2 + 20 = 25.457 (metric47)
+    // Or: 1.007 + 1.45 + 3 + 20 = 25.457 (metric88)
+    const result47 = gaugeBlockStack({ targetDimension: 25.4567 });
+    expect(result47.error).toBeLessThan(0.001);
+
+    const result88 = gaugeBlockStack({
+      targetDimension: 25.4567,
+      availableSet: 'metric88',
+    });
+    expect(result88.error).toBeLessThan(0.001);
+  });
+
+  it('should stack inch target with 4dp precision', () => {
+    // Inch sets resolve to 0.0001" precision
+    const result = gaugeBlockStack({
+      targetDimension: 2.7834,
+      availableSet: 'inch81',
+    });
+
+    expect(result.error).toBeLessThan(0.001);
+    expect(result.blockCount).toBeGreaterThan(0);
   });
 });
