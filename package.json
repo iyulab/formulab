@@ -9,67 +9,83 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./quality": {
       "types": "./dist/quality/index.d.ts",
-      "import": "./dist/quality/index.js"
+      "import": "./dist/quality/index.js",
+      "default": "./dist/quality/index.js"
     },
     "./metal": {
       "types": "./dist/metal/index.d.ts",
-      "import": "./dist/metal/index.js"
+      "import": "./dist/metal/index.js",
+      "default": "./dist/metal/index.js"
     },
     "./chemical": {
       "types": "./dist/chemical/index.d.ts",
-      "import": "./dist/chemical/index.js"
+      "import": "./dist/chemical/index.js",
+      "default": "./dist/chemical/index.js"
     },
     "./electronics": {
       "types": "./dist/electronics/index.d.ts",
-      "import": "./dist/electronics/index.js"
+      "import": "./dist/electronics/index.js",
+      "default": "./dist/electronics/index.js"
     },
     "./construction": {
       "types": "./dist/construction/index.d.ts",
-      "import": "./dist/construction/index.js"
+      "import": "./dist/construction/index.js",
+      "default": "./dist/construction/index.js"
     },
     "./automotive": {
       "types": "./dist/automotive/index.d.ts",
-      "import": "./dist/automotive/index.js"
+      "import": "./dist/automotive/index.js",
+      "default": "./dist/automotive/index.js"
     },
     "./logistics": {
       "types": "./dist/logistics/index.d.ts",
-      "import": "./dist/logistics/index.js"
+      "import": "./dist/logistics/index.js",
+      "default": "./dist/logistics/index.js"
     },
     "./energy": {
       "types": "./dist/energy/index.d.ts",
-      "import": "./dist/energy/index.js"
+      "import": "./dist/energy/index.js",
+      "default": "./dist/energy/index.js"
     },
     "./safety": {
       "types": "./dist/safety/index.d.ts",
-      "import": "./dist/safety/index.js"
+      "import": "./dist/safety/index.js",
+      "default": "./dist/safety/index.js"
     },
     "./food": {
       "types": "./dist/food/index.d.ts",
-      "import": "./dist/food/index.js"
+      "import": "./dist/food/index.js",
+      "default": "./dist/food/index.js"
     },
     "./utility": {
       "types": "./dist/utility/index.d.ts",
-      "import": "./dist/utility/index.js"
+      "import": "./dist/utility/index.js",
+      "default": "./dist/utility/index.js"
     },
     "./battery": {
       "types": "./dist/battery/index.d.ts",
-      "import": "./dist/battery/index.js"
+      "import": "./dist/battery/index.js",
+      "default": "./dist/battery/index.js"
     },
     "./environmental": {
       "types": "./dist/environmental/index.d.ts",
-      "import": "./dist/environmental/index.js"
+      "import": "./dist/environmental/index.js",
+      "default": "./dist/environmental/index.js"
     },
     "./machining": {
       "types": "./dist/machining/index.d.ts",
-      "import": "./dist/machining/index.js"
+      "import": "./dist/machining/index.js",
+      "default": "./dist/machining/index.js"
     },
     "./ie": {
       "types": "./dist/ie/index.d.ts",
-      "import": "./dist/ie/index.js"
+      "import": "./dist/ie/index.js",
+      "default": "./dist/ie/index.js"
     }
   },
   "files": [
