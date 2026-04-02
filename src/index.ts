@@ -15,3 +15,4 @@ export * from './utility/index.js';
 export * from './battery/index.js';
 export * from './environmental/index.js';
 export * from './machining/index.js';
+export * from './ie/index.js';

@@ -378,6 +378,59 @@ export interface WeibullResult {
 }
 
 /**
+ * Action Priority (AP) Types — AIAG-VDA 2019
+ */
+export type ActionPriorityLevel = 'H' | 'M' | 'L';
+
+export interface ActionPriorityInput {
+  severity: number;    // 1-10
+  occurrence: number;  // 1-10
+  detection: number;   // 1-10
+}
+
+export interface ActionPriorityResult {
+  actionPriority: ActionPriorityLevel;
+  rpn: number;
+  severityGroup: number;
+  occurrenceGroup: number;
+  detectionGroup: number;
+}
+
+/**
+ * Cpk to Occurrence Mapping Types
+ */
+export interface CpkToOccurrenceInput {
+  cpk: number;  // >= 0
+}
+
+export interface CpkToOccurrenceResult {
+  occurrence: number;   // 1-10
+  description: string;
+  cpkRange: string;
+}
+
+/**
+ * Nelson Rules Types
+ */
+export interface NelsonRulesInput {
+  values: number[];
+  centerLine: number;
+  sigma: number;
+  rules?: number[];  // default 1-8
+}
+
+export interface NelsonViolation {
+  rule: number;
+  description: string;
+  indices: number[];
+}
+
+export interface NelsonRulesResult {
+  violations: NelsonViolation[];
+  hasViolation: boolean;
+}
+
+/**
  * Pareto Analysis Types
  */
 export interface ParetoItem {

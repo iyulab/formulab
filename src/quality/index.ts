@@ -17,6 +17,9 @@ export { gageRR } from './gageRR.js';
 export { cmk } from './cmk.js';
 export { weibull } from './weibull.js';
 export { paretoAnalysis } from './paretoAnalysis.js';
+export { actionPriority } from './actionPriority.js';
+export { cpkToOccurrence } from './cpkToOccurrence.js';
+export { nelsonRules } from './nelsonRules.js';
 
 // Types
 export type {
@@ -87,4 +90,15 @@ export type {
   ParetoInput,
   ParetoClassification,
   ParetoResult,
+  // Action Priority types
+  ActionPriorityLevel,
+  ActionPriorityInput,
+  ActionPriorityResult,
+  // Cpk to Occurrence types
+  CpkToOccurrenceInput,
+  CpkToOccurrenceResult,
+  // Nelson Rules types
+  NelsonRulesInput,
+  NelsonViolation,
+  NelsonRulesResult,
 } from './types.js';
