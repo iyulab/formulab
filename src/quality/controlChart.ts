@@ -79,10 +79,15 @@ function stdDev(arr: number[]): number {
  * I-MR (Individuals & Moving-Range) constants.
  * Moving range uses span of 2 consecutive points (n=2):
  *   d2 = 1.128, D3 = 0, D4 = 3.267
- *   E2 = 3 / d2 = 2.66  (Individuals chart limit factor)
+ *   E2 = 2.66 (AIAG table; exact 3/d2 = 3/1.128 = 2.6596)  (Individuals chart limit factor)
  * @reference AIAG SPC 2nd Ed.; Montgomery, "Introduction to SQC".
  */
-const IMR_CONSTANTS = { d2: 1.128, D3: 0, D4: 3.267, E2: 2.66 } as const;
+const IMR_CONSTANTS = {
+  d2: 1.128,
+  D3: 0, // span-2 MR has no lower limit; stored for table symmetry
+  D4: 3.267,
+  E2: 2.66,
+} as const;
 
 /**
  * SPC Control Chart Calculator (X-bar/R, X-bar/S, and I-MR)
@@ -261,6 +266,9 @@ function calcXbarS(subgroups: number[][], n: number): ControlChartResult {
 }
 
 function calcImr(subgroups: number[][]): ControlChartResult {
+  if (subgroups.some(sg => sg.length !== 1)) {
+    throw new RangeError('I-MR chart requires subgroups of size 1');
+  }
   // Each subgroup contributes its first element as the individual value
   const individuals = subgroups.map(sg => sg[0]);
   const m = individuals.length;

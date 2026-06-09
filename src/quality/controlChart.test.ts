@@ -178,6 +178,7 @@ describe('controlChart', () => {
     it('first point has no moving range', () => {
       const r = controlChart({ chartType: 'imr', subgroups: individuals });
       expect(r.subgroupStats[0].range).toBeUndefined();
+      expect(r.subgroupStats[0].mean).toBeCloseTo(10, 4);
       expect(r.subgroupStats[1].range).toBeCloseTo(2, 4);
     });
 
@@ -191,6 +192,29 @@ describe('controlChart', () => {
     it('throws when fewer than 2 individuals', () => {
       expect(() => controlChart({ chartType: 'imr', subgroups: [[10]] }))
         .toThrow(RangeError);
+    });
+
+    it('throws when an imr subgroup is not size 1', () => {
+      expect(() => controlChart({ chartType: 'imr', subgroups: [[10, 12], [11, 13]] }))
+        .toThrow(RangeError);
+    });
+
+    it('flags MR-only out-of-control point where individual is within I limits', () => {
+      // individuals = [20,20,20,20,20,20,20,20,20,10,20]
+      // MR = [0,0,0,0,0,0,0,0,10,10]
+      // X̄ = (9*20 + 10 + 20)/11 = 210/11 = 19.0909
+      // MR̄ = 20/10 = 2.0
+      // I UCL = 19.0909 + 2.66*2.0 = 24.411 ; I LCL = 19.0909 - 5.32 = 13.771
+      // MR UCL = 3.267*2.0 = 6.534
+      // Index 9 (value=10): MR=10 > 6.534 (oocMR), individual=10 < 13.771 (oocI too)
+      // Index 10 (value=20): MR=10 > 6.534 (oocMR), individual=20 ∈ [13.771, 24.411] (in I limits → MR-only OOC)
+      const subgroups = [[20],[20],[20],[20],[20],[20],[20],[20],[20],[10],[20]];
+      const r = controlChart({ chartType: 'imr', subgroups });
+      expect(r.outOfControlPoints).toContain(10);
+      // Confirm the flag at index 10 is MR-only: individual is inside I limits
+      expect(r.subgroupStats[10].mean).toBeGreaterThan(r.xBarLimits.lcl);
+      expect(r.subgroupStats[10].mean).toBeLessThan(r.xBarLimits.ucl);
+      expect(r.subgroupStats[10].range).toBeGreaterThan(r.rOrSLimits.ucl);
     });
   });
 
