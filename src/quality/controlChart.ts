@@ -76,7 +76,16 @@ function stdDev(arr: number[]): number {
 }
 
 /**
- * SPC Control Chart Calculator (X-bar/R and X-bar/S)
+ * I-MR (Individuals & Moving-Range) constants.
+ * Moving range uses span of 2 consecutive points (n=2):
+ *   d2 = 1.128, D3 = 0, D4 = 3.267
+ *   E2 = 3 / d2 = 2.66  (Individuals chart limit factor)
+ * @reference AIAG SPC 2nd Ed.; Montgomery, "Introduction to SQC".
+ */
+const IMR_CONSTANTS = { d2: 1.128, D3: 0, D4: 3.267, E2: 2.66 } as const;
+
+/**
+ * SPC Control Chart Calculator (X-bar/R, X-bar/S, and I-MR)
  *
  * @formula X-bar/R method:
  *   - σ̂ = R̄ / d₂
@@ -87,6 +96,11 @@ function stdDev(arr: number[]): number {
  *   - σ̂ = S̄ / c₄
  *   - UCL_X̄ = X̿ + A₃S̄,  LCL_X̄ = X̿ − A₃S̄
  *   - UCL_S  = B₄S̄,       LCL_S  = B₃S̄
+ *
+ * @formula I-MR method (Individuals & Moving Range):
+ *   - σ̂ = MR̄ / d₂  (d₂=1.128 for span-2 moving range)
+ *   - UCL_I = X̄ + E₂·MR̄,  LCL_I = X̄ − E₂·MR̄  (E₂=2.66)
+ *   - UCL_MR = D₄·MR̄,      LCL_MR = max(0, D₃·MR̄)
  *
  * @reference AIAG (2005). "Statistical Process Control (SPC)", 2nd Ed.
  * @reference ASTM E2587-16. Standard Practice for Use of Control Charts.
@@ -106,6 +120,11 @@ export function controlChart(input: ControlChartInput): ControlChartResult {
 
   if (subgroups.length < 2) {
     throw new RangeError('At least 2 subgroups are required');
+  }
+
+  // I-MR: each subgroup is a single individual value (n=1)
+  if (chartType === 'imr') {
+    return calcImr(subgroups);
   }
 
   const n = subgroups[0].length;
@@ -233,6 +252,65 @@ function calcXbarS(subgroups: number[][], n: number): ControlChartResult {
     subgroupSize: n,
     xBarLimits,
     rOrSLimits: sLimits,
+    subgroupStats,
+    grandMean: roundTo(grandMean, 4),
+    sigmaEstimate: roundTo(sigmaEstimate, 4),
+    outOfControlPoints,
+    processCapable: outOfControlPoints.length === 0,
+  };
+}
+
+function calcImr(subgroups: number[][]): ControlChartResult {
+  // Each subgroup contributes its first element as the individual value
+  const individuals = subgroups.map(sg => sg[0]);
+  const m = individuals.length;
+
+  const grandMean = mean(individuals); // CL of Individuals chart (X̄)
+
+  // Moving ranges between consecutive individuals (m-1 values)
+  const movingRanges: number[] = [];
+  for (let i = 1; i < m; i++) {
+    movingRanges.push(Math.abs(individuals[i] - individuals[i - 1]));
+  }
+  const mrBar = mean(movingRanges); // CL of MR chart (MR̄)
+
+  // Sigma estimate: σ̂ = MR̄ / d₂
+  const sigmaEstimate = mrBar / IMR_CONSTANTS.d2;
+
+  // Individuals chart limits: X̄ ± E₂·MR̄
+  const iLimits: ControlLimit = {
+    centerLine: roundTo(grandMean, 4),
+    ucl: roundTo(grandMean + IMR_CONSTANTS.E2 * mrBar, 4),
+    lcl: roundTo(grandMean - IMR_CONSTANTS.E2 * mrBar, 4),
+  };
+
+  // MR chart limits: D₄·MR̄ / D₃·MR̄ (LCL = 0)
+  const mrLimits: ControlLimit = {
+    centerLine: roundTo(mrBar, 4),
+    ucl: roundTo(IMR_CONSTANTS.D4 * mrBar, 4),
+    lcl: roundTo(Math.max(0, IMR_CONSTANTS.D3 * mrBar), 4),
+  };
+
+  const outOfControlPoints: number[] = [];
+  const subgroupStats: SubgroupStat[] = individuals.map((x, i) => {
+    const mr = i === 0 ? undefined : movingRanges[i - 1];
+    const oocI = x < iLimits.lcl || x > iLimits.ucl;
+    const oocMr = mr !== undefined && mr > mrLimits.ucl;
+    const ooc = oocI || oocMr;
+    if (ooc) outOfControlPoints.push(i);
+    return {
+      index: i,
+      mean: roundTo(x, 4),
+      range: mr !== undefined ? roundTo(mr, 4) : undefined,
+      outOfControl: ooc,
+    };
+  });
+
+  return {
+    chartType: 'imr',
+    subgroupSize: 1,
+    xBarLimits: iLimits,
+    rOrSLimits: mrLimits,
     subgroupStats,
     grandMean: roundTo(grandMean, 4),
     sigmaEstimate: roundTo(sigmaEstimate, 4),

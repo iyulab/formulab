@@ -146,6 +146,54 @@ describe('controlChart', () => {
     });
   });
 
+  describe('I-MR chart', () => {
+    // individuals = [10, 12, 11, 13, 12]
+    // MR = [2, 1, 2, 1] -> MR̄ = 1.5 ; X̄ = 58/5 = 11.6 ; σ̂ = 1.5/1.128 = 1.3298
+    // I:  CL=11.6, UCL=11.6+2.66*1.5=15.59, LCL=11.6-3.99=7.61
+    // MR: CL=1.5,  UCL=3.267*1.5=4.9005, LCL=0
+    const individuals = [[10], [12], [11], [13], [12]];
+
+    it('computes I chart limits', () => {
+      const r = controlChart({ chartType: 'imr', subgroups: individuals });
+      expect(r.chartType).toBe('imr');
+      expect(r.subgroupSize).toBe(1);
+      expect(r.grandMean).toBeCloseTo(11.6, 4);
+      expect(r.xBarLimits.centerLine).toBeCloseTo(11.6, 4);
+      expect(r.xBarLimits.ucl).toBeCloseTo(15.59, 2);
+      expect(r.xBarLimits.lcl).toBeCloseTo(7.61, 2);
+    });
+
+    it('computes MR chart limits', () => {
+      const r = controlChart({ chartType: 'imr', subgroups: individuals });
+      expect(r.rOrSLimits.centerLine).toBeCloseTo(1.5, 4);
+      expect(r.rOrSLimits.ucl).toBeCloseTo(4.9005, 3);
+      expect(r.rOrSLimits.lcl).toBe(0);
+    });
+
+    it('estimates sigma from MR̄/d2', () => {
+      const r = controlChart({ chartType: 'imr', subgroups: individuals });
+      expect(r.sigmaEstimate).toBeCloseTo(1.3298, 3);
+    });
+
+    it('first point has no moving range', () => {
+      const r = controlChart({ chartType: 'imr', subgroups: individuals });
+      expect(r.subgroupStats[0].range).toBeUndefined();
+      expect(r.subgroupStats[1].range).toBeCloseTo(2, 4);
+    });
+
+    it('flags out-of-control individual point', () => {
+      // [10,10,10,10,30]: MR=[0,0,0,20] MR̄=5 X̄=14 ; I UCL=14+2.66*5=27.3 ; 30>27.3
+      const r = controlChart({ chartType: 'imr', subgroups: [[10], [10], [10], [10], [30]] });
+      expect(r.outOfControlPoints).toContain(4);
+      expect(r.processCapable).toBe(false);
+    });
+
+    it('throws when fewer than 2 individuals', () => {
+      expect(() => controlChart({ chartType: 'imr', subgroups: [[10]] }))
+        .toThrow(RangeError);
+    });
+  });
+
   describe('Golden Reference Tests', () => {
     it('AIAG/ASTM E2587 constants verification for n=5', () => {
       // Verify that the implementation uses correct constants for n=5
