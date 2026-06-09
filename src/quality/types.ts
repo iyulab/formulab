@@ -274,7 +274,7 @@ export interface RpnResult {
 /**
  * Control Chart (SPC) Types
  */
-export type ControlChartType = 'xbarR' | 'xbarS';
+export type ControlChartType = 'xbarR' | 'xbarS' | 'imr';
 
 export interface ControlChartInput {
   chartType: ControlChartType;
