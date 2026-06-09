@@ -222,10 +222,16 @@ export interface PpkInput {
 export interface PpkResult {
   pp: number;               // process performance (spread)
   ppk: number;              // process performance index
-  ppUpper: number;          // upper process performance (Ppu)
-  ppLower: number;          // lower process performance (Ppl)
+  ppu: number;              // upper process performance (Ppu)
+  ppl: number;              // lower process performance (Ppl)
   withinSpecPercent: number; // percentage within spec
-  sigma: number;            // sigma level
+  sigmaLevel: number;       // sigma level (= 3 × Ppk)
+  /** @deprecated Use `ppu`. Retained as an alias for backward compatibility; removed in a future release. */
+  ppUpper: number;
+  /** @deprecated Use `ppl`. Retained as an alias for backward compatibility; removed in a future release. */
+  ppLower: number;
+  /** @deprecated Use `sigmaLevel`. Retained as an alias for backward compatibility; removed in a future release. */
+  sigma: number;
 }
 
 /**

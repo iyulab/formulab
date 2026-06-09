@@ -10,14 +10,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`cpk()` now returns `withinSpecPercent`** — estimated percentage of output within `[LSL, USL]` under a normal model, mirroring `ppk()`. The capability (`cpk`) and performance (`ppk`) result shapes are now symmetric, so consumers no longer need to recompute the within-spec fraction with `normalCDF`. `CpkResult` gains the field (additive, non-breaking). For `cpk()` this is a short-term/potential estimate (uses the supplied short-term σ); see the function JSDoc.
+- **`ppk()` gains cpk-aligned field names** — `PpkResult` now also exposes `ppu`, `ppl`, and `sigmaLevel` (matching `cpk()`'s `cpu`/`cpl`/`sigmaLevel`). Additive and non-breaking; values are identical to the existing fields.
 
 ### Changed
 
 - **`cpk()` outputs are now rounded via `roundTo`** (cp/cpk/cpu/cpl/withinSpecPercent to 4 dp, sigmaLevel to 2 dp), consistent with `ppk()` and the library-wide rounding convention. Previously `cpk()` returned full-precision floats.
 
+### Deprecated
+
+- **`PpkResult.ppUpper` / `ppLower` / `sigma`** — superseded by `ppu` / `ppl` / `sigmaLevel` for symmetry with `cpk()`. The old fields remain available (identical values) and will be removed in a future release. Note `sigma` was a misleading name — it holds the sigma *level* (3 × Ppk), not the standard deviation.
+
 ### Fixed
 
 - **ERRORS.md accuracy** — `cpk()`, `ppk()`, and `cmk()` were documented as throwing on `stdDev = 0` (the `cpk()` row also wrongly claimed it returns `Infinity`), but all three intentionally return a zero-valued result (verified by tests). Corrected the per-function tables and added an explicit note that the capability-index family is exempt from the "validation failures → throw" rule.
+
+## [0.11.1] - 2026-04-02
+
+### Fixed
+
+- **Subpath exports** — added a `default` condition to every subpath in `package.json` `exports`. Previously only the `import` condition was present, causing `ERR_PACKAGE_PATH_NOT_EXPORTED` when consumed from CJS contexts (e.g. the `tsx` test runner). ESM consumers are unaffected.
+
+## [0.11.0] - 2026-04-02
+
+### Added
+
+- **New IE (Industrial Engineering) domain** (`formulab/ie`) with 5 functions: `standardTime`, `timeStudy`, `workSampling`, `vaAnalysis`, `learningCurve`.
+- **New quality (FMEA/SPC) functions**: `actionPriority` (AIAG-VDA 2019 AP matrix), `cpkToOccurrence` (Cpk → FMEA occurrence mapping), `nelsonRules` (SPC control-chart 8 rules).
+
+### Fixed
+
+- **`learningCurve()` unit vs cumulative model** — the two models previously produced identical results. The unit model now sums individual unit times and the cumulative model derives unit time from cumulative totals.
 
 ## [0.10.1] - 2026-02-09
 

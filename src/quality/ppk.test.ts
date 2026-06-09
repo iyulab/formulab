@@ -118,6 +118,32 @@ describe('ppk', () => {
     });
   });
 
+  describe('field naming (cpk-aligned aliases)', () => {
+    it('should expose ppu/ppl/sigmaLevel matching the deprecated ppUpper/ppLower/sigma', () => {
+      const result = ppk({
+        usl: 110,
+        lsl: 90,
+        mean: 103,
+        stdDev: 3,
+      });
+
+      expect(result.ppu).toBe(result.ppUpper);
+      expect(result.ppl).toBe(result.ppLower);
+      expect(result.sigmaLevel).toBe(result.sigma);
+    });
+
+    it('should expose zeroed aliases on degenerate input', () => {
+      const result = ppk({ usl: 110, lsl: 90, mean: 100, stdDev: 0 });
+
+      expect(result.ppu).toBe(0);
+      expect(result.ppl).toBe(0);
+      expect(result.sigmaLevel).toBe(0);
+      expect(result.ppUpper).toBe(0);
+      expect(result.ppLower).toBe(0);
+      expect(result.sigma).toBe(0);
+    });
+  });
+
   describe('edge cases', () => {
     it('should return zeros for zero standard deviation', () => {
       const result = ppk({
