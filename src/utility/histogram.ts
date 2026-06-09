@@ -10,12 +10,20 @@ export function histogram(input: HistogramInput): HistogramResult | null {
   const numBins = input.bins ?? Math.max(1, Math.ceil(Math.log2(n) + 1));
   if (numBins < 1) return null;
 
-  const min = Math.min(...data);
-  const max = Math.max(...data);
+  // Use explicit range when provided and valid; fall back to data-derived min/max
+  let min: number;
+  let max: number;
+  if (input.range && input.range[1] > input.range[0]) {
+    min = input.range[0];
+    max = input.range[1];
+  } else {
+    min = Math.min(...data);
+    max = Math.max(...data);
+  }
 
   // Handle case where all values are identical
-  const range = max - min;
-  const binWidth = range === 0 ? 1 : range / numBins;
+  const span = max - min;
+  const binWidth = span === 0 ? 1 : span / numBins;
 
   const bins: HistogramBin[] = [];
   for (let i = 0; i < numBins; i++) {
@@ -30,7 +38,8 @@ export function histogram(input: HistogramInput): HistogramResult | null {
   }
 
   for (const value of data) {
-    let idx = range === 0 ? 0 : Math.floor((value - min) / binWidth);
+    let idx = span === 0 ? 0 : Math.floor((value - min) / binWidth);
+    if (idx < 0) idx = 0; // clamp values below min into first bin
     if (idx >= numBins) idx = numBins - 1; // include max in last bin
     bins[idx].count++;
   }

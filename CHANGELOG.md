@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.12.0] - 2026-06-09
+## [0.12.1] - 2026-06-09
 
 ### Added
 
 - **`controlChart()` gains `chartType: 'imr'`** — Individuals & Moving-Range (I-MR) chart for single-value time series where subgroup size = 1. Computes X̄ ± E₂·MR̄ control limits for the Individuals chart and D₄·MR̄ for the MR chart (d₂=1.128, E₂=2.66, D₄=3.267; AIAG SPC 2nd Ed. / Montgomery). `sigmaEstimate` uses σ̂ = MR̄/d₂; first data point carries no moving range (`subgroupStats[0].range` is `undefined`). Additive — existing Xbar-R/S code paths are unchanged. New `ControlChartType` union member: `'imr'`.
+- **`histogram()` gains optional `range`** — `HistogramInput` now accepts `range?: [number, number]` to specify an explicit `[min, max]` binning window. Useful when spec limits or reference bounds extend beyond the data span. Falls back to data-derived min/max when the provided range is invalid (`range[1] <= range[0]`). Values outside the supplied range are clamped into the first or last bin. `totalCount` always reflects the actual data length. Additive and non-breaking.
+
+## [0.12.0] - 2026-06-09
+
+### Added
+
 - **`cpk()` now returns `withinSpecPercent`** — estimated percentage of output within `[LSL, USL]` under a normal model, mirroring `ppk()`. The capability (`cpk`) and performance (`ppk`) result shapes are now symmetric, so consumers no longer need to recompute the within-spec fraction with `normalCDF`. `CpkResult` gains the field (additive, non-breaking). For `cpk()` this is a short-term/potential estimate (uses the supplied short-term σ); see the function JSDoc.
 - **`ppk()` gains cpk-aligned field names** — `PpkResult` now also exposes `ppu`, `ppl`, and `sigmaLevel` (matching `cpk()`'s `cpu`/`cpl`/`sigmaLevel`). Additive and non-breaking; values are identical to the existing fields.
 

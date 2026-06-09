@@ -58,4 +58,21 @@ describe('histogram', () => {
   it('should return null for invalid bins', () => {
     expect(histogram({ data: [1, 2, 3], bins: 0 })).toBeNull();
   });
+
+  it('uses explicit range when provided (spec limits outside data)', () => {
+    // data 4..6, but range spans 0..10 so bins cover the wider window
+    const r = histogram({ data: [4, 5, 6], bins: 5, range: [0, 10] });
+    expect(r).not.toBeNull();
+    expect(r!.bins[0].lower).toBeCloseTo(0, 6);
+    expect(r!.bins[r!.bins.length - 1].upper).toBeCloseTo(10, 6);
+    // all 3 data points still counted
+    expect(r!.bins.reduce((s, b) => s + b.count, 0)).toBe(3);
+    expect(r!.totalCount).toBe(3);
+  });
+
+  it('falls back to data range when range is invalid', () => {
+    const r = histogram({ data: [4, 5, 6], bins: 3, range: [10, 10] });
+    expect(r).not.toBeNull();
+    expect(r!.bins[0].lower).toBeCloseTo(4, 6);
+  });
 });

@@ -265,6 +265,7 @@ export interface NormalizeResult {
 export interface HistogramInput {
   data: number[];
   bins?: number;
+  range?: [number, number]; // explicit [min, max] binning range; defaults to data min/max
 }
 
 export interface HistogramBin {
