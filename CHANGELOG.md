@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`controlChart()` gains `chartType: 'imr'`** — Individuals & Moving-Range (I-MR) chart for single-value time series where subgroup size = 1. Computes X̄ ± E₂·MR̄ control limits for the Individuals chart and D₄·MR̄ for the MR chart (d₂=1.128, E₂=2.66, D₄=3.267; AIAG SPC 2nd Ed. / Montgomery). `sigmaEstimate` uses σ̂ = MR̄/d₂; first data point carries no moving range (`subgroupStats[0].range` is `undefined`). Additive — existing Xbar-R/S code paths are unchanged. New `ControlChartType` union member: `'imr'`.
 - **`cpk()` now returns `withinSpecPercent`** — estimated percentage of output within `[LSL, USL]` under a normal model, mirroring `ppk()`. The capability (`cpk`) and performance (`ppk`) result shapes are now symmetric, so consumers no longer need to recompute the within-spec fraction with `normalCDF`. `CpkResult` gains the field (additive, non-breaking). For `cpk()` this is a short-term/potential estimate (uses the supplied short-term σ); see the function JSDoc.
 - **`ppk()` gains cpk-aligned field names** — `PpkResult` now also exposes `ppu`, `ppl`, and `sigmaLevel` (matching `cpk()`'s `cpu`/`cpl`/`sigmaLevel`). Additive and non-breaking; values are identical to the existing fields.
 
