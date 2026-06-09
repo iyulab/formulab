@@ -16,6 +16,8 @@ This document defines formulab's error handling policy and documents the error b
 
 All public functions follow the error policy above. As of v0.10.0, no functions return `NaN` or `Infinity` for invalid inputs.
 
+**Exception — capability-index family.** `cpk()`, `ppk()`, and `cmk()` do **not** throw on a degenerate spread (`stdDev ≤ 0`, or empty/constant measurements for `cmk()`). They return a **zero-valued result** as a sentinel instead. This is intentional and covered by tests. The "no silent NaN/Infinity" guarantee still holds (0 is finite), but these three are exempt from the "validation failures → throw" rule.
+
 ## Error Patterns by Domain
 
 ### Legend
@@ -31,7 +33,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `oee()` | `throw` | goodCount > totalCount, goodCount < 0, plannedTime ≤ 0 |
-| `cpk()` | `throw` | stdDev = 0 (returns Inf for Cp/Cpk) |
+| `cpk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `cycleTime()` | `safe` | — |
 | `taktTime()` | `throw` | demand = 0 |
@@ -40,12 +42,12 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `dpmo()` | `throw` | opportunities = 0 |
 | `lineBalancing()` | `throw` | Empty stations |
 | `mtbf()` | `safe` | Returns 0 when failures = 0 |
-| `ppk()` | `throw` | stdDev = 0 |
+| `ppk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `ppm()` | `safe` | — |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `safe` | — |
 | `gageRR()` | `throw` | Insufficient data |
-| `cmk()` | `throw` | stdDev = 0 |
+| `cmk()` | `safe` | empty measurements or computed stdDev ≤ 0 → returns zero-valued result; does not throw |
 | `weibull()` | `throw` | < 3 data points |
 | `paretoAnalysis()` | `throw` | Empty items |
 
@@ -181,7 +183,7 @@ Most functions in these domains follow the `throw` pattern for invalid inputs. S
 
 ## Consumer Guidance
 
-All functions follow the same error pattern: invalid inputs throw `RangeError`.
+Most functions follow the same error pattern: invalid inputs throw `RangeError`. The exception is the capability-index family (`cpk()`, `ppk()`, `cmk()`), which returns a zero-valued result for a degenerate spread instead of throwing (see Exception note above).
 
 ```typescript
 import { cRate } from 'formulab/battery';

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-06-09
+
+### Added
+
+- **`cpk()` now returns `withinSpecPercent`** — estimated percentage of output within `[LSL, USL]` under a normal model, mirroring `ppk()`. The capability (`cpk`) and performance (`ppk`) result shapes are now symmetric, so consumers no longer need to recompute the within-spec fraction with `normalCDF`. `CpkResult` gains the field (additive, non-breaking). For `cpk()` this is a short-term/potential estimate (uses the supplied short-term σ); see the function JSDoc.
+
+### Changed
+
+- **`cpk()` outputs are now rounded via `roundTo`** (cp/cpk/cpu/cpl/withinSpecPercent to 4 dp, sigmaLevel to 2 dp), consistent with `ppk()` and the library-wide rounding convention. Previously `cpk()` returned full-precision floats.
+
+### Fixed
+
+- **ERRORS.md accuracy** — `cpk()`, `ppk()`, and `cmk()` were documented as throwing on `stdDev = 0` (the `cpk()` row also wrongly claimed it returns `Infinity`), but all three intentionally return a zero-valued result (verified by tests). Corrected the per-function tables and added an explicit note that the capability-index family is exempt from the "validation failures → throw" rule.
+
 ## [0.10.1] - 2026-02-09
 
 ### Fixed

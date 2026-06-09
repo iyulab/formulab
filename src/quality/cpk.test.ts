@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { cpk } from './cpk.js';
+import { normalCDF } from '../math.js';
 
 describe('cpk', () => {
   describe('normal cases', () => {
@@ -110,6 +111,7 @@ describe('cpk', () => {
       expect(result.cpk).toBe(0);
       expect(result.cpu).toBe(0);
       expect(result.cpl).toBe(0);
+      expect(result.withinSpecPercent).toBe(0);
       expect(result.sigmaLevel).toBe(0);
     });
 
@@ -150,6 +152,47 @@ describe('cpk', () => {
       expect(result.cp).toBeCloseTo(6.67, 1);
       // Very high sigma level
       expect(result.sigmaLevel).toBeGreaterThan(10);
+    });
+  });
+
+  describe('within spec percent', () => {
+    it('should estimate high within-spec percent for a tight centered process', () => {
+      const result = cpk({
+        usl: 110,
+        lsl: 90,
+        mean: 100,
+        stdDev: 3,
+      });
+
+      // Z_upper = (110 - 100) / 3 = 3.33, Z_lower = -3.33 → ≈ 99.91%
+      expect(result.withinSpecPercent).toBeGreaterThan(99);
+    });
+
+    it('should estimate ~68.3% within spec for a 1σ-wide process', () => {
+      const result = cpk({
+        usl: 110,
+        lsl: 90,
+        mean: 100,
+        stdDev: 10,
+      });
+
+      // Z = ±1 → ≈ 68.27%
+      expect(result.withinSpecPercent).toBeCloseTo(68.3, 0);
+    });
+
+    it('should agree with ppk() within-spec percent for identical inputs', () => {
+      // cpk and ppk compute within-spec identically given the same σ; this pins the symmetry.
+      const result = cpk({
+        usl: 110,
+        lsl: 90,
+        mean: 105,
+        stdDev: 4,
+      });
+
+      const zUpper = (110 - 105) / 4;
+      const zLower = (90 - 105) / 4;
+      const expected = (normalCDF(zUpper) - normalCDF(zLower)) * 100;
+      expect(result.withinSpecPercent).toBeCloseTo(expected, 3);
     });
   });
 

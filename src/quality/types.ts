@@ -43,6 +43,7 @@ export interface CpkResult {
   cpk: number;    // process capability index (actual)
   cpu: number;    // upper process capability
   cpl: number;    // lower process capability
+  withinSpecPercent: number; // estimated % of output within [LSL, USL] under a normal model (short-term σ)
   sigmaLevel: number; // sigma level (min of upper and lower z-scores)
 }
 
