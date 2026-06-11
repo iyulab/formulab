@@ -1,10 +1,25 @@
 import { roundTo } from '../utils.js';
 import type { NpvInput, NpvResult } from './types.js';
 
-export function npv(input: NpvInput): NpvResult | null {
+/**
+ * Calculate net present value (NPV), IRR, and profitability index
+ *
+ * @param input - Initial investment, cash flow series, and discount rate
+ * @returns NPV result (irr is null when the IRR iteration does not converge)
+ * @throws RangeError if initialInvestment is negative, cashFlows is empty,
+ *   or discountRate is outside [0, 1)
+ */
+export function npv(input: NpvInput): NpvResult {
   const { initialInvestment, cashFlows, discountRate } = input;
-  if (initialInvestment < 0 || !cashFlows || cashFlows.length === 0) return null;
-  if (discountRate < 0 || discountRate >= 1) return null;
+  if (initialInvestment < 0) {
+    throw new RangeError(`initialInvestment must be >= 0, got ${initialInvestment}`);
+  }
+  if (!cashFlows || cashFlows.length === 0) {
+    throw new RangeError('cashFlows must contain at least one value');
+  }
+  if (discountRate < 0 || discountRate >= 1) {
+    throw new RangeError(`discountRate must be in [0, 1), got ${discountRate}`);
+  }
 
   const pvCashFlows = cashFlows.reduce((acc, cf, i) => {
     return acc + cf / (1 + discountRate) ** (i + 1);

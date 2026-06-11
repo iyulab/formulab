@@ -1,9 +1,25 @@
 import { roundTo } from '../utils.js';
 import type { LinearInterpolationInput, LinearInterpolationResult } from './types.js';
 
-export function linearInterpolation(input: LinearInterpolationInput): LinearInterpolationResult | null {
+/**
+ * Linear interpolation (and extrapolation) over a tabulated x/y series
+ *
+ * @param input - x/y table and target x value
+ * @returns Interpolated value with bracketing indices and extrapolation flag
+ * @throws RangeError if x or y is missing, x and y lengths differ,
+ *   or fewer than 2 points are provided
+ */
+export function linearInterpolation(input: LinearInterpolationInput): LinearInterpolationResult {
   const { x, y, target } = input;
-  if (!x || !y || x.length !== y.length || x.length < 2) return null;
+  if (!x || !y) {
+    throw new RangeError('x and y arrays are required');
+  }
+  if (x.length !== y.length) {
+    throw new RangeError(`x and y must have the same length, got x.length=${x.length}, y.length=${y.length}`);
+  }
+  if (x.length < 2) {
+    throw new RangeError(`x must contain at least 2 points, got ${x.length}`);
+  }
 
   // Find bracketing interval
   let lowerIndex = 0;

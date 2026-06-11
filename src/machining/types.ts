@@ -113,11 +113,13 @@ export interface CuspHeightResult {
 export interface EffectiveDiameterInput {
   toolDiameter: number;       // mm (D) — ball end mill diameter
   axialDepthOfCut: number;    // mm (ap)
+  cuttingSpeed?: number;      // m/min (Vc) — optional; enables effectiveRpm in the result
 }
 
 export interface EffectiveDiameterResult {
-  effectiveDiameter: number;  // mm (Deff)
-  effectiveRpm: number;       // RPM — optional: if cuttingSpeed provided
+  effectiveDiameter: number;     // mm (Deff)
+  rpmCorrectionFactor: number;   // D / Deff (≥ 1) — multiply nominal RPM by this to keep Vc at depth
+  effectiveRpm?: number;         // RPM at Deff — present only when cuttingSpeed is provided
 }
 
 /**

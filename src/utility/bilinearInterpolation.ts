@@ -1,12 +1,29 @@
 import { roundTo } from '../utils.js';
 import type { BilinearInterpolationInput, BilinearInterpolationResult } from './types.js';
 
-export function bilinearInterpolation(input: BilinearInterpolationInput): BilinearInterpolationResult | null {
+/**
+ * Bilinear interpolation on a 2D grid z[xIndex][yIndex].
+ *
+ * @param input - Grid axes (x, y), values (z), and target point
+ * @returns Interpolated value and extrapolation flag
+ * @throws RangeError if x or y has fewer than 2 points, if z row count does not match x length,
+ *   or if any z row length does not match y length
+ */
+export function bilinearInterpolation(input: BilinearInterpolationInput): BilinearInterpolationResult {
   const { x, y, z, targetX, targetY } = input;
-  if (!x || !y || !z || x.length < 2 || y.length < 2) return null;
-  if (z.length !== x.length) return null;
+  if (!x || x.length < 2) {
+    throw new RangeError(`x must contain at least 2 points, got ${x?.length ?? 0}`);
+  }
+  if (!y || y.length < 2) {
+    throw new RangeError(`y must contain at least 2 points, got ${y?.length ?? 0}`);
+  }
+  if (!z || z.length !== x.length) {
+    throw new RangeError(`z must have ${x.length} rows to match x, got ${z?.length ?? 0}`);
+  }
   for (const row of z) {
-    if (row.length !== y.length) return null;
+    if (row.length !== y.length) {
+      throw new RangeError(`each z row must have ${y.length} columns to match y, got ${row.length}`);
+    }
   }
 
   const xi = findBracket(x, targetX);

@@ -8,9 +8,8 @@ describe('npv', () => {
       cashFlows: [3000, 4000, 5000, 6000],
       discountRate: 0.1,
     });
-    expect(result).not.toBeNull();
-    expect(result!.npv).toBeGreaterThan(0);
-    expect(result!.profitabilityIndex).toBeGreaterThan(1);
+    expect(result.npv).toBeGreaterThan(0);
+    expect(result.profitabilityIndex).toBeGreaterThan(1);
   });
 
   it('should calculate negative NPV', () => {
@@ -19,8 +18,8 @@ describe('npv', () => {
       cashFlows: [10000, 10000, 10000],
       discountRate: 0.1,
     });
-    expect(result!.npv).toBeLessThan(0);
-    expect(result!.profitabilityIndex).toBeLessThan(1);
+    expect(result.npv).toBeLessThan(0);
+    expect(result.profitabilityIndex).toBeLessThan(1);
   });
 
   it('should calculate IRR', () => {
@@ -29,8 +28,8 @@ describe('npv', () => {
       cashFlows: [5000, 5000, 5000],
       discountRate: 0.1,
     });
-    expect(result!.irr).not.toBeNull();
-    expect(result!.irr!).toBeGreaterThan(0);
+    expect(result.irr).not.toBeNull();
+    expect(result.irr!).toBeGreaterThan(0);
   });
 
   it('should verify IRR makes NPV zero', () => {
@@ -39,9 +38,9 @@ describe('npv', () => {
       cashFlows: [4000, 4000, 4000],
       discountRate: 0.1,
     });
-    if (result!.irr !== null) {
+    if (result.irr !== null) {
       // Verify: using IRR as discount rate should give NPV ≈ 0
-      const irr = result!.irr;
+      const irr = result.irr;
       let checkNpv = -10000;
       [4000, 4000, 4000].forEach((cf, i) => {
         checkNpv += cf / (1 + irr) ** (i + 1);
@@ -56,27 +55,27 @@ describe('npv', () => {
       cashFlows: [2000, 2000, 2000, 2000],
       discountRate: 0.05,
     });
-    expect(result!.npv).toBeGreaterThan(0);
+    expect(result.npv).toBeGreaterThan(0);
   });
 
-  it('should return null for empty cash flows', () => {
-    expect(npv({
+  it('should throw RangeError for empty cash flows', () => {
+    expect(() => npv({
       initialInvestment: 1000, cashFlows: [], discountRate: 0.1,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for invalid discount rate', () => {
-    expect(npv({
+  it('should throw RangeError for invalid discount rate', () => {
+    expect(() => npv({
       initialInvestment: 1000, cashFlows: [500], discountRate: -0.1,
-    })).toBeNull();
-    expect(npv({
+    })).toThrow(RangeError);
+    expect(() => npv({
       initialInvestment: 1000, cashFlows: [500], discountRate: 1,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for negative investment', () => {
-    expect(npv({
+  it('should throw RangeError for negative investment', () => {
+    expect(() => npv({
       initialInvestment: -1000, cashFlows: [500], discountRate: 0.1,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 });

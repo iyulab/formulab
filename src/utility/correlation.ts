@@ -1,9 +1,21 @@
 import { roundTo } from '../utils.js';
 import type { CorrelationInput, CorrelationResult } from './types.js';
 
-export function correlation(input: CorrelationInput): CorrelationResult | null {
+/**
+ * Pearson correlation coefficient between two equal-length samples.
+ *
+ * @param input - Paired samples x and y
+ * @returns Correlation coefficient r, r-squared, and sample size n
+ * @throws RangeError if x and y lengths differ or contain fewer than 2 points
+ */
+export function correlation(input: CorrelationInput): CorrelationResult {
   const { x, y } = input;
-  if (!x || !y || x.length !== y.length || x.length < 2) return null;
+  if (!x || !y || x.length !== y.length) {
+    throw new RangeError(`x and y must have the same length, got ${x?.length ?? 0} and ${y?.length ?? 0}`);
+  }
+  if (x.length < 2) {
+    throw new RangeError(`x and y must contain at least 2 points, got ${x.length}`);
+  }
 
   const n = x.length;
   const meanX = x.reduce((a, v) => a + v, 0) / n;

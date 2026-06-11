@@ -163,15 +163,24 @@ export function getUnitsForCategory(category: UnitCategory): UnitDef[] {
  * and provides conversions to all units in that category.
  *
  * @param input - Unit conversion input
- * @returns Conversion result with target value and all conversions, or null if invalid
+ * @returns Conversion result with target value and all conversions
+ * @throws RangeError if the category is unknown, or if fromUnit or toUnit
+ *   is not a supported unit in the category
  */
-export function calculateUnit(input: UnitInput): UnitResult | null {
+export function calculateUnit(input: UnitInput): UnitResult {
   const units = UNITS[input.category];
-  if (!units) return null;
+  if (!units) {
+    throw new RangeError(`unknown unit category '${input.category}'`);
+  }
 
   const from = units.find((u) => u.id === input.fromUnit);
+  if (!from) {
+    throw new RangeError(`unknown fromUnit '${input.fromUnit}' in category '${input.category}'`);
+  }
   const to = units.find((u) => u.id === input.toUnit);
-  if (!from || !to) return null;
+  if (!to) {
+    throw new RangeError(`unknown toUnit '${input.toUnit}' in category '${input.category}'`);
+  }
 
   const baseValue = from.toBase(input.value);
   const toValue = to.fromBase(baseValue);

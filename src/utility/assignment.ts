@@ -7,12 +7,17 @@ import type { AssignmentInput, AssignmentResult, AssignmentPair } from './types.
  * Handles rectangular matrices by padding with zeros.
  *
  * @param input - Assignment problem input with cost matrix and labels
- * @returns Assignment result with optimal assignments or null if invalid
+ * @returns Assignment result with optimal assignments
+ * @throws RangeError if matrix is empty or has an empty first row
  */
-export function solveAssignment(input: AssignmentInput): AssignmentResult | null {
+export function solveAssignment(input: AssignmentInput): AssignmentResult {
   const { matrix, rowLabels, colLabels, objective } = input;
 
-  if (matrix.length === 0 || matrix[0].length === 0) return null;
+  if (matrix.length === 0 || matrix[0].length === 0) {
+    throw new RangeError(
+      `matrix must have at least one row and one column, got ${matrix.length}x${matrix.length === 0 ? 0 : matrix[0].length}`
+    );
+  }
 
   const nRows = matrix.length;
   const nCols = matrix[0].length;

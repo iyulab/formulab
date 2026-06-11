@@ -159,14 +159,14 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult | 
       station.totalTime += task.time;
       remainingTime -= task.time;
       assigned.add(task.id);
+      // Mark completed immediately: a successor may share this station, since the
+      // within-station sequence (assignment order) preserves precedence. Deferring
+      // this to station close forced every successor into a later station, inflating
+      // the station count to the precedence-chain depth (standard RPW allows same-station).
+      completedPreds.add(task.id);
     }
 
     station.idleTime = cycleTime - station.totalTime;
-
-    // Mark all assigned tasks as completed for next station
-    for (const t of station.tasks) {
-      completedPreds.add(t.id);
-    }
 
     stations.push(station);
   }

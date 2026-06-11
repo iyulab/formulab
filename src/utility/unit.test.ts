@@ -61,7 +61,7 @@ describe('calculateUnit', () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!.toValue).toBeCloseTo(3.28084, 4);
+      expect(result.toValue).toBeCloseTo(3.28084, 4);
     });
 
     it('should convert feet to meters', () => {
@@ -72,7 +72,7 @@ describe('calculateUnit', () => {
         value: 3.28084,
       });
 
-      expect(result!.toValue).toBeCloseTo(1, 4);
+      expect(result.toValue).toBeCloseTo(1, 4);
     });
 
     it('should convert inches to centimeters', () => {
@@ -83,7 +83,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(2.54, 4);
+      expect(result.toValue).toBeCloseTo(2.54, 4);
     });
 
     it('should convert kilometers to miles', () => {
@@ -94,7 +94,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(0.621371, 4);
+      expect(result.toValue).toBeCloseTo(0.621371, 4);
     });
   });
 
@@ -107,7 +107,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(2.20462, 4);
+      expect(result.toValue).toBeCloseTo(2.20462, 4);
     });
 
     it('should convert lb to kg', () => {
@@ -118,7 +118,7 @@ describe('calculateUnit', () => {
         value: 2.20462,
       });
 
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
 
     it('should convert grams to ounces', () => {
@@ -129,7 +129,7 @@ describe('calculateUnit', () => {
         value: 28.3495,
       });
 
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
   });
 
@@ -142,7 +142,7 @@ describe('calculateUnit', () => {
         value: 0,
       });
 
-      expect(result!.toValue).toBe(32);
+      expect(result.toValue).toBe(32);
     });
 
     it('should convert Fahrenheit to Celsius', () => {
@@ -153,7 +153,7 @@ describe('calculateUnit', () => {
         value: 212,
       });
 
-      expect(result!.toValue).toBe(100);
+      expect(result.toValue).toBe(100);
     });
 
     it('should convert Celsius to Kelvin', () => {
@@ -164,7 +164,7 @@ describe('calculateUnit', () => {
         value: 0,
       });
 
-      expect(result!.toValue).toBeCloseTo(273.15, 2);
+      expect(result.toValue).toBeCloseTo(273.15, 2);
     });
 
     it('should convert Kelvin to Celsius', () => {
@@ -175,7 +175,7 @@ describe('calculateUnit', () => {
         value: 273.15,
       });
 
-      expect(result!.toValue).toBeCloseTo(0, 4);
+      expect(result.toValue).toBeCloseTo(0, 4);
     });
   });
 
@@ -188,7 +188,7 @@ describe('calculateUnit', () => {
         value: 3.78541,
       });
 
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
 
     it('should convert mL to cups', () => {
@@ -199,7 +199,7 @@ describe('calculateUnit', () => {
         value: 236.588,
       });
 
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
   });
 
@@ -212,7 +212,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(14.5038, 3);
+      expect(result.toValue).toBeCloseTo(14.5038, 3);
     });
 
     it('should convert atm to kPa', () => {
@@ -223,7 +223,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(101.325, 2);
+      expect(result.toValue).toBeCloseTo(101.325, 2);
     });
   });
 
@@ -236,7 +236,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(10.7639, 3);
+      expect(result.toValue).toBeCloseTo(10.7639, 3);
     });
 
     it('should convert hectares to acres', () => {
@@ -247,7 +247,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(2.47105, 3);
+      expect(result.toValue).toBeCloseTo(2.47105, 3);
     });
   });
 
@@ -260,7 +260,7 @@ describe('calculateUnit', () => {
         value: 100,
       });
 
-      expect(result!.toValue).toBeCloseTo(62.1371, 3);
+      expect(result.toValue).toBeCloseTo(62.1371, 3);
     });
 
     it('should convert m/s to km/h', () => {
@@ -271,7 +271,7 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.toValue).toBeCloseTo(3.6, 4);
+      expect(result.toValue).toBeCloseTo(3.6, 4);
     });
   });
 
@@ -284,10 +284,10 @@ describe('calculateUnit', () => {
         value: 1,
       });
 
-      expect(result!.allConversions.length).toBeGreaterThan(0);
-      expect(result!.allConversions.find(c => c.unitId === 'm')?.value).toBe(1);
-      expect(result!.allConversions.find(c => c.unitId === 'cm')?.value).toBe(100);
-      expect(result!.allConversions.find(c => c.unitId === 'mm')?.value).toBe(1000);
+      expect(result.allConversions.length).toBeGreaterThan(0);
+      expect(result.allConversions.find(c => c.unitId === 'm')?.value).toBe(1);
+      expect(result.allConversions.find(c => c.unitId === 'cm')?.value).toBe(100);
+      expect(result.allConversions.find(c => c.unitId === 'mm')?.value).toBe(1000);
     });
   });
 
@@ -299,7 +299,7 @@ describe('calculateUnit', () => {
         toUnit: 'BTU',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(3412.14, 0);
+      expect(result.toValue).toBeCloseTo(3412.14, 0);
     });
 
     it('should convert J to cal', () => {
@@ -309,7 +309,7 @@ describe('calculateUnit', () => {
         toUnit: 'cal',
         value: 4.184,
       });
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
   });
 
@@ -321,7 +321,7 @@ describe('calculateUnit', () => {
         toUnit: 'hp',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(1.341, 2);
+      expect(result.toValue).toBeCloseTo(1.341, 2);
     });
 
     it('should convert hp to W', () => {
@@ -331,7 +331,7 @@ describe('calculateUnit', () => {
         toUnit: 'W',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(745.7, 0);
+      expect(result.toValue).toBeCloseTo(745.7, 0);
     });
   });
 
@@ -343,7 +343,7 @@ describe('calculateUnit', () => {
         toUnit: 'lbf',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(224.809, 0);
+      expect(result.toValue).toBeCloseTo(224.809, 0);
     });
 
     it('should convert kgf to N', () => {
@@ -353,7 +353,7 @@ describe('calculateUnit', () => {
         toUnit: 'N',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(9.80665, 4);
+      expect(result.toValue).toBeCloseTo(9.80665, 4);
     });
   });
 
@@ -365,7 +365,7 @@ describe('calculateUnit', () => {
         toUnit: 'lbft',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(0.7376, 3);
+      expect(result.toValue).toBeCloseTo(0.7376, 3);
     });
 
     it('should convert kgf·m to N·m', () => {
@@ -375,7 +375,7 @@ describe('calculateUnit', () => {
         toUnit: 'Nm',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(9.80665, 4);
+      expect(result.toValue).toBeCloseTo(9.80665, 4);
     });
   });
 
@@ -387,7 +387,7 @@ describe('calculateUnit', () => {
         toUnit: 'gpm',
         value: 3.78541,
       });
-      expect(result!.toValue).toBeCloseTo(1, 3);
+      expect(result.toValue).toBeCloseTo(1, 3);
     });
 
     it('should convert m³/h to L/min', () => {
@@ -397,7 +397,7 @@ describe('calculateUnit', () => {
         toUnit: 'Lmin',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(16.6667, 3);
+      expect(result.toValue).toBeCloseTo(16.6667, 3);
     });
   });
 
@@ -409,7 +409,7 @@ describe('calculateUnit', () => {
         toUnit: 'rad',
         value: 180,
       });
-      expect(result!.toValue).toBeCloseTo(Math.PI, 4);
+      expect(result.toValue).toBeCloseTo(Math.PI, 4);
     });
 
     it('should convert revolutions to degrees', () => {
@@ -419,7 +419,7 @@ describe('calculateUnit', () => {
         toUnit: 'deg',
         value: 1,
       });
-      expect(result!.toValue).toBe(360);
+      expect(result.toValue).toBe(360);
     });
   });
 
@@ -431,7 +431,7 @@ describe('calculateUnit', () => {
         toUnit: 'kgm3',
         value: 1,
       });
-      expect(result!.toValue).toBe(1000);
+      expect(result.toValue).toBe(1000);
     });
 
     it('should convert lb/ft³ to kg/m³', () => {
@@ -441,42 +441,36 @@ describe('calculateUnit', () => {
         toUnit: 'kgm3',
         value: 1,
       });
-      expect(result!.toValue).toBeCloseTo(16.0185, 2);
+      expect(result.toValue).toBeCloseTo(16.0185, 2);
     });
   });
 
   describe('edge cases', () => {
-    it('should return null for invalid category', () => {
-      const result = calculateUnit({
+    it('should throw RangeError for invalid category', () => {
+      expect(() => calculateUnit({
         category: 'invalid' as any,
         fromUnit: 'm',
         toUnit: 'ft',
         value: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for invalid fromUnit', () => {
-      const result = calculateUnit({
+    it('should throw RangeError for invalid fromUnit', () => {
+      expect(() => calculateUnit({
         category: 'length',
         fromUnit: 'invalid',
         toUnit: 'ft',
         value: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for invalid toUnit', () => {
-      const result = calculateUnit({
+    it('should throw RangeError for invalid toUnit', () => {
+      expect(() => calculateUnit({
         category: 'length',
         fromUnit: 'm',
         toUnit: 'invalid',
         value: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
     it('should handle zero value', () => {
@@ -487,7 +481,7 @@ describe('calculateUnit', () => {
         value: 0,
       });
 
-      expect(result!.toValue).toBe(0);
+      expect(result.toValue).toBe(0);
     });
 
     it('should handle negative value', () => {
@@ -499,7 +493,7 @@ describe('calculateUnit', () => {
       });
 
       // -40°C = -40°F (they're equal at this point)
-      expect(result!.toValue).toBe(-40);
+      expect(result.toValue).toBe(-40);
     });
   });
 });

@@ -1,9 +1,18 @@
 import { roundTo } from '../utils.js';
 import type { NormalizeInput, NormalizeResult } from './types.js';
 
-export function normalize(input: NormalizeInput): NormalizeResult | null {
+/**
+ * Normalize a data series via min-max scaling or z-score standardization
+ *
+ * @param input - Data series and method ('min-max' | 'z-score')
+ * @returns Normalized values with min/max/mean/stdDev metadata
+ * @throws RangeError if data is empty or method is not 'min-max' or 'z-score'
+ */
+export function normalize(input: NormalizeInput): NormalizeResult {
   const { data, method } = input;
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) {
+    throw new RangeError('data must contain at least one value');
+  }
 
   const n = data.length;
   const min = Math.min(...data);
@@ -24,7 +33,7 @@ export function normalize(input: NormalizeInput): NormalizeResult | null {
       ? data.map(() => 0)
       : data.map((v) => roundTo((v - mean) / stdDev, 6));
   } else {
-    return null;
+    throw new RangeError(`method must be 'min-max' or 'z-score', got ${String(method)}`);
   }
 
   return {

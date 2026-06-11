@@ -11,12 +11,11 @@ describe('lcc', () => {
       lifespan: 10,
       discountRate: 0.05,
     });
-    expect(result).not.toBeNull();
-    expect(result!.totalLcc).toBeGreaterThan(50000);
-    expect(result!.presentValueOperating).toBeGreaterThan(0);
-    expect(result!.presentValueMaintenance).toBeGreaterThan(0);
-    expect(result!.presentValueDisposal).toBeGreaterThan(0);
-    expect(result!.annualEquivalentCost).toBeGreaterThan(0);
+    expect(result.totalLcc).toBeGreaterThan(50000);
+    expect(result.presentValueOperating).toBeGreaterThan(0);
+    expect(result.presentValueMaintenance).toBeGreaterThan(0);
+    expect(result.presentValueDisposal).toBeGreaterThan(0);
+    expect(result.annualEquivalentCost).toBeGreaterThan(0);
   });
 
   it('should discount future costs', () => {
@@ -29,8 +28,8 @@ describe('lcc', () => {
       discountRate: 0.1,
     });
     // PV of 5 years of 1000/yr at 10% < 5000 (undiscounted)
-    expect(result!.totalLcc).toBeLessThan(5000);
-    expect(result!.presentValueOperating).toBeCloseTo(3790.79, 0);
+    expect(result.totalLcc).toBeLessThan(5000);
+    expect(result.presentValueOperating).toBeCloseTo(3790.79, 0);
   });
 
   it('should handle zero discount rate', () => {
@@ -42,10 +41,10 @@ describe('lcc', () => {
       lifespan: 5,
       discountRate: 0,
     });
-    expect(result!.presentValueOperating).toBe(5000);
-    expect(result!.presentValueMaintenance).toBe(2500);
-    expect(result!.presentValueDisposal).toBe(2000);
-    expect(result!.totalLcc).toBe(19500);
+    expect(result.presentValueOperating).toBe(5000);
+    expect(result.presentValueMaintenance).toBe(2500);
+    expect(result.presentValueDisposal).toBe(2000);
+    expect(result.totalLcc).toBe(19500);
   });
 
   it('should calculate annual equivalent cost', () => {
@@ -57,9 +56,9 @@ describe('lcc', () => {
       lifespan: 20,
       discountRate: 0.08,
     });
-    expect(result!.annualEquivalentCost).toBeGreaterThan(0);
+    expect(result.annualEquivalentCost).toBeGreaterThan(0);
     // AEC should be greater than just operating + maintenance
-    expect(result!.annualEquivalentCost).toBeGreaterThan(15000);
+    expect(result.annualEquivalentCost).toBeGreaterThan(15000);
   });
 
   it('should discount disposal cost to present value', () => {
@@ -71,28 +70,28 @@ describe('lcc', () => {
       lifespan: 10,
       discountRate: 0.05,
     });
-    expect(result!.presentValueDisposal).toBeLessThan(10000);
-    expect(result!.presentValueDisposal).toBeCloseTo(6139, 0);
+    expect(result.presentValueDisposal).toBeLessThan(10000);
+    expect(result.presentValueDisposal).toBeCloseTo(6139, 0);
   });
 
-  it('should return null for negative initial cost', () => {
-    expect(lcc({
+  it('should throw RangeError for negative initial cost', () => {
+    expect(() => lcc({
       initialCost: -1000, annualOperatingCost: 100, annualMaintenanceCost: 50,
       disposalCost: 0, lifespan: 5, discountRate: 0.05,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for zero lifespan', () => {
-    expect(lcc({
+  it('should throw RangeError for zero lifespan', () => {
+    expect(() => lcc({
       initialCost: 1000, annualOperatingCost: 100, annualMaintenanceCost: 50,
       disposalCost: 0, lifespan: 0, discountRate: 0.05,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for invalid discount rate', () => {
-    expect(lcc({
+  it('should throw RangeError for invalid discount rate', () => {
+    expect(() => lcc({
       initialCost: 1000, annualOperatingCost: 100, annualMaintenanceCost: 50,
       disposalCost: 0, lifespan: 5, discountRate: 1,
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 });

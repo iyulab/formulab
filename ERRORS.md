@@ -177,9 +177,13 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
 | `cycleTimeEstimator()` | `throw` | Empty operations |
 
-### Energy (15 functions), Safety (14), Food (6), Logistics (17), Environmental (10), Utility (3)
+### Energy (15 functions), Safety (14), Food (6), Logistics (17), Environmental (10)
 
 Most functions in these domains follow the `throw` pattern for invalid inputs. See individual function JSDoc for details.
+
+### Utility
+
+As of v0.13.0 all utility functions follow the standard `throw` pattern — the former `Result | null` signatures (16 functions: assignment, bilinearInterpolation, correlation, depreciation, histogram, lcc, linearInterpolation, movingAverage, normalize, npv, percentile, regression, roi, statistics, unit, weightedScore) were migrated to `RangeError` throws with descriptive messages. One deliberate `null` remains: `NpvResult.irr: number | null` models IRR non-convergence, which is a domain answer rather than an invalid input.
 
 ## Consumer Guidance
 

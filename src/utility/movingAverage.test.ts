@@ -9,11 +9,10 @@ describe('movingAverage', () => {
         window: 3,
         method: 'sma',
       });
-      expect(result).not.toBeNull();
-      expect(result!.values).toHaveLength(3);
-      expect(result!.values[0]).toBe(2); // (1+2+3)/3
-      expect(result!.values[1]).toBe(3); // (2+3+4)/3
-      expect(result!.values[2]).toBe(4); // (3+4+5)/3
+      expect(result.values).toHaveLength(3);
+      expect(result.values[0]).toBe(2); // (1+2+3)/3
+      expect(result.values[1]).toBe(3); // (2+3+4)/3
+      expect(result.values[2]).toBe(4); // (3+4+5)/3
     });
 
     it('should handle window equal to data length', () => {
@@ -22,8 +21,8 @@ describe('movingAverage', () => {
         window: 3,
         method: 'sma',
       });
-      expect(result!.values).toHaveLength(1);
-      expect(result!.values[0]).toBe(4);
+      expect(result.values).toHaveLength(1);
+      expect(result.values[0]).toBe(4);
     });
 
     it('should handle window of 1', () => {
@@ -32,7 +31,7 @@ describe('movingAverage', () => {
         window: 1,
         method: 'sma',
       });
-      expect(result!.values).toEqual([1, 2, 3]);
+      expect(result.values).toEqual([1, 2, 3]);
     });
   });
 
@@ -43,11 +42,10 @@ describe('movingAverage', () => {
         window: 3,
         method: 'ema',
       });
-      expect(result).not.toBeNull();
-      expect(result!.values).toHaveLength(3);
-      expect(result!.values[0]).toBe(2); // SMA(1,2,3) = 2
-      expect(result!.values[1]).toBeCloseTo(3, 4); // 4*0.5 + 2*0.5 = 3
-      expect(result!.values[2]).toBeCloseTo(4, 4); // 5*0.5 + 3*0.5 = 4
+      expect(result.values).toHaveLength(3);
+      expect(result.values[0]).toBe(2); // SMA(1,2,3) = 2
+      expect(result.values[1]).toBeCloseTo(3, 4); // 4*0.5 + 2*0.5 = 3
+      expect(result.values[2]).toBeCloseTo(4, 4); // 5*0.5 + 3*0.5 = 4
     });
 
     it('should weight recent values more heavily', () => {
@@ -56,22 +54,22 @@ describe('movingAverage', () => {
         window: 3,
         method: 'ema',
       });
-      const last = result!.values[result!.values.length - 1];
+      const last = result.values[result.values.length - 1];
       // EMA reacts faster than SMA to the jump
       expect(last).toBeGreaterThan(10);
       expect(last).toBeLessThan(20);
     });
   });
 
-  it('should return null for empty data', () => {
-    expect(movingAverage({ data: [], window: 3, method: 'sma' })).toBeNull();
+  it('should throw RangeError for empty data', () => {
+    expect(() => movingAverage({ data: [], window: 3, method: 'sma' })).toThrow(RangeError);
   });
 
-  it('should return null for window larger than data', () => {
-    expect(movingAverage({ data: [1, 2], window: 3, method: 'sma' })).toBeNull();
+  it('should throw RangeError for window larger than data', () => {
+    expect(() => movingAverage({ data: [1, 2], window: 3, method: 'sma' })).toThrow(RangeError);
   });
 
-  it('should return null for window < 1', () => {
-    expect(movingAverage({ data: [1, 2, 3], window: 0, method: 'sma' })).toBeNull();
+  it('should throw RangeError for window < 1', () => {
+    expect(() => movingAverage({ data: [1, 2, 3], window: 0, method: 'sma' })).toThrow(RangeError);
   });
 });

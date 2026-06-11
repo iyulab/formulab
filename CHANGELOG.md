@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-06-11
+
+### Changed (breaking within 0.x)
+
+- **`utility` domain: `Result | null` signatures migrated to the standard error policy** — 16 functions (`assignment`, `bilinearInterpolation`, `correlation`, `depreciation`, `histogram`, `lcc`, `linearInterpolation`, `movingAverage`, `normalize`, `npv`, `percentile`, `regression`, `roi`, `statistics`, `unit`, `weightedScore`) now **throw `RangeError`** with a descriptive, per-constraint message instead of returning `null` on invalid input, matching every other domain and ERRORS.md. Return types are now non-nullable. `NpvResult.irr: number | null` is intentionally kept — IRR non-convergence is a domain answer, not invalid input. Consumers that branched on `null` should catch `RangeError` instead (reported by online-tools: ISSUE-20260610-formulab-utility-null-returns).
+- **`effectiveDiameter()` (machining): placeholder `effectiveRpm: 0` removed** — the result no longer hard-codes a zero RPM (reported by online-tools: ISSUE-20260610-formulab-effectivediameter-rpm-placeholder). The function now returns:
+  - `rpmCorrectionFactor` (= D / Deff, always present) — multiply nominal RPM by this to keep the programmed surface speed at depth;
+  - `effectiveRpm?` — computed as `(Vc × 1000) / (π × Deff)` only when the new optional `cuttingSpeed` (m/min) input is provided; omitted otherwise (never 0-filled).
+  Also adds input validation (`RangeError` on non-positive D/ap, ap > D, non-positive Vc) and clamps `Deff = D` beyond the equator (ap > D/2) where the previous formula incorrectly decreased.
+
+### Fixed
+
+- **`lineBalancing()` (quality): successors can now share a station with their predecessors** — the RPW assignment marked a task "completed" only when its station closed, which forced every successor into a later station and inflated the station count to the precedence-chain depth (e.g. a 5-task chain with a generous cycle time produced 4 stations and 5% line efficiency instead of 1 station / 20%). Standard RPW (Helgeson & Birnie) allows same-station placement because the within-station sequence preserves precedence. Reported by online-tools: ISSUE-20260611-formulab-linebalancing-same-station-precedence.
+
 ## [0.12.1] - 2026-06-09
 
 ### Added

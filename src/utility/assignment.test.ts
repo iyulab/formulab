@@ -19,8 +19,8 @@ describe('solveAssignment', () => {
       // Optimal: Worker1→Task2(2), Worker2→Task1(6), Worker3→Task3(1) = 9
       // Or: Worker1→Task2(2), Worker2→Task3(3), Worker3→Task1(5) = 10
       // Actual optimal: 2 + 6 + 1 = 9 or check what algorithm produces
-      expect(result!.totalCost).toBeLessThanOrEqual(10);
-      expect(result!.assignments).toHaveLength(3);
+      expect(result.totalCost).toBeLessThanOrEqual(10);
+      expect(result.assignments).toHaveLength(3);
     });
 
     it('should return correct assignment pairs', () => {
@@ -35,8 +35,8 @@ describe('solveAssignment', () => {
       });
 
       // Optimal: A→X(1), B→Y(1) = 2
-      expect(result!.totalCost).toBe(2);
-      expect(result!.assignments).toHaveLength(2);
+      expect(result.totalCost).toBe(2);
+      expect(result.assignments).toHaveLength(2);
     });
   });
 
@@ -57,7 +57,7 @@ describe('solveAssignment', () => {
       // Maximize: choose highest values
       // Worker1→Task1(9), Worker2→Task1(6) - conflict, need different assignment
       // Optimal max: 9 + 4 + ? or 7 + 6 + 8 = 21
-      expect(result!.totalCost).toBeGreaterThanOrEqual(15);
+      expect(result.totalCost).toBeGreaterThanOrEqual(15);
     });
   });
 
@@ -76,9 +76,9 @@ describe('solveAssignment', () => {
 
       expect(result).not.toBeNull();
       // Only 2 assignments possible (2 columns)
-      expect(result!.assignments).toHaveLength(2);
-      expect(result!.unassignedRows).toHaveLength(1);
-      expect(result!.unassignedCols).toHaveLength(0);
+      expect(result.assignments).toHaveLength(2);
+      expect(result.unassignedRows).toHaveLength(1);
+      expect(result.unassignedCols).toHaveLength(0);
     });
 
     it('should handle more columns than rows', () => {
@@ -94,33 +94,29 @@ describe('solveAssignment', () => {
 
       expect(result).not.toBeNull();
       // Only 2 assignments possible (2 rows)
-      expect(result!.assignments).toHaveLength(2);
-      expect(result!.unassignedRows).toHaveLength(0);
-      expect(result!.unassignedCols).toHaveLength(1);
+      expect(result.assignments).toHaveLength(2);
+      expect(result.unassignedRows).toHaveLength(0);
+      expect(result.unassignedCols).toHaveLength(1);
     });
   });
 
   describe('edge cases', () => {
-    it('should return null for empty matrix', () => {
-      const result = solveAssignment({
+    it('should throw RangeError for empty matrix', () => {
+      expect(() => solveAssignment({
         matrix: [],
         rowLabels: [],
         colLabels: [],
         objective: 'minimize',
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for matrix with empty row', () => {
-      const result = solveAssignment({
+    it('should throw RangeError for matrix with empty row', () => {
+      expect(() => solveAssignment({
         matrix: [[]],
         rowLabels: ['R1'],
         colLabels: [],
         objective: 'minimize',
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
     it('should handle 1x1 matrix', () => {
@@ -132,10 +128,10 @@ describe('solveAssignment', () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!.totalCost).toBe(42);
-      expect(result!.assignments).toHaveLength(1);
-      expect(result!.assignments[0].rowLabel).toBe('Only');
-      expect(result!.assignments[0].colLabel).toBe('Task');
+      expect(result.totalCost).toBe(42);
+      expect(result.assignments).toHaveLength(1);
+      expect(result.assignments[0].rowLabel).toBe('Only');
+      expect(result.assignments[0].colLabel).toBe('Task');
     });
 
     it('should use default labels when not provided', () => {
@@ -148,8 +144,8 @@ describe('solveAssignment', () => {
 
       expect(result).not.toBeNull();
       // Should use R1, R2, C1, C2 as default labels
-      expect(result!.assignments[0].rowLabel).toMatch(/R\d/);
-      expect(result!.assignments[0].colLabel).toMatch(/C\d/);
+      expect(result.assignments[0].rowLabel).toMatch(/R\d/);
+      expect(result.assignments[0].colLabel).toMatch(/C\d/);
     });
   });
 
@@ -169,10 +165,10 @@ describe('solveAssignment', () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!.assignments).toHaveLength(4);
+      expect(result.assignments).toHaveLength(4);
       // Each worker assigned to exactly one task
-      const assignedRows = new Set(result!.assignments.map(a => a.row));
-      const assignedCols = new Set(result!.assignments.map(a => a.col));
+      const assignedRows = new Set(result.assignments.map(a => a.row));
+      const assignedCols = new Set(result.assignments.map(a => a.col));
       expect(assignedRows.size).toBe(4);
       expect(assignedCols.size).toBe(4);
     });
@@ -192,7 +188,7 @@ describe('solveAssignment', () => {
 
       expect(result).not.toBeNull();
       // Should maximize total profit
-      expect(result!.totalCost).toBeGreaterThanOrEqual(300);
+      expect(result.totalCost).toBeGreaterThanOrEqual(300);
     });
   });
 
@@ -208,7 +204,7 @@ describe('solveAssignment', () => {
         objective: 'minimize',
       });
 
-      expect(result!.assignments[0].row).toBeLessThanOrEqual(result!.assignments[1].row);
+      expect(result.assignments[0].row).toBeLessThanOrEqual(result.assignments[1].row);
     });
   });
 });

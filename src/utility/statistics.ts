@@ -1,9 +1,18 @@
 import { roundTo } from '../utils.js';
 import type { StatisticsInput, StatisticsResult } from './types.js';
 
-export function statistics(input: StatisticsInput): StatisticsResult | null {
+/**
+ * Descriptive statistics (count, sum, mean, median, min, max, range, variance, stdDev)
+ *
+ * @param input - Statistics input with data array
+ * @returns Descriptive statistics for the data set
+ * @throws RangeError if data is missing or empty
+ */
+export function statistics(input: StatisticsInput): StatisticsResult {
   const { data } = input;
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) {
+    throw new RangeError('data must contain at least 1 value');
+  }
 
   const n = data.length;
   const sorted = [...data].sort((a, b) => a - b);

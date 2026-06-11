@@ -9,39 +9,38 @@ describe('linearInterpolation', () => {
 
   it('should interpolate between known points', () => {
     const result = linearInterpolation({ ...table, target: 15 });
-    expect(result).not.toBeNull();
-    expect(result!.value).toBe(140); // midpoint of 100 and 180
-    expect(result!.isExtrapolation).toBe(false);
-    expect(result!.lowerIndex).toBe(1);
-    expect(result!.upperIndex).toBe(2);
+    expect(result.value).toBe(140); // midpoint of 100 and 180
+    expect(result.isExtrapolation).toBe(false);
+    expect(result.lowerIndex).toBe(1);
+    expect(result.upperIndex).toBe(2);
   });
 
   it('should return exact value at known point', () => {
     const result = linearInterpolation({ ...table, target: 20 });
-    expect(result!.value).toBe(180);
-    expect(result!.isExtrapolation).toBe(false);
+    expect(result.value).toBe(180);
+    expect(result.isExtrapolation).toBe(false);
   });
 
   it('should interpolate at first interval', () => {
     const result = linearInterpolation({ ...table, target: 5 });
-    expect(result!.value).toBe(50);
+    expect(result.value).toBe(50);
   });
 
   it('should interpolate at last interval', () => {
     const result = linearInterpolation({ ...table, target: 35 });
-    expect(result!.value).toBe(260); // midpoint of 240 and 280
+    expect(result.value).toBe(260); // midpoint of 240 and 280
   });
 
   it('should extrapolate below range', () => {
     const result = linearInterpolation({ ...table, target: -5 });
-    expect(result!.value).toBe(-50);
-    expect(result!.isExtrapolation).toBe(true);
+    expect(result.value).toBe(-50);
+    expect(result.isExtrapolation).toBe(true);
   });
 
   it('should extrapolate above range', () => {
     const result = linearInterpolation({ ...table, target: 50 });
-    expect(result!.value).toBe(320);
-    expect(result!.isExtrapolation).toBe(true);
+    expect(result.value).toBe(320);
+    expect(result.isExtrapolation).toBe(true);
   });
 
   it('should handle two-point table', () => {
@@ -50,18 +49,18 @@ describe('linearInterpolation', () => {
       y: [32, 212],
       target: 50,
     });
-    expect(result!.value).toBe(122);
+    expect(result.value).toBe(122);
   });
 
-  it('should return null for mismatched arrays', () => {
-    expect(linearInterpolation({ x: [1, 2], y: [1], target: 1.5 })).toBeNull();
+  it('should throw RangeError for mismatched arrays', () => {
+    expect(() => linearInterpolation({ x: [1, 2], y: [1], target: 1.5 })).toThrow(RangeError);
   });
 
-  it('should return null for single point', () => {
-    expect(linearInterpolation({ x: [1], y: [1], target: 1 })).toBeNull();
+  it('should throw RangeError for single point', () => {
+    expect(() => linearInterpolation({ x: [1], y: [1], target: 1 })).toThrow(RangeError);
   });
 
-  it('should return null for empty arrays', () => {
-    expect(linearInterpolation({ x: [], y: [], target: 1 })).toBeNull();
+  it('should throw RangeError for empty arrays', () => {
+    expect(() => linearInterpolation({ x: [], y: [], target: 1 })).toThrow(RangeError);
   });
 });

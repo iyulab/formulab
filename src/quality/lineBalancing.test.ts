@@ -107,6 +107,40 @@ describe('lineBalancing', () => {
       // So they should be in different stations
       expect(stationWithA).not.toBe(stationWithB);
     });
+
+    it('should allow a successor in the same station as its predecessor when capacity permits', () => {
+      // Standard RPW (Helgeson-Birnie): within-station sequence preserves precedence,
+      // so A→B with 4+3 ≤ cycleTime 10 must share one station.
+      const result = lineBalancing({
+        tasks: [
+          { id: 'A', name: 'Task A', time: 4, predecessors: [] },
+          { id: 'B', name: 'Task B', time: 3, predecessors: ['A'] },
+        ],
+        cycleTime: 10,
+      });
+
+      expect(result).not.toBeNull();
+      expect(result!.numStations).toBe(1);
+      expect(result!.stations[0].tasks.map(t => t.id)).toEqual(['A', 'B']);
+      expect(result!.lineEfficiency).toBe(70);
+    });
+
+    it('should pack a full precedence chain into one station when cycle time covers it', () => {
+      const result = lineBalancing({
+        tasks: [
+          { id: 'A', name: 'a', time: 4, predecessors: [] },
+          { id: 'B', name: 'b', time: 3, predecessors: ['A'] },
+          { id: 'C', name: 'c', time: 5, predecessors: ['A'] },
+          { id: 'D', name: 'd', time: 2, predecessors: ['B', 'C'] },
+          { id: 'E', name: 'e', time: 6, predecessors: ['D'] },
+        ],
+        cycleTime: 100,
+      });
+
+      expect(result).not.toBeNull();
+      expect(result!.numStations).toBe(1);
+      expect(result!.lineEfficiency).toBe(20);
+    });
   });
 
   describe('error handling', () => {

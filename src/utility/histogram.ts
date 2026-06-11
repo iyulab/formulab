@@ -1,14 +1,25 @@
 import { roundTo } from '../utils.js';
 import type { HistogramInput, HistogramResult, HistogramBin } from './types.js';
 
-export function histogram(input: HistogramInput): HistogramResult | null {
+/**
+ * Histogram binning with optional explicit bin count (Sturges' rule by default) and range.
+ *
+ * @param input - Data values, optional bin count, optional [min, max] range
+ * @returns Bins with counts/frequencies, bin width, and total count
+ * @throws RangeError if data is empty or bins < 1
+ */
+export function histogram(input: HistogramInput): HistogramResult {
   const { data } = input;
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) {
+    throw new RangeError('data must contain at least one value');
+  }
 
   const n = data.length;
   // Sturges' rule for default bin count
   const numBins = input.bins ?? Math.max(1, Math.ceil(Math.log2(n) + 1));
-  if (numBins < 1) return null;
+  if (numBins < 1) {
+    throw new RangeError(`bins must be >= 1, got ${numBins}`);
+  }
 
   // Use explicit range when provided and valid; fall back to data-derived min/max
   let min: number;

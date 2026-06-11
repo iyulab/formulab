@@ -14,10 +14,10 @@ describe('weightedScore', () => {
       ],
     });
     expect(result).not.toBeNull();
-    expect(result!.rankings).toHaveLength(3);
-    expect(result!.rankings[0].rank).toBe(1);
-    expect(result!.rankings[1].rank).toBe(2);
-    expect(result!.rankings[2].rank).toBe(3);
+    expect(result.rankings).toHaveLength(3);
+    expect(result.rankings[0].rank).toBe(1);
+    expect(result.rankings[1].rank).toBe(2);
+    expect(result.rankings[2].rank).toBe(3);
   });
 
   it('should normalize weights', () => {
@@ -27,8 +27,8 @@ describe('weightedScore', () => {
       alternatives: ['X'],
       scores: [[10, 10]],
     });
-    expect(result!.normalizedWeights[0]).toBe(0.25);
-    expect(result!.normalizedWeights[1]).toBe(0.75);
+    expect(result.normalizedWeights[0]).toBe(0.25);
+    expect(result.normalizedWeights[1]).toBe(0.75);
   });
 
   it('should calculate correct weighted scores', () => {
@@ -40,7 +40,7 @@ describe('weightedScore', () => {
     });
     // Equal weights → normalized to [0.5, 0.5]
     // Weighted: [4, 3] → total = 7
-    expect(result!.rankings[0].totalScore).toBe(7);
+    expect(result.rankings[0].totalScore).toBe(7);
   });
 
   it('should handle single alternative', () => {
@@ -50,8 +50,8 @@ describe('weightedScore', () => {
       alternatives: ['Only'],
       scores: [[5, 8]],
     });
-    expect(result!.rankings[0].rank).toBe(1);
-    expect(result!.rankings[0].name).toBe('Only');
+    expect(result.rankings[0].rank).toBe(1);
+    expect(result.rankings[0].name).toBe('Only');
   });
 
   it('should handle equal scores', () => {
@@ -61,36 +61,36 @@ describe('weightedScore', () => {
       alternatives: ['X', 'Y'],
       scores: [[10], [10]],
     });
-    expect(result!.rankings[0].totalScore).toBe(result!.rankings[1].totalScore);
+    expect(result.rankings[0].totalScore).toBe(result.rankings[1].totalScore);
   });
 
-  it('should return null for mismatched criteria and weights', () => {
-    expect(weightedScore({
+  it('should throw RangeError for mismatched criteria and weights', () => {
+    expect(() => weightedScore({
       criteria: ['A', 'B'], weights: [1], alternatives: ['X'], scores: [[1, 2]],
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for mismatched scores dimensions', () => {
-    expect(weightedScore({
+  it('should throw RangeError for mismatched scores dimensions', () => {
+    expect(() => weightedScore({
       criteria: ['A'], weights: [1], alternatives: ['X', 'Y'], scores: [[1]],
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for zero weights', () => {
-    expect(weightedScore({
+  it('should throw RangeError for zero weights', () => {
+    expect(() => weightedScore({
       criteria: ['A'], weights: [0], alternatives: ['X'], scores: [[5]],
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for empty criteria', () => {
-    expect(weightedScore({
+  it('should throw RangeError for empty criteria', () => {
+    expect(() => weightedScore({
       criteria: [], weights: [], alternatives: ['X'], scores: [[]],
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 
-  it('should return null for empty alternatives', () => {
-    expect(weightedScore({
+  it('should throw RangeError for empty alternatives', () => {
+    expect(() => weightedScore({
       criteria: ['A'], weights: [1], alternatives: [], scores: [],
-    })).toBeNull();
+    })).toThrow(RangeError);
   });
 });

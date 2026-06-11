@@ -1,10 +1,25 @@
 import { roundTo } from '../utils.js';
 import type { LccInput, LccResult } from './types.js';
 
-export function lcc(input: LccInput): LccResult | null {
+/**
+ * Calculate life cycle cost (LCC) with present-value discounting
+ *
+ * @param input - LCC input parameters
+ * @returns LCC result with total cost, present values, and annual equivalent cost
+ * @throws RangeError if initialCost is negative, lifespan is not positive,
+ *   or discountRate is outside [0, 1)
+ */
+export function lcc(input: LccInput): LccResult {
   const { initialCost, annualOperatingCost, annualMaintenanceCost, disposalCost, lifespan, discountRate } = input;
-  if (initialCost < 0 || lifespan <= 0) return null;
-  if (discountRate < 0 || discountRate >= 1) return null;
+  if (initialCost < 0) {
+    throw new RangeError(`initialCost must be >= 0, got ${initialCost}`);
+  }
+  if (lifespan <= 0) {
+    throw new RangeError(`lifespan must be > 0, got ${lifespan}`);
+  }
+  if (discountRate < 0 || discountRate >= 1) {
+    throw new RangeError(`discountRate must be in [0, 1), got ${discountRate}`);
+  }
 
   // Present value of annuity factor: (1 - (1+r)^-n) / r
   const pvFactor = discountRate === 0
