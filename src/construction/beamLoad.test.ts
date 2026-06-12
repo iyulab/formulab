@@ -281,57 +281,64 @@ describe('beamLoad', () => {
   });
 
   describe('error handling', () => {
-    it('should return null for zero span', () => {
-      const result = beamLoad({
+    it('should throw RangeError for zero span', () => {
+      expect(() => beamLoad({
         loadType: 'uniform',
         support: 'simple',
         span: 0,
         uniformLoad: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for negative span', () => {
-      const result = beamLoad({
+    it('should throw RangeError for negative span', () => {
+      expect(() => beamLoad({
         loadType: 'uniform',
         support: 'simple',
         span: -5,
         uniformLoad: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow('span must be greater than 0');
     });
 
-    it('should return null for uniform load without uniformLoad value', () => {
-      const result = beamLoad({
+    it('should throw RangeError for uniform load without uniformLoad value', () => {
+      expect(() => beamLoad({
         loadType: 'uniform',
         support: 'simple',
         span: 6,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow('uniformLoad is required for uniform load type');
     });
 
-    it('should return null for concentrated load without pointLoad value', () => {
-      const result = beamLoad({
+    it('should throw RangeError for concentrated load without pointLoad value', () => {
+      expect(() => beamLoad({
         loadType: 'concentrated',
         support: 'simple',
         span: 6,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow('pointLoad is required for concentrated load type');
     });
 
-    it('should return null for combined load without both values', () => {
-      const result = beamLoad({
+    it('should throw RangeError for combined load without both values', () => {
+      expect(() => beamLoad({
         loadType: 'combined',
         support: 'simple',
         span: 6,
         uniformLoad: 10,
-      });
+      })).toThrow('pointLoad is required for combined load type');
+    });
 
-      expect(result).toBeNull();
+    it('should throw RangeError for pointPosition outside the span', () => {
+      expect(() => beamLoad({
+        loadType: 'concentrated',
+        support: 'simple',
+        span: 6,
+        pointLoad: 50,
+        pointPosition: 7,
+      })).toThrow('pointPosition must be within [0, span]');
+      expect(() => beamLoad({
+        loadType: 'concentrated',
+        support: 'simple',
+        span: 6,
+        pointLoad: 50,
+        pointPosition: -1,
+      })).toThrow(RangeError);
     });
   });
 

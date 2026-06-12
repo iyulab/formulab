@@ -7,26 +7,35 @@ import type { LoadInput, LoadResult } from './types.js';
  * uniform, concentrated, or combined loading.
  *
  * @param input - Beam load input parameters
- * @returns Load analysis result or null for invalid inputs
+ * @returns Load analysis result
+ * @throws RangeError if span is not positive, a required load value for the
+ *   selected load type is missing, or pointPosition lies outside [0, span]
  */
-export function beamLoad(input: LoadInput): LoadResult | null {
+export function beamLoad(input: LoadInput): LoadResult {
   const { loadType, support, span, uniformLoad, pointLoad, pointPosition } = input;
 
   // Validate span
   if (span <= 0) {
-    return null;
+    throw new RangeError('span must be greater than 0');
   }
 
   // Validate required inputs based on load type
   if (loadType === 'uniform' && (uniformLoad === undefined || uniformLoad === null)) {
-    return null;
+    throw new RangeError('uniformLoad is required for uniform load type');
   }
   if (loadType === 'concentrated' && (pointLoad === undefined || pointLoad === null)) {
-    return null;
+    throw new RangeError('pointLoad is required for concentrated load type');
   }
   if (loadType === 'combined') {
-    if (uniformLoad === undefined || uniformLoad === null) return null;
-    if (pointLoad === undefined || pointLoad === null) return null;
+    if (uniformLoad === undefined || uniformLoad === null) {
+      throw new RangeError('uniformLoad is required for combined load type');
+    }
+    if (pointLoad === undefined || pointLoad === null) {
+      throw new RangeError('pointLoad is required for combined load type');
+    }
+  }
+  if (pointPosition !== undefined && pointPosition !== null && (pointPosition < 0 || pointPosition > span)) {
+    throw new RangeError('pointPosition must be within [0, span]');
   }
 
   const w = uniformLoad ?? 0;

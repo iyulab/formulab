@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.2] - 2026-06-12
+
+### Changed (breaking within 0.x)
+
+- **`beamLoad()` (construction): `LoadResult | null` migrated to the standard error policy** — now **throws `RangeError`** with a per-constraint message (non-positive span, missing `uniformLoad`/`pointLoad` for the selected load type) instead of returning `null`, matching ERRORS.md and the 0.13.0 utility migration. Also adds a new guard: `pointPosition` outside `[0, span]` now throws (previously produced physically meaningless negative moments). Return type is non-nullable. Reported by online-tools: ISSUE-20260612-formulab-beamload-null-returns.
+
 ## [0.13.1] - 2026-06-12
 
 ### Added
