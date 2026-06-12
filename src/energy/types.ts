@@ -28,7 +28,8 @@ export interface CompressedAirCostResult {
   electricityCost: number;
   totalCost: number;
   costPerM3: number;
-  costPerCfm: number;
+  /** Cost per cubic foot of delivered air ($/ft³) */
+  costPerFt3: number;
 }
 
 /**

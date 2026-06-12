@@ -58,7 +58,7 @@ describe('compressedAirCost', () => {
       expect(result.costPerM3).toBe(0.06);
     });
 
-    it('should calculate cost per CFM correctly', () => {
+    it('should calculate cost per cubic foot correctly', () => {
       const result = compressedAirCost({
         compressorPower: 50,
         runningHours: 100,
@@ -67,49 +67,40 @@ describe('compressedAirCost', () => {
         maintenanceCost: 0,
       });
 
-      // Cost per CFM = 0.06 / 35.3147 ≈ $0.0017
-      expect(result.costPerCfm).toBeCloseTo(0.0017, 3);
+      // Cost per ft³ = 0.06 / 35.3147 ≈ $0.0017
+      expect(result.costPerFt3).toBeCloseTo(0.0017, 3);
     });
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero compressor power', () => {
-      const result = compressedAirCost({
+    it('should throw RangeError for zero compressor power', () => {
+      expect(() => compressedAirCost({
         compressorPower: 0,
         runningHours: 100,
         electricityRate: 0.12,
         airOutput: 10000,
         maintenanceCost: 50,
-      });
-
-      expect(result.electricityCost).toBe(0);
-      expect(result.totalCost).toBe(0);
+      })).toThrow('compressorPower must be greater than 0');
     });
 
-    it('should return zeros for zero running hours', () => {
-      const result = compressedAirCost({
+    it('should throw RangeError for zero running hours', () => {
+      expect(() => compressedAirCost({
         compressorPower: 50,
         runningHours: 0,
         electricityRate: 0.12,
         airOutput: 10000,
         maintenanceCost: 50,
-      });
-
-      expect(result.electricityCost).toBe(0);
-      expect(result.totalCost).toBe(0);
+      })).toThrow('runningHours must be greater than 0');
     });
 
-    it('should return zeros for zero air output', () => {
-      const result = compressedAirCost({
+    it('should throw RangeError for zero air output', () => {
+      expect(() => compressedAirCost({
         compressorPower: 50,
         runningHours: 100,
         electricityRate: 0.12,
         airOutput: 0,
         maintenanceCost: 50,
-      });
-
-      expect(result.costPerM3).toBe(0);
-      expect(result.costPerCfm).toBe(0);
+      })).toThrow('airOutput must be greater than 0');
     });
   });
 

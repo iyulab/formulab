@@ -1,30 +1,31 @@
 import type { CompressedAirCostInput, CompressedAirCostResult } from './types.js';
 
-// Conversion factor: 1 m3 = 35.3147 CFM (cubic feet per minute)
-const M3_TO_CFM = 35.3147;
+// Conversion factor: 1 m³ = 35.3147 ft³ (cubic feet)
+const M3_TO_FT3 = 35.3147;
 
 /**
  * Calculate compressed air production cost
  *
  * Electricity cost = compressor power (kW) * running hours * electricity rate ($/kWh)
  * Total cost = electricity cost + maintenance cost
- * Cost per m3 = total cost / air output (m3)
- * Cost per CFM = cost per m3 / 35.3147 (m3 to CFM conversion)
+ * Cost per m³ = total cost / air output (m³)
+ * Cost per ft³ = cost per m³ / 35.3147 (m³ to ft³ conversion)
  *
  * @param input - Compressed air cost input parameters
  * @returns Compressed air cost result
+ * @throws RangeError if compressorPower, runningHours, or airOutput is not positive
  */
 export function compressedAirCost(input: CompressedAirCostInput): CompressedAirCostResult {
   const { compressorPower, runningHours, electricityRate, airOutput, maintenanceCost } = input;
 
-  // Handle edge case - invalid inputs
-  if (compressorPower <= 0 || runningHours <= 0 || airOutput <= 0) {
-    return {
-      electricityCost: 0,
-      totalCost: 0,
-      costPerM3: 0,
-      costPerCfm: 0,
-    };
+  if (compressorPower <= 0) {
+    throw new RangeError('compressorPower must be greater than 0');
+  }
+  if (runningHours <= 0) {
+    throw new RangeError('runningHours must be greater than 0');
+  }
+  if (airOutput <= 0) {
+    throw new RangeError('airOutput must be greater than 0');
   }
 
   // Calculate electricity cost
@@ -35,12 +36,12 @@ export function compressedAirCost(input: CompressedAirCostInput): CompressedAirC
 
   // Calculate cost per unit volume
   const costPerM3 = totalCost / airOutput;
-  const costPerCfm = costPerM3 / M3_TO_CFM;
+  const costPerFt3 = costPerM3 / M3_TO_FT3;
 
   return {
     electricityCost,
     totalCost,
     costPerM3,
-    costPerCfm,
+    costPerFt3,
   };
 }

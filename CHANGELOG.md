@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.3] - 2026-06-12
+
+### Changed (breaking within 0.x)
+
+- **`compressedAirCost()` (energy): `costPerCfm` renamed to `costPerFt3`** — the value is total cost divided by delivered volume in cubic feet ($/ft³); "CFM" is a flow rate (ft³/min), so the old name was dimensionally wrong (the conversion comment also incorrectly read "1 m3 = 35.3147 CFM"). Reported by online-tools: ISSUE-20260612-formulab-compressedaircost-cfm-dimension-zerofill.
+- **`compressedAirCost()`: zero-filled result on invalid input migrated to the standard error policy** — non-positive `compressorPower`/`runningHours`/`airOutput` now **throws `RangeError`** with a per-constraint message instead of returning an all-zero result. Note: zero-fill returns are not caught by `return null` scans — the null-returns audit (ISSUE-20260612-formulab-null-returns-full-audit) should also cover this pattern.
+
 ## [0.13.2] - 2026-06-12
 
 ### Changed (breaking within 0.x)
