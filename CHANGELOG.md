@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.1] - 2026-06-12
+
+### Added
+
+- **`statistics()` gains `sampleVariance` / `sampleStdDev`** — sample statistics with Bessel's correction (divisor n−1), `undefined` when the data set has fewer than 2 values. The existing `variance`/`stdDev` remain population statistics (divisor n) and are now explicitly documented as such in JSDoc and `StatisticsResult`. Additive and non-breaking. Practitioner-facing calculators typically need the sample variant for measured data (reported by online-tools: ISSUE-20260612-formulab-statistics-population-vs-sample).
+
 ## [0.13.0] - 2026-06-11
 
 ### Changed (breaking within 0.x)

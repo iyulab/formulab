@@ -71,8 +71,14 @@ export interface StatisticsResult {
   min: number;
   max: number;
   range: number;
+  /** Population variance (divisor n) */
   variance: number;
+  /** Population standard deviation (divisor n) */
   stdDev: number;
+  /** Sample variance (divisor n−1, Bessel's correction); undefined when count < 2 */
+  sampleVariance?: number;
+  /** Sample standard deviation (divisor n−1); undefined when count < 2 */
+  sampleStdDev?: number;
 }
 
 /**

@@ -24,6 +24,16 @@ describe('statistics', () => {
     expect(result.median).toBe(42);
     expect(result.variance).toBe(0);
     expect(result.stdDev).toBe(0);
+    expect(result.sampleVariance).toBeUndefined();
+    expect(result.sampleStdDev).toBeUndefined();
+  });
+
+  it('should calculate sample variance with Bessel correction (n−1)', () => {
+    const result = statistics({ data: [4, 8, 6, 5, 3] });
+    expect(result.variance).toBeCloseTo(2.96, 4); // population, ÷5
+    expect(result.stdDev).toBeCloseTo(1.720465, 5);
+    expect(result.sampleVariance).toBeCloseTo(3.7, 4); // sample, ÷4
+    expect(result.sampleStdDev).toBeCloseTo(1.923538, 5);
   });
 
   it('should handle odd number of values for median', () => {

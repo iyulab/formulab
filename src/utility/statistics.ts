@@ -4,6 +4,10 @@ import type { StatisticsInput, StatisticsResult } from './types.js';
 /**
  * Descriptive statistics (count, sum, mean, median, min, max, range, variance, stdDev)
  *
+ * `variance`/`stdDev` are population statistics (divisor n);
+ * `sampleVariance`/`sampleStdDev` use Bessel's correction (divisor n−1)
+ * and are undefined when the data set has fewer than 2 values.
+ *
  * @param input - Statistics input with data array
  * @returns Descriptive statistics for the data set
  * @throws RangeError if data is missing or empty
@@ -29,8 +33,11 @@ export function statistics(input: StatisticsInput): StatisticsResult {
     median = sorted[Math.floor(n / 2)];
   }
 
-  const variance = data.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;
+  const sumSquaredDev = data.reduce((acc, v) => acc + (v - mean) ** 2, 0);
+  const variance = sumSquaredDev / n;
   const stdDev = Math.sqrt(variance);
+  const sampleVariance = n >= 2 ? sumSquaredDev / (n - 1) : undefined;
+  const sampleStdDev = sampleVariance !== undefined ? Math.sqrt(sampleVariance) : undefined;
 
   return {
     count: n,
@@ -42,5 +49,7 @@ export function statistics(input: StatisticsInput): StatisticsResult {
     range: roundTo(range, 6),
     variance: roundTo(variance, 6),
     stdDev: roundTo(stdDev, 6),
+    sampleVariance: sampleVariance !== undefined ? roundTo(sampleVariance, 6) : undefined,
+    sampleStdDev: sampleStdDev !== undefined ? roundTo(sampleStdDev, 6) : undefined,
   };
 }
