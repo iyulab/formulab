@@ -88,18 +88,34 @@ describe('earthwork', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero dimensions', () => {
-      const result = earthwork({
+    it('should throw on zero dimensions', () => {
+      expect(() => earthwork({
         length: 0,
         width: 5,
         depth: 2,
         swellFactor: 1.25,
         shrinkFactor: 0.9,
-      });
+      })).toThrow(RangeError);
+    });
 
-      expect(result.bankVolume).toBe(0);
-      expect(result.looseVolume).toBe(0);
-      expect(result.compactedVolume).toBe(0);
+    it('should throw on negative dimensions', () => {
+      expect(() => earthwork({
+        length: 10,
+        width: -5,
+        depth: 2,
+        swellFactor: 1.25,
+        shrinkFactor: 0.9,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw on non-positive swell factor', () => {
+      expect(() => earthwork({
+        length: 10,
+        width: 5,
+        depth: 2,
+        swellFactor: 0,
+        shrinkFactor: 0.9,
+      })).toThrow(RangeError);
     });
 
     it('should handle swell factor of 1.0 (no swell)', () => {

@@ -177,18 +177,43 @@ describe('formwork', () => {
       expect(result.plywoodSheets).toBe(2);
     });
 
-    it('should return 0 sheets for zero area', () => {
-      const result = formwork({
+    it('should throw on zero used dimension (slab length)', () => {
+      expect(() => formwork({
         elementType: 'slab',
         length: 0,
         width: 5,
         height: 0.15,
         quantity: 1,
         reuses: 1,
-      });
+      })).toThrow(RangeError);
+    });
+  });
 
-      expect(result.singleAreaSqm).toBe(0);
-      expect(result.plywoodSheets).toBe(0);
+  describe('dimension validation', () => {
+    it('should throw on non-positive quantity', () => {
+      expect(() => formwork({
+        elementType: 'slab', length: 6, width: 4, height: 0.15, quantity: 0, reuses: 1,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw when a used dimension is negative', () => {
+      expect(() => formwork({
+        elementType: 'column', length: 0.4, width: -0.4, height: 3, quantity: 1, reuses: 1,
+      })).toThrow(RangeError);
+    });
+
+    it('should ignore the unused dimension for a slab (height = 0 is allowed)', () => {
+      const result = formwork({
+        elementType: 'slab', length: 6, width: 4, height: 0, quantity: 1, reuses: 1,
+      });
+      expect(result.singleAreaSqm).toBe(24);
+    });
+
+    it('should ignore the unused dimension for a wall (width = 0 is allowed)', () => {
+      const result = formwork({
+        elementType: 'wall', length: 8, width: 0, height: 3, quantity: 1, reuses: 1,
+      });
+      expect(result.singleAreaSqm).toBe(48);
     });
   });
 

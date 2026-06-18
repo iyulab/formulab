@@ -47,13 +47,52 @@ function calculateSingleArea(
 }
 
 /**
+ * Validate that the dimensions actually consumed by an element type's area
+ * formula are positive. Dimensions not used by a given element type are left
+ * unvalidated (e.g. a slab ignores height, a wall ignores width).
+ */
+function validateDimensions(
+  elementType: ElementType,
+  length: number,
+  width: number,
+  height: number
+): void {
+  if (length <= 0) {
+    throw new RangeError('length must be greater than 0');
+  }
+  switch (elementType) {
+    case 'column':
+    case 'beam':
+    case 'footing':
+      if (width <= 0) throw new RangeError('width must be greater than 0');
+      if (height <= 0) throw new RangeError('height must be greater than 0');
+      break;
+    case 'slab':
+      if (width <= 0) throw new RangeError('width must be greater than 0');
+      break;
+    case 'wall':
+      if (height <= 0) throw new RangeError('height must be greater than 0');
+      break;
+  }
+}
+
+/**
  * Calculate formwork area requirements
  *
  * @param input - Formwork calculation parameters
  * @returns Formwork area results
+ * @throws RangeError if a dimension consumed by the element type's area formula
+ *   is not positive (column/beam/footing: length, width, height; slab: length,
+ *   width; wall: length, height), or if quantity is not positive
  */
 export function formwork(input: FormworkInput): FormworkResult {
   const { elementType, length, width, height, quantity, reuses } = input;
+
+  validateDimensions(elementType, length, width, height);
+
+  if (quantity <= 0) {
+    throw new RangeError('quantity must be greater than 0');
+  }
 
   // Calculate area for single element
   const singleAreaSqm = calculateSingleArea(elementType, length, width, height);

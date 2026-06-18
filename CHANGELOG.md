@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.4] - 2026-06-18
+
+### Changed (breaking within 0.x)
+
+- **`earthwork()` / `formwork()` (construction): zero-filled result on invalid input migrated to the standard error policy** — both functions previously returned an all-zero result for non-positive dimensions instead of throwing, and their existing tests encoded that as an "edge case". They now **throw `RangeError`** with a per-constraint message, matching `ERRORS.md` (which already documented them as `throw`) and the beamLoad/compressedAirCost migrations:
+  - `earthwork()`: non-positive `length`/`width`/`depth`, or non-positive `swellFactor`/`shrinkFactor` (a zero factor silently produced a zero loose/compacted volume).
+  - `formwork()`: non-positive dimension **consumed by the element type's area formula** (column/beam/footing → length, width, height; slab → length, width; wall → length, height) or non-positive `quantity`. Dimensions a given element type ignores (slab height, wall width) are left unvalidated, so a formula-irrelevant zero is still accepted. `reuses ≤ 0 → 1` remains intentional lenient behavior.
+
+  Reported by online-tools: ISSUE-20260618-formulab-earthwork-formwork-zerofill (NT-9). `ERRORS.md` condition text updated from "Negative dimensions" to the precise non-positive constraints.
+
 ## [0.13.3] - 2026-06-12
 
 ### Changed (breaking within 0.x)

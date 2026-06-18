@@ -121,8 +121,8 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `momentOfInertia()` | `throw` | Non-positive dimensions |
 | `beamLoad()` | `throw` | span ≤ 0 |
 | `concreteMix()` | `throw` | volume ≤ 0 |
-| `earthwork()` | `throw` | Negative dimensions |
-| `formwork()` | `throw` | Negative dimensions |
+| `earthwork()` | `throw` | Non-positive length/width/depth or non-positive swell/shrink factor |
+| `formwork()` | `throw` | Non-positive used dimension (per element type) or non-positive quantity |
 | `rebarWeight()` | `throw` | Unknown size |
 | `slope()` | `throw` | ratio = 0 |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
