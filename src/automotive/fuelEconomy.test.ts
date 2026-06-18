@@ -119,16 +119,12 @@ describe('fuelEconomy', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero value', () => {
-      const result = fuelEconomy({
-        fromUnit: 'kmPerL',
-        value: 0,
-      });
+    it('should throw RangeError for zero value', () => {
+      expect(() => fuelEconomy({ fromUnit: 'kmPerL', value: 0 })).toThrow(RangeError);
+    });
 
-      expect(result.kmPerL).toBe(0);
-      expect(result.lPer100km).toBe(0);
-      expect(result.mpgUS).toBe(0);
-      expect(result.mpgUK).toBe(0);
+    it('should throw RangeError for negative value', () => {
+      expect(() => fuelEconomy({ fromUnit: 'kmPerL', value: -5 })).toThrow(RangeError);
     });
   });
 

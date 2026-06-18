@@ -182,67 +182,55 @@ describe('shipping', () => {
       expect(result!.transitDays).toBe('1 day');
     });
 
-    it('should return null for missing distance', () => {
-      const result = shipping({
+    it('should throw for missing distance', () => {
+      expect(() => shipping({
         mode: 'truck',
         weight: 500,
         volume: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero distance', () => {
-      const result = shipping({
+    it('should throw for zero distance', () => {
+      expect(() => shipping({
         mode: 'truck',
         weight: 500,
         volume: 1,
         distance: 0,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 
   describe('edge cases', () => {
-    it('should return null for zero weight', () => {
-      const result = shipping({
+    it('should throw for zero weight', () => {
+      expect(() => shipping({
         mode: 'air',
         weight: 0,
         volume: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero volume', () => {
-      const result = shipping({
+    it('should throw for zero volume', () => {
+      expect(() => shipping({
         mode: 'air',
         weight: 100,
         volume: 0,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for negative weight', () => {
-      const result = shipping({
+    it('should throw for negative weight', () => {
+      expect(() => shipping({
         mode: 'ocean_fcl',
         weight: -100,
         volume: 5,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for invalid mode', () => {
-      const result = shipping({
+    it('should throw for invalid mode', () => {
+      expect(() => shipping({
         mode: 'invalid' as any,
         weight: 100,
         volume: 1,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 

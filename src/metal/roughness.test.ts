@@ -75,11 +75,8 @@ describe('roughness', () => {
       expect(result.nClass).toBe(12); // Max valid N class
     });
 
-    it('should return zero for zero N class input', () => {
-      const result = roughness({ fromScale: 'N', value: 0 }); // Zero input
-
-      expect(result.nClass).toBe(0); // Returns 0 for 0 input
-      expect(result.ra).toBe(0);
+    it('should throw for zero N class input', () => {
+      expect(() => roughness({ fromScale: 'N', value: 0 })).toThrow(RangeError);
     });
 
     it('should clamp low N class to valid range', () => {
@@ -99,12 +96,8 @@ describe('roughness', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero value', () => {
-      const result = roughness({ fromScale: 'Ra', value: 0 });
-
-      expect(result.ra).toBe(0);
-      expect(result.rz).toBe(0);
-      expect(result.nClass).toBe(0);
+    it('should throw for zero value', () => {
+      expect(() => roughness({ fromScale: 'Ra', value: 0 })).toThrow(RangeError);
     });
   });
 

@@ -31,12 +31,14 @@ function findClosest(key: 'ra' | 'rz', value: number) {
 
 /**
  * Convert surface roughness between Ra, Rz, and N class.
+ *
+ * @throws RangeError if value is not positive
  */
 export function roughness(input: RoughnessInput): RoughnessResult {
   const { fromScale, value } = input;
 
-  if (value === 0) {
-    return { ra: 0, rz: 0, nClass: 0, rms: 0 };
+  if (value <= 0) {
+    throw new RangeError('value must be greater than 0');
   }
 
   let entry;

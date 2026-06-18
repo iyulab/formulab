@@ -161,9 +161,8 @@ describe('tsp', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for empty nodes', () => {
-      const result = tsp({ nodes: [] });
-      expect(result).toBeNull();
+    it('should throw for empty nodes', () => {
+      expect(() => tsp({ nodes: [] })).toThrow(RangeError);
     });
 
     it('should handle single node', () => {

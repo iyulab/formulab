@@ -12,19 +12,13 @@ import type { GearRatioInput, GearRatioResult } from './types.js';
  *
  * @param input - Gear parameters
  * @returns Gear result with ratio, speed, and torque
+ * @throws RangeError if drivingTeeth is not greater than 0
  */
 export function gearRatio(input: GearRatioInput): GearRatioResult {
   const { drivingTeeth, drivenTeeth, inputSpeed, inputTorque, efficiency } = input;
 
-  // Handle edge case - zero driving teeth
-  if (drivingTeeth === 0) {
-    return {
-      gearRatio: 0,
-      outputSpeed: 0,
-      outputTorque: 0,
-      speedReduction: false,
-      mechanicalAdvantage: 0,
-    };
+  if (drivingTeeth <= 0) {
+    throw new RangeError('drivingTeeth must be greater than 0');
   }
 
   const ratio = drivenTeeth / drivingTeeth;

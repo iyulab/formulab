@@ -24,13 +24,17 @@ function dpmoToSigma(dpmoValue: number): number {
  *
  * @param input - DPMO input parameters
  * @returns DPMO analysis result
+ * @throws RangeError if units or opportunities is not positive
  */
 export function dpmo(input: DpmoInput): DpmoResult {
   const { defects, units, opportunities } = input;
 
-  // Handle invalid inputs
-  if (units <= 0 || opportunities <= 0) {
-    return { dpmo: 0, sigmaLevel: 0, yield: 0, dpu: 0, defectRate: 0 };
+  // Validate inputs
+  if (units <= 0) {
+    throw new RangeError('units must be greater than 0');
+  }
+  if (opportunities <= 0) {
+    throw new RangeError('opportunities must be greater than 0');
   }
 
   // Calculate total opportunities

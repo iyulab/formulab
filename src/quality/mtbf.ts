@@ -10,19 +10,18 @@ import type { MtbfInput, MtbfResult } from './types.js';
  *
  * @param input - MTBF input parameters
  * @returns MTBF analysis result
+ * @throws RangeError if totalOperatingTime is not positive, or if
+ *   numberOfFailures is not positive (MTBF is undefined with zero failures)
  */
 export function mtbf(input: MtbfInput): MtbfResult {
   const { totalOperatingTime, totalRepairTime, numberOfFailures } = input;
 
-  // Handle invalid input
-  if (totalOperatingTime <= 0 || numberOfFailures <= 0) {
-    return {
-      mtbf: 0,
-      mttr: 0,
-      availability: 0,
-      failureRate: 0,
-      reliabilityAtMtbf: 0,
-    };
+  // Validate inputs
+  if (totalOperatingTime <= 0) {
+    throw new RangeError('totalOperatingTime must be greater than 0');
+  }
+  if (numberOfFailures <= 0) {
+    throw new RangeError('numberOfFailures must be greater than 0');
   }
 
   // MTBF = Total Operating Time / Number of Failures

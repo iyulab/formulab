@@ -43,11 +43,15 @@ export function getUnifiedSizes(): string[] {
 
 /**
  * Look up thread dimensions from standard tables.
+ *
+ * @throws RangeError if the thread size is unknown
  */
-export function thread(input: ThreadInput): ThreadResult | null {
+export function thread(input: ThreadInput): ThreadResult {
   if (input.type === 'metric') {
     const spec = METRIC_THREADS[input.size];
-    if (!spec) return null;
+    if (!spec) {
+      throw new RangeError('unknown thread size: ' + input.size);
+    }
 
     const minorDiameter = roundTo(spec.majorDiameter - 1.0825 * spec.pitch, 3);
     const pitchDiameter = roundTo(spec.majorDiameter - 0.6495 * spec.pitch, 3);
@@ -63,7 +67,9 @@ export function thread(input: ThreadInput): ThreadResult | null {
   }
 
   const spec = UNIFIED_THREADS[input.size];
-  if (!spec) return null;
+  if (!spec) {
+    throw new RangeError('unknown thread size: ' + input.size);
+  }
 
   const pitchMm = 25.4 / spec.tpi;
   const minorDiameter = roundTo(spec.majorDiameter - 1.0825 * pitchMm, 3);

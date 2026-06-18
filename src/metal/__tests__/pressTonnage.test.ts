@@ -250,19 +250,13 @@ describe('pressTonnage', () => {
   });
 
   describe('combined operation', () => {
-    it('returns zeros without explicit operations array', () => {
-      const result = pressTonnage({
+    it('throws without explicit operations array', () => {
+      expect(() => pressTonnage({
         operation: 'combined',
         thickness: 2,
         tensileStrength: 400,
         shearStrength: 300,
-      });
-
-      expect(result.blankingForce).toBe(0);
-      expect(result.bendingForce).toBe(0);
-      expect(result.drawingForce).toBe(0);
-      expect(result.totalForce).toBe(0);
-      expect(result.recommendedPress).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

@@ -53,19 +53,28 @@ function getToleranceValue(nominal: number, itGrade: number): number {
 
 /**
  * Calculate ISO tolerance band for a given nominal size and tolerance class.
+ *
+ * @throws RangeError if the nominal size is out of range, the IT grade is unknown,
+ *   or the deviation letter is unknown
  */
-export function tolerance(input: ToleranceInput): ToleranceResult | null {
+export function tolerance(input: ToleranceInput): ToleranceResult {
   const { nominalSize, fitType, deviationLetter, itGrade } = input;
 
   const idx = getSizeRangeIndex(nominalSize);
-  if (idx < 0) return null;
+  if (idx < 0) {
+    throw new RangeError('nominal size out of range');
+  }
 
   const toleranceVal = getToleranceValue(nominalSize, itGrade);
-  if (toleranceVal === 0) return null;
+  if (toleranceVal === 0) {
+    throw new RangeError('unknown IT grade: ' + itGrade);
+  }
 
   const letter = deviationLetter.toLowerCase();
   const deviations = FUNDAMENTAL_DEVIATIONS[letter === 'js' ? 'js' : letter];
-  if (!deviations) return null;
+  if (!deviations) {
+    throw new RangeError('unknown deviation letter: ' + deviationLetter);
+  }
 
   let upperDev: number;
   let lowerDev: number;

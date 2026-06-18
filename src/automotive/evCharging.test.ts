@@ -59,43 +59,34 @@ describe('evCharging', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zero when SOC end equals SOC start', () => {
-      const result = evCharging({
+    it('should throw RangeError when SOC end equals SOC start', () => {
+      expect(() => evCharging({
         batteryCapacityKwh: 60,
         chargerPowerKw: 11,
         socStartPercent: 50,
         socEndPercent: 50,
         efficiency: 0.9,
-      });
-
-      expect(result.energyNeeded).toBe(0);
-      expect(result.chargingTimeHours).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zero when SOC end less than SOC start', () => {
-      const result = evCharging({
+    it('should throw RangeError when SOC end less than SOC start', () => {
+      expect(() => evCharging({
         batteryCapacityKwh: 60,
         chargerPowerKw: 11,
         socStartPercent: 80,
         socEndPercent: 20,
         efficiency: 0.9,
-      });
-
-      expect(result.energyNeeded).toBe(0);
-      expect(result.chargingTimeHours).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle zero charger power', () => {
-      const result = evCharging({
+    it('should throw RangeError for zero charger power', () => {
+      expect(() => evCharging({
         batteryCapacityKwh: 60,
         chargerPowerKw: 0,
         socStartPercent: 20,
         socEndPercent: 80,
         efficiency: 0.9,
-      });
-
-      expect(result.energyNeeded).toBe(36);
-      expect(result.chargingTimeHours).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

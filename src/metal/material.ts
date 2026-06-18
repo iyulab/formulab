@@ -38,12 +38,21 @@ export function getGrades(category: MaterialCategory): string[] {
   return Object.keys(data);
 }
 
-export function material(input: MaterialInput): MaterialResult | null {
+/**
+ * Look up mechanical and physical properties for a material grade.
+ *
+ * @throws RangeError if the material category or grade is unknown
+ */
+export function material(input: MaterialInput): MaterialResult {
   const categoryData = MATERIAL_DATA[input.category];
-  if (!categoryData) return null;
+  if (!categoryData) {
+    throw new RangeError('unknown material category: ' + input.category);
+  }
 
   const spec = categoryData[input.grade];
-  if (!spec) return null;
+  if (!spec) {
+    throw new RangeError('unknown material grade: ' + input.grade);
+  }
 
   return {
     grade: input.grade,

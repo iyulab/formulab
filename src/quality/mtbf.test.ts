@@ -103,38 +103,28 @@ describe('mtbf', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero operating time', () => {
-      const result = mtbf({
+    it('should throw for zero operating time', () => {
+      expect(() => mtbf({
         totalOperatingTime: 0,
         totalRepairTime: 10,
         numberOfFailures: 5,
-      });
-
-      expect(result.mtbf).toBe(0);
-      expect(result.mttr).toBe(0);
-      expect(result.availability).toBe(0);
-      expect(result.failureRate).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero failures', () => {
-      const result = mtbf({
+    it('should throw for zero failures', () => {
+      expect(() => mtbf({
         totalOperatingTime: 1000,
         totalRepairTime: 0,
         numberOfFailures: 0,
-      });
-
-      expect(result.mtbf).toBe(0);
-      expect(result.mttr).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for negative operating time', () => {
-      const result = mtbf({
+    it('should throw for negative operating time', () => {
+      expect(() => mtbf({
         totalOperatingTime: -1000,
         totalRepairTime: 100,
         numberOfFailures: 10,
-      });
-
-      expect(result.mtbf).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle zero repair time', () => {

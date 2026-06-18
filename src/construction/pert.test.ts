@@ -234,20 +234,17 @@ describe('pert', () => {
   });
 
   describe('error handling', () => {
-    it('should return null for empty tasks', () => {
-      const result = pert({ tasks: [] });
-      expect(result).toBeNull();
+    it('should throw for empty tasks', () => {
+      expect(() => pert({ tasks: [] })).toThrow(RangeError);
     });
 
-    it('should return null for cyclic dependencies', () => {
-      const result = pert({
+    it('should throw for cyclic dependencies', () => {
+      expect(() => pert({
         tasks: [
           { id: 'A', name: 'Task A', optimistic: 2, mostLikely: 4, pessimistic: 6, predecessors: ['B'] },
           { id: 'B', name: 'Task B', optimistic: 2, mostLikely: 4, pessimistic: 6, predecessors: ['A'] },
         ],
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 

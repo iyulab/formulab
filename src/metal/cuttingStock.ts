@@ -5,10 +5,18 @@ import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './ty
  * Calculate optimal cutting layout for 1D cutting stock problem.
  *
  * Uses First Fit Decreasing (FFD) or Best Fit Decreasing (BFD) algorithm.
+ *
+ * @throws RangeError if stockLength is not positive, pieces is empty, total piece
+ *   quantity is 0, or any piece length exceeds stockLength
  */
-export function cuttingStock(input: CuttingStockInput): CuttingStockResult | null {
+export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
   const { stockLength, kerf, pieces, algorithm } = input;
-  if (pieces.length === 0) return null;
+  if (stockLength <= 0) {
+    throw new RangeError('stockLength must be greater than 0');
+  }
+  if (pieces.length === 0) {
+    throw new RangeError('pieces must not be empty');
+  }
 
   // Expand quantities
   const expanded: { length: number; label: string }[] = [];
@@ -17,10 +25,14 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult | nul
       expanded.push({ length: p.length, label: p.label ?? `${p.length}` });
     }
   }
+  if (expanded.length === 0) {
+    throw new RangeError('total piece quantity must be greater than 0');
+  }
 
   // Check if any piece exceeds stock length
-  if (expanded.some(p => p.length > stockLength)) return null;
-  if (expanded.length === 0) return null;
+  if (expanded.some(p => p.length > stockLength)) {
+    throw new RangeError('piece length must not exceed stockLength');
+  }
 
   // Sort descending by length
   expanded.sort((a, b) => b.length - a.length);

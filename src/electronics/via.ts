@@ -22,14 +22,25 @@ const IPC_C = 0.725;
  * Where r_outer = holeDiameter/2 + platingThickness and r_inner = holeDiameter/2
  *
  * @param input - Via hole diameter, plating thickness, via length, and temp rise
- * @returns Via current capacity and related properties, or null if invalid
+ * @returns Via current capacity and related properties
+ * @throws RangeError if holeDiameter, platingThickness, viaLength, or tempRise
+ *   is not positive
  */
-export function viaCurrent(input: ViaInput): ViaResult | null {
+export function viaCurrent(input: ViaInput): ViaResult {
   const { holeDiameter, platingThickness, viaLength, tempRise } = input;
 
   // Validate inputs
-  if (holeDiameter <= 0 || platingThickness <= 0 || viaLength <= 0 || tempRise <= 0) {
-    return null;
+  if (holeDiameter <= 0) {
+    throw new RangeError('holeDiameter must be greater than 0');
+  }
+  if (platingThickness <= 0) {
+    throw new RangeError('platingThickness must be greater than 0');
+  }
+  if (viaLength <= 0) {
+    throw new RangeError('viaLength must be greater than 0');
+  }
+  if (tempRise <= 0) {
+    throw new RangeError('tempRise must be greater than 0');
   }
 
   // Convert plating thickness from μm to mm

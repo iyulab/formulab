@@ -138,19 +138,24 @@ describe('gearRatio', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero driving teeth', () => {
-      const result = gearRatio({
+    it('should throw RangeError for zero driving teeth', () => {
+      expect(() => gearRatio({
         drivingTeeth: 0,
         drivenTeeth: 40,
         inputSpeed: 1000,
         inputTorque: 10,
         efficiency: 1.0,
-      });
+      })).toThrow(RangeError);
+    });
 
-      expect(result.gearRatio).toBe(0);
-      expect(result.outputSpeed).toBe(0);
-      expect(result.outputTorque).toBe(0);
-      expect(result.mechanicalAdvantage).toBe(0);
+    it('should throw RangeError for negative driving teeth', () => {
+      expect(() => gearRatio({
+        drivingTeeth: -20,
+        drivenTeeth: 40,
+        inputSpeed: 1000,
+        inputTorque: 10,
+        efficiency: 1.0,
+      })).toThrow(RangeError);
     });
 
     it('should handle zero input speed', () => {

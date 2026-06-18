@@ -7,12 +7,14 @@ import type { CuttingInput, CuttingResult } from './types.js';
  * RPM = 1000 x Vc / (pi x D)
  * Feed rate = RPM x feed x (teeth for milling)
  * MRR = material removal rate in cm3/min
+ *
+ * @throws RangeError if toolDiameter is not positive
  */
 export function cutting(input: CuttingInput): CuttingResult {
   const { operation, cuttingSpeed, toolDiameter } = input;
 
   if (toolDiameter <= 0) {
-    return { rpm: 0, feedRate: 0, mrr: 0 };
+    throw new RangeError('toolDiameter must be greater than 0');
   }
 
   // RPM = 1000 x Vc / (pi x D)

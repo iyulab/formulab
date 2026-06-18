@@ -140,59 +140,49 @@ describe('viaCurrent', () => {
   });
 
   describe('invalid inputs', () => {
-    it('should return null for zero hole diameter', () => {
-      const result = viaCurrent({
+    it('should throw for zero hole diameter', () => {
+      expect(() => viaCurrent({
         holeDiameter: 0,
         platingThickness: 25,
         viaLength: 1.6,
         tempRise: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero plating thickness', () => {
-      const result = viaCurrent({
+    it('should throw for zero plating thickness', () => {
+      expect(() => viaCurrent({
         holeDiameter: 0.3,
         platingThickness: 0,
         viaLength: 1.6,
         tempRise: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero via length', () => {
-      const result = viaCurrent({
+    it('should throw for zero via length', () => {
+      expect(() => viaCurrent({
         holeDiameter: 0.3,
         platingThickness: 25,
         viaLength: 0,
         tempRise: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero temp rise', () => {
-      const result = viaCurrent({
+    it('should throw for zero temp rise', () => {
+      expect(() => viaCurrent({
         holeDiameter: 0.3,
         platingThickness: 25,
         viaLength: 1.6,
         tempRise: 0,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for negative values', () => {
-      const result = viaCurrent({
+    it('should throw for negative values', () => {
+      expect(() => viaCurrent({
         holeDiameter: -0.3,
         platingThickness: 25,
         viaLength: 1.6,
         tempRise: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 

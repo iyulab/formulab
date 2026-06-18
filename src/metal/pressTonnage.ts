@@ -172,6 +172,7 @@ function estimateNumberOfDraws(
  *
  * @param input - Press tonnage input parameters
  * @returns PressTonnageResult with forces, draw analysis, and warnings
+ * @throws RangeError if operation is 'combined' but no operations array is provided
  */
 export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   const {
@@ -286,20 +287,9 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     }
   }
 
-  // For combined operation without explicit operations array, return zeros
+  // Combined operation requires an explicit operations array
   if (operation === 'combined' && !input.operations) {
-    return {
-      blankingForce: 0,
-      bendingForce: 0,
-      drawingForce: 0,
-      blankHolderForce: 0,
-      totalForce: 0,
-      recommendedPress: 0,
-      drawRatio: 0,
-      numberOfDraws: 0,
-      breakdown: [],
-      warnings: [],
-    };
+    throw new RangeError('operations is required for combined operation');
   }
 
   // Calculate total force (blank holder adds to drawing force requirement)

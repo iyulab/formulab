@@ -11,32 +11,17 @@ import type { ChargingInput, ChargingResult } from './types.js';
  *
  * @param input - Charging parameters
  * @returns Charging result with energy and time
+ * @throws RangeError if socEndPercent is not greater than socStartPercent,
+ *   or if chargerPowerKw is not greater than 0
  */
 export function evCharging(input: ChargingInput): ChargingResult {
   const { batteryCapacityKwh, chargerPowerKw, socStartPercent, socEndPercent, efficiency } = input;
 
-  // Handle edge cases - no charging needed or invalid
   if (socEndPercent <= socStartPercent) {
-    return {
-      energyNeeded: 0,
-      energyFromGrid: 0,
-      chargingTimeHours: 0,
-      chargingTimeMinutes: 0,
-    };
+    throw new RangeError('socEndPercent must be greater than socStartPercent');
   }
-
-  // Handle zero charger power
   if (chargerPowerKw <= 0) {
-    const socDiff = (socEndPercent - socStartPercent) / 100;
-    const energyNeeded = batteryCapacityKwh * socDiff;
-    const energyFromGrid = energyNeeded / efficiency;
-
-    return {
-      energyNeeded: roundTo(energyNeeded, 2),
-      energyFromGrid: roundTo(energyFromGrid, 2),
-      chargingTimeHours: 0,
-      chargingTimeMinutes: 0,
-    };
+    throw new RangeError('chargerPowerKw must be greater than 0');
   }
 
   const socDiff = (socEndPercent - socStartPercent) / 100;

@@ -8,13 +8,21 @@ import type { BearingInput, BearingResult } from './types.js';
  *
  * p = 3 for ball bearings
  * p = 10/3 for roller bearings
+ *
+ * @throws RangeError if dynamicLoadRating, equivalentLoad, or rpm is not positive
  */
 export function bearing(input: BearingInput): BearingResult {
   const { bearingType, dynamicLoadRating, equivalentLoad, rpm } = input;
 
   // Validate inputs
-  if (dynamicLoadRating <= 0 || equivalentLoad <= 0 || rpm <= 0) {
-    return { l10: 0, l10h: 0, lifeExponent: 0 };
+  if (dynamicLoadRating <= 0) {
+    throw new RangeError('dynamicLoadRating must be greater than 0');
+  }
+  if (equivalentLoad <= 0) {
+    throw new RangeError('equivalentLoad must be greater than 0');
+  }
+  if (rpm <= 0) {
+    throw new RangeError('rpm must be greater than 0');
   }
 
   // Life exponent: p = 3 for ball bearings, 10/3 for roller bearings

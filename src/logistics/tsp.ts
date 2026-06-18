@@ -112,15 +112,16 @@ function bruteForce(nodes: TspNode[]): { tour: number[]; distance: number } | nu
  *
  * @param input - Array of nodes with x, y coordinates
  * @returns Tour information and distances
+ * @throws RangeError if nodes contains fewer than 1 element
  */
-export function tsp(input: TspInput): TspResult | null {
+export function tsp(input: TspInput): TspResult {
   const { nodes } = input;
   if (nodes.length < 2) {
     if (nodes.length === 1) return {
       nnTour: [0], nnDistance: 0, optimizedTour: [0], optimizedDistance: 0,
       improvementPercent: 0,
     };
-    return null;
+    throw new RangeError('nodes must contain at least 1 element');
   }
   if (nodes.length === 2) {
     return {

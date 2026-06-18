@@ -17,18 +17,13 @@ const LITERS_PER_UK_GALLON = 4.54609;
  *
  * @param input - Fuel economy input with value and source unit
  * @returns All fuel economy units
+ * @throws RangeError if value is not greater than 0
  */
 export function fuelEconomy(input: FuelInput): FuelResult {
   const { fromUnit, value } = input;
 
-  // Handle zero value
-  if (value === 0) {
-    return {
-      kmPerL: 0,
-      lPer100km: 0,
-      mpgUS: 0,
-      mpgUK: 0,
-    };
+  if (value <= 0) {
+    throw new RangeError('value must be greater than 0');
   }
 
   let kmPerL: number;

@@ -62,16 +62,12 @@ describe('thread', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for invalid metric size', () => {
-      const result = thread({ type: 'metric', size: 'M7' });
-
-      expect(result).toBeNull();
+    it('should throw for invalid metric size', () => {
+      expect(() => thread({ type: 'metric', size: 'M7' })).toThrow(RangeError);
     });
 
-    it('should return null for invalid unified size', () => {
-      const result = thread({ type: 'unified', size: '1/3-20' });
-
-      expect(result).toBeNull();
+    it('should throw for invalid unified size', () => {
+      expect(() => thread({ type: 'unified', size: '1/3-20' })).toThrow(RangeError);
     });
   });
 

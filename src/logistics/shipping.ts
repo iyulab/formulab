@@ -12,12 +12,19 @@ import type { ShippingInput, ShippingResult } from './types.js';
  * - Truck: Distance + weight based
  *
  * @param input - Shipment details
- * @returns Cost estimate or null if invalid input
+ * @returns Cost estimate
+ * @throws RangeError if weight or volume is not positive, distance is not
+ *   positive for truck mode, or the shipping mode is unknown
  */
-export function shipping(input: ShippingInput): ShippingResult | null {
+export function shipping(input: ShippingInput): ShippingResult {
   const { mode, weight, volume, distance } = input;
 
-  if (weight <= 0 || volume <= 0) return null;
+  if (weight <= 0) {
+    throw new RangeError('weight must be greater than 0');
+  }
+  if (volume <= 0) {
+    throw new RangeError('volume must be greater than 0');
+  }
 
   let volumetricWeight: number;
   let estimatedCost: number;
@@ -78,7 +85,9 @@ export function shipping(input: ShippingInput): ShippingResult | null {
       return result;
     }
     case 'truck': {
-      if (distance == null || distance <= 0) return null;
+      if (distance == null || distance <= 0) {
+        throw new RangeError('distance must be greater than 0 for truck mode');
+      }
       volumetricWeight = roundTo(volume * 333, 2);
       const chargeableWt = Math.max(weight, volumetricWeight);
       estimatedCost = roundTo(distance * 1.5 + weight * 0.02, 2);
@@ -97,7 +106,7 @@ export function shipping(input: ShippingInput): ShippingResult | null {
       return result;
     }
     default:
-      return null;
+      throw new RangeError('unknown shipping mode: ' + mode);
   }
 
   // For ocean modes

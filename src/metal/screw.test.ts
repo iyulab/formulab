@@ -93,10 +93,8 @@ describe('screw', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for invalid designation', () => {
-      const result = screw({ designation: 'M7', pitchType: 'coarse' });
-
-      expect(result).toBeNull();
+    it('should throw for invalid designation', () => {
+      expect(() => screw({ designation: 'M7', pitchType: 'coarse' })).toThrow(RangeError);
     });
 
     it('should handle small screws (M1.6)', () => {

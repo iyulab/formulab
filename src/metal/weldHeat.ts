@@ -169,26 +169,24 @@ function calculateHAZHardness(
 /**
  * Calculate welding heat input, cooling time, and preheating requirements.
  * Implements AWS D1.1, EN 1011, and Yurioka methodologies.
+ *
+ * @throws RangeError if voltage, current, travelSpeed, or thickness is not positive
  */
 export function weldHeat(input: WeldHeatInput): WeldHeatResult {
   const { process, voltage, current, travelSpeed, baseMetal, thickness } = input;
 
   // Validation
-  if (voltage <= 0 || current <= 0 || travelSpeed <= 0 || thickness <= 0) {
-    return {
-      heatInput: 0,
-      efficiency: WELD_EFFICIENCY[process],
-      carbonEquivalent: 0,
-      carbonEquivalentPcm: 0,
-      coolingTime_t85: 0,
-      coolingRate: 0,
-      preheatTemp: { min: 20, max: 20, source: 'N/A - invalid input' },
-      interpassTemp: { min: 20, max: 250 },
-      hazHardnessMax: 0,
-      crackingRisk: 'low',
-      hydrogenLevel: 'low',
-      recommendations: [],
-    };
+  if (voltage <= 0) {
+    throw new RangeError('voltage must be greater than 0');
+  }
+  if (current <= 0) {
+    throw new RangeError('current must be greater than 0');
+  }
+  if (travelSpeed <= 0) {
+    throw new RangeError('travelSpeed must be greater than 0');
+  }
+  if (thickness <= 0) {
+    throw new RangeError('thickness must be greater than 0');
   }
 
   const efficiency = WELD_EFFICIENCY[process];

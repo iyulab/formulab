@@ -114,28 +114,24 @@ describe('cuttingStock', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for empty pieces', () => {
-      const result = cuttingStock({
+    it('should throw for empty pieces', () => {
+      expect(() => cuttingStock({
         stockLength: 6000,
         kerf: 3,
         pieces: [],
         algorithm: 'ffd',
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null when piece exceeds stock length', () => {
-      const result = cuttingStock({
+    it('should throw when piece exceeds stock length', () => {
+      expect(() => cuttingStock({
         stockLength: 6000,
         kerf: 3,
         pieces: [
           { length: 7000, quantity: 1 },
         ],
         algorithm: 'ffd',
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
     it('should handle zero kerf', () => {

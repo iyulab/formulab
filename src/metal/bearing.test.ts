@@ -116,51 +116,40 @@ describe('bearing', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero dynamic load rating', () => {
-      const result = bearing({
+    it('should throw for zero dynamic load rating', () => {
+      expect(() => bearing({
         bearingType: 'ball',
         dynamicLoadRating: 0,
         equivalentLoad: 10,
         rpm: 1000,
-      });
-
-      expect(result.l10).toBe(0);
-      expect(result.l10h).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero equivalent load', () => {
-      const result = bearing({
+    it('should throw for zero equivalent load', () => {
+      expect(() => bearing({
         bearingType: 'ball',
         dynamicLoadRating: 50,
         equivalentLoad: 0,
         rpm: 1000,
-      });
-
-      expect(result.l10).toBe(0);
-      expect(result.l10h).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero RPM', () => {
-      const result = bearing({
+    it('should throw for zero RPM', () => {
+      expect(() => bearing({
         bearingType: 'ball',
         dynamicLoadRating: 50,
         equivalentLoad: 10,
         rpm: 0,
-      });
-
-      expect(result.l10).toBe(0);
-      expect(result.l10h).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for negative values', () => {
-      const result = bearing({
+    it('should throw for negative values', () => {
+      expect(() => bearing({
         bearingType: 'ball',
         dynamicLoadRating: -50,
         equivalentLoad: 10,
         rpm: 1000,
-      });
-
-      expect(result.l10).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

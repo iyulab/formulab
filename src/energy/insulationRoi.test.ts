@@ -142,31 +142,26 @@ describe('insulationRoi', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero surface area', () => {
-      const result = insulationRoi({
+    it('should throw RangeError for zero surface area', () => {
+      expect(() => insulationRoi({
         surfaceArea: 0,
         tempDifference: 150,
         insulationK: 0.04,
         insulationThickness: 50,
         operatingHours: 8000,
         energyCost: 0.05,
-      });
-
-      expect(result.bareHeatLoss).toBe(0);
-      expect(result.annualEnergySaved).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero temp difference', () => {
-      const result = insulationRoi({
+    it('should throw RangeError for zero temp difference', () => {
+      expect(() => insulationRoi({
         surfaceArea: 50,
         tempDifference: 0,
         insulationK: 0.04,
         insulationThickness: 50,
         operatingHours: 8000,
         energyCost: 0.05,
-      });
-
-      expect(result.bareHeatLoss).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle custom surface coefficient', () => {

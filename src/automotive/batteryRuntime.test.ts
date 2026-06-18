@@ -81,41 +81,31 @@ describe('batteryRuntime', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero voltage', () => {
-      const result = batteryRuntime({
+    it('should throw RangeError for zero voltage', () => {
+      expect(() => batteryRuntime({
         capacityAh: 100,
         voltageV: 0,
         loadW: 100,
         efficiency: 1,
-      });
-
-      expect(result.energyWh).toBe(0);
-      expect(result.runtimeHours).toBe(0);
-      expect(result.currentDraw).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle zero load', () => {
-      const result = batteryRuntime({
+    it('should throw RangeError for zero load', () => {
+      expect(() => batteryRuntime({
         capacityAh: 100,
         voltageV: 12,
         loadW: 0,
         efficiency: 1,
-      });
-
-      expect(result.energyWh).toBe(1200);
-      expect(result.runtimeHours).toBe(0);
-      expect(result.currentDraw).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle negative voltage', () => {
-      const result = batteryRuntime({
+    it('should throw RangeError for negative voltage', () => {
+      expect(() => batteryRuntime({
         capacityAh: 100,
         voltageV: -12,
         loadW: 100,
         efficiency: 1,
-      });
-
-      expect(result.energyWh).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

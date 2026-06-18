@@ -18,12 +18,19 @@ const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
  *
  * @param input - Calorie input parameters
  * @returns Calorie result with BMR, TDEE, and calorie goals
+ * @throws RangeError if weightKg, heightCm, or age is not greater than 0
  */
 export function calorie(input: CalorieInput): CalorieResult {
   const { gender, age, weightKg, heightCm, activityLevel } = input;
 
-  if (weightKg <= 0 || heightCm <= 0 || age <= 0) {
-    return { bmr: 0, tdee: 0, weightLoss: 0, weightMaintain: 0, weightGain: 0 };
+  if (weightKg <= 0) {
+    throw new RangeError('weightKg must be greater than 0');
+  }
+  if (heightCm <= 0) {
+    throw new RangeError('heightCm must be greater than 0');
+  }
+  if (age <= 0) {
+    throw new RangeError('age must be greater than 0');
   }
 
   // Mifflin-St Jeor equation

@@ -11,6 +11,8 @@ import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
  *
  * @param input - Insulation parameters
  * @returns Insulation ROI result with heat savings and payback
+ * @throws RangeError if surfaceArea, tempDifference, insulationK, or
+ *   insulationThickness is not greater than 0
  */
 export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
   const {
@@ -25,16 +27,17 @@ export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
     installationCost,
   } = input;
 
-  if (surfaceArea <= 0 || tempDifference <= 0 || insulationK <= 0 || insulationThickness <= 0) {
-    return {
-      bareHeatLoss: 0,
-      insulatedHeatLoss: 0,
-      heatSaved: 0,
-      heatLossReduction: 0,
-      annualEnergySaved: 0,
-      annualCostSaved: 0,
-      paybackPeriod: null,
-    };
+  if (surfaceArea <= 0) {
+    throw new RangeError('surfaceArea must be greater than 0');
+  }
+  if (tempDifference <= 0) {
+    throw new RangeError('tempDifference must be greater than 0');
+  }
+  if (insulationK <= 0) {
+    throw new RangeError('insulationK must be greater than 0');
+  }
+  if (insulationThickness <= 0) {
+    throw new RangeError('insulationThickness must be greater than 0');
   }
 
   // Bare surface heat loss: Q = h × A × ΔT (W)

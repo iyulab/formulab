@@ -10,13 +10,14 @@ import type { DegreeDayInput, DegreeDayResult } from './types.js';
  *
  * @reference ASHRAE Fundamentals Handbook — Degree Day Method
  * @reference ISO 50001:2018 — Energy management systems
+ * @throws RangeError if dailyTemps is empty
  */
 export function degreeDay(input: DegreeDayInput): DegreeDayResult {
   const { dailyTemps, baseHeating = 18, baseCooling = 24 } = input;
   const totalDays = dailyTemps.length;
 
   if (totalDays === 0) {
-    return { hdd: 0, cdd: 0, totalDays: 0, heatingDays: 0, coolingDays: 0, neutralDays: 0, avgTemp: 0 };
+    throw new RangeError('dailyTemps must not be empty');
   }
 
   let hdd = 0;

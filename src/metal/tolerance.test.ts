@@ -150,37 +150,31 @@ describe('tolerance', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for size out of range', () => {
-      const result = tolerance({
+    it('should throw for size out of range', () => {
+      expect(() => tolerance({
         nominalSize: 500, // Beyond 400mm
         fitType: 'hole',
         deviationLetter: 'H',
         itGrade: 7,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for invalid IT grade', () => {
-      const result = tolerance({
+    it('should throw for invalid IT grade', () => {
+      expect(() => tolerance({
         nominalSize: 25,
         fitType: 'hole',
         deviationLetter: 'H',
         itGrade: 3, // Below IT5
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for invalid deviation letter', () => {
-      const result = tolerance({
+    it('should throw for invalid deviation letter', () => {
+      expect(() => tolerance({
         nominalSize: 25,
         fitType: 'hole',
         deviationLetter: 'x', // Invalid
         itGrade: 7,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 

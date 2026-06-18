@@ -24,6 +24,9 @@ const simplySuportedLambda = (n: number): number => n * Math.PI;
 
 /**
  * Calculate natural frequencies for various vibration systems.
+ *
+ * @throws RangeError if a required geometry or system parameter is not positive,
+ *   or if innerDiameter is not less than outerDiameter for a hollow section
  */
 export function vibration(input: VibrationInput): VibrationResult {
   const { system, material } = input;
@@ -43,8 +46,11 @@ export function vibration(input: VibrationInput): VibrationResult {
   if (system === 'springMass') {
     const k = input.springConstant ?? 0;
     const m = input.mass ?? 0;
-    if (k <= 0 || m <= 0) {
-      return { frequencies: [], momentOfInertia: 0, crossSectionalArea: 0, materialProps };
+    if (k <= 0) {
+      throw new RangeError('springConstant must be greater than 0');
+    }
+    if (m <= 0) {
+      throw new RangeError('mass must be greater than 0');
     }
     const omega = Math.sqrt(k / m);
     const freq = omega / (2 * Math.PI);
@@ -64,7 +70,7 @@ export function vibration(input: VibrationInput): VibrationResult {
   // Beam systems need geometry
   const L = input.length ?? 0; // mm
   if (L <= 0) {
-    return { frequencies: [], momentOfInertia: 0, crossSectionalArea: 0, materialProps };
+    throw new RangeError('length must be greater than 0');
   }
 
   // Calculate cross-sectional properties
@@ -78,8 +84,11 @@ export function vibration(input: VibrationInput): VibrationResult {
     case 'rectangular': {
       const w = input.width ?? 0;
       const h = input.height ?? 0;
-      if (w <= 0 || h <= 0) {
-        return { frequencies: [], momentOfInertia: 0, crossSectionalArea: 0, materialProps };
+      if (w <= 0) {
+        throw new RangeError('width must be greater than 0');
+      }
+      if (h <= 0) {
+        throw new RangeError('height must be greater than 0');
       }
       I = (w * Math.pow(h, 3)) / 12;
       A = w * h;
@@ -92,7 +101,7 @@ export function vibration(input: VibrationInput): VibrationResult {
     case 'circular': {
       const d = input.diameter ?? 0;
       if (d <= 0) {
-        return { frequencies: [], momentOfInertia: 0, crossSectionalArea: 0, materialProps };
+        throw new RangeError('diameter must be greater than 0');
       }
       I = (Math.PI * Math.pow(d, 4)) / 64;
       A = (Math.PI * Math.pow(d, 2)) / 4;
@@ -102,8 +111,14 @@ export function vibration(input: VibrationInput): VibrationResult {
     case 'hollow': {
       const Do = input.outerDiameter ?? 0;
       const Di = input.innerDiameter ?? 0;
-      if (Do <= 0 || Di <= 0 || Di >= Do) {
-        return { frequencies: [], momentOfInertia: 0, crossSectionalArea: 0, materialProps };
+      if (Do <= 0) {
+        throw new RangeError('outerDiameter must be greater than 0');
+      }
+      if (Di <= 0) {
+        throw new RangeError('innerDiameter must be greater than 0');
+      }
+      if (Di >= Do) {
+        throw new RangeError('Di must be less than Do');
       }
       I = (Math.PI / 64) * (Math.pow(Do, 4) - Math.pow(Di, 4));
       A = (Math.PI / 4) * (Math.pow(Do, 2) - Math.pow(Di, 2));
@@ -129,8 +144,11 @@ export function vibration(input: VibrationInput): VibrationResult {
     // Ip = mass moment of inertia of disk = (1/2) x m x r^2
     const diskMass = input.diskMass ?? 0;
     const diskRadius = (input.diskRadius ?? 0) / 1000; // mm -> m
-    if (diskMass <= 0 || diskRadius <= 0) {
-      return { frequencies: [], momentOfInertia: roundTo(I, 2), crossSectionalArea: roundTo(A, 2), materialProps };
+    if (diskMass <= 0) {
+      throw new RangeError('diskMass must be greater than 0');
+    }
+    if (diskRadius <= 0) {
+      throw new RangeError('diskRadius must be greater than 0');
     }
     const Ip = 0.5 * diskMass * Math.pow(diskRadius, 2); // kg-m2
     const omega = Math.sqrt((G_Pa * J_m4) / (L_m * Ip));

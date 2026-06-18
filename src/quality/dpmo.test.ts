@@ -101,37 +101,28 @@ describe('dpmo', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero units', () => {
-      const result = dpmo({
+    it('should throw for zero units', () => {
+      expect(() => dpmo({
         defects: 10,
         units: 0,
         opportunities: 5,
-      });
-
-      expect(result.dpmo).toBe(0);
-      expect(result.sigmaLevel).toBe(0);
-      expect(result.yield).toBe(0);
-      expect(result.dpu).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero opportunities', () => {
-      const result = dpmo({
+    it('should throw for zero opportunities', () => {
+      expect(() => dpmo({
         defects: 10,
         units: 1000,
         opportunities: 0,
-      });
-
-      expect(result.dpmo).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for negative units', () => {
-      const result = dpmo({
+    it('should throw for negative units', () => {
+      expect(() => dpmo({
         defects: 10,
         units: -100,
         opportunities: 5,
-      });
-
-      expect(result.dpmo).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

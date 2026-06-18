@@ -63,11 +63,8 @@ describe('degreeDay', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty array', () => {
-      const result = degreeDay({ dailyTemps: [] });
-      expect(result.hdd).toBe(0);
-      expect(result.cdd).toBe(0);
-      expect(result.totalDays).toBe(0);
+    it('should throw RangeError for empty array', () => {
+      expect(() => degreeDay({ dailyTemps: [] })).toThrow(RangeError);
     });
 
     it('should handle single day', () => {

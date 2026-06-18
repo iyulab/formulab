@@ -229,41 +229,35 @@ describe('vibration', () => {
   });
 
   describe('edge cases', () => {
-    it('should return empty for invalid spring-mass', () => {
-      const result = vibration({
+    it('should throw for invalid spring-mass', () => {
+      expect(() => vibration({
         system: 'springMass',
         material: 'steel',
         springConstant: 0,
         mass: 1,
-      });
-
-      expect(result.frequencies.length).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return empty for zero length beam', () => {
-      const result = vibration({
+    it('should throw for zero length beam', () => {
+      expect(() => vibration({
         system: 'cantilever',
         material: 'steel',
         length: 0,
         crossSection: 'rectangular',
         width: 20,
         height: 10,
-      });
-
-      expect(result.frequencies.length).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return empty for invalid dimensions', () => {
-      const result = vibration({
+    it('should throw for invalid dimensions', () => {
+      expect(() => vibration({
         system: 'cantilever',
         material: 'steel',
         length: 500,
         crossSection: 'rectangular',
         width: 0,
         height: 10,
-      });
-
-      expect(result.frequencies.length).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 });

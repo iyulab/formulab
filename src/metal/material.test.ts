@@ -83,16 +83,12 @@ describe('material', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for invalid category', () => {
-      const result = material({ category: 'invalid' as any, grade: 'SS400' });
-
-      expect(result).toBeNull();
+    it('should throw for invalid category', () => {
+      expect(() => material({ category: 'invalid' as any, grade: 'SS400' })).toThrow(RangeError);
     });
 
-    it('should return null for invalid grade', () => {
-      const result = material({ category: 'steel', grade: 'INVALID' });
-
-      expect(result).toBeNull();
+    it('should throw for invalid grade', () => {
+      expect(() => material({ category: 'steel', grade: 'INVALID' })).toThrow(RangeError);
     });
   });
 });

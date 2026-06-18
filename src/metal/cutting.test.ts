@@ -123,30 +123,24 @@ describe('cutting', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero tool diameter', () => {
-      const result = cutting({
+    it('should throw for zero tool diameter', () => {
+      expect(() => cutting({
         operation: 'turning',
         cuttingSpeed: 100,
         toolDiameter: 0,
         feedPerRev: 0.2,
         depthOfCut: 2,
-      });
-
-      expect(result.rpm).toBe(0);
-      expect(result.feedRate).toBe(0);
-      expect(result.mrr).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for negative tool diameter', () => {
-      const result = cutting({
+    it('should throw for negative tool diameter', () => {
+      expect(() => cutting({
         operation: 'turning',
         cuttingSpeed: 100,
         toolDiameter: -10,
         feedPerRev: 0.2,
         depthOfCut: 2,
-      });
-
-      expect(result.rpm).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle zero feed per rev', () => {

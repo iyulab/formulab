@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.5] - 2026-06-18
+
+### Changed (breaking within 0.x)
+
+- **Invalid-input `return null` / zero-fill results migrated to the standard error policy across 8 domains** — a systematic sweep (reported by online-tools: ISSUE-20260612-formulab-null-returns-full-audit) found ~25 public functions that returned `null` or an all-zero/sentinel result object on invalid input instead of throwing, contradicting `ERRORS.md`. `ERRORS.md` itself was found to be aspirational for several of these (it claimed `throw` where the code 0-filled) and has been corrected to match the code. All of the following now **throw `RangeError`** with a per-constraint message:
+  - **automotive**: `fuelEconomy()` (value ≤ 0), `evCharging()` (socEndPercent ≤ socStartPercent, chargerPowerKw ≤ 0), `batteryRuntime()` (voltageV ≤ 0, loadW ≤ 0), `gearRatio()` (drivingTeeth ≤ 0).
+  - **energy**: `insulationRoi()` (surfaceArea/tempDifference/insulationK/insulationThickness ≤ 0), `degreeDay()` (empty `dailyTemps`).
+  - **food**: `calorie()` (weightKg/heightCm/age ≤ 0).
+  - **metal**: `cutting()` (toolDiameter ≤ 0), `bearing()` (dynamicLoadRating/equivalentLoad/rpm ≤ 0), `roughness()` (value ≤ 0), `weldHeat()` (voltage/current/travelSpeed/thickness ≤ 0), `vibration()` (non-positive system/geometry field; innerDiameter ≥ outerDiameter), `pressTonnage()` (combined operation without `operations`). **Return type changes** (`... | null` → non-nullable): `cuttingStock()` (empty pieces, zero total quantity, stockLength ≤ 0, piece > stockLength), `material()` (unknown category/grade), `screw()` (unknown designation), `thread()` (unknown size), `tolerance()` (nominal size out of range, unknown IT grade / deviation letter).
+  - **quality**: `mtbf()` (totalOperatingTime ≤ 0, numberOfFailures ≤ 0 — with zero failures MTBF is undefined; the previous `0` wrongly read as "fails constantly"), `dpmo()` (units ≤ 0, opportunities ≤ 0), `lineBalancing()` (empty tasks, cycleTime ≤ 0, a task time > cycleTime, circular dependency; `... | null` → non-nullable).
+  - **electronics**: `viaCurrent()` (holeDiameter/platingThickness/viaLength/tempRise ≤ 0; `... | null` → non-nullable).
+  - **logistics**: `shipping()` (weight/volume ≤ 0, truck distance ≤ 0, unknown mode; `... | null` → non-nullable), `tsp()` (empty nodes; `... | null` → non-nullable).
+  - **construction**: `pert()` (empty tasks, circular dependency; `... | null` → non-nullable).
+- **Lookup-miss policy unified to throw** — unknown designation/grade/size/category (`material`/`screw`/`thread`/`tolerance`) now throw, consistent with the rest of metal (`hardness`/`pipeSpec`/`flangeSpec`). Consumers branch on the boundary, not on `null`.
+- **Intentionally kept** (not invalid input): `npv().irr` non-convergence null; `nelsonRules()` internal rule-helper nulls (never surfaced); `pallet3d()` internal placement-helper null; `cpk()`/`ppk()`/`cmk()` degenerate-spread zero result; `energyDensity()` missing-mass null.
+
 ## [0.13.4] - 2026-06-18
 
 ### Changed (breaking within 0.x)

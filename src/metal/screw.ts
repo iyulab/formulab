@@ -24,10 +24,14 @@ export function getDesignations(): string[] {
 
 /**
  * Calculate metric screw dimensions and clearances.
+ *
+ * @throws RangeError if the screw designation is unknown
  */
-export function screw(input: ScrewInput): ScrewResult | null {
+export function screw(input: ScrewInput): ScrewResult {
   const spec = SCREW_TABLE[input.designation];
-  if (!spec) return null;
+  if (!spec) {
+    throw new RangeError('unknown screw designation: ' + input.designation);
+  }
 
   const pitch = input.pitchType === 'coarse' ? spec.coarsePitch : spec.finePitch;
   const minorDiameter = roundTo(spec.nominal - 1.0825 * pitch, 3);

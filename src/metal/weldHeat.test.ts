@@ -225,30 +225,26 @@ describe('weldHeat', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero current', () => {
-      const result = weldHeat({
+    it('should throw for zero current', () => {
+      expect(() => weldHeat({
         process: 'gmaw',
         voltage: 25,
         current: 0,
         travelSpeed: 300,
         baseMetal: 'mildSteel',
         thickness: 10,
-      });
-
-      expect(result.heatInput).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle zero travel speed', () => {
-      const result = weldHeat({
+    it('should throw for zero travel speed', () => {
+      expect(() => weldHeat({
         process: 'gmaw',
         voltage: 25,
         current: 200,
         travelSpeed: 0,
         baseMetal: 'mildSteel',
         thickness: 10,
-      });
-
-      expect(result.heatInput).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 });

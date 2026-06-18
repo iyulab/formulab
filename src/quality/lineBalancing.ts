@@ -108,22 +108,35 @@ function calculatePositionalWeights(tasks: BalancingTask[]): Map<string, number>
  * Calculate line balancing using Ranked Positional Weight (RPW) heuristic
  *
  * @param input - Line balancing input parameters
- * @returns Line balancing result or null if infeasible
+ * @returns Line balancing result
+ * @throws RangeError if tasks is empty, cycleTime is not positive, a task's
+ *   time exceeds cycleTime (infeasible), or the precedence graph is cyclic
  */
-export function lineBalancing(input: LineBalancingInput): LineBalancingResult | null {
+export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   const { tasks, cycleTime } = input;
 
-  if (tasks.length === 0 || cycleTime <= 0) return null;
+  if (tasks.length === 0) {
+    throw new RangeError('tasks must not be empty');
+  }
+  if (cycleTime <= 0) {
+    throw new RangeError('cycleTime must be greater than 0');
+  }
 
   // Check if any task exceeds cycle time
-  if (tasks.some(t => t.time > cycleTime)) return null;
+  if (tasks.some(t => t.time > cycleTime)) {
+    throw new RangeError('cycleTime must be at least the maximum task time');
+  }
 
   // Detect cycle
-  if (detectCycle(tasks)) return null;
+  if (detectCycle(tasks)) {
+    throw new RangeError('tasks contain a circular dependency');
+  }
 
   // Topological sort
   const sorted = topologicalSort(tasks);
-  if (!sorted) return null;
+  if (!sorted) {
+    throw new RangeError('tasks contain a circular dependency');
+  }
 
   // Calculate positional weights
   const pwMap = calculatePositionalWeights(tasks);

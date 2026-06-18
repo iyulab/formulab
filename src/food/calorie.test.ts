@@ -147,53 +147,44 @@ describe('calorie', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero weight', () => {
-      const result = calorie({
+    it('should throw RangeError for zero weight', () => {
+      expect(() => calorie({
         gender: 'male',
         age: 30,
         weightKg: 0,
         heightCm: 175,
         activityLevel: 'moderate',
-      });
-
-      expect(result.bmr).toBe(0);
-      expect(result.tdee).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero height', () => {
-      const result = calorie({
+    it('should throw RangeError for zero height', () => {
+      expect(() => calorie({
         gender: 'male',
         age: 30,
         weightKg: 70,
         heightCm: 0,
         activityLevel: 'moderate',
-      });
-
-      expect(result.bmr).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero age', () => {
-      const result = calorie({
+    it('should throw RangeError for zero age', () => {
+      expect(() => calorie({
         gender: 'male',
         age: 0,
         weightKg: 70,
         heightCm: 175,
         activityLevel: 'moderate',
-      });
-
-      expect(result.bmr).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for negative weight', () => {
-      const result = calorie({
+    it('should throw RangeError for negative weight', () => {
+      expect(() => calorie({
         gender: 'male',
         age: 30,
         weightKg: -70,
         heightCm: 175,
         activityLevel: 'moderate',
-      });
-
-      expect(result.bmr).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

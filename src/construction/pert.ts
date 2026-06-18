@@ -80,18 +80,25 @@ function topologicalSort(tasks: PertTask[]): PertTask[] | null {
  * - Z-score = (deadline - project duration) / √(project variance)
  *
  * @param input - PERT input with tasks and optional deadline
- * @returns PERT analysis result or null if cycle detected
+ * @returns PERT analysis result
+ * @throws RangeError if tasks is empty or contains a circular dependency
  */
-export function pert(input: PertInput): PertResult | null {
+export function pert(input: PertInput): PertResult {
   const { tasks, deadline } = input;
-  if (tasks.length === 0) return null;
+  if (tasks.length === 0) {
+    throw new RangeError('tasks must not be empty');
+  }
 
   // Cycle detection
-  if (detectCycle(tasks)) return null;
+  if (detectCycle(tasks)) {
+    throw new RangeError('tasks contain a circular dependency');
+  }
 
   // Topological sort
   const sorted = topologicalSort(tasks);
-  if (!sorted) return null;
+  if (!sorted) {
+    throw new RangeError('tasks contain a circular dependency');
+  }
 
   // Calculate expected duration and variance
   const te = new Map<string, number>();

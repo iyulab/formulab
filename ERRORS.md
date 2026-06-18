@@ -39,9 +39,9 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `taktTime()` | `throw` | demand = 0 |
 | `aql()` | `throw` | Invalid lot size, invalid AQL level |
 | `downtime()` | `safe` | — |
-| `dpmo()` | `throw` | opportunities = 0 |
-| `lineBalancing()` | `throw` | Empty stations |
-| `mtbf()` | `safe` | Returns 0 when failures = 0 |
+| `dpmo()` | `throw` | units ≤ 0, opportunities ≤ 0 |
+| `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time > cycleTime (infeasible), circular dependency |
+| `mtbf()` | `throw` | totalOperatingTime ≤ 0, numberOfFailures ≤ 0 |
 | `ppk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `ppm()` | `safe` | — |
 | `rpn()` | `safe` | — |
@@ -60,22 +60,22 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `flatPattern()` | `throw` | Invalid dimensions |
 | `kFactorReverse()` | `throw` | Invalid dimensions |
 | `pressTonnage()` | `throw` | Missing operation-specific fields |
-| `bearing()` | `throw` | load ≤ 0, rpm ≤ 0 |
+| `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
 | `bolt()` | `throw` | diameter ≤ 0, torque/preload ≤ 0 |
 | `cutting()` | `throw` | toolDiameter ≤ 0 |
-| `cuttingStock()` | `throw` | stockLength ≤ 0, empty pieces |
+| `cuttingStock()` | `throw` | stockLength ≤ 0, empty pieces, total quantity 0, piece length > stockLength |
 | `gear()` | `throw` | Missing required fields per mode |
 | `hardness()` | `throw` | value out of conversion range |
 | `material()` | `throw` | Unknown grade |
 | `pressFit()` | `throw` | Negative interference |
-| `roughness()` | `throw` | Negative value |
+| `roughness()` | `throw` | value ≤ 0 |
 | `screw()` | `throw` | Unknown designation |
 | `spring()` | `throw` | wireDiameter ≤ 0 |
 | `tap()` | `throw` | Invalid parameters |
 | `thread()` | `throw` | Unknown size |
-| `tolerance()` | `throw` | Invalid IT grade or deviation letter |
-| `vibration()` | `throw` | Missing system-specific fields |
-| `weldHeat()` | `throw` | Invalid parameters |
+| `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
+| `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); innerDiameter ≥ outerDiameter |
+| `weldHeat()` | `throw` | voltage ≤ 0, current ≤ 0, travelSpeed ≤ 0, thickness ≤ 0 |
 | `welding()` | `throw` | Invalid base metal/joint combination |
 | `materialGradeConverter()` | `null` | Unknown grade returns null equivalents |
 | `pipeSpec()` | `throw` | Unknown size/schedule |
@@ -136,10 +136,10 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `brakingDistance()` | `throw` | speed ≤ 0, friction ≤ 0 |
-| `batteryRuntime()` | `throw` | capacity ≤ 0 |
-| `evCharging()` | `throw` | chargerPower ≤ 0 |
-| `fuelEconomy()` | `throw` | distance ≤ 0, fuel ≤ 0 |
-| `gearRatio()` | `throw` | teeth ≤ 0 |
+| `batteryRuntime()` | `throw` | voltageV ≤ 0, loadW ≤ 0 |
+| `evCharging()` | `throw` | socEndPercent ≤ socStartPercent, chargerPowerKw ≤ 0 |
+| `fuelEconomy()` | `throw` | value ≤ 0 |
+| `gearRatio()` | `throw` | drivingTeeth ≤ 0 |
 | `tireCompare()` | `throw` | Invalid tire format |
 | `torque()` | `safe` | — |
 | `power()` | `safe` | — |

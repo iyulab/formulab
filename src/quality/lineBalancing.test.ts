@@ -144,48 +144,40 @@ describe('lineBalancing', () => {
   });
 
   describe('error handling', () => {
-    it('should return null for empty tasks', () => {
-      const result = lineBalancing({
+    it('should throw for empty tasks', () => {
+      expect(() => lineBalancing({
         tasks: [],
         cycleTime: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for zero cycle time', () => {
-      const result = lineBalancing({
+    it('should throw for zero cycle time', () => {
+      expect(() => lineBalancing({
         tasks: [
           { id: 'A', name: 'Task A', time: 5, predecessors: [] },
         ],
         cycleTime: 0,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null when task time exceeds cycle time', () => {
-      const result = lineBalancing({
+    it('should throw when task time exceeds cycle time', () => {
+      expect(() => lineBalancing({
         tasks: [
           { id: 'A', name: 'Task A', time: 15, predecessors: [] },
         ],
         cycleTime: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
 
-    it('should return null for cyclic dependencies', () => {
-      const result = lineBalancing({
+    it('should throw for cyclic dependencies', () => {
+      expect(() => lineBalancing({
         tasks: [
           { id: 'A', name: 'Task A', time: 3, predecessors: ['C'] },
           { id: 'B', name: 'Task B', time: 3, predecessors: ['A'] },
           { id: 'C', name: 'Task C', time: 3, predecessors: ['B'] },
         ],
         cycleTime: 10,
-      });
-
-      expect(result).toBeNull();
+      })).toThrow(RangeError);
     });
   });
 
