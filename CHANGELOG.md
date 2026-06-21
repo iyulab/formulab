@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.8] - 2026-06-21
+
+### Fixed
+
+- **`formulab/metal`: re-export the weld-heat code types referenced by `WeldHeatResult`** — addresses online-tools ISSUE-20260621-formulab-weld-type-exports. The 0.13.7 i18n additions surfaced `preheatTemp.sourceCode: WeldPreheatSourceCode` and `recommendationCodes: WeldRecommendation[]` on the exported `WeldHeatResult`, but the supporting type aliases `WeldPreheatSourceCode`, `WeldRecommendationCode`, and `WeldRecommendation` were defined in `types.ts` yet missing from the `metal/index.ts` barrel — so consumers could not name them (`TS2305: Module 'formulab/metal' has no exported member 'WeldRecommendation'`). All three are now re-exported alongside `WeldHeatInput`/`WeldHeatResult`. Type-only change; no runtime or behavioral impact.
+
 ## [0.13.7] - 2026-06-21
 
 ### Changed (breaking within 0.x)

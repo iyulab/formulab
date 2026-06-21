@@ -91,6 +91,9 @@ export type {
   WeldProcess,
   WeldBaseMetal,
   CrackingRisk,
+  WeldPreheatSourceCode,
+  WeldRecommendationCode,
+  WeldRecommendation,
   WeldHeatInput,
   WeldHeatResult,
   // Welding
