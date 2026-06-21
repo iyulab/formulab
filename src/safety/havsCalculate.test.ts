@@ -179,4 +179,20 @@ describe('havsCalculate', () => {
       expect(result.status).not.toBe('safe');
     });
   });
+
+  describe('input validation', () => {
+    it('should throw RangeError for negative vibrationMagnitude', () => {
+      expect(() => havsCalculate({ tools: [{ vibrationMagnitude: -1, exposureTime: 2 }] })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for negative exposureTime', () => {
+      expect(() => havsCalculate({ tools: [{ vibrationMagnitude: 3, exposureTime: -1 }] })).toThrow(RangeError);
+    });
+
+    it('should accept an empty tool list (no exposure)', () => {
+      const result = havsCalculate({ tools: [] });
+      expect(result.a8).toBe(0);
+      expect(result.status).toBe('safe');
+    });
+  });
 });

@@ -142,4 +142,16 @@ describe('noiseExposure', () => {
       expect(result.status).toBe('exceeds');
     });
   });
+
+  describe('input validation', () => {
+    it('should throw RangeError for negative duration', () => {
+      expect(() => noiseExposure({ exposures: [{ soundLevel: 95, duration: -1 }] })).toThrow(RangeError);
+    });
+
+    it('should accept an empty exposure list (compliant)', () => {
+      const result = noiseExposure({ exposures: [] });
+      expect(result.dose).toBe(0);
+      expect(result.status).toBe('compliant');
+    });
+  });
 });

@@ -52,14 +52,20 @@ describe('respiratorCalculate', () => {
       expect(result.hazardRatio).toBe(10);
     });
 
-    it('should return Infinity for zero OEL', () => {
-      const result = respiratorCalculate({
+    it('should throw RangeError for zero OEL', () => {
+      expect(() => respiratorCalculate({
         concentration: 100,
         oel: 0,
         respiratorType: 'half-mask',
-      });
+      })).toThrow(RangeError);
+    });
 
-      expect(result.hazardRatio).toBe(Infinity);
+    it('should throw RangeError for negative concentration', () => {
+      expect(() => respiratorCalculate({
+        concentration: -1,
+        oel: 10,
+        respiratorType: 'half-mask',
+      })).toThrow(RangeError);
     });
   });
 

@@ -11,9 +11,27 @@ import type { ThermalComfortInput, ThermalComfortResult } from './types.js';
  * @reference ISO 7730:2005 — Ergonomics of the thermal environment
  * @reference ASHRAE Standard 55-2020
  * @reference pythermalcomfort reference implementation
+ *
+ * @throws {RangeError} relativeHumidity outside 0–100, metabolicRate ≤ 0,
+ *   clothingInsulation < 0, or airVelocity < 0.
+ * @remarks Air and radiant temperatures are in °C and may be negative, so they
+ *   are not range-checked.
  */
 export function thermalComfort(input: ThermalComfortInput): ThermalComfortResult {
   const { airTemp, radiantTemp, airVelocity, relativeHumidity, metabolicRate, clothingInsulation } = input;
+
+  if (relativeHumidity < 0 || relativeHumidity > 100) {
+    throw new RangeError('relativeHumidity must be between 0 and 100');
+  }
+  if (metabolicRate <= 0) {
+    throw new RangeError('metabolicRate must be greater than 0');
+  }
+  if (clothingInsulation < 0) {
+    throw new RangeError('clothingInsulation must not be negative');
+  }
+  if (airVelocity < 0) {
+    throw new RangeError('airVelocity must not be negative');
+  }
 
   const M = metabolicRate * 58.15;  // W/m²
   const W = 0;

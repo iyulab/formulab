@@ -1,5 +1,13 @@
 import { roundTo } from '../utils.js';
-import type { WeldHeatInput, WeldHeatResult, WeldProcess, WeldBaseMetal, CrackingRisk } from './types.js';
+import type {
+  WeldHeatInput,
+  WeldHeatResult,
+  WeldProcess,
+  WeldBaseMetal,
+  CrackingRisk,
+  WeldPreheatSourceCode,
+  WeldRecommendation,
+} from './types.js';
 
 /** Arc efficiency by welding process */
 const WELD_EFFICIENCY: Record<WeldProcess, number> = {
@@ -24,7 +32,7 @@ const TYPICAL_COMPOSITION: Record<WeldBaseMetal, {
  * Based on Carbon Equivalent (CE) and combined thickness
  * Returns preheat temperature based on interaction of CE and thickness
  */
-function getPreheatTempAWS(ce: number, thickness: number, heatInput: number): { min: number; max: number; source: string } {
+function getPreheatTempAWS(ce: number, thickness: number, heatInput: number): { min: number; max: number; source: string; sourceCode: WeldPreheatSourceCode } {
   // AWS D1.1 Table 5.8 preheat requirements (simplified)
   // Uses combined CE (IIW) and governing thickness
 
@@ -33,6 +41,7 @@ function getPreheatTempAWS(ce: number, thickness: number, heatInput: number): { 
 
   let baseTemp = 20; // ambient
   let source = 'AWS D1.1 Table 5.8';
+  let sourceCode: WeldPreheatSourceCode = 'awsTable';
 
   // CE and thickness interaction matrix (AWS D1.1 / EN 1011-2 basis)
   if (ce <= 0.30) {
@@ -67,10 +76,12 @@ function getPreheatTempAWS(ce: number, thickness: number, heatInput: number): { 
     else if (thickness > 12) baseTemp = 150;
     else baseTemp = 125;
     source = 'AWS D1.1 + Engineering judgment';
+    sourceCode = 'awsJudgment';
   } else {
     // Extremely high CE - requires special procedures
     baseTemp = 250 + Math.min(50, (ce - 0.60) * 200);
     source = 'Engineering judgment - consult welding engineer';
+    sourceCode = 'engineeringJudgment';
   }
 
   // Apply heat input adjustment
@@ -80,6 +91,7 @@ function getPreheatTempAWS(ce: number, thickness: number, heatInput: number): { 
     min: Math.max(20, baseTemp - 25),
     max: Math.min(350, baseTemp + 25),
     source,
+    sourceCode,
   };
 }
 
@@ -170,7 +182,11 @@ function calculateHAZHardness(
  * Calculate welding heat input, cooling time, and preheating requirements.
  * Implements AWS D1.1, EN 1011, and Yurioka methodologies.
  *
- * @throws RangeError if voltage, current, travelSpeed, or thickness is not positive
+ * The result carries advice in two parallel forms: `recommendations` (English
+ * sentences) and `recommendationCodes` (stable `{ code, params }` entries for
+ * i18n). `preheatTemp.source` likewise has a stable `preheatTemp.sourceCode`.
+ *
+ * @throws {RangeError} voltage, current, travelSpeed, or thickness is not positive
  */
 export function weldHeat(input: WeldHeatInput): WeldHeatResult {
   const { process, voltage, current, travelSpeed, baseMetal, thickness } = input;
@@ -242,47 +258,65 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
     hydrogenLevel = 'high'; // Standard consumables acceptable
   }
 
-  // Generate recommendations
+  // Generate recommendations. `recommendations` holds human-readable English
+  // sentences; `recommendationCodes` holds the parallel machine-readable form
+  // (stable code + interpolation params) so consumers can localise the advice.
   const recommendations: string[] = [];
+  const recommendationCodes: WeldRecommendation[] = [];
+  const t85Rounded = roundTo(coolingTime_t85, 1);
 
   if (preheatTemp.min > 20) {
     recommendations.push(`Preheat to ${preheatTemp.min}-${preheatTemp.max}°C before welding (${preheatTemp.source})`);
+    recommendationCodes.push({ code: 'preheat', params: { min: preheatTemp.min, max: preheatTemp.max, source: preheatTemp.sourceCode } });
   }
 
   if (coolingTime_t85 < 8) {
-    recommendations.push(`Fast cooling (t8/5=${roundTo(coolingTime_t85, 1)}s) - increase heat input or preheat to reduce cracking risk`);
+    recommendations.push(`Fast cooling (t8/5=${t85Rounded}s) - increase heat input or preheat to reduce cracking risk`);
+    recommendationCodes.push({ code: 'fastCooling', params: { t85: t85Rounded } });
   } else if (coolingTime_t85 > 50) {
-    recommendations.push(`Slow cooling (t8/5=${roundTo(coolingTime_t85, 1)}s) - may result in reduced toughness`);
+    recommendations.push(`Slow cooling (t8/5=${t85Rounded}s) - may result in reduced toughness`);
+    recommendationCodes.push({ code: 'slowCooling', params: { t85: t85Rounded } });
   }
 
   if (heatInput < 0.5) {
     recommendations.push('Consider increasing heat input to reduce cooling rate');
+    recommendationCodes.push({ code: 'increaseHeatInput', params: {} });
   } else if (heatInput > 3.0) {
     recommendations.push('High heat input may cause excessive grain growth in HAZ');
+    recommendationCodes.push({ code: 'highHeatInput', params: {} });
   }
 
   if (hydrogenLevel === 'low') {
     recommendations.push('Use low-hydrogen electrodes (E7018, ER70S-6) or processes (GMAW, SAW)');
+    recommendationCodes.push({ code: 'lowHydrogenConsumables', params: {} });
     recommendations.push('Maintain consumables dry per AWS A5.1 requirements');
+    recommendationCodes.push({ code: 'keepConsumablesDry', params: {} });
   }
 
   if (crackingRisk === 'high' || crackingRisk === 'veryHigh') {
     recommendations.push('Consider post-weld heat treatment (PWHT) per AWS D1.1 Table 5.12');
+    recommendationCodes.push({ code: 'pwht', params: {} });
   }
 
   if (hazHardnessMax > 350) {
     recommendations.push(`High HAZ hardness expected (${hazHardnessMax} HV) - control cooling rate and consider PWHT`);
+    recommendationCodes.push({ code: 'highHazHardness', params: { hazHardnessMax } });
   }
 
   if (baseMetal === 'stainlessSteel') {
     recommendations.push('Maintain low interpass temperature (<150°C) to prevent sensitization');
+    recommendationCodes.push({ code: 'stainlessInterpass', params: {} });
     recommendations.push('Use matching filler metal with controlled ferrite content');
+    recommendationCodes.push({ code: 'stainlessFiller', params: {} });
   }
 
   if (baseMetal === 'castIron') {
     recommendations.push('Use nickel-based filler metals (ENiFe-CI, ENi-CI)');
+    recommendationCodes.push({ code: 'castIronNiFiller', params: {} });
     recommendations.push('Peen weld passes while hot to relieve stress');
+    recommendationCodes.push({ code: 'castIronPeen', params: {} });
     recommendations.push('Consider butter layers for thick sections');
+    recommendationCodes.push({ code: 'castIronButter', params: {} });
   }
 
   return {
@@ -298,5 +332,6 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
     crackingRisk,
     hydrogenLevel,
     recommendations,
+    recommendationCodes,
   };
 }

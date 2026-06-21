@@ -128,4 +128,29 @@ describe('thermalComfort', () => {
       expect(fast.pmv).toBeLessThan(slow.pmv);
     });
   });
+
+  describe('input validation', () => {
+    const valid = {
+      airTemp: 24,
+      radiantTemp: 24,
+      airVelocity: 0.1,
+      relativeHumidity: 50,
+      metabolicRate: 1.2,
+      clothingInsulation: 0.5,
+    };
+
+    it.each([
+      ['relativeHumidity > 100', { relativeHumidity: 120 }],
+      ['negative relativeHumidity', { relativeHumidity: -1 }],
+      ['non-positive metabolicRate', { metabolicRate: 0 }],
+      ['negative clothingInsulation', { clothingInsulation: -0.1 }],
+      ['negative airVelocity', { airVelocity: -0.1 }],
+    ])('should throw RangeError for %s', (_label, override) => {
+      expect(() => thermalComfort({ ...valid, ...override })).toThrow(RangeError);
+    });
+
+    it('should accept negative (cold) temperatures', () => {
+      expect(() => thermalComfort({ ...valid, airTemp: -10, radiantTemp: -10 })).not.toThrow();
+    });
+  });
 });

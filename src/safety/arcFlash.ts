@@ -11,9 +11,28 @@ import type { ArcFlashInput, ArcFlashResult } from './types.js';
  *
  * @reference IEEE 1584-2018 — Guide for Performing Arc-Flash Hazard Calculations
  * @reference NFPA 70E-2024 — Standard for Electrical Safety in the Workplace
+ *
+ * @throws {RangeError} voltage, boltedFaultCurrent, workingDistance, faultClearingTime,
+ *   or gapBetweenConductors is not greater than 0
  */
 export function arcFlash(input: ArcFlashInput): ArcFlashResult {
   const { voltage, boltedFaultCurrent, workingDistance, faultClearingTime, gapBetweenConductors, enclosureType } = input;
+
+  if (voltage <= 0) {
+    throw new RangeError('voltage must be greater than 0');
+  }
+  if (boltedFaultCurrent <= 0) {
+    throw new RangeError('boltedFaultCurrent must be greater than 0');
+  }
+  if (workingDistance <= 0) {
+    throw new RangeError('workingDistance must be greater than 0');
+  }
+  if (faultClearingTime <= 0) {
+    throw new RangeError('faultClearingTime must be greater than 0');
+  }
+  if (gapBetweenConductors <= 0) {
+    throw new RangeError('gapBetweenConductors must be greater than 0');
+  }
 
   const Ibf = boltedFaultCurrent; // kA
   const V = voltage;

@@ -511,6 +511,42 @@ export type WeldProcess = 'smaw' | 'gmaw' | 'gtaw' | 'saw';
 export type WeldBaseMetal = 'mildSteel' | 'lowAlloySteel' | 'stainlessSteel' | 'castIron';
 export type CrackingRisk = 'low' | 'moderate' | 'high' | 'veryHigh';
 
+/**
+ * Stable code for the preheat-temperature source, for i18n by consumers.
+ * Maps 1:1 to the human-readable `preheatTemp.source` string.
+ */
+export type WeldPreheatSourceCode = 'awsTable' | 'awsJudgment' | 'engineeringJudgment';
+
+/**
+ * Stable codes for {@link WeldHeatResult.recommendationCodes}. Each maps to the
+ * corresponding English sentence in `recommendations`, allowing consumers to
+ * localise the advice while interpolating the supplied `params`.
+ */
+export type WeldRecommendationCode =
+  | 'preheat'
+  | 'fastCooling'
+  | 'slowCooling'
+  | 'increaseHeatInput'
+  | 'highHeatInput'
+  | 'lowHydrogenConsumables'
+  | 'keepConsumablesDry'
+  | 'pwht'
+  | 'highHazHardness'
+  | 'stainlessInterpass'
+  | 'stainlessFiller'
+  | 'castIronNiFiller'
+  | 'castIronPeen'
+  | 'castIronButter';
+
+/**
+ * Machine-readable form of a single recommendation: a stable `code` plus the
+ * interpolation `params` used in the matching English `recommendations` string.
+ */
+export interface WeldRecommendation {
+  code: WeldRecommendationCode;
+  params: Record<string, number | string>;
+}
+
 export interface WeldHeatInput {
   process: WeldProcess;
   voltage: number;             // V
@@ -538,7 +574,8 @@ export interface WeldHeatResult {
   preheatTemp: {
     min: number;               // C
     max: number;               // C
-    source: string;            // Reference standard used
+    source: string;            // Reference standard used (human-readable, English)
+    sourceCode: WeldPreheatSourceCode; // Stable code for i18n
   };
   interpassTemp: {
     min: number;               // C
@@ -547,7 +584,10 @@ export interface WeldHeatResult {
   hazHardnessMax: number;      // HV
   crackingRisk: CrackingRisk;
   hydrogenLevel: 'low' | 'medium' | 'high'; // Required hydrogen control
+  /** Human-readable English advice. */
   recommendations: string[];
+  /** Machine-readable form of `recommendations`, parallel by index, for i18n. */
+  recommendationCodes: WeldRecommendation[];
 }
 
 /**

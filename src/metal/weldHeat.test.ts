@@ -224,6 +224,73 @@ describe('weldHeat', () => {
     });
   });
 
+  describe('i18n codes (additive)', () => {
+    it('should expose a stable preheat sourceCode alongside the source string', () => {
+      const result = weldHeat({
+        process: 'gmaw',
+        voltage: 25,
+        current: 200,
+        travelSpeed: 300,
+        baseMetal: 'mildSteel',
+        thickness: 10,
+      });
+
+      expect(['awsTable', 'awsJudgment', 'engineeringJudgment']).toContain(result.preheatTemp.sourceCode);
+      // Backward-compatible: human-readable source string still present
+      expect(typeof result.preheatTemp.source).toBe('string');
+    });
+
+    it('should map preheat source to engineeringJudgment for extremely high CE', () => {
+      const result = weldHeat({
+        process: 'smaw',
+        voltage: 22,
+        current: 100,
+        travelSpeed: 150,
+        baseMetal: 'castIron', // C=3.5 → very high CE
+        thickness: 15,
+      });
+
+      expect(result.preheatTemp.sourceCode).toBe('engineeringJudgment');
+      expect(result.preheatTemp.source).toBe('Engineering judgment - consult welding engineer');
+    });
+
+    it('should provide recommendationCodes parallel to recommendations', () => {
+      const result = weldHeat({
+        process: 'gtaw',
+        voltage: 12,
+        current: 100,
+        travelSpeed: 100,
+        baseMetal: 'stainlessSteel',
+        thickness: 3,
+      });
+
+      // Same count, index-aligned with the English strings
+      expect(result.recommendationCodes).toHaveLength(result.recommendations.length);
+      expect(result.recommendationCodes.some(r => r.code === 'stainlessInterpass')).toBe(true);
+      for (const rec of result.recommendationCodes) {
+        expect(typeof rec.code).toBe('string');
+        expect(rec.params).toBeTypeOf('object');
+      }
+    });
+
+    it('should carry interpolation params in recommendation codes', () => {
+      const result = weldHeat({
+        process: 'gmaw',
+        voltage: 28,
+        current: 250,
+        travelSpeed: 300,
+        baseMetal: 'lowAlloySteel',
+        thickness: 30,
+      });
+
+      const preheat = result.recommendationCodes.find(r => r.code === 'preheat');
+      expect(preheat).toBeDefined();
+      expect(preheat!.params.min).toBe(result.preheatTemp.min);
+      expect(preheat!.params.max).toBe(result.preheatTemp.max);
+      expect(preheat!.params.source).toBe(result.preheatTemp.sourceCode);
+    });
+  });
+
   describe('edge cases', () => {
     it('should throw for zero current', () => {
       expect(() => weldHeat({

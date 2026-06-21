@@ -177,7 +177,28 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
 | `cycleTimeEstimator()` | `throw` | Empty operations |
 
-### Energy (15 functions), Safety (14), Food (6), Logistics (17), Environmental (10)
+### Safety (14 functions)
+
+| Function | Error Behavior | Conditions |
+|----------|---------------|------------|
+| `arcFlash()` | `throw` | voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0 |
+| `confinedSpace()` | `throw` | oxygenPercent outside 0–100, or any gas reading (lelPercent, h2sPpm, coPpm, customGas) negative; customGas pel/idlh ≤ 0. A reading of 0 is a valid measurement and does not throw. |
+| `ergonomicRisk()` | `throw` | load < 0 (joint angles may be negative and are not checked) |
+| `fallClearance()` | `throw` | workerHeight ≤ 0, or any distance negative. anchorHeight ≤ 0 is a valid (inadequate) geometry → isAdequate=false, does not throw. |
+| `havsCalculate()` | `throw` | a tool has negative vibrationMagnitude/exposureTime (empty/all-zero tool list is valid) |
+| `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight |
+| `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied) |
+| `lel()` | `throw` | a gas component has negative concentration or non-positive LEL (empty gas list is valid → 'safe') |
+| `nioshLifting()` | `throw` | any distance/angle/frequency/loadWeight negative. RWL=0 (sustained high-frequency lifting) → liftingIndex=Infinity, an intentional sentinel. |
+| `noiseExposure()` | `throw` | an exposure entry has negative duration (empty list is valid → compliant) |
+| `respiratorCalculate()` | `throw` | oel ≤ 0, or concentration < 0. concentration=0 (no hazard) → safetyMargin=Infinity, an intentional sentinel. |
+| `thermalComfort()` | `throw` | relativeHumidity outside 0–100, metabolicRate ≤ 0, clothingInsulation < 0, airVelocity < 0 (temperatures may be negative °C) |
+| `ventilationRate()` | `throw` | non-positive room dimensions/occupants; custom space type without positive customAch |
+| `wbgtCalculate()` | `safe` | all inputs (incl. negative °C) produce a valid index |
+
+**Sentinel exceptions (intentional `Infinity`).** `respiratorCalculate()` returns `safetyMargin = Infinity` when `concentration = 0` (no hazard → any respirator is infinitely adequate), and `nioshLifting()` returns `liftingIndex = Infinity` when the frequency multiplier drives `RWL` to 0 (no weight is acceptable). Both arise from **valid** inputs and are tested, analogous to the capability-index zero-sentinel exception above.
+
+### Energy (15 functions), Food (6), Logistics (17), Environmental (10)
 
 Most functions in these domains follow the `throw` pattern for invalid inputs. See individual function JSDoc for details.
 

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.7] - 2026-06-21
+
+### Changed (breaking within 0.x)
+
+- **Safety domain: clamp/`Infinity`/0-guard validation migrated to the standard error policy (12 functions)** — the v0.13.5/0.13.6 zero-fill sweep was return-pattern-driven and missed the safety domain, where invalid inputs were masked by `Math.max/min` clamping, `Infinity`, or 0-guards rather than `throw` (reported by online-tools: ISSUE-20260621-formulab-validation-gaps-pid-safety-domain — gap 2). For an accuracy-critical domain this left no defense-in-depth for non-page consumers. The following now **throw `RangeError`** with a per-constraint message:
+  - `arcFlash()` (voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0), `illuminance()` (roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight — **return-type behavior change**: previously returned an all-zero result), `lel()` (gas with negative concentration or non-positive LEL), `respiratorCalculate()` (oel ≤ 0 — **was a tested `Infinity` return**; concentration < 0), `confinedSpace()` (oxygenPercent outside 0–100, or any negative gas reading; customGas pel/idlh ≤ 0), `thermalComfort()` (relativeHumidity outside 0–100, metabolicRate ≤ 0, clothingInsulation < 0, airVelocity < 0), `nioshLifting()` (negative distance/angle/frequency/loadWeight), `ladderAngle()` (negative height/baseDistance; ladderLength ≤ 0 when used as a given), `fallClearance()` (workerHeight ≤ 0, or negative distances), `havsCalculate()` (negative tool vibrationMagnitude/exposureTime), `noiseExposure()` (negative exposure duration), `ergonomicRisk()` (load < 0).
+  - **Boundaries deliberately preserved** (valid degenerate domain answers, not invalid input): `confinedSpace()` accepts a reading of `0` (a valid, possibly catastrophic measurement); `fallClearance()` keeps anchorHeight ≤ 0 → `isAdequate=false` + warning; `thermalComfort()`/`wbgtCalculate()` accept negative °C temperatures; `ergonomicRisk()` accepts negative joint angles (flexion/extension); empty tool/exposure/gas lists report no-exposure. **Intentional `Infinity` sentinels kept** (and now documented in `ERRORS.md`): `respiratorCalculate().safetyMargin = Infinity` when concentration = 0 (no hazard), `nioshLifting().liftingIndex = Infinity` when RWL = 0 (no acceptable weight) — both from valid inputs, analogous to the `cpk`/`ppk`/`cmk` degenerate-spread exception. `wbgtCalculate()` remains `safe` (no invalid-input class).
+- **`lel()` status thresholds conservatized (NT-14)** — the mixed-gas `%LEL` status used `safe < 25 / caution 25–50 / danger > 50`, more permissive than the industry `%LEL` convention used everywhere else in the library (`confinedSpace()` and all locale docs: `safe < 10 / caution 10–25 / danger > 25`, evacuate above 25% LEL). `lel()` now follows the same `10 / 25` convention. **Behavior change**: the `status` field returns `caution`/`danger` at lower `%LEL` than before (e.g. 20% LEL: `safe` → `caution`; 40% LEL: `caution` → `danger`). Numeric outputs (`mixtureLel`, `percentOfLel`, `safetyMargin`) are unchanged.
+
+### Added
+
+- **`weldHeat()`: machine-readable i18n codes (additive, backward-compatible)** — addresses online-tools ISSUE-20260621-formulab-weldheat-recommendations-no-code, where consumers could only render the English `recommendations` prose and `preheatTemp.source` string (i18n required brittle reverse-mapping or re-implementing the branch logic — both layer-violating anti-patterns). The result now also carries:
+  - `preheatTemp.sourceCode: 'awsTable' | 'awsJudgment' | 'engineeringJudgment'` alongside the unchanged `source` string.
+  - `recommendationCodes: { code, params }[]` parallel (index-aligned) to `recommendations`, with stable codes (`preheat`, `fastCooling`, `pwht`, `stainlessInterpass`, …) and interpolation params (e.g. `{ min, max, source }`, `{ t85 }`, `{ hazHardnessMax }`). Consumers map `code` → a localized template and interpolate `params`. The existing `recommendations`/`source` strings are untouched.
+
 ## [0.13.6] - 2026-06-21
 
 ### Changed (breaking within 0.x)

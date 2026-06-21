@@ -130,4 +130,14 @@ describe('ergonomicRisk (REBA)', () => {
       expect(withActivity.rebaScore).toBe(base.rebaScore + 3);
     });
   });
+
+  describe('input validation', () => {
+    it('should throw RangeError for negative load', () => {
+      expect(() => ergonomicRisk({ ...neutralPosture, load: -1 })).toThrow(RangeError);
+    });
+
+    it('should accept negative joint angles (flexion/extension)', () => {
+      expect(() => ergonomicRisk({ ...neutralPosture, trunkAngle: -15, wristAngle: -10 })).not.toThrow();
+    });
+  });
 });

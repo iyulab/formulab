@@ -34,9 +34,18 @@ function getAllowableTime(soundLevel: number): number {
  *
  * @param input - Noise exposure input with array of exposures
  * @returns Noise exposure result with dose, TWA, and status
+ * @throws {RangeError} an exposure entry has a negative duration.
+ * @remarks An empty exposure list (no significant noise) is a valid input that
+ *   reports a compliant 0% dose.
  */
 export function noiseExposure(input: NoiseExposureInput): NoiseExposureResult {
   const { exposures } = input;
+
+  for (const exposure of exposures) {
+    if (exposure.duration < 0) {
+      throw new RangeError('exposure duration must not be negative');
+    }
+  }
 
   // Calculate dose as sum of (Cn/Tn)
   let doseSum = 0;

@@ -40,6 +40,8 @@ function lookupCU(roomIndex: number): number {
  *
  * @param input - Room dimensions and lighting parameters
  * @returns Number of fixtures needed and lighting metrics
+ * @throws {RangeError} roomLength, roomWidth, lumensPerLuminaire, or targetLux ≤ 0,
+ *   or the mounting height above the workplane (luminaireHeight − workplaneHeight) ≤ 0.
  */
 export function illuminance(input: IlluminanceInput): IlluminanceResult {
   const {
@@ -55,28 +57,14 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   } = input;
 
   if (roomLength <= 0 || roomWidth <= 0 || lumensPerLuminaire <= 0 || targetLux <= 0) {
-    return {
-      fixturesNeeded: 0,
-      actualLux: 0,
-      roomIndex: 0,
-      totalLumens: 0,
-      powerDensity: null,
-      recommendedSpacing: 0,
-    };
+    throw new RangeError('roomLength, roomWidth, lumensPerLuminaire, and targetLux must all be greater than 0');
   }
 
   const area = roomLength * roomWidth;
   const hm = luminaireHeight - workplaneHeight;
 
   if (hm <= 0) {
-    return {
-      fixturesNeeded: 0,
-      actualLux: 0,
-      roomIndex: 0,
-      totalLumens: 0,
-      powerDensity: null,
-      recommendedSpacing: 0,
-    };
+    throw new RangeError('luminaireHeight must be greater than workplaneHeight');
   }
 
   // Room Index (Cavity Ratio)

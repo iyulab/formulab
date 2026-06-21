@@ -151,42 +151,35 @@ describe('illuminance', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero room length', () => {
-      const result = illuminance({
+    it('should throw RangeError for zero room length', () => {
+      expect(() => illuminance({
         roomLength: 0,
         roomWidth: 8,
         luminaireHeight: 3,
         targetLux: 500,
         lumensPerLuminaire: 3000,
-      });
-
-      expect(result.fixturesNeeded).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero lumens per luminaire', () => {
-      const result = illuminance({
+    it('should throw RangeError for zero lumens per luminaire', () => {
+      expect(() => illuminance({
         roomLength: 10,
         roomWidth: 8,
         luminaireHeight: 3,
         targetLux: 500,
         lumensPerLuminaire: 0,
-      });
-
-      expect(result.fixturesNeeded).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros when luminaire at workplane height', () => {
-      const result = illuminance({
+    it('should throw RangeError when luminaire at workplane height', () => {
+      expect(() => illuminance({
         roomLength: 10,
         roomWidth: 8,
         luminaireHeight: 0.85,
         workplaneHeight: 0.85,
         targetLux: 500,
         lumensPerLuminaire: 3000,
-      });
-
-      // Hm = 0 → invalid
-      expect(result.fixturesNeeded).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

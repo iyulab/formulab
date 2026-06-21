@@ -16,10 +16,25 @@ const RAD = Math.PI / 180;
  *
  * @param input - Ladder dimensions (2 of 3 required)
  * @returns Angle, compliance status, and warnings
+ * @throws {RangeError} a provided height/baseDistance is negative, or ladderLength ≤ 0
+ *   when it is used as a given (i.e. height and baseDistance are not both supplied).
  */
 export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   let { ladderLength, height, baseDistance } = input;
   const warnings: string[] = [];
+
+  if (height !== undefined && height < 0) {
+    throw new RangeError('height must not be negative');
+  }
+  if (baseDistance !== undefined && baseDistance < 0) {
+    throw new RangeError('baseDistance must not be negative');
+  }
+  // When both height and baseDistance are given, ladderLength is recalculated and
+  // its input value (often a 0 placeholder) is ignored. Otherwise it is a given.
+  const bothGiven = height !== undefined && baseDistance !== undefined;
+  if (!bothGiven && ladderLength <= 0) {
+    throw new RangeError('ladderLength must be greater than 0');
+  }
 
   // Resolve the third dimension from the other two
   if (height !== undefined && baseDistance !== undefined) {

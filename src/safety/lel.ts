@@ -11,9 +11,23 @@ import type { LelInput, LelResult } from './types.js';
  *
  * @reference Le Chatelier, H. (1891). Estimation of Firedamp by Flammability Limits.
  * @reference NFPA 69 — Standard on Explosion Prevention Systems
+ *
+ * @throws {RangeError} a gas component has a negative concentration or a non-positive LEL.
+ * @remarks Status thresholds follow the industry %LEL convention (matching
+ *   {@link confinedSpace}): safe < 10%, caution 10–25%, danger > 25%. An empty
+ *   gas list (no flammable gas present) is a valid input that reports 'safe'.
  */
 export function lel(input: LelInput): LelResult {
   const { gases } = input;
+
+  for (const gas of gases) {
+    if (gas.concentration < 0) {
+      throw new RangeError(`gas "${gas.name}" concentration must not be negative`);
+    }
+    if (gas.lel <= 0) {
+      throw new RangeError(`gas "${gas.name}" LEL must be greater than 0`);
+    }
+  }
 
   const totalConcentration = gases.reduce((s, g) => s + g.concentration, 0);
 
@@ -34,9 +48,8 @@ export function lel(input: LelInput): LelResult {
 
   for (const gas of gases) {
     const yi = gas.concentration / totalConcentration;
-    if (gas.lel > 0) {
-      sumFractionOverLel += yi / gas.lel;
-    }
+    // gas.lel > 0 is guaranteed by input validation above
+    sumFractionOverLel += yi / gas.lel;
     contributions.push({
       name: gas.name,
       fraction: roundTo(yi * 100, 2),
@@ -52,11 +65,12 @@ export function lel(input: LelInput): LelResult {
     ? mixtureLel - totalConcentration
     : 0;
 
-  // Status
+  // Status — industry %LEL convention (matches confinedSpace):
+  // safe < 10%, caution 10–25%, danger > 25%
   let status: LelResult['status'];
-  if (percentOfLel < 25) {
+  if (percentOfLel < 10) {
     status = 'safe';
-  } else if (percentOfLel < 50) {
+  } else if (percentOfLel <= 25) {
     status = 'caution';
   } else {
     status = 'danger';

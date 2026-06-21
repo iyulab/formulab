@@ -145,6 +145,11 @@ function getCouplingMultiplier(
  *
  * @param input - NIOSH lifting parameters
  * @returns NIOSH results including RWL, LI, multipliers, and risk level
+ * @throws {RangeError} any distance, angle, frequency, or loadWeight is negative.
+ * @remarks Distances below the equation's domain (H, D < 25 cm) are clamped per the
+ *   NIOSH spec rather than rejected. When the frequency multiplier drives RWL to 0
+ *   (sustained high-frequency lifting), liftingIndex is Infinity — an intentional
+ *   sentinel meaning "no weight is acceptable for this task".
  */
 export function nioshLifting(input: NioshInput): NioshResult {
   const {
@@ -157,6 +162,17 @@ export function nioshLifting(input: NioshInput): NioshResult {
     coupling,
     loadWeight,
   } = input;
+
+  if (
+    horizontalDistance < 0 ||
+    verticalDistance < 0 ||
+    verticalTravel < 0 ||
+    asymmetryAngle < 0 ||
+    frequency < 0 ||
+    loadWeight < 0
+  ) {
+    throw new RangeError('distances, asymmetryAngle, frequency, and loadWeight must not be negative');
+  }
 
   // Calculate multipliers
   // HM: Horizontal Multiplier (25/H), max 1.0, H must be >= 25cm

@@ -127,4 +127,29 @@ describe('confinedSpace', () => {
       expect(result.entryPermitted).toBe(false);
     });
   });
+
+  describe('input validation', () => {
+    it.each([
+      ['negative oxygenPercent', { oxygenPercent: -1, lelPercent: 0 }],
+      ['oxygenPercent > 100', { oxygenPercent: 101, lelPercent: 0 }],
+      ['negative lelPercent', { oxygenPercent: 20.9, lelPercent: -1 }],
+      ['negative h2sPpm', { oxygenPercent: 20.9, lelPercent: 0, h2sPpm: -1 }],
+      ['negative coPpm', { oxygenPercent: 20.9, lelPercent: 0, coPpm: -1 }],
+    ])('should throw RangeError for %s', (_label, input) => {
+      expect(() => confinedSpace(input)).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for non-positive customGas pel/idlh', () => {
+      expect(() => confinedSpace({
+        oxygenPercent: 20.9,
+        lelPercent: 0,
+        customGas: { name: 'NH3', concentration: 10, pel: 0, idlh: 300 },
+      })).toThrow(RangeError);
+    });
+
+    it('should accept a zero reading as a valid measurement', () => {
+      const result = confinedSpace({ oxygenPercent: 0, lelPercent: 0 });
+      expect(result.oxygenStatus).toBe('deficient');
+    });
+  });
 });

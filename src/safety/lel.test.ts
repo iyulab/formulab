@@ -10,10 +10,11 @@ describe('lel', () => {
 
       expect(result.mixtureLel).toBeCloseTo(5.0, 2);
       expect(result.percentOfLel).toBeCloseTo(20, 1);
-      expect(result.status).toBe('safe');
+      // 20% LEL → caution under the industry 10/25 convention
+      expect(result.status).toBe('caution');
     });
 
-    it('should detect danger when concentration exceeds 50% LEL', () => {
+    it('should detect danger when concentration exceeds 25% LEL', () => {
       const result = lel({
         gases: [{ name: 'Methane', concentration: 3.0, lel: 5.0 }],
       });
@@ -84,26 +85,55 @@ describe('lel', () => {
     });
   });
 
-  describe('status classification', () => {
-    it('safe: < 25% LEL', () => {
+  describe('status classification (industry 10/25 convention)', () => {
+    it('safe: < 10% LEL', () => {
+      // conc 0.4 / lel 5.0 → 8% LEL
       const result = lel({
-        gases: [{ name: 'Methane', concentration: 1.0, lel: 5.0 }],
+        gases: [{ name: 'Methane', concentration: 0.4, lel: 5.0 }],
       });
+      expect(result.percentOfLel).toBeCloseTo(8, 1);
       expect(result.status).toBe('safe');
     });
 
-    it('caution: 25-50% LEL', () => {
+    it('caution: 10-25% LEL', () => {
+      // conc 1.0 / lel 5.0 → 20% LEL
       const result = lel({
-        gases: [{ name: 'Methane', concentration: 2.0, lel: 5.0 }],
+        gases: [{ name: 'Methane', concentration: 1.0, lel: 5.0 }],
       });
+      expect(result.percentOfLel).toBeCloseTo(20, 1);
       expect(result.status).toBe('caution');
     });
 
-    it('danger: > 50% LEL', () => {
+    it('caution: at 25% LEL boundary (inclusive)', () => {
+      // conc 1.25 / lel 5.0 → 25% LEL
       const result = lel({
-        gases: [{ name: 'Methane', concentration: 3.0, lel: 5.0 }],
+        gases: [{ name: 'Methane', concentration: 1.25, lel: 5.0 }],
       });
+      expect(result.percentOfLel).toBeCloseTo(25, 1);
+      expect(result.status).toBe('caution');
+    });
+
+    it('danger: > 25% LEL', () => {
+      // conc 2.0 / lel 5.0 → 40% LEL
+      const result = lel({
+        gases: [{ name: 'Methane', concentration: 2.0, lel: 5.0 }],
+      });
+      expect(result.percentOfLel).toBeCloseTo(40, 1);
       expect(result.status).toBe('danger');
+    });
+  });
+
+  describe('input validation', () => {
+    it('should throw RangeError for negative concentration', () => {
+      expect(() => lel({
+        gases: [{ name: 'Methane', concentration: -1, lel: 5.0 }],
+      })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for non-positive LEL', () => {
+      expect(() => lel({
+        gases: [{ name: 'Methane', concentration: 1, lel: 0 }],
+      })).toThrow(RangeError);
     });
   });
 

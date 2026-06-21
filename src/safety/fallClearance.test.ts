@@ -257,4 +257,35 @@ describe('fallClearance', () => {
       expect(result.warnings.some(w => w.includes('increasing anchor height'))).toBe(true);
     });
   });
+
+  describe('input validation', () => {
+    const valid = {
+      lanyardLength: 1.8,
+      decelerationDistance: 1.07,
+      harnessStretch: 0.3,
+      workerHeight: 1.5,
+      safetyFactor: 0.6,
+      anchorHeight: 6,
+    };
+
+    it('should throw RangeError for non-positive workerHeight', () => {
+      expect(() => fallClearance({ ...valid, workerHeight: 0 })).toThrow(RangeError);
+    });
+
+    it.each([
+      ['lanyardLength', { lanyardLength: -1 }],
+      ['decelerationDistance', { decelerationDistance: -1 }],
+      ['harnessStretch', { harnessStretch: -1 }],
+      ['safetyFactor', { safetyFactor: -1 }],
+      ['rescueClearance', { rescueClearance: -1 }],
+      ['obstacleHeight', { obstacleHeight: -1 }],
+    ])('should throw RangeError for negative %s', (_label, override) => {
+      expect(() => fallClearance({ ...valid, ...override })).toThrow(RangeError);
+    });
+
+    it('should NOT throw for non-positive anchorHeight (reports inadequate instead)', () => {
+      const result = fallClearance({ ...valid, anchorHeight: 0 });
+      expect(result.isAdequate).toBe(false);
+    });
+  });
 });

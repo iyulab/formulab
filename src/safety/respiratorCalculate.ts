@@ -36,7 +36,7 @@ function calculateMUC(apf: number, oel: number): number {
  * concentration exceeds the occupational exposure limit.
  */
 function calculateHazardRatio(concentration: number, oel: number): number {
-  if (oel <= 0) return Infinity;
+  // oel > 0 is guaranteed by the caller's input validation
   return concentration / oel;
 }
 
@@ -67,9 +67,19 @@ function calculateSafetyMargin(apf: number, requiredAPF: number): number {
  *
  * @param input - Respirator input parameters
  * @returns Respirator results including MUC, APF, and protection assessment
+ * @throws {RangeError} oel is not greater than 0, or concentration is negative
+ * @remarks When concentration is 0 (no hazard present), safetyMargin is Infinity —
+ *   an intentional sentinel meaning "any respirator is infinitely adequate".
  */
 export function respiratorCalculate(input: RespiratorInput): RespiratorResult {
   const { concentration, oel, respiratorType } = input;
+
+  if (oel <= 0) {
+    throw new RangeError('oel (occupational exposure limit) must be greater than 0');
+  }
+  if (concentration < 0) {
+    throw new RangeError('concentration must not be negative');
+  }
 
   // Get APF for selected respirator type
   const apf = APF_VALUES[respiratorType];

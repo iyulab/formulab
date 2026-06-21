@@ -399,4 +399,36 @@ describe('nioshLifting', () => {
       expect(result.rwl).toBeCloseTo(21.85, 1);
     });
   });
+
+  describe('input validation', () => {
+    const valid = {
+      horizontalDistance: 25,
+      verticalDistance: 75,
+      verticalTravel: 25,
+      asymmetryAngle: 0,
+      frequency: 1,
+      duration: 'short' as const,
+      coupling: 'good' as const,
+      loadWeight: 10,
+    };
+
+    it.each([
+      ['horizontalDistance', { horizontalDistance: -1 }],
+      ['verticalDistance', { verticalDistance: -1 }],
+      ['verticalTravel', { verticalTravel: -1 }],
+      ['asymmetryAngle', { asymmetryAngle: -1 }],
+      ['frequency', { frequency: -1 }],
+      ['loadWeight', { loadWeight: -1 }],
+    ])('should throw RangeError for negative %s', (_label, override) => {
+      expect(() => nioshLifting({ ...valid, ...override })).toThrow(RangeError);
+    });
+
+    it('should return Infinity liftingIndex when RWL=0 (sustained high-frequency lifting)', () => {
+      // 'long' duration at freq ≥ 13 → FM = 0 → RWL = 0 → no acceptable weight
+      const result = nioshLifting({ ...valid, frequency: 15, duration: 'long', loadWeight: 10 });
+      expect(result.rwl).toBe(0);
+      expect(result.liftingIndex).toBe(Infinity);
+      expect(result.riskLevel).toBe('high');
+    });
+  });
 });

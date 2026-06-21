@@ -133,4 +133,25 @@ describe('arcFlash', () => {
       expect(slow.incidentEnergy / fast.incidentEnergy).toBeCloseTo(5, 0);
     });
   });
+
+  describe('input validation', () => {
+    const valid = {
+      voltage: 480,
+      boltedFaultCurrent: 20,
+      workingDistance: 457,
+      faultClearingTime: 0.2,
+      gapBetweenConductors: 32,
+      enclosureType: 'box' as const,
+    };
+
+    it.each([
+      ['voltage', { voltage: 0 }],
+      ['boltedFaultCurrent', { boltedFaultCurrent: 0 }],
+      ['workingDistance', { workingDistance: 0 }],
+      ['faultClearingTime', { faultClearingTime: 0 }],
+      ['gapBetweenConductors', { gapBetweenConductors: 0 }],
+    ])('should throw RangeError for non-positive %s', (_label, override) => {
+      expect(() => arcFlash({ ...valid, ...override })).toThrow(RangeError);
+    });
+  });
 });

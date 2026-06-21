@@ -63,8 +63,16 @@ function clampIdx(val: number, min: number, max: number): number {
  *
  * @reference Hignett, S. & McAtamney, L. (2000). REBA, Applied Ergonomics 31(2), 201-205.
  * @reference 중대재해처벌법 시행령 — 인체공학적 유해요인 평가
+ *
+ * @throws {RangeError} load is negative.
+ * @remarks Joint angles may legitimately be negative (flexion vs. extension), so they
+ *   are not range-checked; only the handled load (kg) must be non-negative.
  */
 export function ergonomicRisk(input: RebaInput): RebaResult {
+  if (input.load < 0) {
+    throw new RangeError('load must not be negative');
+  }
+
   // --- Trunk Score ---
   const absTA = Math.abs(input.trunkAngle);
   let trunkScore: number;

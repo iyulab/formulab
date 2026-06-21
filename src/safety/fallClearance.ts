@@ -18,6 +18,11 @@ import type { FallClearanceInput, FallClearanceResult } from './types.js';
  *
  * @param input - Fall clearance parameters
  * @returns Fall clearance results including adequacy assessment and warnings
+ * @throws {RangeError} workerHeight ≤ 0, or any distance (lanyardLength,
+ *   decelerationDistance, harnessStretch, safetyFactor, rescueClearance,
+ *   obstacleHeight) is negative.
+ * @remarks anchorHeight ≤ 0 is NOT rejected: it is a valid (dangerous) geometry
+ *   that the function reports as isAdequate=false with a warning.
  */
 export function fallClearance(input: FallClearanceInput): FallClearanceResult {
   const {
@@ -30,6 +35,20 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     rescueClearance = 0.9, // ANSI Z359.4 default minimum
     obstacleHeight = 0,    // Ground level default
   } = input;
+
+  if (workerHeight <= 0) {
+    throw new RangeError('workerHeight must be greater than 0');
+  }
+  if (
+    lanyardLength < 0 ||
+    decelerationDistance < 0 ||
+    harnessStretch < 0 ||
+    safetyFactor < 0 ||
+    rescueClearance < 0 ||
+    obstacleHeight < 0
+  ) {
+    throw new RangeError('lanyardLength, decelerationDistance, harnessStretch, safetyFactor, rescueClearance, and obstacleHeight must not be negative');
+  }
 
   const warnings: string[] = [];
 

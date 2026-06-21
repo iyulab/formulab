@@ -11,9 +11,31 @@ import type { ConfinedSpaceInput, ConfinedSpaceResult } from './types.js';
  *
  * @reference OSHA 29 CFR 1910.146 — Permit-required confined spaces
  * @reference NIOSH Pocket Guide to Chemical Hazards
+ *
+ * @throws {RangeError} oxygenPercent outside 0–100, or any gas reading
+ *   (lelPercent, h2sPpm, coPpm, customGas fields) is negative.
+ * @remarks A reading of 0 is a valid (and possibly catastrophic) measurement,
+ *   so zero values are accepted; only physically impossible values throw.
  */
 export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
   const { oxygenPercent, lelPercent, h2sPpm, coPpm, customGas } = input;
+
+  if (oxygenPercent < 0 || oxygenPercent > 100) {
+    throw new RangeError('oxygenPercent must be between 0 and 100');
+  }
+  if (lelPercent < 0) {
+    throw new RangeError('lelPercent must not be negative');
+  }
+  if (h2sPpm != null && h2sPpm < 0) {
+    throw new RangeError('h2sPpm must not be negative');
+  }
+  if (coPpm != null && coPpm < 0) {
+    throw new RangeError('coPpm must not be negative');
+  }
+  if (customGas && (customGas.concentration < 0 || customGas.pel <= 0 || customGas.idlh <= 0)) {
+    throw new RangeError('customGas concentration must not be negative and pel/idlh must be greater than 0');
+  }
+
   const warnings: string[] = [];
 
   // Oxygen assessment

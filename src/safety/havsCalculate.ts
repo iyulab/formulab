@@ -83,9 +83,18 @@ function calculateMaxDailyExposure(tools: ToolExposure[]): number {
  *
  * @param input - HAVS input parameters with tool exposures
  * @returns HAVS results including A(8), status, and exposure metrics
+ * @throws {RangeError} a tool has a negative vibrationMagnitude or exposureTime.
+ * @remarks Zero-valued tool entries are treated as unused and filtered out; an empty
+ *   (or all-zero) tool list is a valid input that reports no exposure.
  */
 export function havsCalculate(input: HavsInput): HavsResult {
   const { tools } = input;
+
+  for (const t of tools) {
+    if (t.vibrationMagnitude < 0 || t.exposureTime < 0) {
+      throw new RangeError('tool vibrationMagnitude and exposureTime must not be negative');
+    }
+  }
 
   // Filter out empty entries
   const validTools = tools.filter(t => t.vibrationMagnitude > 0 && t.exposureTime > 0);

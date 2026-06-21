@@ -148,4 +148,18 @@ describe('ladderAngle', () => {
       expect(result.baseDistance).toBeGreaterThan(0);
     });
   });
+
+  describe('input validation', () => {
+    it('should throw RangeError for non-positive ladderLength', () => {
+      expect(() => ladderAngle({ ladderLength: 0, height: 5 })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for negative height', () => {
+      expect(() => ladderAngle({ ladderLength: 6, height: -1 })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for negative baseDistance', () => {
+      expect(() => ladderAngle({ ladderLength: 6, baseDistance: -1 })).toThrow(RangeError);
+    });
+  });
 });
