@@ -27,18 +27,8 @@ export function pickTime(input: PickTimeInput): PickTimeResult {
     batchSize = 1,
   } = input;
 
-  // Handle zero/invalid inputs
-  if (speed <= 0 || itemsPerOrder <= 0) {
-    return {
-      travelTime: 0,
-      searchTime: 0,
-      pickTime: 0,
-      documentationTime: 0,
-      totalTime: 0,
-      totalTimeMinutes: 0,
-      ordersPerHour: 0,
-    };
-  }
+  if (speed <= 0) throw new RangeError('speed must be greater than 0');
+  if (itemsPerOrder <= 0) throw new RangeError('itemsPerOrder must be greater than 0');
 
   // Calculate base times
   // Travel time = distance / speed, convert to seconds (speed is per minute)

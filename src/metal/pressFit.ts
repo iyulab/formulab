@@ -25,18 +25,10 @@ export function pressFit(input: PressFitInput): PressFitResult {
   } = input;
 
   // Validate inputs
-  if (shaftDiameter <= 0 || holeDiameter <= 0 || hubOuterDiameter <= 0 || contactLength <= 0) {
-    return {
-      interference: 0,
-      interfacePressure: 0,
-      assemblyForce: 0,
-      assemblyForceKN: 0,
-      holdingTorque: 0,
-      axialHoldingForce: 0,
-      hubHoopStress: 0,
-      shaftRadialStress: 0,
-    };
-  }
+  if (shaftDiameter <= 0) throw new RangeError('shaftDiameter must be greater than 0');
+  if (holeDiameter <= 0) throw new RangeError('holeDiameter must be greater than 0');
+  if (hubOuterDiameter <= 0) throw new RangeError('hubOuterDiameter must be greater than 0');
+  if (contactLength <= 0) throw new RangeError('contactLength must be greater than 0');
 
   if (hubOuterDiameter <= shaftDiameter) {
     return {

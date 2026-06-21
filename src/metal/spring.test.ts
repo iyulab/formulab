@@ -187,34 +187,28 @@ describe('spring', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for invalid wire diameter', () => {
-      const result = spring({
+    it('should throw for invalid wire diameter', () => {
+      expect(() => spring({
         wireDiameter: 0,
         meanCoilDiameter: 15,
         activeCoils: 10,
-      });
-
-      expect(result.springRate).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for invalid coil diameter', () => {
-      const result = spring({
+    it('should throw for invalid coil diameter', () => {
+      expect(() => spring({
         wireDiameter: 2,
         meanCoilDiameter: 0,
         activeCoils: 10,
-      });
-
-      expect(result.springRate).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for invalid coil count', () => {
-      const result = spring({
+    it('should throw for invalid coil count', () => {
+      expect(() => spring({
         wireDiameter: 2,
         meanCoilDiameter: 15,
         activeCoils: 0,
-      });
-
-      expect(result.springRate).toBe(0);
+      })).toThrow();
     });
   });
 

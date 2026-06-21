@@ -118,25 +118,20 @@ describe('tap', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for invalid major diameter', () => {
-      const result = tap({
+    it('should throw for invalid major diameter', () => {
+      expect(() => tap({
         standard: 'metric',
         majorDiameter: 0,
         pitch: 1.5,
-      });
-
-      expect(result.tapDrillSize).toBe(0);
-      expect(result.threadPercentage).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for invalid pitch', () => {
-      const result = tap({
+    it('should throw for invalid pitch', () => {
+      expect(() => tap({
         standard: 'metric',
         majorDiameter: 10,
         pitch: 0,
-      });
-
-      expect(result.tapDrillSize).toBe(0);
+      })).toThrow();
     });
   });
 

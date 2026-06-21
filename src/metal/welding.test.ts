@@ -179,15 +179,12 @@ describe('welding', () => {
   });
 
   describe('edge cases', () => {
-    it('should return empty for zero thickness', () => {
-      const result = welding({
+    it('should throw for zero thickness', () => {
+      expect(() => welding({
         baseMetal: 'mildSteel',
         position: 'flat',
         thickness: 0,
-      });
-
-      expect(result.recommendations.length).toBe(0);
-      expect(result.rodDiameter).toBe(0);
+      })).toThrow();
     });
   });
 });

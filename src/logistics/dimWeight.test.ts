@@ -96,70 +96,68 @@ describe('dimWeight', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero length', () => {
-      const result = dimWeight({
+    it('should throw for zero length', () => {
+      expect(() => dimWeight({
         length: 0,
         width: 40,
         height: 30,
         actualWeight: 5,
         carrier: 'domestic_air',
-      });
-
-      expect(result.dimensionalWeight).toBe(0);
-      expect(result.billableWeight).toBe(0);
-      expect(result.isDimWeightHigher).toBe(false);
+      })).toThrow();
     });
 
-    it('should handle zero width', () => {
-      const result = dimWeight({
+    it('should throw for zero width', () => {
+      expect(() => dimWeight({
         length: 50,
         width: 0,
         height: 30,
         actualWeight: 5,
         carrier: 'domestic_air',
-      });
-
-      expect(result.dimensionalWeight).toBe(0);
-      expect(result.billableWeight).toBe(0);
+      })).toThrow();
     });
 
-    it('should handle zero height', () => {
-      const result = dimWeight({
+    it('should throw for zero height', () => {
+      expect(() => dimWeight({
         length: 50,
         width: 40,
         height: 0,
         actualWeight: 5,
         carrier: 'domestic_air',
-      });
-
-      expect(result.dimensionalWeight).toBe(0);
-      expect(result.billableWeight).toBe(0);
+      })).toThrow();
     });
 
-    it('should handle negative dimensions', () => {
-      const result = dimWeight({
+    it('should throw for negative dimensions', () => {
+      expect(() => dimWeight({
         length: -10,
         width: 40,
         height: 30,
         actualWeight: 5,
         carrier: 'domestic_air',
-      });
-
-      expect(result.dimensionalWeight).toBe(0);
-      expect(result.billableWeight).toBe(0);
+      })).toThrow();
     });
 
-    it('should handle negative actual weight', () => {
-      const result = dimWeight({
+    it('should throw for negative actual weight', () => {
+      expect(() => dimWeight({
         length: 50,
         width: 40,
         height: 30,
         actualWeight: -5,
         carrier: 'domestic_air',
+      })).toThrow();
+    });
+
+    it('should allow zero actual weight', () => {
+      const result = dimWeight({
+        length: 50,
+        width: 40,
+        height: 30,
+        actualWeight: 0,
+        carrier: 'domestic_air',
       });
 
-      expect(result.dimensionalWeight).toBe(0);
       expect(result.actualWeight).toBe(0);
+      expect(result.dimensionalWeight).toBe(12);
+      expect(result.billableWeight).toBe(12);
     });
   });
 

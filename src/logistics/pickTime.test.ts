@@ -136,8 +136,8 @@ describe('pickTime', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero speed', () => {
-      const result = pickTime({
+    it('should throw for zero speed', () => {
+      expect(() => pickTime({
         mode: 'single',
         distance: 100,
         speed: 0,
@@ -145,14 +145,11 @@ describe('pickTime', () => {
         searchTimePerItem: 10,
         pickTimePerItem: 5,
         documentationTime: 30,
-      });
-
-      expect(result.totalTime).toBe(0);
-      expect(result.ordersPerHour).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero items', () => {
-      const result = pickTime({
+    it('should throw for zero items', () => {
+      expect(() => pickTime({
         mode: 'single',
         distance: 100,
         speed: 50,
@@ -160,9 +157,7 @@ describe('pickTime', () => {
         searchTimePerItem: 10,
         pickTimePerItem: 5,
         documentationTime: 30,
-      });
-
-      expect(result.totalTime).toBe(0);
+      })).toThrow();
     });
 
     it('should default batch size to 1', () => {

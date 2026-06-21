@@ -86,10 +86,12 @@ describe('slope', () => {
       expect(result.risePerMeter).toBe(0);
     });
 
-    it('should handle zero ratio', () => {
-      const result = slope({ fromUnit: 'ratio', value: 0 });
+    it('should throw for zero ratio (1:0 is vertical, not flat)', () => {
+      expect(() => slope({ fromUnit: 'ratio', value: 0 })).toThrow();
+    });
 
-      expect(result.percent).toBe(0);
+    it('should throw for negative ratio', () => {
+      expect(() => slope({ fromUnit: 'ratio', value: -5 })).toThrow();
     });
 
     it('should handle very steep slope (200%)', () => {

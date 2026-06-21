@@ -19,15 +19,7 @@ import type {
 export function fillRate(input: FillRateInput): FillRateResult {
   const { totalOrders, filledComplete } = input;
 
-  // Handle zero/invalid inputs
-  if (totalOrders <= 0) {
-    return {
-      fillRate: 0,
-      shortfallRate: 100,
-      filledComplete: 0,
-      shortfall: 0,
-    };
-  }
+  if (totalOrders <= 0) throw new RangeError('totalOrders must be greater than 0');
 
   // Clamp filledComplete to valid range
   const actualFilled = Math.min(Math.max(0, filledComplete), totalOrders);

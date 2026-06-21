@@ -37,14 +37,11 @@ describe('fillRate', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero total orders', () => {
-      const result = fillRate({
+    it('should throw for zero total orders', () => {
+      expect(() => fillRate({
         totalOrders: 0,
         filledComplete: 0,
-      });
-
-      expect(result.fillRate).toBe(0);
-      expect(result.shortfallRate).toBe(100);
+      })).toThrow();
     });
 
     it('should clamp filled to total orders', () => {

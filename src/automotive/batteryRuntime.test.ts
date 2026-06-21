@@ -81,6 +81,24 @@ describe('batteryRuntime', () => {
   });
 
   describe('edge cases', () => {
+    it('should throw RangeError for zero capacity', () => {
+      expect(() => batteryRuntime({
+        capacityAh: 0,
+        voltageV: 12,
+        loadW: 100,
+        efficiency: 1,
+      })).toThrow(RangeError);
+    });
+
+    it('should throw RangeError for negative capacity', () => {
+      expect(() => batteryRuntime({
+        capacityAh: -100,
+        voltageV: 12,
+        loadW: 100,
+        efficiency: 1,
+      })).toThrow(RangeError);
+    });
+
     it('should throw RangeError for zero voltage', () => {
       expect(() => batteryRuntime({
         capacityAh: 100,

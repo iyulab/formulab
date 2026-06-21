@@ -37,7 +37,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `cycleTime()` | `safe` | — |
 | `taktTime()` | `throw` | demand = 0 |
-| `aql()` | `throw` | Invalid lot size, invalid AQL level |
+| `aql()` | `throw` | lotSize ≤ 0 |
 | `downtime()` | `safe` | — |
 | `dpmo()` | `throw` | units ≤ 0, opportunities ≤ 0 |
 | `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time > cycleTime (infeasible), circular dependency |
@@ -61,22 +61,22 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `kFactorReverse()` | `throw` | Invalid dimensions |
 | `pressTonnage()` | `throw` | Missing operation-specific fields |
 | `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
-| `bolt()` | `throw` | diameter ≤ 0, torque/preload ≤ 0 |
+| `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |
 | `cutting()` | `throw` | toolDiameter ≤ 0 |
 | `cuttingStock()` | `throw` | stockLength ≤ 0, empty pieces, total quantity 0, piece length > stockLength |
 | `gear()` | `throw` | Missing required fields per mode |
 | `hardness()` | `throw` | value out of conversion range |
 | `material()` | `throw` | Unknown grade |
-| `pressFit()` | `throw` | Negative interference |
+| `pressFit()` | `throw` | shaftDiameter/holeDiameter/hubOuterDiameter/contactLength ≤ 0 |
 | `roughness()` | `throw` | value ≤ 0 |
 | `screw()` | `throw` | Unknown designation |
-| `spring()` | `throw` | wireDiameter ≤ 0 |
-| `tap()` | `throw` | Invalid parameters |
+| `spring()` | `throw` | wireDiameter/meanCoilDiameter/activeCoils ≤ 0 |
+| `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0 |
 | `thread()` | `throw` | Unknown size |
 | `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
 | `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); innerDiameter ≥ outerDiameter |
 | `weldHeat()` | `throw` | voltage ≤ 0, current ≤ 0, travelSpeed ≤ 0, thickness ≤ 0 |
-| `welding()` | `throw` | Invalid base metal/joint combination |
+| `welding()` | `throw` | thickness ≤ 0 |
 | `materialGradeConverter()` | `null` | Unknown grade returns null equivalents |
 | `pipeSpec()` | `throw` | Unknown size/schedule |
 | `flangeSpec()` | `throw` | Unknown size/class |
@@ -96,7 +96,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `injectionCycle()` | `throw` | Invalid resin parameters |
 | `flowControl()` | `throw` | pressureDrop ≤ 0 |
 | `reliefValve()` | `throw` | Capacity ≤ 0 |
-| `pid()` | `throw` | Missing method-specific fields |
+| `pid()` | `throw` | Non-positive process params (processGain/deadTime/timeConstant ≤ 0, or ultimateGain/ultimatePeriod ≤ 0) |
 
 ### Electronics (11 functions)
 
@@ -105,8 +105,8 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `ohmsLaw()` | `throw` | Negative values |
 | `reflowProfile()` | `throw` | Unknown paste type |
 | `resistorDecode()` | `throw` | Invalid band colors/count |
-| `smtTakt()` | `throw` | placementRate ≤ 0 |
-| `solderPaste()` | `throw` | Negative dimensions |
+| `smtTakt()` | `throw` | placementRate ≤ 0, componentsPerBoard ≤ 0 |
+| `solderPaste()` | `throw` | padCount ≤ 0, stencilThickness ≤ 0 |
 | `traceWidth()` | `throw` | current ≤ 0 |
 | `awgProperties()` | `throw` | AWG not between 0 and 40 |
 | `capacitorDecode()` | `throw` | Invalid code format |
@@ -124,7 +124,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `earthwork()` | `throw` | Non-positive length/width/depth or non-positive swell/shrink factor |
 | `formwork()` | `throw` | Non-positive used dimension (per element type) or non-positive quantity |
 | `rebarWeight()` | `throw` | Unknown size |
-| `slope()` | `throw` | ratio = 0 |
+| `slope()` | `throw` | ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat) |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
 | `brick()` | `throw` | wallArea ≤ 0 |
 | `pert()` | `throw` | Empty tasks, circular dependencies |
@@ -136,7 +136,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `brakingDistance()` | `throw` | speed ≤ 0, friction ≤ 0 |
-| `batteryRuntime()` | `throw` | voltageV ≤ 0, loadW ≤ 0 |
+| `batteryRuntime()` | `throw` | capacityAh ≤ 0, voltageV ≤ 0, loadW ≤ 0 |
 | `evCharging()` | `throw` | socEndPercent ≤ socStartPercent, chargerPowerKw ≤ 0 |
 | `fuelEconomy()` | `throw` | value ≤ 0 |
 | `gearRatio()` | `throw` | drivingTeeth ≤ 0 |

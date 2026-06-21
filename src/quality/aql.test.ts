@@ -140,27 +140,20 @@ describe('aql', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero lot size', () => {
-      const result = aql({
+    it('should throw for zero lot size', () => {
+      expect(() => aql({
         lotSize: 0,
         aqlLevel: 1.0,
         inspectionLevel: 'II',
-      });
-
-      expect(result.sampleCode).toBe('-');
-      expect(result.sampleSize).toBe(0);
-      expect(result.samplingPercent).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for negative lot size', () => {
-      const result = aql({
+    it('should throw for negative lot size', () => {
+      expect(() => aql({
         lotSize: -100,
         aqlLevel: 1.0,
         inspectionLevel: 'II',
-      });
-
-      expect(result.sampleCode).toBe('-');
-      expect(result.sampleSize).toBe(0);
+      })).toThrow();
     });
 
     it('should return zeros for negative AQL level', () => {

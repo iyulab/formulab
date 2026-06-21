@@ -130,8 +130,8 @@ describe('solderPaste', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero pad count', () => {
-      const result = solderPaste({
+    it('should throw RangeError for zero pad count', () => {
+      expect(() => solderPaste({
         padCount: 0,
         avgPadArea: 0.5,
         stencilThickness: 0.12,
@@ -139,14 +139,11 @@ describe('solderPaste', () => {
         density: 7.4,
         boardsPerPanel: 1,
         panelCount: 1,
-      });
-
-      expect(result.volumePerBoard).toBe(0);
-      expect(result.weightPerBoard).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero stencil thickness', () => {
-      const result = solderPaste({
+    it('should throw RangeError for zero stencil thickness', () => {
+      expect(() => solderPaste({
         padCount: 100,
         avgPadArea: 0.5,
         stencilThickness: 0,
@@ -154,9 +151,7 @@ describe('solderPaste', () => {
         density: 7.4,
         boardsPerPanel: 1,
         panelCount: 1,
-      });
-
-      expect(result.volumePerBoard).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle very small pads', () => {

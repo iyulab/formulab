@@ -114,38 +114,31 @@ describe('kanban', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero daily demand', () => {
-      const result = kanban({
+    it('should throw for zero daily demand', () => {
+      expect(() => kanban({
         dailyDemand: 0,
         leadTime: 2,
         safetyFactor: 0.2,
         containerQuantity: 50,
-      });
-
-      expect(result.numberOfKanbans).toBe(0);
-      expect(result.numberOfKanbansRounded).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero lead time', () => {
-      const result = kanban({
+    it('should throw for zero lead time', () => {
+      expect(() => kanban({
         dailyDemand: 100,
         leadTime: 0,
         safetyFactor: 0.2,
         containerQuantity: 50,
-      });
-
-      expect(result.numberOfKanbans).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero container quantity', () => {
-      const result = kanban({
+    it('should throw for zero container quantity', () => {
+      expect(() => kanban({
         dailyDemand: 100,
         leadTime: 2,
         safetyFactor: 0.2,
         containerQuantity: 0,
-      });
-
-      expect(result.numberOfKanbans).toBe(0);
+      })).toThrow();
     });
 
     it('should return zeros for negative safety factor', () => {

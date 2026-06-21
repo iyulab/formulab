@@ -26,18 +26,10 @@ export function bolt(input: BoltInput): BoltResult {
   const { mode, diameter, pitch, kFactor, tensileStrength } = input;
 
   // Validate inputs
-  if (diameter <= 0 || pitch <= 0 || kFactor <= 0 || tensileStrength <= 0) {
-    return {
-      torque: 0,
-      preload: 0,
-      preloadN: 0,
-      stressArea: 0,
-      tensileStress: 0,
-      strengthUtilization: 0,
-      kFactor: 0,
-      recommendedMaxPreload: 0,
-    };
-  }
+  if (diameter <= 0) throw new RangeError('diameter must be greater than 0');
+  if (pitch <= 0) throw new RangeError('pitch must be greater than 0');
+  if (kFactor <= 0) throw new RangeError('kFactor must be greater than 0');
+  if (tensileStrength <= 0) throw new RangeError('tensileStrength must be greater than 0');
 
   // Calculate tensile stress area (ISO metric thread)
   // As = (pi/4) * (d - 0.9382*p)^2
@@ -50,18 +42,7 @@ export function bolt(input: BoltInput): BoltResult {
   if (mode === 'torqueToPreload') {
     // Given torque, calculate preload
     torque = input.torque;
-    if (torque <= 0) {
-      return {
-        torque: 0,
-        preload: 0,
-        preloadN: 0,
-        stressArea: roundTo(stressArea, 2),
-        tensileStress: 0,
-        strengthUtilization: 0,
-        kFactor,
-        recommendedMaxPreload: 0,
-      };
-    }
+    if (torque == null || torque <= 0) throw new RangeError('torque must be greater than 0');
     // T = K * D * F => F = T / (K * D)
     // T in N-m, D in mm => need to convert D to m: D/1000
     // F = T / (K * D/1000) = T * 1000 / (K * D)
@@ -69,18 +50,7 @@ export function bolt(input: BoltInput): BoltResult {
   } else {
     // Given preload, calculate torque
     const preloadKN = input.preload;
-    if (preloadKN <= 0) {
-      return {
-        torque: 0,
-        preload: 0,
-        preloadN: 0,
-        stressArea: roundTo(stressArea, 2),
-        tensileStress: 0,
-        strengthUtilization: 0,
-        kFactor,
-        recommendedMaxPreload: 0,
-      };
-    }
+    if (preloadKN == null || preloadKN <= 0) throw new RangeError('preload must be greater than 0');
     preloadN = preloadKN * 1000;
     // T = K * D * F
     // T in N-m, D in mm, F in N => T = K * (D/1000) * F

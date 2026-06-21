@@ -18,15 +18,8 @@ export function tap(input: TapInput): TapResult {
   const { standard, majorDiameter, pitch: inputPitch, threadPercentage = 75 } = input;
 
   // Validate inputs
-  if (majorDiameter <= 0 || inputPitch <= 0) {
-    return {
-      tapDrillSize: 0,
-      minorDiameter: 0,
-      pitchDiameter: 0,
-      threadPercentage: 0,
-      threadHeight: 0,
-    };
-  }
+  if (majorDiameter <= 0) throw new RangeError('majorDiameter must be greater than 0');
+  if (inputPitch <= 0) throw new RangeError('pitch must be greater than 0');
 
   // Convert TPI to metric pitch for unified threads
   const pitch = standard === 'metric' ? inputPitch : 25.4 / inputPitch;

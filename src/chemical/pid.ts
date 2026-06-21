@@ -26,7 +26,7 @@ export function pid(input: PidInput): PidResult {
     const T = input.timeConstant ?? 1;
 
     if (K <= 0 || L <= 0 || T <= 0) {
-      return { kp: 0, ki: 0, kd: 0, ti: 0, td: 0, method: methodName };
+      throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
     }
 
     if (controllerType === 'P') {
@@ -49,7 +49,7 @@ export function pid(input: PidInput): PidResult {
     const Pu = input.ultimatePeriod ?? 1;
 
     if (Ku <= 0 || Pu <= 0) {
-      return { kp: 0, ki: 0, kd: 0, ti: 0, td: 0, method: methodName };
+      throw new RangeError('ultimateGain and ultimatePeriod must both be greater than 0');
     }
 
     if (controllerType === 'P') {
@@ -73,7 +73,7 @@ export function pid(input: PidInput): PidResult {
     const T = input.timeConstant ?? 1;
 
     if (K <= 0 || L <= 0 || T <= 0) {
-      return { kp: 0, ki: 0, kd: 0, ti: 0, td: 0, method: methodName };
+      throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
     }
 
     const r = L / T; // dead time ratio

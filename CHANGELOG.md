@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.6] - 2026-06-21
+
+### Changed (breaking within 0.x)
+
+- **Invalid-input zero-fill results migrated to the standard error policy — tail of the v0.13.5 sweep** — the v0.13.5 sweep missed a set of public functions that still returned an all-zero/sentinel result object on must-be-positive invalid input instead of throwing (reported by online-tools: ISSUE-20260621-formulab-zerofill-invalid-guards, which independently reproduced user-facing zero-fills the prior full-audit had marked drained). `ERRORS.md` already documented several of these as `throw` (aspirational); the code now conforms. All of the following now **throw `RangeError`** with a per-constraint message, consistent with the rest of the library — consumers branch on the boundary, not on a zero result:
+  - **metal**: `bolt()` (diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 in `torqueToPreload`, preload ≤ 0 in `preloadToTorque` — all six former zero-fill paths), `pressFit()` (shaftDiameter/holeDiameter/hubOuterDiameter/contactLength ≤ 0 — the clearance-fit `interference ≤ 0` and `hubOuterDiameter ≤ shaftDiameter` results are legitimate physical states and **kept**), `spring()` (wireDiameter/meanCoilDiameter/activeCoils ≤ 0), `tap()` (majorDiameter/pitch ≤ 0), `welding()` (thickness ≤ 0 — previously returned empty recommendations + zero rod diameter).
+  - **logistics**: `dimWeight()` (length/width/height ≤ 0; actualWeight < 0 — zero actual weight stays legit, billing falls back to dimensional weight), `fillRate()` (totalOrders ≤ 0), `freightClass()` (weight/length/width/height ≤ 0), `kanban()` (dailyDemand/leadTime/containerQuantity ≤ 0), `pickTime()` (speed/itemsPerOrder ≤ 0).
+  - **electronics**: `smtTakt()` (placementRate/componentsPerBoard ≤ 0), `solderPaste()` (padCount/stencilThickness ≤ 0).
+  - **energy**: `motorEfficiency()` (currentEfficiency/newEfficiency ≤ 0).
+  - **automotive**: `batteryRuntime()` (capacityAh ≤ 0 — completing the voltageV/loadW guards added in 0.13.5).
+  - **chemical**: `ph()` (acidConcentration/baseConcentration ≤ 0), `pid()` (non-positive process parameters in every method branch — processGain/deadTime/timeConstant ≤ 0 for Z-N step & Cohen-Coon, ultimateGain/ultimatePeriod ≤ 0 for Z-N ultimate; previously returned all-zero gains).
+  - **quality**: `aql()` (lotSize ≤ 0).
+  - **construction**: `slope()` (ratio ≤ 0 — a 1:N ratio with N ≤ 0 is vertical/undefined, previously inverted to "flat 0%"; percent/degrees value 0 stays legit flat ground).
+- **Intentionally kept** (unchanged): `cpk()`/`ppk()`/`cmk()` degenerate-spread zero result (stdDev ≤ 0 → zero indices — a computable degenerate case, not invalid input); `kanban()` negative `safetyFactor` zero-fill and `fillRate()` `serviceLevel()` (not must-be-positive); all legitimate-zero computations (e.g. automotive `power()`/`torque()`, energy `carbonFootprint()` where 0 input = 0 output). `ERRORS.md` condition descriptions corrected for the migrated functions.
+
 ## [0.13.5] - 2026-06-18
 
 ### Changed (breaking within 0.x)

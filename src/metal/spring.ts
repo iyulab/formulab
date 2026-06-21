@@ -21,14 +21,9 @@ export function spring(input: SpringInput): SpringResult {
   const { wireDiameter, meanCoilDiameter, activeCoils, force, material } = input;
 
   // Validate inputs
-  if (wireDiameter <= 0 || meanCoilDiameter <= 0 || activeCoils <= 0) {
-    return {
-      springRate: 0,
-      springIndex: 0,
-      stressCorrectionFactor: 0,
-      shearModulus: 0,
-    };
-  }
+  if (wireDiameter <= 0) throw new RangeError('wireDiameter must be greater than 0');
+  if (meanCoilDiameter <= 0) throw new RangeError('meanCoilDiameter must be greater than 0');
+  if (activeCoils <= 0) throw new RangeError('activeCoils must be greater than 0');
 
   const d = wireDiameter;
   const D = meanCoilDiameter;

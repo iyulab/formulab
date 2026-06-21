@@ -109,31 +109,26 @@ describe('motorEfficiency', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero current efficiency', () => {
-      const result = motorEfficiency({
+    it('should throw RangeError for zero current efficiency', () => {
+      expect(() => motorEfficiency({
         motorPower: 50,
         runningHours: 6000,
         currentEfficiency: 0,
         newEfficiency: 0.95,
         electricityRate: 0.10,
         loadFactor: 0.75,
-      });
-
-      expect(result.currentAnnualCost).toBe(0);
-      expect(result.annualSavings).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero new efficiency', () => {
-      const result = motorEfficiency({
+    it('should throw RangeError for zero new efficiency', () => {
+      expect(() => motorEfficiency({
         motorPower: 50,
         runningHours: 6000,
         currentEfficiency: 0.90,
         newEfficiency: 0,
         electricityRate: 0.10,
         loadFactor: 0.75,
-      });
-
-      expect(result.newAnnualCost).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle same efficiency (no improvement)', () => {

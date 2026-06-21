@@ -22,14 +22,11 @@ export function solderPaste(input: SolderInput): SolderResult {
   } = input;
 
   // Guard against zero/negative values
-  if (padCount <= 0 || stencilThickness <= 0) {
-    return {
-      volumePerBoard: 0,
-      weightPerBoard: 0,
-      totalVolume: 0,
-      totalWeight: 0,
-      totalWeightKg: 0,
-    };
+  if (padCount <= 0) {
+    throw new RangeError('padCount must be greater than 0');
+  }
+  if (stencilThickness <= 0) {
+    throw new RangeError('stencilThickness must be greater than 0');
   }
 
   // Volume per board (mm3)

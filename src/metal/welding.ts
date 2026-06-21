@@ -48,9 +48,7 @@ function getRodDiameter(thickness: number): number {
 export function welding(input: WeldingInput): WeldingResult {
   const { baseMetal, position, thickness } = input;
 
-  if (thickness <= 0) {
-    return { recommendations: [], rodDiameter: 0, currentRange: { min: 0, max: 0 }, notes: [] };
-  }
+  if (thickness <= 0) throw new RangeError('thickness must be greater than 0');
 
   const allRods = ELECTRODES[baseMetal] || [];
 

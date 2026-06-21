@@ -23,14 +23,11 @@ export function motorEfficiency(input: MotorEfficiencyInput): MotorEfficiencyRes
   } = input;
 
   // Handle edge case - invalid efficiency values
-  if (currentEfficiency <= 0 || newEfficiency <= 0) {
-    return {
-      currentAnnualCost: 0,
-      newAnnualCost: 0,
-      annualSavings: 0,
-      energySavings: 0,
-      paybackPeriod: null,
-    };
+  if (currentEfficiency <= 0) {
+    throw new RangeError('currentEfficiency must be greater than 0');
+  }
+  if (newEfficiency <= 0) {
+    throw new RangeError('newEfficiency must be greater than 0');
   }
 
   // Calculate annual energy consumption for each efficiency level

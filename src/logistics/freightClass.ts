@@ -38,15 +38,10 @@ const FREIGHT_CLASS_TABLE: Array<{ minDensity: number; maxDensity: number; freig
 export function freightClass(input: FreightClassInput): FreightClassResult {
   const { weight, length, width, height } = input;
 
-  // Handle zero/invalid inputs
-  if (weight <= 0 || length <= 0 || width <= 0 || height <= 0) {
-    return {
-      density: 0,
-      freightClass: 0,
-      className: 'Invalid Input',
-      volumeCuFt: 0,
-    };
-  }
+  if (weight <= 0) throw new RangeError('weight must be greater than 0');
+  if (length <= 0) throw new RangeError('length must be greater than 0');
+  if (width <= 0) throw new RangeError('width must be greater than 0');
+  if (height <= 0) throw new RangeError('height must be greater than 0');
 
   // Calculate volume in cubic feet (input is in inches)
   const volumeCuIn = length * width * height;

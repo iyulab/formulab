@@ -25,16 +25,10 @@ const DIM_FACTORS: Record<CarrierType, number> = {
 export function dimWeight(input: DimWeightInput): DimWeightResult {
   const { length, width, height, actualWeight, carrier } = input;
 
-  // Handle zero/invalid inputs
-  if (length <= 0 || width <= 0 || height <= 0 || actualWeight < 0) {
-    return {
-      dimensionalWeight: 0,
-      actualWeight: 0,
-      billableWeight: 0,
-      dimFactor: DIM_FACTORS[carrier],
-      isDimWeightHigher: false,
-    };
-  }
+  if (length <= 0) throw new RangeError('length must be greater than 0');
+  if (width <= 0) throw new RangeError('width must be greater than 0');
+  if (height <= 0) throw new RangeError('height must be greater than 0');
+  if (actualWeight < 0) throw new RangeError('actualWeight must not be negative');
 
   const dimFactor = DIM_FACTORS[carrier];
 

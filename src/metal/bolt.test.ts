@@ -125,44 +125,70 @@ describe('bolt', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for invalid diameter', () => {
-      const result = bolt({
+    it('should throw for invalid diameter', () => {
+      expect(() => bolt({
         mode: 'torqueToPreload',
         diameter: 0,
         pitch: 1.5,
         torque: 40,
         kFactor: 0.2,
         tensileStrength: 800,
-      });
-
-      expect(result.torque).toBe(0);
-      expect(result.preload).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero torque', () => {
-      const result = bolt({
+    it('should throw for invalid pitch', () => {
+      expect(() => bolt({
+        mode: 'torqueToPreload',
+        diameter: 10,
+        pitch: 0,
+        torque: 40,
+        kFactor: 0.2,
+        tensileStrength: 800,
+      })).toThrow();
+    });
+
+    it('should throw for invalid kFactor', () => {
+      expect(() => bolt({
+        mode: 'torqueToPreload',
+        diameter: 10,
+        pitch: 1.5,
+        torque: 40,
+        kFactor: 0,
+        tensileStrength: 800,
+      })).toThrow();
+    });
+
+    it('should throw for invalid tensileStrength', () => {
+      expect(() => bolt({
+        mode: 'torqueToPreload',
+        diameter: 10,
+        pitch: 1.5,
+        torque: 40,
+        kFactor: 0.2,
+        tensileStrength: 0,
+      })).toThrow();
+    });
+
+    it('should throw for zero torque', () => {
+      expect(() => bolt({
         mode: 'torqueToPreload',
         diameter: 10,
         pitch: 1.5,
         torque: 0,
         kFactor: 0.2,
         tensileStrength: 800,
-      });
-
-      expect(result.preloadN).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero preload', () => {
-      const result = bolt({
+    it('should throw for zero preload', () => {
+      expect(() => bolt({
         mode: 'preloadToTorque',
         diameter: 10,
         pitch: 1.5,
         preload: 0,
         kFactor: 0.2,
         tensileStrength: 800,
-      });
-
-      expect(result.torque).toBe(0);
+      })).toThrow();
     });
   });
 });

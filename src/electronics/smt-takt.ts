@@ -20,24 +20,11 @@ export function smtTakt(input: SmtTaktInput): SmtTaktResult {
   } = input;
 
   // Guard against invalid inputs
-  if (componentsPerBoard <= 0) {
-    return {
-      placementTimeSec: 0,
-      totalCycleTimeSec: 0,
-      boardsPerHour: 0,
-      totalBoardsPerShift: 0,
-      lineUtilization: 0,
-    };
-  }
-
   if (placementRate <= 0) {
-    return {
-      placementTimeSec: 0,
-      totalCycleTimeSec: 0,
-      boardsPerHour: 0,
-      totalBoardsPerShift: 0,
-      lineUtilization: 0,
-    };
+    throw new RangeError('placementRate must be greater than 0');
+  }
+  if (componentsPerBoard <= 0) {
+    throw new RangeError('componentsPerBoard must be greater than 0');
   }
 
   // Calculate placement time per board (seconds)

@@ -130,24 +130,52 @@ describe('pid', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero process gain', () => {
-      const result = pid({
+    it('should throw for zero process gain (Z-N step)', () => {
+      expect(() => pid({
         method: 'ziegler-nichols-step',
         controllerType: 'PID',
         processGain: 0, deadTime: 1, timeConstant: 10,
-      });
-
-      expect(result.kp).toBe(0);
+      })).toThrow();
     });
 
-    it('should return zeros for zero dead time', () => {
-      const result = pid({
+    it('should throw for zero dead time (Z-N step)', () => {
+      expect(() => pid({
         method: 'ziegler-nichols-step',
         controllerType: 'PID',
         processGain: 1, deadTime: 0, timeConstant: 10,
-      });
+      })).toThrow();
+    });
 
-      expect(result.kp).toBe(0);
+    it('should throw for zero time constant (Z-N step)', () => {
+      expect(() => pid({
+        method: 'ziegler-nichols-step',
+        controllerType: 'PID',
+        processGain: 1, deadTime: 1, timeConstant: 0,
+      })).toThrow();
+    });
+
+    it('should throw for non-positive ultimate gain (Z-N ultimate)', () => {
+      expect(() => pid({
+        method: 'ziegler-nichols-ultimate',
+        controllerType: 'PID',
+        ultimateGain: 0, ultimatePeriod: 4,
+      })).toThrow();
+    });
+
+    it('should throw for non-positive ultimate period (Z-N ultimate)', () => {
+      expect(() => pid({
+        method: 'ziegler-nichols-ultimate',
+        controllerType: 'PID',
+        ultimateGain: 5, ultimatePeriod: 0,
+      })).toThrow();
+    });
+
+    it('should throw for zero process gain (Cohen-Coon)', () => {
+      expect(() => pid({
+        method: 'cohen-coon',
+        controllerType: 'PID',
+        processGain: 0, deadTime: 1, timeConstant: 10,
+      })).toThrow();
     });
   });
 });

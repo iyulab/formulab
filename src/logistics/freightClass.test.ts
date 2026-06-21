@@ -71,27 +71,22 @@ describe('freightClass', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero weight', () => {
-      const result = freightClass({
+    it('should throw for zero weight', () => {
+      expect(() => freightClass({
         weight: 0,
         length: 24,
         width: 24,
         height: 24,
-      });
-
-      expect(result.freightClass).toBe(0);
-      expect(result.className).toBe('Invalid Input');
+      })).toThrow();
     });
 
-    it('should handle zero dimensions', () => {
-      const result = freightClass({
+    it('should throw for zero dimensions', () => {
+      expect(() => freightClass({
         weight: 100,
         length: 0,
         width: 24,
         height: 24,
-      });
-
-      expect(result.freightClass).toBe(0);
+      })).toThrow();
     });
   });
 

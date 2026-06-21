@@ -146,8 +146,8 @@ describe('pressFit', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for invalid dimensions', () => {
-      const result = pressFit({
+    it('should throw for invalid dimensions', () => {
+      expect(() => pressFit({
         shaftDiameter: 0,
         holeDiameter: 25.00,
         hubOuterDiameter: 50,
@@ -155,10 +155,7 @@ describe('pressFit', () => {
         youngsModulus: 200,
         poissonRatio: 0.3,
         frictionCoefficient: 0.15,
-      });
-
-      expect(result.interference).toBe(0);
-      expect(result.interfacePressure).toBe(0);
+      })).toThrow();
     });
 
     it('should return zeros when hub OD <= shaft diameter', () => {

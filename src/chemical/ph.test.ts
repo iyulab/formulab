@@ -213,17 +213,22 @@ describe('ph', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero acid concentration', () => {
-      const result = ph({
+    it('should throw for zero acid concentration', () => {
+      expect(() => ph({
         bufferSystem: 'acetate',
         acidConcentration: 0,
         baseConcentration: 0.1,
         temperature: 25,
-      });
+      })).toThrow();
+    });
 
-      expect(result.pH).toBe(0);
-      expect(result.pKa).toBe(0);
-      expect(result.bufferCapacity).toBe(0);
+    it('should throw for zero base concentration', () => {
+      expect(() => ph({
+        bufferSystem: 'acetate',
+        acidConcentration: 0.1,
+        baseConcentration: 0,
+        temperature: 25,
+      })).toThrow();
     });
 
     it('should handle very low base concentration', () => {

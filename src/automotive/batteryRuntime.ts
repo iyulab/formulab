@@ -11,11 +11,14 @@ import type { BatteryInput, BatteryResult } from './types.js';
  *
  * @param input - Battery parameters
  * @returns Battery result with energy and runtime
- * @throws RangeError if voltageV is not greater than 0, or if loadW is not greater than 0
+ * @throws RangeError if capacityAh, voltageV, or loadW is not greater than 0
  */
 export function batteryRuntime(input: BatteryInput): BatteryResult {
   const { capacityAh, voltageV, loadW, efficiency } = input;
 
+  if (capacityAh <= 0) {
+    throw new RangeError('capacityAh must be greater than 0');
+  }
   if (voltageV <= 0) {
     throw new RangeError('voltageV must be greater than 0');
   }

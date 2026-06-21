@@ -157,31 +157,34 @@ describe('smtTakt', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero components per board', () => {
-      const result = smtTakt({
+    it('should throw RangeError for zero components per board', () => {
+      expect(() => smtTakt({
         placementRate: 36000,
         componentsPerBoard: 0,
         boardsPerPanel: 1,
         setupTimeSec: 5,
         availableTimeMin: 480,
-      });
-
-      expect(result.placementTimeSec).toBe(0);
-      expect(result.boardsPerHour).toBe(0);
-      expect(result.lineUtilization).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle zero placement rate', () => {
-      const result = smtTakt({
+    it('should throw RangeError for zero placement rate', () => {
+      expect(() => smtTakt({
         placementRate: 0,
         componentsPerBoard: 100,
         boardsPerPanel: 1,
         setupTimeSec: 5,
         availableTimeMin: 480,
-      });
+      })).toThrow(RangeError);
+    });
 
-      expect(result.placementTimeSec).toBe(0);
-      expect(result.boardsPerHour).toBe(0);
+    it('should throw RangeError for negative placement rate', () => {
+      expect(() => smtTakt({
+        placementRate: -36000,
+        componentsPerBoard: 100,
+        boardsPerPanel: 1,
+        setupTimeSec: 5,
+        availableTimeMin: 480,
+      })).toThrow(RangeError);
     });
   });
 

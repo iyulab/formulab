@@ -84,8 +84,13 @@ function getAcceptReject(sampleCode: string, aqlLevel: number): [number, number]
 export function aql(input: AqlInput): AqlResult {
   const { lotSize, aqlLevel, inspectionLevel } = input;
 
-  // Handle invalid input
-  if (lotSize <= 0 || aqlLevel < 0) {
+  // Guard against invalid lot size
+  if (lotSize <= 0) {
+    throw new RangeError('lotSize must be greater than 0');
+  }
+
+  // Handle invalid AQL level
+  if (aqlLevel < 0) {
     return {
       sampleCode: '-',
       sampleSize: 0,

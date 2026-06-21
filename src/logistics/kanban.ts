@@ -20,8 +20,12 @@ import type { KanbanInput, KanbanResult } from './types.js';
 export function kanban(input: KanbanInput): KanbanResult {
   const { dailyDemand, leadTime, safetyFactor, containerQuantity } = input;
 
-  // Handle zero/invalid inputs
-  if (dailyDemand <= 0 || leadTime <= 0 || containerQuantity <= 0 || safetyFactor < 0) {
+  if (dailyDemand <= 0) throw new RangeError('dailyDemand must be greater than 0');
+  if (leadTime <= 0) throw new RangeError('leadTime must be greater than 0');
+  if (containerQuantity <= 0) throw new RangeError('containerQuantity must be greater than 0');
+
+  // Negative safety factor is invalid but returns a zero result (not a throw)
+  if (safetyFactor < 0) {
     return {
       numberOfKanbans: 0,
       numberOfKanbansRounded: 0,

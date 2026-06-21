@@ -14,7 +14,13 @@ import type { SlopeInput, SlopeResult } from './types.js';
 export function slope(input: SlopeInput): SlopeResult {
   const { fromUnit, value } = input;
 
-  // Handle zero value
+  // A ratio of 1:N with N <= 0 is vertical/undefined, not flat ground.
+  // (percent/degrees value 0 is legitimately flat and returns zeros below.)
+  if (fromUnit === 'ratio' && value <= 0) {
+    throw new RangeError('ratio value must be greater than 0');
+  }
+
+  // Handle zero value (flat ground for percent/degrees)
   if (value === 0) {
     return {
       percent: 0,
