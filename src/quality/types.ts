@@ -389,6 +389,12 @@ export interface WeibullResult {
  */
 export type ActionPriorityLevel = 'H' | 'M' | 'L';
 
+/** Inclusive rating range of one AP lookup band; array index = group index. */
+export interface ApRatingBand {
+  min: number;
+  max: number;
+}
+
 export interface ActionPriorityInput {
   severity: number;    // 1-10
   occurrence: number;  // 1-10
@@ -398,9 +404,9 @@ export interface ActionPriorityInput {
 export interface ActionPriorityResult {
   actionPriority: ActionPriorityLevel;
   rpn: number;
-  severityGroup: number;
-  occurrenceGroup: number;
-  detectionGroup: number;
+  severityGroup: number;   // 0-4: {1}, {2-3}, {4-6}, {7-8}, {9-10}
+  occurrenceGroup: number; // 0-4: {1}, {2-3}, {4-5}, {6-7}, {8-10}
+  detectionGroup: number;  // 0-3: {1}, {2-4}, {5-6}, {7-10}
 }
 
 /**

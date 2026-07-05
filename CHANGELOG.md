@@ -5,6 +5,81 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-07-05
+
+### Changed (breaking within 0.x) — standard-table conformance sweep
+
+Four independently transcribed lookup tables were found to diverge from their cited
+standards (origin: upstream-006, forge-fmea). Each was re-verified cell-by-cell against
+the standard or a cell-complete reproduction; all changes move outputs **toward the
+published standard**, and every fix ships with cell-level golden tests.
+
+- **`quality/actionPriority()` — AIAG-VDA 2019 AP table conformance** (upstream-006):
+  - Occurrence bands were a copy of the severity bands (`4-6/7-8/9-10`); corrected to the
+    handbook's `4-5/6-7/8-10`. Detection bands corrected from five bands to the handbook's
+    four (`1/2-4/5-6/7-10`) — **`detectionGroup` in the result now ranges 0–3 (was 0–4)**
+    and `occurrenceGroup` boundaries moved.
+  - The S=1 row is now all-L and the O=1 rows all-L per the handbook (e.g.
+    `{S:1, O:10, D:10}` returned `'H'`, now `'L'`). Boundary verdicts moved at O=5/6, O=7/8
+    and D=6/7 splits.
+  - Verification: Relyence FMEA user-guide reproduction of the handbook table (cell-complete,
+    re-extracted twice) + structural invariants; handbook hardcopy not consulted — flagged
+    for anyone with 1st-edition access to spot-audit.
+- **`safety/ergonomicRisk()` (REBA) — Tables A/B re-transcribed from the published REBA
+  worksheet** (Hignett & McAtamney 2000 / Hedge worksheet): 14 of 15 Table A rows and 10 of
+  12 Table B rows were a smoothed monotone pattern, not the published values (Table A even
+  reached 12; the standard caps at 9; the irregular cells `N3/T1 = 3,3,5,6` and the
+  duplicated `N1/N2` Trunk-1 rows were missing). Table C, load score, risk levels were
+  already correct. Trunk extension now caps at 3 and upper-arm extension at 2 per the
+  worksheet zones (previously |angle| symmetric).
+- **`safety/nioshLifting()` — FM/CM tables conformed to NIOSH 94-110 Tables 5 & 7**:
+  - CM for fair coupling was inverted (`V<75: 1.0, V≥75: 0.95`; the manual says
+    `V<75: 0.95, V≥75: 1.00`) — and the prior test pinned the inverted value while citing
+    Table 7.
+  - FM now carries the manual's V<75/V≥75 columns: at high frequencies with V<75cm the
+    published FM is 0.00 (→ `rwl: 0`, `liftingIndex: Infinity`, the documented sentinel);
+    previously the more permissive V≥75 column was used everywhere. Invented FM values that
+    do not exist in Table 5 were removed (medium-duration F13-15 `0.19/0.17/0.15` → 0, long
+    F11-12 `0.11/0.10` → 0), and frequency >15 lifts/min now yields FM 0 (was clamped to the
+    F=15 value). All changes are conservative (lower or equal RWL).
+- **`quality/aql()` — re-transcribed from ISO 2859-1:1999 Tables 1 & 2-A** (scanned table
+  images from the published standard, cell-by-cell):
+  - Table 1: the S-1/S-2/S-3 code-letter columns promoted one lot-size band late in many
+    rows (e.g. lot 281–500 at S-1 is code **B**, not A). S-4 and general levels I/II/III
+    were already correct.
+  - Table 2-A: nearly every Ac/Re pair sat one ladder step too permissive — an off-by-one
+    introduced by omitting the standard's 0.15 AQL column (e.g. code J at AQL 6.5 accepted
+    on 14 nonconforming; the standard accepts on 10). The 0.15 AQL level is now supported.
+    The fixed-sample-size simplification of arrow cells is unchanged and now documented in
+    the JSDoc.
+
+- **`environmental/gwpCalculator()` — two AR6 cells corrected** (single-axis constant
+  audit): SF6 GWP100 `25,200` → **`24,300`** (AR6; cross-checked against the GHG Protocol
+  AR6 GWP tables v2.0 and independent AR6 citations) and CH4 GWP500 `7.6` → **`10.0`**
+  (the 7.6 was AR4's value left in an otherwise-AR6 table; 10.0 is AR6 fossil methane,
+  consistent with the fossil 20/100-year values already used). The JSDoc now states the
+  CH4 row uses AR6 *fossil* methane values. Remaining unverified 500-year cells
+  (NF3/SF6/HFC-152a GWP500) are noted in the audit log but unchanged.
+
+### Added
+
+- **`quality`: AP matrix exported for consumers** (upstream-006 feature request) —
+  `AP_TABLE` (`[severityGroup][occurrenceGroup][detectionGroup]`, deep-readonly) and
+  `AP_SEVERITY_BANDS` / `AP_OCCURRENCE_BANDS` / `AP_DETECTION_BANDS`
+  (`ApRatingBand { min, max }[]`, index = group), so matrix visualizations don't need a
+  locally duplicated table.
+- **`safety/ergonomicRisk()`: REBA Step 11 coupling** — optional
+  `coupling?: 'good' | 'fair' | 'poor' | 'unacceptable'` input (+0…+3 to Score B, default
+  `'good'` preserves existing calls) and `couplingScore` in the result.
+
+### Docs
+
+- README: function tables and domain counts synced to the actual exports (217 functions;
+  `actionPriority`/`cpkToOccurrence`/`nelsonRules` rows and the whole Industrial
+  Engineering section were missing); ERRORS.md quality rows completed; CLAUDE.md now
+  prescribes lookup-table transcription discipline (cell-level golden tests, irregular-cell
+  pins, invariant tests).
+
 ## [0.13.8] - 2026-06-21
 
 ### Fixed

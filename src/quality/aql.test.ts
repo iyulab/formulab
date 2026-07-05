@@ -11,10 +11,11 @@ describe('aql', () => {
       });
 
       // Lot size 100 falls in 91-150 range, Level II → Code F
+      // ISO 2859-1 Table 2-A: F at AQL 1.0 is an arrow cell → Ac 0 / Re 1
       expect(result.sampleCode).toBe('F');
       expect(result.sampleSize).toBe(20);
-      expect(result.acceptNumber).toBe(1);
-      expect(result.rejectNumber).toBe(2);
+      expect(result.acceptNumber).toBe(0);
+      expect(result.rejectNumber).toBe(1);
     });
 
     it('should return sample code and size for medium lot (lotSize=1000, AQL=2.5, Level II)', () => {
@@ -24,10 +25,11 @@ describe('aql', () => {
         inspectionLevel: 'II',
       });
 
+      // ISO 2859-1 Table 2-A: J (n=80) at AQL 2.5 → Ac 5 / Re 6
       expect(result.sampleCode).toBe('J');
       expect(result.sampleSize).toBe(80);
-      expect(result.acceptNumber).toBe(7);
-      expect(result.rejectNumber).toBe(8);
+      expect(result.acceptNumber).toBe(5);
+      expect(result.rejectNumber).toBe(6);
     });
 
     it('should return sample code and size for large lot (lotSize=10000, AQL=4.0, Level II)', () => {
@@ -37,10 +39,11 @@ describe('aql', () => {
         inspectionLevel: 'II',
       });
 
+      // ISO 2859-1 Table 2-A: L (n=200) at AQL 4.0 → Ac 14 / Re 15
       expect(result.sampleCode).toBe('L');
       expect(result.sampleSize).toBe(200);
-      expect(result.acceptNumber).toBe(21);
-      expect(result.rejectNumber).toBe(22);
+      expect(result.acceptNumber).toBe(14);
+      expect(result.rejectNumber).toBe(15);
     });
   });
 
@@ -74,8 +77,9 @@ describe('aql', () => {
         inspectionLevel: 'S-1',
       });
 
-      expect(result.sampleCode).toBe('A');
-      expect(result.sampleSize).toBe(2);
+      // ISO 2859-1 Table 1: lot 281-500 at S-1 → code B (n=3)
+      expect(result.sampleCode).toBe('B');
+      expect(result.sampleSize).toBe(3);
     });
 
     it('should use special inspection level S-4', () => {
@@ -109,8 +113,9 @@ describe('aql', () => {
         inspectionLevel: 'II',
       });
 
-      expect(result.acceptNumber).toBe(14);
-      expect(result.rejectNumber).toBe(15);
+      // ISO 2859-1 Table 2-A: J (n=80) at AQL 6.5 → Ac 10 / Re 11
+      expect(result.acceptNumber).toBe(10);
+      expect(result.rejectNumber).toBe(11);
     });
   });
 
@@ -179,6 +184,47 @@ describe('aql', () => {
     });
   });
 
+  describe('ISO 2859-1:1999 golden cells', () => {
+    it('Table 1: lot 51-90 at S-1 → code B (was A before the S-column fix)', () => {
+      const result = aql({ lotSize: 60, aqlLevel: 1.0, inspectionLevel: 'S-1' });
+      expect(result.sampleCode).toBe('B');
+      expect(result.sampleSize).toBe(3);
+    });
+
+    it('Table 1: lot 150001-500000 at S-3 → code G', () => {
+      const result = aql({ lotSize: 200000, aqlLevel: 1.0, inspectionLevel: 'S-3' });
+      expect(result.sampleCode).toBe('G');
+      expect(result.sampleSize).toBe(32);
+    });
+
+    it('Table 1: lot 500001+ at S-3 → code H', () => {
+      const result = aql({ lotSize: 600000, aqlLevel: 1.0, inspectionLevel: 'S-3' });
+      expect(result.sampleCode).toBe('H');
+      expect(result.sampleSize).toBe(50);
+    });
+
+    it('Table 2-A: K (n=125) at AQL 0.65 → Ac 2 / Re 3', () => {
+      const result = aql({ lotSize: 2000, aqlLevel: 0.65, inspectionLevel: 'II' });
+      expect(result.sampleCode).toBe('K');
+      expect(result.acceptNumber).toBe(2);
+      expect(result.rejectNumber).toBe(3);
+    });
+
+    it('Table 2-A: Q (n=1250) at AQL 0.15 → Ac 5 / Re 6 (0.15 level supported)', () => {
+      const result = aql({ lotSize: 600000, aqlLevel: 0.15, inspectionLevel: 'II' });
+      expect(result.sampleCode).toBe('Q');
+      expect(result.acceptNumber).toBe(5);
+      expect(result.rejectNumber).toBe(6);
+    });
+
+    it('Table 2-A: N (n=500) at AQL 1.0 → Ac 10 / Re 11', () => {
+      const result = aql({ lotSize: 600000, aqlLevel: 1.0, inspectionLevel: 'I' });
+      expect(result.sampleCode).toBe('N');
+      expect(result.acceptNumber).toBe(10);
+      expect(result.rejectNumber).toBe(11);
+    });
+  });
+
   describe('real-world scenarios', () => {
     it('should calculate for electronics manufacturing (10000 units, AQL 0.25)', () => {
       const result = aql({
@@ -187,9 +233,10 @@ describe('aql', () => {
         inspectionLevel: 'II',
       });
 
+      // ISO 2859-1 Table 2-A: L (n=200) at AQL 0.25 → Ac 1 / Re 2
       expect(result.sampleCode).toBe('L');
-      expect(result.acceptNumber).toBe(2);
-      expect(result.rejectNumber).toBe(3);
+      expect(result.acceptNumber).toBe(1);
+      expect(result.rejectNumber).toBe(2);
     });
 
     it('should calculate for pharmaceutical (150 units, AQL 0.1)', () => {

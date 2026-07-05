@@ -19,10 +19,10 @@ describe('gwpCalculator', () => {
     expect(result.co2eqKg).toBeCloseTo(2730, 0);
   });
 
-  it('SF6: GWP100 = 25200, so 1 kg SF6 = 25200 kg CO2eq', () => {
+  it('SF6: GWP100 = 24300 (AR6; cross-checked vs GHG Protocol AR6 tables), so 1 kg SF6 = 24300 kg CO2eq', () => {
     const result = gwpCalculator({ gas: 'SF6', quantityKg: 1 });
-    expect(result.co2eqKg).toBeCloseTo(25200, 0);
-    expect(result.co2eqTonnes).toBeCloseTo(25.2, 1);
+    expect(result.co2eqKg).toBeCloseTo(24300, 0);
+    expect(result.co2eqTonnes).toBeCloseTo(24.3, 1);
   });
 
   it('should use GWP20 time horizon', () => {
@@ -33,9 +33,9 @@ describe('gwpCalculator', () => {
   });
 
   it('should use GWP500 time horizon', () => {
-    // CH4 GWP500 = 7.6
+    // CH4 (fossil) GWP500 = 10.0 per AR6; the previous 7.6 was the AR4 value
     const result = gwpCalculator({ gas: 'CH4', quantityKg: 100, timeHorizon: 'GWP500' });
-    expect(result.co2eqKg).toBeCloseTo(760, 0);
+    expect(result.co2eqKg).toBeCloseTo(1000, 0);
   });
 
   it('HFC-134a: GWP100 = 1526 (refrigerant)', () => {

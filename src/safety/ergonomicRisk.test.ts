@@ -131,6 +131,111 @@ describe('ergonomicRisk (REBA)', () => {
     });
   });
 
+  describe('Table A golden cells (published REBA worksheet)', () => {
+    it('Trunk=1, Neck=3, Legs=1 → posture score 3 (irregular cell)', () => {
+      // neck 10° (1) + twisted + side bent = 3; trunk 0° = 1; legs bilateral = 1
+      const r = ergonomicRisk({ ...neutralPosture, neckTwisted: true, neckSideBent: true });
+      expect(r.neckScore).toBe(3);
+      expect(r.trunkScore).toBe(1);
+      expect(r.scoreA).toBe(3); // old transcription gave 2
+    });
+
+    it('Trunk=1, Neck=2, Legs=1 → posture score 1 (N1 and N2 rows identical for Trunk 1)', () => {
+      const r = ergonomicRisk({ ...neutralPosture, neckAngle: 25 });
+      expect(r.neckScore).toBe(2);
+      expect(r.scoreA).toBe(1); // old transcription gave 2
+    });
+
+    it('Trunk=3, Neck=1, Legs=2 → posture score 4', () => {
+      const r = ergonomicRisk({ ...neutralPosture, trunkAngle: 45, legSupport: 'unilateral' });
+      expect(r.trunkScore).toBe(3);
+      expect(r.legScore).toBe(2);
+      expect(r.scoreA).toBe(4); // old transcription gave 6
+    });
+
+    it('Trunk=5, Neck=3, Legs=4 → posture score 9 (table maximum)', () => {
+      const r = ergonomicRisk({
+        ...neutralPosture,
+        trunkAngle: 70, trunkTwisted: true, trunkSideBent: true,
+        neckAngle: 25, neckTwisted: true, neckSideBent: true,
+        legSupport: 'unilateral', kneeFlexion: 70,
+      });
+      expect(r.scoreA).toBe(9); // Table A caps at 9, old table reached 12
+    });
+  });
+
+  describe('Table B golden cells (published REBA worksheet)', () => {
+    it('UA=2, LA=2, Wrist=1 → posture score 2', () => {
+      const r = ergonomicRisk({ ...neutralPosture, upperArmAngle: 30, lowerArmAngle: 30 });
+      expect(r.upperArmScore).toBe(2);
+      expect(r.lowerArmScore).toBe(2);
+      expect(r.scoreB).toBe(2); // old transcription gave 4
+    });
+
+    it('UA=4, LA=1, Wrist=2 → posture score 5', () => {
+      const r = ergonomicRisk({
+        ...neutralPosture,
+        upperArmAngle: 60, shoulderRaised: true, wristAngle: 20,
+      });
+      expect(r.upperArmScore).toBe(4);
+      expect(r.wristScore).toBe(2);
+      expect(r.scoreB).toBe(5); // old transcription gave 8
+    });
+
+    it('UA=6, LA=2, Wrist=3 → posture score 9 (table maximum)', () => {
+      const r = ergonomicRisk({
+        ...neutralPosture,
+        upperArmAngle: 100, shoulderRaised: true, armAbducted: true,
+        lowerArmAngle: 30, wristAngle: 20, wristTwisted: true,
+      });
+      expect(r.scoreB).toBe(9);
+    });
+  });
+
+  describe('coupling (Step 11)', () => {
+    it('defaults to good coupling (+0)', () => {
+      const r = ergonomicRisk(neutralPosture);
+      expect(r.couplingScore).toBe(0);
+    });
+
+    it('adds +1/+2/+3 for fair/poor/unacceptable coupling', () => {
+      const base = ergonomicRisk(neutralPosture);
+      const fair = ergonomicRisk({ ...neutralPosture, coupling: 'fair' });
+      const poor = ergonomicRisk({ ...neutralPosture, coupling: 'poor' });
+      const unacceptable = ergonomicRisk({ ...neutralPosture, coupling: 'unacceptable' });
+
+      expect(fair.couplingScore).toBe(1);
+      expect(poor.couplingScore).toBe(2);
+      expect(unacceptable.couplingScore).toBe(3);
+      expect(fair.scoreB).toBe(base.scoreB + 1);
+      expect(poor.scoreB).toBe(base.scoreB + 2);
+      expect(unacceptable.scoreB).toBe(base.scoreB + 3);
+    });
+  });
+
+  describe('extension handling (published worksheet zones)', () => {
+    it('trunk extension beyond 20° scores 3 regardless of magnitude', () => {
+      expect(ergonomicRisk({ ...neutralPosture, trunkAngle: -30 }).trunkScore).toBe(3);
+      expect(ergonomicRisk({ ...neutralPosture, trunkAngle: -70 }).trunkScore).toBe(3);
+    });
+
+    it('upper arm extension beyond 20° scores 2 regardless of magnitude', () => {
+      expect(ergonomicRisk({ ...neutralPosture, upperArmAngle: -30 }).upperArmScore).toBe(2);
+      expect(ergonomicRisk({ ...neutralPosture, upperArmAngle: -60 }).upperArmScore).toBe(2);
+    });
+  });
+
+  describe('worked example (full pipeline)', () => {
+    it('neutral posture resolves to REBA score 1 = negligible', () => {
+      const r = ergonomicRisk(neutralPosture);
+      expect(r.scoreA).toBe(1);
+      expect(r.scoreB).toBe(1);
+      expect(r.scoreC).toBe(1);
+      expect(r.rebaScore).toBe(1);
+      expect(r.riskLevel).toBe('negligible');
+    });
+  });
+
   describe('input validation', () => {
     it('should throw RangeError for negative load', () => {
       expect(() => ergonomicRisk({ ...neutralPosture, load: -1 })).toThrow(RangeError);

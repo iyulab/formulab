@@ -11,32 +11,33 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **174 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
-- **14 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining
+- **209 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,494 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,779 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
 
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
-| Quality | 18 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
-| Metal | 25 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
+| Quality | 21 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
+| Metal | 34 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
 | Logistics | 17 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
-| Chemical | 12 | — | Darcy-Weisbach, Fourier, API 520, ISA |
-| Electronics | 11 | — | IPC-2221 |
-| Construction | 12 | — | AISC, Timoshenko |
+| Chemical | 15 | — | Darcy-Weisbach, Fourier, API 520, ISA |
+| Electronics | 13 | — | IPC-2221 |
+| Construction | 16 | — | AISC, Timoshenko |
 | Automotive | 9 | — | AASHTO, SAE J1772 |
 | Energy | 15 | — | NREL PVWatts, ISO 50001 |
-| Food | 6 | — | HACCP, ICH Q1A |
-| Utility | 16 | — | — |
-| Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
+| Food | 7 | — | HACCP, ICH Q1A |
+| Utility | 18 | — | — |
+| Battery | 11 | — | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
 | Machining | 12 | — | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
+| IE | 5 | — | MTM/MOST, Wright's learning curve |
 
 > Functions with golden reference tests have been verified against authoritative engineering sources.
 > See each function's JSDoc for specific references.
@@ -95,7 +96,7 @@ Three functions solve NP-hard combinatorial problems using **heuristic** algorit
 
 GitHub Actions runs on every push to `main` and every pull request:
 
-- **Matrix**: Node.js 18, 20
+- **Matrix**: Node.js 20, 22
 - **Steps**: `pnpm install` → `tsc` (type check) → `vitest run --coverage`
 - **Coverage enforcement**: Fails if below thresholds (lines 90%, functions 95%, branches 85%, statements 90%)
 
@@ -157,7 +158,7 @@ console.log(volume.totalCbm); // 0.96 m³
 
 ## Domains
 
-### Quality & Production (18 functions)
+### Quality & Production (21 functions)
 
 ```typescript
 import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formulab/quality';
@@ -183,8 +184,11 @@ import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formula
 | `cmk()` | Machine capability index Cm/Cmk |
 | `weibull()` | Weibull reliability analysis |
 | `paretoAnalysis()` | Pareto 80/20 ABC classification |
+| `actionPriority()` | AIAG-VDA 2019 Action Priority (AP) matrix — table exported as `AP_TABLE` + `AP_*_BANDS` |
+| `cpkToOccurrence()` | Cpk → FMEA occurrence rating mapping |
+| `nelsonRules()` | SPC Nelson rules (8 control-chart tests) |
 
-### Metal & Machining (25 functions)
+### Metal & Machining (34 functions)
 
 ```typescript
 import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
@@ -217,8 +221,15 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `materialGradeConverter()` | ASTM/EN/JIS/GB/KS grade cross-reference |
 | `pipeSpec()` | ANSI/ASME pipe dimensions lookup |
 | `flangeSpec()` | ASME B16.5 flange dimensions lookup |
+| `getKFactor()` | Bolt torque K-factor by lubrication condition |
+| `getStandardPitch()` | ISO metric standard thread pitch lookup |
+| `getCategories()` | Material category list |
+| `getGrades()` | Material grades for a category |
+| `getDesignations()` | Screw thread designation list |
+| `getMetricSizes()` | Metric thread size list |
+| `getUnifiedSizes()` | Unified (UNC/UNF) thread size list |
 
-### Chemical & Process (12 functions)
+### Chemical & Process (15 functions)
 
 ```typescript
 import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer, flowControl, pid } from 'formulab/chemical';
@@ -239,7 +250,7 @@ import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer, flowContr
 | `reliefValve()` | Safety relief valve sizing (API 520/526) |
 | `pid()` | PID controller tuning (Z-N / Cohen-Coon) |
 
-### Electronics & SMT (11 functions)
+### Electronics & SMT (13 functions)
 
 ```typescript
 import { traceWidth, solderPaste, resistorDecode, ohmsLaw } from 'formulab/electronics';
@@ -258,8 +269,9 @@ import { traceWidth, solderPaste, resistorDecode, ohmsLaw } from 'formulab/elect
 | `ledResistor()` | LED resistor calculation |
 | `stencilAperture()` | Stencil aperture design |
 | `viaCurrent()` | Via current capacity |
+| `getPasteTypes()` | Available solder paste types |
 
-### Construction (12 functions)
+### Construction (16 functions)
 
 ```typescript
 import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formulab/construction';
@@ -279,6 +291,9 @@ import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formula
 | `pert()` | PERT schedule analysis |
 | `roof()` | Roof calculation |
 | `stair()` | Stair dimension calculation |
+| `getAggregateDensity()` | Aggregate bulk density lookup |
+| `aggregateCoverage()` | Aggregate coverage area from volume and depth |
+| `getRebarUnitWeight()` | Rebar unit weight lookup (D10-D51) |
 
 ### Automotive (9 functions)
 
@@ -371,7 +386,7 @@ import { nioshLifting, noiseExposure, wbgtCalculate, ventilationRate, thermalCom
 | `ventilationRate()` | Required ventilation ACH/CFM (ASHRAE/OSHA) |
 | `wbgtCalculate()` | WBGT heat stress index |
 
-### Food & HACCP (6 functions)
+### Food & HACCP (7 functions)
 
 ```typescript
 import { calorie, nutrition, haccp, waterActivity, stabilityStudy } from 'formulab/food';
@@ -385,8 +400,9 @@ import { calorie, nutrition, haccp, waterActivity, stabilityStudy } from 'formul
 | `haccp()` | HACCP checklist generation |
 | `waterActivity()` | Water activity microbial risk (HACCP) |
 | `stabilityStudy()` | Accelerated stability (Arrhenius, ICH Q1A) |
+| `getHaccpCategories()` | HACCP hazard category list |
 
-### Utility (16 functions)
+### Utility (18 functions)
 
 ```typescript
 import { solveAssignment, calculateUnit, statistics, regression, npv } from 'formulab/utility';
@@ -411,8 +427,9 @@ import { solveAssignment, calculateUnit, statistics, regression, npv } from 'for
 | `normalize()` | Data normalization (min-max/z-score) |
 | `histogram()` | Frequency distribution histogram |
 | `weightedScore()` | Weighted scoring model |
+| `getUnitsForCategory()` | Unit definitions for a conversion category |
 
-### Battery (10 functions)
+### Battery (11 functions)
 
 ```typescript
 import { energyDensity, cRate, stateOfHealth, cycleLife } from 'formulab/battery';
@@ -470,6 +487,20 @@ import { truePosition, boltCircle, toolDeflection, threadOverWires } from 'formu
 | `gaugeBlockStack()` | Gauge block combination (47/88/81-pc sets) |
 | `triangleSolver()` | Triangle solver (SSS/SAS/ASA/SSA) |
 | `cycleTimeEstimator()` | CNC cycle time estimation |
+
+### Industrial Engineering (5 functions)
+
+```typescript
+import { standardTime, timeStudy, workSampling, learningCurve } from 'formulab/ie';
+```
+
+| Function | Description |
+|----------|-------------|
+| `standardTime()` | Standard time from normal time + allowances |
+| `timeStudy()` | Time study observation analysis (rating, normal/standard time) |
+| `workSampling()` | Work sampling ratio and required observations |
+| `vaAnalysis()` | Value-added / non-value-added activity analysis |
+| `learningCurve()` | Wright's learning curve (time per unit, cumulative) |
 
 ## API Examples
 

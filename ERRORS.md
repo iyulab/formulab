@@ -28,7 +28,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `null` | Returns `null` for optional/unavailable fields |
 | `safe` | No error edge cases; all inputs produce valid outputs |
 
-### Quality (18 functions)
+### Quality (21 functions)
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
@@ -37,7 +37,10 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `cycleTime()` | `safe` | — |
 | `taktTime()` | `throw` | demand = 0 |
-| `aql()` | `throw` | lotSize ≤ 0 |
+| `aql()` | `throw` | lotSize ≤ 0; negative aqlLevel → '-' zero-plan result (does not throw) |
+| `actionPriority()` | `throw` | severity/occurrence/detection outside 1–10 or non-finite |
+| `cpkToOccurrence()` | `throw` | cpk negative or non-finite |
+| `nelsonRules()` | `throw` | empty values, sigma ≤ 0, non-finite centerLine |
 | `downtime()` | `safe` | — |
 | `dpmo()` | `throw` | units ≤ 0, opportunities ≤ 0 |
 | `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time > cycleTime (infeasible), circular dependency |

@@ -234,6 +234,8 @@ export interface RebaInput {
   lowerArmAngle: number;      // degrees
   wristAngle: number;         // degrees
   wristTwisted: boolean;
+  /** Hand-to-object coupling quality (REBA Step 11). Defaults to 'good' (+0). */
+  coupling?: 'good' | 'fair' | 'poor' | 'unacceptable';
   load: number;               // kg
   shockForce: boolean;
   staticPosture: boolean;
@@ -248,6 +250,7 @@ export interface RebaResult {
   upperArmScore: number;
   lowerArmScore: number;
   wristScore: number;
+  couplingScore: number;      // 0-3 (REBA Step 11)
   scoreA: number;
   scoreB: number;
   scoreC: number;

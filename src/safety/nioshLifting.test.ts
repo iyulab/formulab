@@ -381,8 +381,8 @@ describe('nioshLifting', () => {
       expect(result.rwl).toBeCloseTo(21.62, 1);
     });
 
-    it('CM table verification: coupling=fair, V≥75 → CM=0.95', () => {
-      // NIOSH 94-110 Table 7: CM for fair coupling, V ≥ 75cm = 0.95
+    it('CM table verification: coupling=fair, V≥75 → CM=1.00', () => {
+      // NIOSH 94-110 Table 7: CM for fair coupling is 0.95 when V < 75cm and 1.00 when V ≥ 75cm
       const result = nioshLifting({
         horizontalDistance: 25,
         verticalDistance: 75,   // V ≥ 75 → use "high" column
@@ -394,9 +394,102 @@ describe('nioshLifting', () => {
         loadWeight: 10,
       });
 
+      expect(result.cm).toBe(1.0);
+      // RWL = 23 × 1 × 1 × 1 × 1 × 1 × 1.0 = 23
+      expect(result.rwl).toBeCloseTo(23, 1);
+    });
+
+    it('FM table verification: F=13, short duration, V<75 → FM=0 (RWL=0, LI=Infinity)', () => {
+      // NIOSH 94-110 Table 5: at V < 75cm the ≤1h column ends at F=12; F=13 → 0.00
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 50,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 13,
+        duration: 'short',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+
+      expect(result.fm).toBe(0);
+      expect(result.rwl).toBe(0);
+      expect(result.liftingIndex).toBe(Infinity);
+    });
+
+    it('FM table verification: F=13, short duration, V≥75 → FM=0.34', () => {
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 13,
+        duration: 'short',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+
+      expect(result.fm).toBe(0.34);
+    });
+
+    it('FM table verification: F=13 medium and F=11 long → FM=0 even at V≥75', () => {
+      // NIOSH 94-110 Table 5: these cells are 0.00 — earlier versions shipped invented values
+      const medium = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 13,
+        duration: 'medium',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+      const long = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 75,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 11,
+        duration: 'long',
+        coupling: 'good',
+        loadWeight: 10,
+      });
+
+      expect(medium.fm).toBe(0);
+      expect(long.fm).toBe(0);
+    });
+
+    it('FM table verification: frequency above 15 lifts/min → FM=0 for all durations', () => {
+      // NIOSH 94-110 Table 5: > 15 row is 0.00 (was clamped to the F=15 value before)
+      for (const duration of ['short', 'medium', 'long'] as const) {
+        const result = nioshLifting({
+          horizontalDistance: 25,
+          verticalDistance: 75,
+          verticalTravel: 25,
+          asymmetryAngle: 0,
+          frequency: 20,
+          duration,
+          coupling: 'good',
+          loadWeight: 10,
+        });
+        expect(result.fm).toBe(0);
+      }
+    });
+
+    it('CM table verification: coupling=fair, V<75 → CM=0.95', () => {
+      // NIOSH 94-110 Table 7: fair coupling penalizes lifts below knuckle height
+      const result = nioshLifting({
+        horizontalDistance: 25,
+        verticalDistance: 74.9,
+        verticalTravel: 25,
+        asymmetryAngle: 0,
+        frequency: 0.2,
+        duration: 'short',
+        coupling: 'fair',
+        loadWeight: 10,
+      });
+
       expect(result.cm).toBe(0.95);
-      // RWL = 23 × 1 × 1 × 1 × 1 × 1 × 0.95 = 21.85
-      expect(result.rwl).toBeCloseTo(21.85, 1);
     });
   });
 

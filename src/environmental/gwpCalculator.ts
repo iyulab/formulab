@@ -3,15 +3,18 @@ import type { GhgGas, GwpTimeHorizon, GwpCalculatorInput, GwpCalculatorResult } 
 
 /**
  * Global Warming Potential factors
- * @reference IPCC AR6 (2021), WGI Table 7.SM.7
+ * @reference IPCC AR6 (2021), WGI Table 7.15 / 7.SM.7; GWP100 cross-checked against the
+ *   GHG Protocol "IPCC Global Warming Potential Values" v2.0 (Aug 2024, AR6-adapted).
+ * @remarks CH4 uses the AR6 *fossil methane* values (82.5 / 29.8 / 10.0) — use-case:
+ *   fugitive/industrial fossil sources. AR6 non-fossil CH4 is lower (80.8 / 27.0 / 7.2).
  */
 const GWP_TABLE: Record<GhgGas, Record<GwpTimeHorizon, number>> = {
   CO2:     { GWP20: 1,     GWP100: 1,     GWP500: 1 },
-  CH4:     { GWP20: 82.5,  GWP100: 29.8,  GWP500: 7.6 },
+  CH4:     { GWP20: 82.5,  GWP100: 29.8,  GWP500: 10.0 },
   N2O:     { GWP20: 273,   GWP100: 273,   GWP500: 130 },
   HFC134a: { GWP20: 4144,  GWP100: 1526,  GWP500: 436 },
   HFC152a: { GWP20: 591,   GWP100: 164,   GWP500: 44 },
-  SF6:     { GWP20: 18300, GWP100: 25200, GWP500: 34100 },
+  SF6:     { GWP20: 18300, GWP100: 24300, GWP500: 34100 },
   NF3:     { GWP20: 13400, GWP100: 17400, GWP500: 20700 },
   CF4:     { GWP20: 5300,  GWP100: 7380,  GWP500: 10600 },
 };

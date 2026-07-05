@@ -17,7 +17,13 @@ export { gageRR } from './gageRR.js';
 export { cmk } from './cmk.js';
 export { weibull } from './weibull.js';
 export { paretoAnalysis } from './paretoAnalysis.js';
-export { actionPriority } from './actionPriority.js';
+export {
+  actionPriority,
+  AP_TABLE,
+  AP_SEVERITY_BANDS,
+  AP_OCCURRENCE_BANDS,
+  AP_DETECTION_BANDS,
+} from './actionPriority.js';
 export { cpkToOccurrence } from './cpkToOccurrence.js';
 export { nelsonRules } from './nelsonRules.js';
 
@@ -94,6 +100,7 @@ export type {
   ActionPriorityLevel,
   ActionPriorityInput,
   ActionPriorityResult,
+  ApRatingBand,
   // Cpk to Occurrence types
   CpkToOccurrenceInput,
   CpkToOccurrenceResult,
