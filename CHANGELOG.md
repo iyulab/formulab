@@ -53,13 +53,20 @@ published standard**, and every fix ships with cell-level golden tests.
     The fixed-sample-size simplification of arrow cells is unchanged and now documented in
     the JSDoc.
 
-- **`environmental/gwpCalculator()` — two AR6 cells corrected** (single-axis constant
-  audit): SF6 GWP100 `25,200` → **`24,300`** (AR6; cross-checked against the GHG Protocol
-  AR6 GWP tables v2.0 and independent AR6 citations) and CH4 GWP500 `7.6` → **`10.0`**
-  (the 7.6 was AR4's value left in an otherwise-AR6 table; 10.0 is AR6 fossil methane,
-  consistent with the fossil 20/100-year values already used). The JSDoc now states the
-  CH4 row uses AR6 *fossil* methane values. Remaining unverified 500-year cells
-  (NF3/SF6/HFC-152a GWP500) are noted in the audit log but unchanged.
+- **`environmental/gwpCalculator()` — six cells conformed to IPCC AR6 Table 7.SM.7**
+  (verified against the published supplementary table itself): the whole SF6 row was
+  computed with the superseded 3,200-year lifetime — AR6 assesses 1,000 years — so
+  `18,300/25,200/34,100` → **`18,200/24,300/29,000`** (GWP20/100/500); NF3 GWP500
+  `20,700` → **`18,200`**; HFC-152a GWP500 `44` → **`46.8`**; CH4 GWP500 `7.6` (AR4
+  leftover) → **`10.0`** (AR6 fossil methane, consistent with the fossil 20/100-year
+  values already used). GWP100 additionally cross-checked against the GHG Protocol AR6
+  GWP tables v2.0. The JSDoc now states the CH4 row uses AR6 *fossil* methane values,
+  and Table 7.SM.7 golden tests pin the corrected cells.
+- **`safety/nioshLifting()` — outputs now pass through `roundTo`** per the library-wide
+  convention (README "Floating-Point Handling"): `rwl`/`liftingIndex` to 2 decimals,
+  computed multipliers (`hm`/`vm`/`dm`/`am`) to 4. `riskLevel` is classified from the
+  rounded `liftingIndex` so the returned index and level always agree. The
+  `liftingIndex = Infinity` sentinel is unaffected (`roundTo` passes it through).
 
 ### Added
 

@@ -48,4 +48,26 @@ describe('gwpCalculator', () => {
     expect(result.timeHorizon).toBe('GWP100');
     expect(result.gwpFactor).toBe(273);
   });
+
+  describe('AR6 Table 7.SM.7 golden cells (verified against the published table)', () => {
+    it('SF6 row uses the AR6-assessed 1000-year lifetime: 18200 / 24300 / 29000', () => {
+      expect(gwpCalculator({ gas: 'SF6', quantityKg: 1, timeHorizon: 'GWP20' }).gwpFactor).toBe(18200);
+      expect(gwpCalculator({ gas: 'SF6', quantityKg: 1, timeHorizon: 'GWP100' }).gwpFactor).toBe(24300);
+      expect(gwpCalculator({ gas: 'SF6', quantityKg: 1, timeHorizon: 'GWP500' }).gwpFactor).toBe(29000);
+    });
+
+    it('NF3 GWP500 = 18200', () => {
+      expect(gwpCalculator({ gas: 'NF3', quantityKg: 1, timeHorizon: 'GWP500' }).gwpFactor).toBe(18200);
+    });
+
+    it('HFC-152a GWP500 = 46.8', () => {
+      expect(gwpCalculator({ gas: 'HFC152a', quantityKg: 1, timeHorizon: 'GWP500' }).gwpFactor).toBe(46.8);
+    });
+
+    it('CF4 (PFC-14) GWP grows with horizon: 5300 / 7380 / 10600', () => {
+      expect(gwpCalculator({ gas: 'CF4', quantityKg: 1, timeHorizon: 'GWP20' }).gwpFactor).toBe(5300);
+      expect(gwpCalculator({ gas: 'CF4', quantityKg: 1, timeHorizon: 'GWP100' }).gwpFactor).toBe(7380);
+      expect(gwpCalculator({ gas: 'CF4', quantityKg: 1, timeHorizon: 'GWP500' }).gwpFactor).toBe(10600);
+    });
+  });
 });

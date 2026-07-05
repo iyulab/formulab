@@ -1,3 +1,4 @@
+import { roundTo } from '../utils.js';
 import type {
   NioshInput,
   NioshResult,
@@ -152,6 +153,8 @@ function getCouplingMultiplier(
  *   NIOSH spec rather than rejected. When the frequency multiplier drives RWL to 0
  *   (sustained high-frequency lifting), liftingIndex is Infinity — an intentional
  *   sentinel meaning "no weight is acceptable for this task".
+ *   Outputs are rounded: rwl/liftingIndex to 2 decimals, computed multipliers to 4;
+ *   riskLevel is classified from the rounded liftingIndex so the two always agree.
  */
 export function nioshLifting(input: NioshInput): NioshResult {
   const {
@@ -200,8 +203,8 @@ export function nioshLifting(input: NioshInput): NioshResult {
   // Calculate RWL
   const rwl = LC * hm * vm * dm * am * fm * cm;
 
-  // Calculate Lifting Index
-  const liftingIndex = rwl > 0 ? loadWeight / rwl : Infinity;
+  // Calculate Lifting Index (rounded so the returned index and risk level agree)
+  const liftingIndex = rwl > 0 ? roundTo(loadWeight / rwl, 2) : Infinity;
 
   // Determine risk level
   let riskLevel: 'low' | 'moderate' | 'high';
@@ -214,12 +217,12 @@ export function nioshLifting(input: NioshInput): NioshResult {
   }
 
   return {
-    rwl,
+    rwl: roundTo(rwl, 2),
     liftingIndex,
-    hm,
-    vm,
-    dm,
-    am,
+    hm: roundTo(hm, 4),
+    vm: roundTo(vm, 4),
+    dm: roundTo(dm, 4),
+    am: roundTo(am, 4),
     fm,
     cm,
     riskLevel,
