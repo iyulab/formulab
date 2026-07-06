@@ -74,6 +74,54 @@ describe('gageRR', () => {
     });
   });
 
+  describe('status = worse(byPercentGRR, byPercentTolerance)', () => {
+    // ISSUE-20260705-formulab-gagerr-status-ignores-tolerance: good %GRR but a tight tolerance
+    // (large part variation relative to a narrow spec) must not read "acceptable".
+    it('downgrades to unacceptable when %GRR is good but %Tolerance is not (reported case)', () => {
+      const rows: number[][] = [
+        [9.65, 10.05, 9.95, 10.35, 9.45, 9.85],
+        [14.8, 15.2, 15.1, 15.5, 14.6, 15],
+        [19.95, 20.35, 20.25, 20.65, 19.75, 20.15],
+        [24.65, 25.05, 24.95, 25.35, 24.45, 24.85],
+        [29.8, 30.2, 30.1, 30.5, 29.6, 30],
+        [34.95, 35.35, 35.25, 35.65, 34.75, 35.15],
+        [39.65, 40.05, 39.95, 40.35, 39.45, 39.85],
+        [44.8, 45.2, 45.1, 45.5, 44.6, 45],
+        [49.95, 50.35, 50.25, 50.65, 49.75, 50.15],
+        [54.65, 55.05, 54.95, 55.35, 54.45, 54.85],
+      ];
+      const measurements: number[][][] = rows.map((r) => [
+        [r[0], r[1]],
+        [r[2], r[3]],
+        [r[4], r[5]],
+      ]);
+      const result = gageRR({ measurements, tolerance: 10 });
+      expect(result.percentGRR).toBeLessThanOrEqual(10);
+      expect(result.percentTolerance).toBeGreaterThan(30);
+      expect(result.status).toBe('unacceptable');
+    });
+
+    it('keeps the %GRR classification when tolerance is not provided (no data to downgrade with)', () => {
+      const result = gageRR({ measurements: classicMeasurements });
+      expect(result.status).toBe('acceptable');
+    });
+
+    it('keeps acceptable when both %GRR and %Tolerance are within band', () => {
+      const result = gageRR({ measurements: classicMeasurements, tolerance: 10 });
+      expect(result.percentGRR).toBeLessThanOrEqual(10);
+      expect(result.percentTolerance).toBeLessThanOrEqual(10);
+      expect(result.status).toBe('acceptable');
+    });
+
+    it('downgrades to marginal when %Tolerance lands in the 10–30 band while %GRR is acceptable', () => {
+      const result = gageRR({ measurements: classicMeasurements, tolerance: 2.0 });
+      expect(result.percentGRR).toBeLessThanOrEqual(10);
+      expect(result.percentTolerance).toBeGreaterThan(10);
+      expect(result.percentTolerance).toBeLessThanOrEqual(30);
+      expect(result.status).toBe('marginal');
+    });
+  });
+
   describe('ndc (number of distinct categories)', () => {
     it('should calculate ndc >= 1 for reasonable data', () => {
       const result = gageRR({ measurements: classicMeasurements });

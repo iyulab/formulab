@@ -13,6 +13,20 @@ const K3: Record<number, number> = {
   6: 1.93, 7: 1.82, 8: 1.74, 9: 1.67, 10: 1.62,
 };
 
+type GageRRStatus = GageRRResult['status'];
+const STATUS_RANK: Record<GageRRStatus, number> = { acceptable: 0, marginal: 1, unacceptable: 2 };
+
+// AIAG MSA 4th Ed. applies the same ≤10/≤30 bands to %GRR-of-tolerance as to %GRR-of-TV.
+function classifyPercent(percent: number): GageRRStatus {
+  if (percent <= 10) return 'acceptable';
+  if (percent <= 30) return 'marginal';
+  return 'unacceptable';
+}
+
+function worse(a: GageRRStatus, b: GageRRStatus): GageRRStatus {
+  return STATUS_RANK[a] >= STATUS_RANK[b] ? a : b;
+}
+
 /**
  * Gage R&R (Measurement System Analysis) — AIAG MSA 4th Edition, Average and Range Method
  *
@@ -102,15 +116,11 @@ export function gageRR(input: GageRRInput): GageRRResult {
   // ndc
   const ndc = grr > 0 ? Math.floor(1.41 * (pv / grr)) : 0;
 
-  // Status
-  let status: GageRRResult['status'];
-  if (percentGRR <= 10) {
-    status = 'acceptable';
-  } else if (percentGRR <= 30) {
-    status = 'marginal';
-  } else {
-    status = 'unacceptable';
-  }
+  // Status — %GRR-of-TV is the process-control criterion; when a tolerance is supplied,
+  // %GRR-of-tolerance (product-acceptance criterion) is evaluated too and the worse of the
+  // two wins, since a measurement system unfit for either purpose should not read "acceptable".
+  const byPercentGRR = classifyPercent(percentGRR);
+  const status = percentTolerance != null ? worse(byPercentGRR, classifyPercent(percentTolerance)) : byPercentGRR;
 
   return {
     ev: roundTo(ev, 4),

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.1] - 2026-07-06
+
+### Fixed
+
+- **`quality/gageRR()` — `status` now also considers `%GRR`-of-tolerance when a `tolerance`
+  is supplied.** Previously `status` was classified from `percentGRR` (the process-control
+  criterion, %GRR of Total Variation) alone, so a measurement system with excellent %GRR but
+  a tolerance far narrower than the part-to-part variation could report `'acceptable'` while
+  `percentTolerance` (the product-acceptance criterion) sat well above 30%. `status` is now
+  `worse(byPercentGRR, byPercentTolerance)` — AIAG MSA 4th Ed.'s ≤10/≤30 bands applied to
+  both criteria — falling back to `byPercentGRR` alone when no tolerance is given (unchanged
+  behavior). Reported via dogfooding (online-tools `quality/gage-rr`, ISSUE-20260705).
+
 ## [0.14.0] - 2026-07-05
 
 ### Changed (breaking within 0.x) — standard-table conformance sweep
