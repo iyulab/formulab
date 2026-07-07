@@ -209,9 +209,11 @@ Most functions in these domains follow the `throw` pattern for invalid inputs. S
 
 As of v0.13.0 all utility functions follow the standard `throw` pattern — the former `Result | null` signatures (16 functions: assignment, bilinearInterpolation, correlation, depreciation, histogram, lcc, linearInterpolation, movingAverage, normalize, npv, percentile, regression, roi, statistics, unit, weightedScore) were migrated to `RangeError` throws with descriptive messages. One deliberate `null` remains: `NpvResult.irr: number | null` models IRR non-convergence, which is a domain answer rather than an invalid input.
 
+**Exception — `correlation()` zero-variance sentinel.** `correlation()` throws `RangeError` for genuinely invalid input (mismatched lengths, fewer than 2 points), but for **valid** input where one variable has zero variance (constant data, so the Pearson denominator `√(ΣΔx²·ΣΔy²) = 0`) it returns `{ r: 0, r2: 0, n }` rather than throwing or emitting `NaN`. This is the same "valid-but-degenerate → finite sentinel" pattern as the capability-index family: constant data has an undefined correlation, and `r = 0` is reported as the finite sentinel. (Note: `r = 0` reads as "no linear correlation"; whether that is the ideal representation of "undefined" is a product question, not an error-handling one.)
+
 ## Consumer Guidance
 
-Most functions follow the same error pattern: invalid inputs throw `RangeError`. The exception is the capability-index family (`cpk()`, `ppk()`, `cmk()`), which returns a zero-valued result for a degenerate spread instead of throwing (see Exception note above).
+Most functions follow the same error pattern: invalid inputs throw `RangeError`. The exceptions are the capability-index family (`cpk()`, `ppk()`, `cmk()`), which returns a zero-valued result for a degenerate spread instead of throwing, and `correlation()`, which returns `r = 0` for zero-variance (constant) data — both are valid-but-degenerate sentinels (see Exception notes above).
 
 ```typescript
 import { cRate } from 'formulab/battery';

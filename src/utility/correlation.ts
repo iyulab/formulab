@@ -7,6 +7,10 @@ import type { CorrelationInput, CorrelationResult } from './types.js';
  * @param input - Paired samples x and y
  * @returns Correlation coefficient r, r-squared, and sample size n
  * @throws RangeError if x and y lengths differ or contain fewer than 2 points
+ * @remarks For valid input where one variable has zero variance (constant data),
+ * the Pearson denominator is 0 and correlation is undefined; this returns
+ * `{ r: 0, r2: 0, n }` as a finite sentinel rather than throwing or emitting NaN
+ * (same valid-but-degenerate policy as the capability-index family — see ERRORS.md).
  */
 export function correlation(input: CorrelationInput): CorrelationResult {
   const { x, y } = input;

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.2] - 2026-07-07
+
+### Documentation
+
+- **`utility/correlation()` — zero-variance sentinel now documented.** `correlation()`
+  throws `RangeError` for genuinely invalid input (mismatched lengths, fewer than 2 points),
+  but for **valid** constant data (one variable has zero variance, so the Pearson denominator
+  is 0) it returns `{ r: 0, r2: 0, n }` as a finite sentinel rather than throwing or emitting
+  `NaN` — the same "valid-but-degenerate → finite sentinel" policy as the capability-index
+  family. This behavior was already covered by tests but was undocumented in `ERRORS.md`,
+  which implied all migrated utility functions throw on invalid input. `ERRORS.md` and the
+  `correlation()` JSDoc now document the exception. No behavior change. Surfaced during an
+  error-handling characterization audit (online-tools NT-66 갈래①).
+
 ## [0.14.1] - 2026-07-06
 
 ### Fixed
