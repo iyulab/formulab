@@ -65,6 +65,51 @@ describe('solarOutput', () => {
     });
   });
 
+  describe('floor disclosure (ISSUE-20260713 silent clamp)', () => {
+    // Regression pin from the issue's execution evidence: north-facing roof at latitude 37,
+    // tilt 30 → raw azimuth factor cos(108°) ≈ -0.309, floored to 0.5.
+    it('flags a north-facing array (azimuthOffset 180°)', () => {
+      const north = solarOutput({
+        panelWattage: 400, panelCount: 10, peakSunHours: 5,
+        systemEfficiency: 0.80, tiltAngle: 30, latitude: 37, azimuthOffset: 180,
+      });
+      const south = solarOutput({
+        panelWattage: 400, panelCount: 10, peakSunHours: 5,
+        systemEfficiency: 0.80, tiltAngle: 30, latitude: 37, azimuthOffset: 0,
+      });
+
+      expect(north.tiltEfficiencyFloored).toBe(true);
+      expect(south.tiltEfficiencyFloored).toBe(false);
+      // The floored result sits at exactly 50% of south-facing — the issue's symptom
+      expect(north.annualOutputKwh / south.annualOutputKwh).toBeCloseTo(0.5, 2);
+    });
+
+    it('flags an extreme tilt deviation hitting the tilt-factor floor', () => {
+      // tilt deviation must exceed 2×acos(0.5) = 240°... unreachable via tilt alone;
+      // the tilt factor floors only for |tilt - latitude| > 120°, e.g. tilt 180 at latitude 55
+      const result = solarOutput({
+        panelWattage: 400, panelCount: 10, peakSunHours: 5,
+        systemEfficiency: 0.80, tiltAngle: 180, latitude: 55, azimuthOffset: 0,
+      });
+
+      expect(result.tiltEfficiencyFloored).toBe(true);
+    });
+
+    it('does not flag optimal or mildly off-optimal configurations', () => {
+      const optimal = solarOutput({
+        panelWattage: 400, panelCount: 10, peakSunHours: 5,
+        systemEfficiency: 0.80, tiltAngle: 35, latitude: 35, azimuthOffset: 0,
+      });
+      const east = solarOutput({
+        panelWattage: 400, panelCount: 10, peakSunHours: 5,
+        systemEfficiency: 0.80, tiltAngle: 35, latitude: 35, azimuthOffset: 90,
+      });
+
+      expect(optimal.tiltEfficiencyFloored).toBe(false);
+      expect(east.tiltEfficiencyFloored).toBe(false); // cos(54°) ≈ 0.59 > 0.5
+    });
+  });
+
   describe('validation', () => {
     it('should throw on zero panel wattage', () => {
       expect(() => solarOutput({

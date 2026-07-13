@@ -32,7 +32,7 @@ function interpolate(
   value: number,
   low: ConversionRow,
   high: ConversionRow,
-): HardnessResult {
+): Omit<HardnessResult, 'outOfTableRange'> {
   const t = (value - low[scale]) / (high[scale] - low[scale]);
   return {
     HRC: roundTo(low.HRC + t * (high.HRC - low.HRC), 1),
@@ -45,6 +45,11 @@ function interpolate(
 /**
  * Convert a hardness value from one scale to all scales using
  * linear interpolation on the conversion table.
+ *
+ * Inputs outside the table (e.g. HRC below 20 or above 68) are clamped to the boundary
+ * row and disclosed via `outOfTableRange: true` — the returned values are then a boundary
+ * approximation, not a conversion of the input. Exact boundary hits are table hits and
+ * are not flagged. Interpolation within the table is the method's intended behavior.
  */
 export function hardness(input: HardnessInput): HardnessResult {
   const { fromScale, value } = input;
@@ -52,25 +57,30 @@ export function hardness(input: HardnessInput): HardnessResult {
   // Sort table by the source scale ascending
   const sorted = [...CONVERSION_TABLE].sort((a, b) => a[fromScale] - b[fromScale]);
 
+  const min = sorted[0][fromScale];
+  const max = sorted[sorted.length - 1][fromScale];
+
   // Clamp: if value is at or below the minimum row
-  if (value <= sorted[0][fromScale]) {
+  if (value <= min) {
     const row = sorted[0];
     return {
       HRC: row.HRC,
       HB: row.HB,
       HV: row.HV,
       Shore: row.Shore,
+      outOfTableRange: value < min,
     };
   }
 
   // Clamp: if value is at or above the maximum row
-  if (value >= sorted[sorted.length - 1][fromScale]) {
+  if (value >= max) {
     const row = sorted[sorted.length - 1];
     return {
       HRC: row.HRC,
       HB: row.HB,
       HV: row.HV,
       Shore: row.Shore,
+      outOfTableRange: value > max,
     };
   }
 
@@ -79,7 +89,7 @@ export function hardness(input: HardnessInput): HardnessResult {
     const low = sorted[i];
     const high = sorted[i + 1];
     if (value >= low[fromScale] && value <= high[fromScale]) {
-      return interpolate(fromScale, value, low, high);
+      return { ...interpolate(fromScale, value, low, high), outOfTableRange: false };
     }
   }
 
@@ -90,5 +100,6 @@ export function hardness(input: HardnessInput): HardnessResult {
     HB: row.HB,
     HV: row.HV,
     Shore: row.Shore,
+    outOfTableRange: false,
   };
 }

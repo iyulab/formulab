@@ -37,9 +37,20 @@ const COPPER_RESISTIVITY = 0.6787;
  * Calculate PCB trace width using IPC-2221 formula
  * @param input - Trace parameters (current, temp rise, copper weight, layer)
  * @returns Trace width and related calculations
+ * @throws {RangeError} current ≤ 0, tempRise ≤ 0, or copperWeight ≤ 0
  */
 export function traceWidth(input: TraceInput): TraceResult {
   const { current, tempRise, copperWeight, layer } = input;
+
+  if (current <= 0) {
+    throw new RangeError('current must be greater than 0');
+  }
+  if (tempRise <= 0) {
+    throw new RangeError('tempRise must be greater than 0');
+  }
+  if (copperWeight <= 0) {
+    throw new RangeError('copperWeight must be greater than 0');
+  }
 
   // Get constants for the layer type
   const constants = IPC2221_CONSTANTS[layer];

@@ -49,3 +49,20 @@ describe('vocEmissions', () => {
     expect(result.reductionPercent).toBeCloseTo(72, 0);
   });
 });
+
+describe('vocEmissions contract restoration (2026-07 audit)', () => {
+  it('reports reductionPercent 0 for zero VOC total instead of NaN (valid-but-degenerate)', () => {
+    const result = vocEmissions({ totalVocKg: 0, captureEfficiency: 0.9, destructionEfficiency: 0.95 });
+    expect(result.reductionPercent).toBe(0);
+    expect(result.emittedVocKg).toBe(0);
+  });
+
+  it('throws RangeError for negative totalVocKg', () => {
+    expect(() => vocEmissions({ totalVocKg: -1, captureEfficiency: 0.9, destructionEfficiency: 0.95 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for efficiencies outside [0, 1]', () => {
+    expect(() => vocEmissions({ totalVocKg: 100, captureEfficiency: 1.5, destructionEfficiency: 0.95 })).toThrow(RangeError);
+    expect(() => vocEmissions({ totalVocKg: 100, captureEfficiency: 0.9, destructionEfficiency: -0.1 })).toThrow(RangeError);
+  });
+});

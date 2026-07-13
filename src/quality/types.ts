@@ -106,6 +106,17 @@ export interface AqlResult {
   rejectNumber: number;
   /** Sampling percentage of lot */
   samplingPercent: number;
+  /**
+   * The AQL column actually applied from the embedded ISO 2859-1 table
+   * (0.065–6.5). 0 for the negative-aqlLevel zero-plan sentinel.
+   */
+  aqlUsed: number;
+  /**
+   * true when `aqlUsed !== aqlLevel` — the requested AQL is not a column of the
+   * embedded table (e.g. 10 → 6.5, 0.01 → 0.065, 5.0 → 4.0) and the returned plan
+   * is for a DIFFERENT quality level than requested.
+   */
+  aqlAdjusted: boolean;
 }
 
 /**

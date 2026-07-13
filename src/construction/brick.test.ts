@@ -258,3 +258,21 @@ describe('brick', () => {
     });
   });
 });
+
+describe('brick contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for wallArea <= 0 (documented contract, previously unimplemented)', () => {
+    expect(() => brick({ wallArea: 0, brickSize: 'standard', mortarThickness: 10, wasteFactor: 5 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for an unknown brick size (was uncontrolled TypeError)', () => {
+    expect(() => brick({ wallArea: 10, brickSize: 'giant' as never, mortarThickness: 10, wasteFactor: 5 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for non-positive custom dimensions', () => {
+    expect(() => brick({ wallArea: 10, brickSize: 'custom', customLength: 0, customHeight: 60, mortarThickness: 10, wasteFactor: 5 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for negative mortar thickness (was Infinity via zero/negative denominator)', () => {
+    expect(() => brick({ wallArea: 10, brickSize: 'standard', mortarThickness: -300, wasteFactor: 5 })).toThrow(RangeError);
+  });
+});

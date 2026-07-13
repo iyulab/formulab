@@ -90,10 +90,3 @@ export function normalInvCDF(p: number): number {
       ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
   }
 }
-
-/**
- * Clamp a value to a range [min, max].
- */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
-}

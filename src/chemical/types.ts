@@ -250,6 +250,9 @@ export interface ReliefValveResult {
   relievingPressure: number;  // kPa
   capacityAtOrifice: number;  // kg/h
   percentUtilized: number;    // %
+  orificeExceedsMax: boolean; // true when requiredArea exceeds the largest API 526 orifice
+                              // ('T', 16,774 mm²) — selectedOrifice is then NOT adequate on its
+                              // own; multiple valves in parallel (or a custom device) are required
 }
 
 /**

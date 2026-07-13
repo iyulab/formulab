@@ -206,3 +206,26 @@ describe('hardness', () => {
     });
   });
 });
+
+describe('out-of-table disclosure (clamp/snap convention)', () => {
+  it('flags HRC below the ASTM E140 table (HRC 10 -> clamped to HRC 20 row)', () => {
+    const result = hardness({ fromScale: 'HRC', value: 10 });
+    expect(result.HRC).toBe(20);
+    expect(result.outOfTableRange).toBe(true);
+  });
+
+  it('flags HRC above the table (HRC 70 -> clamped to HRC 68 row)', () => {
+    const result = hardness({ fromScale: 'HRC', value: 70 });
+    expect(result.HRC).toBe(68);
+    expect(result.outOfTableRange).toBe(true);
+  });
+
+  it('does not flag exact boundary hits (HRC 20 and 68)', () => {
+    expect(hardness({ fromScale: 'HRC', value: 20 }).outOfTableRange).toBe(false);
+    expect(hardness({ fromScale: 'HRC', value: 68 }).outOfTableRange).toBe(false);
+  });
+
+  it('does not flag interpolation within the table', () => {
+    expect(hardness({ fromScale: 'HV', value: 400 }).outOfTableRange).toBe(false);
+  });
+});

@@ -27,10 +27,17 @@ const MIX_DESIGNS: Record<ConcreteGrade, MixDesign> = {
  *
  * @param input - Concrete grade and volume
  * @returns Material quantities in kg (cement, sand, gravel) and liters (water)
+ * @throws {RangeError} unknown grade, or volume ≤ 0
  */
 export function concreteMix(input: ConcreteInput): ConcreteResult {
   const { grade, volume } = input;
   const design = MIX_DESIGNS[grade];
+  if (design === undefined) {
+    throw new RangeError(`unknown concrete grade: ${String(grade)}`);
+  }
+  if (volume <= 0) {
+    throw new RangeError('volume must be greater than 0');
+  }
 
   const cement = roundTo(design.cementPerM3 * volume, 2);
   const sand = roundTo(cement * design.sandRatio, 2);

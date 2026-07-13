@@ -201,3 +201,9 @@ describe('rebarWeight', () => {
     });
   });
 });
+
+describe('rebarWeight contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for an unknown rebar size (was silent NaN)', () => {
+    expect(() => rebarWeight({ size: 'D99' as never, length: 10, quantity: 5 })).toThrow(RangeError);
+  });
+});

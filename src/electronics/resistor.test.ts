@@ -252,3 +252,26 @@ describe('resistorDecode', () => {
     });
   });
 });
+
+describe('resistorDecode contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for an unknown digit color (was silent NaN resistance)', () => {
+    expect(() => resistorDecode({ bandCount: 4, bands: ['pink', 'black', 'red', 'gold'] as never })).toThrow(RangeError);
+  });
+
+  it('throws RangeError when gold/silver is used as a digit (was negative resistance)', () => {
+    expect(() => resistorDecode({ bandCount: 4, bands: ['gold', 'black', 'red', 'gold'] })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for an invalid tolerance color (was silent 20% fallback)', () => {
+    expect(() => resistorDecode({ bandCount: 4, bands: ['brown', 'black', 'red', 'white'] })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for an invalid tempCoeff color on 6-band', () => {
+    expect(() => resistorDecode({ bandCount: 6, bands: ['brown', 'black', 'black', 'red', 'gold', 'gold'] })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for missing bands or unsupported band count', () => {
+    expect(() => resistorDecode({ bandCount: 4, bands: ['brown', 'black'] as never })).toThrow(RangeError);
+    expect(() => resistorDecode({ bandCount: 3 as never, bands: ['brown', 'black', 'red'] as never })).toThrow(RangeError);
+  });
+});

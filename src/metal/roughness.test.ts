@@ -117,6 +117,57 @@ describe('roughness', () => {
     });
   });
 
+  describe('out-of-table disclosure (ISSUE-20260713 silent clamp)', () => {
+    // Regression pins from the issue's execution evidence.
+    it('flags lapped/superfinished Ra 0.006 µm snapped 4× up to N1 (0.025)', () => {
+      const result = roughness({ fromScale: 'Ra', value: 0.006 });
+
+      expect(result.nClass).toBe(1);
+      expect(result.ra).toBe(0.025);
+      expect(result.outOfTableRange).toBe(true);
+    });
+
+    it('flags rough sand-cast Ra 100 µm snapped 0.5× down to N12 (50)', () => {
+      const result = roughness({ fromScale: 'Ra', value: 100 });
+
+      expect(result.nClass).toBe(12);
+      expect(result.ra).toBe(50);
+      expect(result.outOfTableRange).toBe(true);
+    });
+
+    it('flags N 14 clamped to N12', () => {
+      const result = roughness({ fromScale: 'N', value: 14 });
+
+      expect(result.nClass).toBe(12);
+      expect(result.outOfTableRange).toBe(true);
+    });
+
+    it('flags Rz outside the table (Rz 500 → N12)', () => {
+      const result = roughness({ fromScale: 'Rz', value: 500 });
+
+      expect(result.nClass).toBe(12);
+      expect(result.outOfTableRange).toBe(true);
+    });
+
+    it('does not flag exact boundary hits (Ra 0.025 and Ra 50)', () => {
+      expect(roughness({ fromScale: 'Ra', value: 0.025 }).outOfTableRange).toBe(false);
+      expect(roughness({ fromScale: 'Ra', value: 50 }).outOfTableRange).toBe(false);
+    });
+
+    it('does not flag nearest-grade snapping within the table (by design)', () => {
+      const result = roughness({ fromScale: 'Ra', value: 1.0 }); // between N6 (0.8) and N7 (1.6)
+
+      expect(result.outOfTableRange).toBe(false);
+    });
+
+    it('does not flag non-integer N that rounds into range (N 0.5 → N1)', () => {
+      const result = roughness({ fromScale: 'N', value: 0.5 });
+
+      expect(result.nClass).toBe(1);
+      expect(result.outOfTableRange).toBe(false);
+    });
+  });
+
   describe('real-world scenarios', () => {
     it('should identify machined surface (N7)', () => {
       const result = roughness({ fromScale: 'Ra', value: 1.6 });

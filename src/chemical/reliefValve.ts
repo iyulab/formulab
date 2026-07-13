@@ -29,6 +29,11 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  *
  * @reference API 520 Part I (2020) — Sizing and Selection of Pressure-Relieving Devices
  * @reference API 526 (2017) — Flanged Steel Pressure-Relief Valves
+ *
+ * When the required area exceeds the largest API 526 orifice ('T', 16,774 mm²), the result
+ * still reports 'T' as the closest standard size but sets `orificeExceedsMax: true` — a single
+ * valve cannot provide the required capacity (multiple valves in parallel are needed). Callers
+ * should surface this to the user; `percentUtilized` will be > 100 in that case.
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
@@ -87,7 +92,10 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     }
   }
 
-  // Select standard orifice
+  // Select the smallest standard orifice that covers the required area. API 526 tops out at
+  // 'T' (16,774 mm²) — realistic large reliefs do exceed it (e.g. gas 50,000 kg/h @ 1,000 kPa(g)
+  // needs ~43,000 mm²). When that happens 'T' is reported as the closest standard size, but it is
+  // NOT adequate on its own, so flag it instead of presenting 'T' as a valid single-valve selection.
   let selectedOrifice = API_ORIFICES[API_ORIFICES.length - 1];
   for (const orifice of API_ORIFICES) {
     if (orifice.area >= requiredArea) {
@@ -95,6 +103,7 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
       break;
     }
   }
+  const orificeExceedsMax = requiredArea > selectedOrifice.area;
 
   // Capacity at selected orifice
   const capacityAtOrifice = requiredArea > 0
@@ -112,5 +121,6 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     relievingPressure: roundTo(relievingPressure, 2),
     capacityAtOrifice: roundTo(capacityAtOrifice, 2),
     percentUtilized: roundTo(percentUtilized, 2),
+    orificeExceedsMax,
   };
 }

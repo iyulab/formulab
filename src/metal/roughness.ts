@@ -32,6 +32,13 @@ function findClosest(key: 'ra' | 'rz', value: number) {
 /**
  * Convert surface roughness between Ra, Rz, and N class.
  *
+ * Conversion is a lookup against the ISO 1302 grade table (N1-N12, Ra 0.025-50 µm,
+ * Rz 0.1-200 µm) with nearest-grade snapping. Inputs outside the table — realistic ones exist
+ * on both ends (lapped/superfinished Ra ≈ 0.006 µm, rough sand casting Ra ≈ 100 µm) — are
+ * snapped to the boundary grade and disclosed via `outOfTableRange: true`, because the
+ * returned grade is then NOT equivalent to the input (up to 4× off at the edges).
+ *
+ * @reference ISO 1302 — surface texture indication, N-grade table
  * @throws RangeError if value is not positive
  */
 export function roughness(input: RoughnessInput): RoughnessResult {
@@ -41,20 +48,26 @@ export function roughness(input: RoughnessInput): RoughnessResult {
     throw new RangeError('value must be greater than 0');
   }
 
+  const first = ISO_1302_TABLE[0];
+  const last = ISO_1302_TABLE[ISO_1302_TABLE.length - 1];
   let entry;
+  let outOfTableRange = false;
 
   if (fromScale === 'N') {
     const n = roundTo(value, 0);
     entry = ISO_1302_TABLE.find(e => e.n === n);
     if (!entry) {
-      // clamp to valid range
+      // outside N1-N12 — snap to the boundary grade and disclose
+      outOfTableRange = true;
       const clamped = Math.max(1, Math.min(12, n));
       entry = ISO_1302_TABLE.find(e => e.n === clamped)!;
     }
   } else if (fromScale === 'Ra') {
     entry = findClosest('ra', value);
+    outOfTableRange = value < first.ra || value > last.ra;
   } else {
     entry = findClosest('rz', value);
+    outOfTableRange = value < first.rz || value > last.rz;
   }
 
   return {
@@ -62,5 +75,6 @@ export function roughness(input: RoughnessInput): RoughnessResult {
     rz: roundTo(entry.rz, 1),
     nClass: entry.n,
     rms: roundTo(entry.ra * 1.11, 3),
+    outOfTableRange,
   };
 }

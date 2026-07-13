@@ -59,11 +59,16 @@ function getSampleCode(lotSize: number, inspectionLevel: InspectionLevel): strin
   return 'A'; // fallback
 }
 
-function getAcceptReject(sampleCode: string, aqlLevel: number): [number, number] {
+function getAcceptReject(
+  sampleCode: string, aqlLevel: number
+): { acceptNumber: number; rejectNumber: number; aqlUsed: number } {
   const codeTable = AQL_TABLE[sampleCode];
-  if (!codeTable) return [0, 1];
 
-  // Find the closest AQL level
+  // Snap to the nearest table column at or below the requested AQL (or the lowest column
+  // when the request is below the table). The embedded table only covers 0.065-6.5, while
+  // ISO 2859-1 defines AQLs from 0.010 up to 1000 — so realistic requests (AQL 10, AQL 0.01)
+  // get a plan for a DIFFERENT quality level. `aqlUsed` reports which column was applied;
+  // the caller compares it against the request via `aqlAdjusted`.
   const aqlLevels = Object.keys(codeTable).map(Number).sort((a, b) => a - b);
   let selectedAql = aqlLevels[0];
 
@@ -73,7 +78,8 @@ function getAcceptReject(sampleCode: string, aqlLevel: number): [number, number]
     }
   }
 
-  return codeTable[selectedAql] ?? [0, 1];
+  const [acceptNumber, rejectNumber] = codeTable[selectedAql];
+  return { acceptNumber, rejectNumber, aqlUsed: selectedAql };
 }
 
 /**
@@ -84,6 +90,11 @@ function getAcceptReject(sampleCode: string, aqlLevel: number): [number, number]
  * @remarks Simplified relative to the standard: the sample size is always the code
  *   letter's own size — Table 2-A arrow cells (which redirect to a plan with a
  *   different sample size) reuse the redirected plan's Ac/Re with this letter's size.
+ * @remarks The embedded table covers AQL columns 0.065–6.5 only, while ISO 2859-1
+ *   defines 0.010–1000. A request outside (or between) the embedded columns is snapped
+ *   to the nearest column at or below it (or up to 0.065 from below) and disclosed via
+ *   `aqlUsed` / `aqlAdjusted` — the returned plan is then for a different quality level
+ *   than requested.
  *
  * @param input - AQL input parameters
  * @returns AQL sampling plan result
@@ -104,12 +115,14 @@ export function aql(input: AqlInput): AqlResult {
       acceptNumber: 0,
       rejectNumber: 1,
       samplingPercent: 0,
+      aqlUsed: 0,
+      aqlAdjusted: true,
     };
   }
 
   const sampleCode = getSampleCode(lotSize, inspectionLevel);
   const sampleSize = SAMPLE_SIZES[sampleCode] ?? 2;
-  const [acceptNumber, rejectNumber] = getAcceptReject(sampleCode, aqlLevel);
+  const { acceptNumber, rejectNumber, aqlUsed } = getAcceptReject(sampleCode, aqlLevel);
 
   // Ensure sample size doesn't exceed lot size
   const effectiveSampleSize = Math.min(sampleSize, lotSize);
@@ -121,5 +134,7 @@ export function aql(input: AqlInput): AqlResult {
     acceptNumber,
     rejectNumber,
     samplingPercent,
+    aqlUsed,
+    aqlAdjusted: aqlUsed !== aqlLevel,
   };
 }

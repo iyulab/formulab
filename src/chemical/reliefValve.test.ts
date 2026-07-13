@@ -104,6 +104,86 @@ describe('reliefValve', () => {
     });
   });
 
+  describe('orifice exceeds max (ISSUE-20260713 silent clamp)', () => {
+    // Regression pins from the issue's execution evidence: realistic large reliefs
+    // exceed the largest API 526 orifice ('T', 16,774 mm²) and must be flagged.
+    it('flags gas relief beyond T (50,000 kg/h @ 1,000 kPa(g), 100°C, M=29)', () => {
+      const result = reliefValve({
+        requiredCapacity: 50000,
+        setPressure: 1000,
+        backPressure: 0,
+        temperature: 100,
+        fluidType: 'gas',
+        molecularWeight: 29,
+      });
+
+      expect(result.requiredArea).toBeCloseTo(43005.5, 0);
+      expect(result.selectedOrifice).toBe('T');
+      expect(result.orificeArea).toBe(16774);
+      expect(result.orificeExceedsMax).toBe(true);
+      expect(result.percentUtilized).toBeCloseTo(256.38, 1);
+      expect(result.capacityAtOrifice).toBeCloseTo(19502.16, 0);
+    });
+
+    it('flags steam relief beyond T (30,000 kg/h @ 1,500 kPa(g))', () => {
+      const result = reliefValve({
+        requiredCapacity: 30000,
+        setPressure: 1500,
+        backPressure: 0,
+        temperature: 200,
+        fluidType: 'steam',
+        molecularWeight: 18,
+      });
+
+      expect(result.requiredArea).toBeCloseTo(25960.5, 0);
+      expect(result.selectedOrifice).toBe('T');
+      expect(result.orificeExceedsMax).toBe(true);
+      expect(result.percentUtilized).toBeGreaterThan(100);
+    });
+
+    it('does not flag when T still covers the required area (boundary)', () => {
+      const result = reliefValve({
+        requiredCapacity: 19000, // scales the 50,000 kg/h case to ~16,342 mm² < 16,774
+        setPressure: 1000,
+        backPressure: 0,
+        temperature: 100,
+        fluidType: 'gas',
+        molecularWeight: 29,
+      });
+
+      expect(result.selectedOrifice).toBe('T');
+      expect(result.requiredArea).toBeLessThanOrEqual(16774);
+      expect(result.orificeExceedsMax).toBe(false);
+      expect(result.percentUtilized).toBeLessThanOrEqual(100);
+    });
+
+    it('does not flag ordinary in-range selections', () => {
+      const result = reliefValve({
+        requiredCapacity: 5000,
+        setPressure: 1000,
+        backPressure: 101,
+        temperature: 100,
+        fluidType: 'gas',
+        molecularWeight: 29,
+      });
+
+      expect(result.orificeExceedsMax).toBe(false);
+    });
+
+    it('does not flag the liquid zero-differential edge (requiredArea = 0)', () => {
+      const result = reliefValve({
+        requiredCapacity: 1000,
+        setPressure: 100,
+        backPressure: 500, // back pressure above relieving pressure → dp <= 0
+        temperature: 20,
+        fluidType: 'liquid',
+      });
+
+      expect(result.requiredArea).toBe(0);
+      expect(result.orificeExceedsMax).toBe(false);
+    });
+  });
+
   describe('percent utilized', () => {
     it('should be <= 100%', () => {
       const result = reliefValve({

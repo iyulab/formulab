@@ -286,6 +286,9 @@ export interface HardnessResult {
   HB: number;
   HV: number;
   Shore: number;
+  outOfTableRange: boolean; // true when the input fell outside the ASTM E140 table
+                            // (e.g. HRC 20–68) and the result was clamped to the boundary
+                            // row — the returned values are NOT equivalent to the input
 }
 
 /**
@@ -361,6 +364,11 @@ export interface RoughnessResult {
   rz: number;    // um
   nClass: number; // N1-N12
   rms: number;   // um (Rq)
+  outOfTableRange: boolean; // true when the input fell outside the ISO 1302 table
+                            // (Ra 0.025-50, Rz 0.1-200, N 1-12) and the result was snapped to
+                            // the boundary grade — the returned values are NOT equivalent to
+                            // the input (nearest-grade snapping WITHIN the table is by design
+                            // and not flagged)
 }
 
 /**
@@ -552,6 +560,7 @@ export type WeldRecommendationCode =
   | 'keepConsumablesDry'
   | 'pwht'
   | 'highHazHardness'
+  | 'hazHardnessCapped'
   | 'stainlessInterpass'
   | 'stainlessFiller'
   | 'castIronNiFiller'
@@ -590,6 +599,8 @@ export interface WeldHeatResult {
   carbonEquivalent: number;    // CE (IIW)
   carbonEquivalentPcm: number; // CE (Pcm) for low-alloy steels
   coolingTime_t85: number;     // seconds - time to cool from 800°C to 500°C
+  coolingTimeClamped: boolean; // true when raw t8/5 fell outside the model range (0.5-300 s) and
+                               // coolingTime_t85 is the boundary value, not the prediction
   coolingRate: number;         // °C/s - average cooling rate in critical range
   preheatTemp: {
     min: number;               // C
@@ -602,6 +613,9 @@ export interface WeldHeatResult {
     max: number;               // C
   };
   hazHardnessMax: number;      // HV
+  hazHardnessClamped: boolean; // true when the Yurioka prediction fell outside the model range
+                               // (150-700 HV) and hazHardnessMax is the boundary value — at the
+                               // 700 ceiling treat it as a lower bound (stainless/cast iron hit this)
   crackingRisk: CrackingRisk;
   hydrogenLevel: 'low' | 'medium' | 'high'; // Required hydrogen control
   /** Human-readable English advice. */

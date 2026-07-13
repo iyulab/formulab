@@ -119,6 +119,47 @@ describe('aql', () => {
     });
   });
 
+  describe('AQL substitution disclosure (ISSUE-20260713 silent clamp)', () => {
+    it('flags AQL 10 snapped down to the 6.5 column (10 is a real ISO 2859-1 AQL)', () => {
+      const result = aql({ lotSize: 1000, aqlLevel: 10, inspectionLevel: 'II' });
+
+      expect(result.aqlUsed).toBe(6.5);
+      expect(result.aqlAdjusted).toBe(true);
+      // Plan returned is the 6.5 plan: J (n=80) → Ac 10 / Re 11
+      expect(result.acceptNumber).toBe(10);
+      expect(result.rejectNumber).toBe(11);
+    });
+
+    it('flags AQL below the table snapped UP to 0.065 (silently looser plan)', () => {
+      const result = aql({ lotSize: 1000, aqlLevel: 0.01, inspectionLevel: 'II' });
+
+      expect(result.aqlUsed).toBe(0.065);
+      expect(result.aqlAdjusted).toBe(true);
+    });
+
+    it('flags non-preferred AQL between columns (5.0 → 4.0)', () => {
+      const result = aql({ lotSize: 1000, aqlLevel: 5.0, inspectionLevel: 'II' });
+
+      expect(result.aqlUsed).toBe(4.0);
+      expect(result.aqlAdjusted).toBe(true);
+    });
+
+    it('does not flag exact column hits', () => {
+      for (const level of [0.065, 0.4, 1.0, 2.5, 6.5]) {
+        const result = aql({ lotSize: 1000, aqlLevel: level, inspectionLevel: 'II' });
+        expect(result.aqlUsed).toBe(level);
+        expect(result.aqlAdjusted).toBe(false);
+      }
+    });
+
+    it('marks the negative-AQL zero-plan sentinel as adjusted (aqlUsed 0)', () => {
+      const result = aql({ lotSize: 100, aqlLevel: -1.0, inspectionLevel: 'II' });
+
+      expect(result.aqlUsed).toBe(0);
+      expect(result.aqlAdjusted).toBe(true);
+    });
+  });
+
   describe('sampling percent', () => {
     it('should calculate sampling percent correctly', () => {
       const result = aql({

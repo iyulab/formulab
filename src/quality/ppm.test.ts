@@ -133,32 +133,18 @@ describe('ppm', () => {
   });
 
   describe('edge cases', () => {
-    it('should clamp defect rate at 100%', () => {
-      const result = ppm({
-        convertFrom: 'defectRate',
-        value: 150,
-      });
-
-      expect(result.defectRate).toBe(100);
-      expect(result.yieldRate).toBe(0);
+    // Out-of-range inputs used to be clamped silently (150% → 100%, sigma 10 → 6),
+    // substituting a different quality level than requested; they now throw (2026-07 sweep).
+    it('should throw for defect rate above 100%', () => {
+      expect(() => ppm({ convertFrom: 'defectRate', value: 150 })).toThrow(RangeError);
     });
 
-    it('should clamp negative defect rate to 0', () => {
-      const result = ppm({
-        convertFrom: 'defectRate',
-        value: -10,
-      });
-
-      expect(result.defectRate).toBe(0);
+    it('should throw for negative defect rate', () => {
+      expect(() => ppm({ convertFrom: 'defectRate', value: -10 })).toThrow(RangeError);
     });
 
-    it('should clamp sigma above 6 to 6', () => {
-      const result = ppm({
-        convertFrom: 'sigma',
-        value: 10,
-      });
-
-      expect(result.sigma).toBeCloseTo(6, 0);
+    it('should throw for sigma above 6', () => {
+      expect(() => ppm({ convertFrom: 'sigma', value: 10 })).toThrow(RangeError);
     });
   });
 
@@ -180,5 +166,28 @@ describe('ppm', () => {
 
       expect(result.yieldRate).toBeGreaterThan(99.9996);
     });
+  });
+});
+
+describe('ppm input validation (2026-07 clamp sweep)', () => {
+  it('throws RangeError for defectRate outside [0, 100] (was silently clamped)', () => {
+    expect(() => ppm({ convertFrom: 'defectRate', value: 150 })).toThrow(RangeError);
+    expect(() => ppm({ convertFrom: 'defectRate', value: -1 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for ppm outside [0, 1,000,000]', () => {
+    expect(() => ppm({ convertFrom: 'ppm', value: 1_500_000 })).toThrow(RangeError);
+    expect(() => ppm({ convertFrom: 'ppm', value: -5 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for sigma outside [0, 6] (sigma 7 was silently degraded to 6)', () => {
+    expect(() => ppm({ convertFrom: 'sigma', value: 7 })).toThrow(RangeError);
+    expect(() => ppm({ convertFrom: 'sigma', value: -0.5 })).toThrow(RangeError);
+  });
+
+  it('accepts the domain boundaries exactly', () => {
+    expect(ppm({ convertFrom: 'sigma', value: 6 }).sigma).toBeGreaterThan(0);
+    expect(ppm({ convertFrom: 'defectRate', value: 100 }).yieldRate).toBe(0);
+    expect(ppm({ convertFrom: 'ppm', value: 1_000_000 }).defectRate).toBe(100);
   });
 });

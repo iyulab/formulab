@@ -33,3 +33,14 @@ describe('energyIntensity', () => {
     expect(result.kwhPerUnit).toBeCloseTo(2.7778, 2);
   });
 });
+
+describe('energyIntensity contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for productionUnits <= 0 (was Infinity/NaN)', () => {
+    expect(() => energyIntensity({ totalEnergyMJ: 100, productionUnits: 0 })).toThrow(RangeError);
+    expect(() => energyIntensity({ totalEnergyMJ: 100, productionUnits: -5 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for negative totalEnergyMJ', () => {
+    expect(() => energyIntensity({ totalEnergyMJ: -1, productionUnits: 10 })).toThrow(RangeError);
+  });
+});

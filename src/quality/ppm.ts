@@ -1,5 +1,5 @@
 import { roundTo } from '../utils.js';
-import { normalCDF, normalInvCDF, clamp } from '../math.js';
+import { normalCDF, normalInvCDF } from '../math.js';
 import type { PpmInput, PpmResult } from './types.js';
 
 /**
@@ -25,19 +25,32 @@ function defectRateToSigma(defectRate: number): number {
  *
  * @param input - PPM conversion input
  * @returns PPM conversion result with all metrics
+ * @throws {RangeError} defectRate outside [0, 100], ppm outside [0, 1,000,000], or
+ *   sigma outside [0, 6] (this converter's supported short-term sigma domain with the
+ *   conventional 1.5σ shift). Values were previously clamped silently, substituting a
+ *   different quality level than requested.
  */
 export function ppm(input: PpmInput): PpmResult {
   let defectRate: number;
 
   switch (input.convertFrom) {
     case 'defectRate':
-      defectRate = clamp(input.value, 0, 100);
+      if (input.value < 0 || input.value > 100) {
+        throw new RangeError('defectRate must be between 0 and 100');
+      }
+      defectRate = input.value;
       break;
     case 'ppm':
-      defectRate = clamp(input.value / 10000, 0, 100);
+      if (input.value < 0 || input.value > 1_000_000) {
+        throw new RangeError('ppm must be between 0 and 1,000,000');
+      }
+      defectRate = input.value / 10000;
       break;
     case 'sigma':
-      defectRate = sigmaToDefectRate(clamp(input.value, 0, 6));
+      if (input.value < 0 || input.value > 6) {
+        throw new RangeError('sigma must be between 0 and 6');
+      }
+      defectRate = sigmaToDefectRate(input.value);
       break;
   }
 

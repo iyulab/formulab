@@ -5,6 +5,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2026-07-13
+
+### Added — clamp/snap disclosure (ISSUE-20260713 audit)
+
+An execution-based audit confirmed five silent-clamp defects across four functions: realistic
+inputs land outside a model/table boundary, the output is clamped to the boundary, and nothing
+in the result says so. Following the `illuminance()` `roomIndexClamped` precedent (0.16.0),
+every clamping function now reports the clamp. All new fields are **additive booleans** —
+no existing field changed.
+
+- **`chemical/reliefValve()` → `orificeExceedsMax`.** When the required area exceeds the largest
+  API 526 orifice ('T', 16,774 mm²) the loop silently reported 'T' as the selection — e.g. a gas
+  relief of 50,000 kg/h @ 1,000 kPa(g) needs ~43,000 mm² (2.56 × T) yet came back as
+  `selectedOrifice: 'T'` with no warning, a valve that delivers only ~39% of the required
+  capacity. The flag marks that a single valve cannot do it (parallel valves needed);
+  `percentUtilized > 100` accompanies it.
+- **`metal/weldHeat()` → `hazHardnessClamped`, `coolingTimeClamped`.** HAZ hardness is clamped
+  to the Yurioka model's 150–700 HV range and t8/5 to 0.5–300 s. Stainless/cast-iron
+  compositions blow past 700 HV (cast iron ≈ 4200 raw) and thin-sheet GTAW lands under 0.5 s,
+  producing flat, input-insensitive outputs with no explanation. When the 700 HV ceiling is
+  hit the recommendation now says so via the new code **`hazHardnessCapped`** (`{ cap: 700 }`)
+  instead of presenting "700 HV" as the expected value (`WeldRecommendationCode` union gains
+  one member).
+- **`metal/roughness()` → `outOfTableRange`.** Ra/Rz/N inputs outside the ISO 1302 table
+  (Ra 0.025–50 µm) were silently snapped up to 4× off (lapped Ra 0.006 → N1 = 0.025;
+  sand-cast Ra 100 → N12 = 50). Nearest-grade snapping *within* the table is by design and
+  is not flagged.
+- **`metal/hardness()` → `outOfTableRange`.** Same class, found while codifying the convention:
+  inputs outside the ASTM E140 table (HRC 20–68) clamp to the boundary row, now disclosed.
+- **`energy/solarOutput()` → `tiltEfficiencyFloored`.** The tilt/azimuth factors floor at 0.5,
+  so a north-facing array reports exactly 50% of south-facing forever (real yield can be
+  30–40%). The flag marks the output as an optimistic bound, not an estimate.
+- **`quality/aql()` → `aqlUsed`, `aqlAdjusted`.** The embedded ISO 2859-1 table covers AQL
+  0.065–6.5 while the standard defines 0.010–1000; requests outside or between columns were
+  silently substituted (10 → 6.5, 0.01 → 0.065 — a *looser* plan than asked). `aqlUsed` reports
+  the column actually applied.
+
+The rule is now codified in CLAUDE.md: **a function that clamps or snaps to a boundary must
+disclose it via a boolean flag.**
+
+### Fixed — error-contract restoration (full ERRORS.md audit)
+
+A source-level audit of all 15 domains found ten functions whose documented `RangeError`
+contract was not implemented — degenerate inputs produced `NaN`/`Infinity` or an uncontrolled
+`TypeError`. They now validate as documented (⚠️ behavior change for previously-garbage paths):
+
+- `construction/rebarWeight` (unknown size → was NaN), `concreteMix` (unknown grade → was
+  TypeError; volume ≤ 0), `brick` (wallArea ≤ 0; unknown size → was TypeError; custom
+  dimensions ≤ 0; negative mortar), `stair` (totalRise ≤ 0 → was NaN with a specified riser;
+  negative totalRun/riserHeight; riserHeight 0 still means auto-calculate)
+- `electronics/resistorDecode` (unknown colors → was NaN; gold/silver as digit → was negative
+  resistance; the silent `?? 20%` tolerance fallback for invalid colors now throws),
+  `traceWidth` (current/tempRise/copperWeight ≤ 0 → was NaN/Infinity)
+- `environmental/energyIntensity` (productionUnits ≤ 0 → was Infinity), `productCarbonFootprint`
+  (empty stages → was TypeError; quantity ≤ 0; negative stages remain valid as recycling
+  credits, total ≤ 0 → stage percents 0), `vocEmissions` (negative total, efficiency outside
+  [0, 1]; zero total → reductionPercent 0), `waterFootprint` (negative volumes; all-zero
+  footprint → percents 0)
+- `quality/ppm` — out-of-range inputs were clamped silently (defectRate 150 → 100%,
+  **sigma 7 → 6**, which substitutes a defect rate orders of magnitude off). Now throws
+  `RangeError` for defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside
+  [0, 6]
+
+### Documentation
+
+- **ERRORS.md is now a complete, source-verified contract**: full per-function tables added for
+  Logistics (17), Energy (15), Food (7), Utility (18), Environmental (10), and IE (5) — these
+  domains previously had a one-line stub — and 12 stale rows in Metal/Construction/Electronics
+  corrected against source. Every domain's row count now matches its function count (210 total).
+- README/package.json function census corrected by script count: **210 calculations + 8 type
+  guards** (package.json still said 182).
+
 ## [0.16.0] - 2026-07-13
 
 ### Added

@@ -19,16 +19,30 @@ const DEFAULT_RISER = 170; // Target riser height for auto-calculation
  *
  * @param input - Stair input parameters
  * @returns Stair calculation results
+ * @throws {RangeError} totalRise ≤ 0, totalRun < 0, or riserHeight < 0 (riserHeight 0
+ *   means "auto-calculate", the established contract)
  */
 export function stair(input: StairInput): StairResult {
   const { totalRise, totalRun, riserHeight } = input;
+
+  if (totalRise <= 0) {
+    throw new RangeError('totalRise must be greater than 0');
+  }
+  if (totalRun < 0) {
+    throw new RangeError('totalRun must not be negative');
+  }
+  if (riserHeight !== undefined && riserHeight < 0) {
+    // riserHeight 0 is the established "auto-calculate" sentinel; negative is invalid
+    throw new RangeError('riserHeight must not be negative');
+  }
 
   let numberOfRisers: number;
   let actualRiserHeight: number;
 
   if (riserHeight && riserHeight > 0) {
-    // Use specified riser height
-    numberOfRisers = Math.round(totalRise / riserHeight);
+    // Use specified riser height; at least one riser even when riserHeight > 2×totalRise
+    // (rounding to 0 would divide by zero)
+    numberOfRisers = Math.max(1, Math.round(totalRise / riserHeight));
     actualRiserHeight = totalRise / numberOfRisers;
   } else {
     // Auto-calculate optimal riser count based on target riser height

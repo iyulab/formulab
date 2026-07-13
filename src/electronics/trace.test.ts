@@ -274,3 +274,18 @@ describe('traceWidth', () => {
     });
   });
 });
+
+describe('traceWidth contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for current <= 0 (negative current yielded NaN via pow)', () => {
+    expect(() => traceWidth({ current: 0, tempRise: 10, copperWeight: 1, layer: 'external' })).toThrow(RangeError);
+    expect(() => traceWidth({ current: -1, tempRise: 10, copperWeight: 1, layer: 'external' })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for tempRise <= 0 (was division by zero -> Infinity)', () => {
+    expect(() => traceWidth({ current: 1, tempRise: 0, copperWeight: 1, layer: 'external' })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for copperWeight <= 0 (was division by zero -> Infinity)', () => {
+    expect(() => traceWidth({ current: 1, tempRise: 10, copperWeight: 0, layer: 'internal' })).toThrow(RangeError);
+  });
+});

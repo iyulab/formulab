@@ -66,3 +66,34 @@ describe('productCarbonFootprint', () => {
     expect(result.perUnitCo2Kg).toBeCloseTo(93, 0);
   });
 });
+
+describe('productCarbonFootprint contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for empty stages (was uncontrolled TypeError)', () => {
+    expect(() => productCarbonFootprint({ stages: [], productionQuantity: 10 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for productionQuantity <= 0 (was Infinity/NaN per unit)', () => {
+    expect(() => productCarbonFootprint({
+      stages: [{ name: 'materials', co2Kg: 10 }],
+      productionQuantity: 0,
+    })).toThrow(RangeError);
+  });
+
+  it('reports 0% shares for an all-zero stage list instead of NaN (valid-but-degenerate)', () => {
+    const result = productCarbonFootprint({
+      stages: [{ name: 'a', co2Kg: 0 }, { name: 'b', co2Kg: 0 }],
+      productionQuantity: 10,
+    });
+    expect(result.totalCo2Kg).toBe(0);
+    for (const s of result.stageBreakdown) expect(s.percent).toBe(0);
+  });
+
+  it('keeps negative stages (recycling credits) valid and finite', () => {
+    const result = productCarbonFootprint({
+      stages: [{ name: 'materials', co2Kg: 100 }, { name: 'end-of-life credit', co2Kg: -20 }],
+      productionQuantity: 10,
+    });
+    expect(result.totalCo2Kg).toBe(80);
+    expect(Number.isFinite(result.stageBreakdown[1].percent)).toBe(true);
+  });
+});

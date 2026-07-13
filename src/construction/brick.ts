@@ -20,9 +20,17 @@ export const BRICK_SIZES: Record<Exclude<BrickSize, 'custom'>, BrickDimensions> 
  *
  * @param input - Brick input parameters
  * @returns Brick calculation results
+ * @throws {RangeError} wallArea ≤ 0, unknown brickSize, custom dimensions ≤ 0, or mortarThickness < 0
  */
 export function brick(input: BrickInput): BrickResult {
   const { wallArea, brickSize, customLength, customHeight, mortarThickness, wasteFactor } = input;
+
+  if (wallArea <= 0) {
+    throw new RangeError('wallArea must be greater than 0');
+  }
+  if (mortarThickness < 0) {
+    throw new RangeError('mortarThickness must not be negative');
+  }
 
   // Get brick dimensions
   let length: number;
@@ -31,8 +39,14 @@ export function brick(input: BrickInput): BrickResult {
   if (brickSize === 'custom') {
     length = customLength ?? 200;
     height = customHeight ?? 60;
+    if (length <= 0 || height <= 0) {
+      throw new RangeError('custom brick dimensions must be greater than 0');
+    }
   } else {
     const dims = BRICK_SIZES[brickSize as Exclude<BrickSize, 'custom'>];
+    if (dims === undefined) {
+      throw new RangeError(`unknown brick size: ${String(brickSize)}`);
+    }
     length = dims.length;
     height = dims.height;
   }

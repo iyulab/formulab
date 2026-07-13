@@ -278,3 +278,24 @@ describe('stair', () => {
     });
   });
 });
+
+describe('stair contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for totalRise <= 0 (was 0/0 = NaN with a specified riser)', () => {
+    expect(() => stair({ totalRise: 0, totalRun: 3000, riserHeight: 170 })).toThrow(RangeError);
+    expect(() => stair({ totalRise: -100, totalRun: 3000 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for negative totalRun', () => {
+    expect(() => stair({ totalRise: 2700, totalRun: -1 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for negative riserHeight (0 still means auto-calculate)', () => {
+    expect(() => stair({ totalRise: 2700, totalRun: 3000, riserHeight: -170 })).toThrow(RangeError);
+  });
+
+  it('keeps outputs finite when riserHeight exceeds 2x totalRise (rounded riser count floors at 1)', () => {
+    const result = stair({ totalRise: 50, totalRun: 300, riserHeight: 170 });
+    expect(result.numberOfRisers).toBe(1);
+    expect(Number.isFinite(result.actualRiserHeight)).toBe(true);
+  });
+});

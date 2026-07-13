@@ -117,7 +117,9 @@ function getInterpassTemp(baseMetal: WeldBaseMetal): { min: number; max: number 
  * Simplified formula for practical use:
  * t8/5 ≈ K × H² / t² (thin plate) or K × H (thick plate)
  */
-function calculateCoolingTime(heatInput: number, thickness: number, preheatTemp: number): number {
+function calculateCoolingTime(
+  heatInput: number, thickness: number, preheatTemp: number
+): { value: number; clamped: boolean } {
   const T0 = preheatTemp;
 
   // Critical thickness for 2D/3D transition (approximately)
@@ -139,8 +141,11 @@ function calculateCoolingTime(heatInput: number, thickness: number, preheatTemp:
     t85 = factor * heatInput * tempTerm;
   }
 
-  // Clamp to reasonable range (0.5s - 300s)
-  return Math.max(0.5, Math.min(300, t85));
+  // Clamp to the model's validity range (0.5s - 300s). Realistic inputs do land outside it
+  // (thin-sheet GTAW at low heat input gives raw t8/5 ≈ 0.39s), so report the clamp — otherwise
+  // varying thickness below the floor produces identical outputs with no explanation.
+  const value = Math.max(0.5, Math.min(300, t85));
+  return { value, clamped: value !== t85 };
 }
 
 /**
@@ -154,7 +159,7 @@ function calculateCoolingTime(heatInput: number, thickness: number, preheatTemp:
 function calculateHAZHardness(
   C: number, Mn: number, Cr: number, Mo: number, V: number, Ni: number, Si: number,
   coolingTime: number
-): number {
+): { value: number; clamped: boolean } {
   // Base hardness contribution from composition (Yurioka base)
   const HV_base = 90 + 1050 * C + 47 * Mn + 31 * Cr + 34 * Mo + 38 * V + 12 * Ni + 17 * Si;
 
@@ -174,8 +179,12 @@ function calculateHAZHardness(
 
   const HV_max = HV_base * coolingFactor;
 
-  // Clamp to realistic range (150-700 HV)
-  return Math.min(700, Math.max(150, roundTo(HV_max, 0)));
+  // Clamp to the Yurioka model's calibrated range (150-700 HV). Stainless and cast-iron
+  // compositions push HV_base far past 700 (e.g. cast iron ≈ 4200), so a silent clamp renders
+  // hardness flat across current/composition sweeps — report it so callers treat the value as
+  // a bound, not a prediction.
+  const value = Math.min(700, Math.max(150, roundTo(HV_max, 0)));
+  return { value, clamped: value !== roundTo(HV_max, 0) };
 }
 
 /**
@@ -185,6 +194,11 @@ function calculateHAZHardness(
  * The result carries advice in two parallel forms: `recommendations` (English
  * sentences) and `recommendationCodes` (stable `{ code, params }` entries for
  * i18n). `preheatTemp.source` likewise has a stable `preheatTemp.sourceCode`.
+ *
+ * Both `coolingTime_t85` (model range 0.5-300 s) and `hazHardnessMax` (150-700 HV) are
+ * clamped to their models' validity ranges; when that happens `coolingTimeClamped` /
+ * `hazHardnessClamped` is set and the reported number is a boundary value, not a prediction
+ * (at the 700 HV ceiling it is a lower bound — stainless and cast iron compositions hit it).
  *
  * @throws {RangeError} voltage, current, travelSpeed, or thickness is not positive
  */
@@ -242,11 +256,13 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
   const interpassTemp = getInterpassTemp(baseMetal);
 
   // Calculate cooling time t8/5
-  const coolingTime_t85 = calculateCoolingTime(heatInput, thickness, preheatTemp.min);
+  const { value: coolingTime_t85, clamped: coolingTimeClamped } =
+    calculateCoolingTime(heatInput, thickness, preheatTemp.min);
   const coolingRate = 300 / coolingTime_t85; // (800-500)/t8/5
 
   // Estimate maximum HAZ hardness with cooling rate consideration
-  const hazHardnessMax = calculateHAZHardness(C, Mn, Cr, Mo, V, Ni, Si, coolingTime_t85);
+  const { value: hazHardnessMax, clamped: hazHardnessClamped } =
+    calculateHAZHardness(C, Mn, Cr, Mo, V, Ni, Si, coolingTime_t85);
 
   // Determine hydrogen control level required
   let hydrogenLevel: 'low' | 'medium' | 'high';
@@ -298,7 +314,12 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
     recommendationCodes.push({ code: 'pwht', params: {} });
   }
 
-  if (hazHardnessMax > 350) {
+  if (hazHardnessClamped && hazHardnessMax === 700) {
+    // Prediction exceeded the model ceiling — presenting "700 HV" as the expected value would
+    // understate the risk (white cast iron HAZ genuinely exceeds 700 HV).
+    recommendations.push('HAZ hardness prediction exceeds model ceiling (>700 HV) - treat value as a lower bound; control cooling rate and consider PWHT');
+    recommendationCodes.push({ code: 'hazHardnessCapped', params: { cap: 700 } });
+  } else if (hazHardnessMax > 350) {
     recommendations.push(`High HAZ hardness expected (${hazHardnessMax} HV) - control cooling rate and consider PWHT`);
     recommendationCodes.push({ code: 'highHazHardness', params: { hazHardnessMax } });
   }
@@ -325,10 +346,12 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
     carbonEquivalent: roundTo(carbonEquivalent, 3),
     carbonEquivalentPcm: roundTo(carbonEquivalentPcm, 3),
     coolingTime_t85: roundTo(coolingTime_t85, 1),
+    coolingTimeClamped,
     coolingRate: roundTo(coolingRate, 1),
     preheatTemp,
     interpassTemp,
     hazHardnessMax,
+    hazHardnessClamped,
     crackingRisk,
     hydrogenLevel,
     recommendations,

@@ -98,13 +98,47 @@ function formatResistance(resistance: number, tolerance: number, tempCoeff?: num
   return formatted;
 }
 
+/** Digit bands must be black–white (0–9); gold/silver are multiplier/tolerance-only. */
+function digitValue(color: ColorName, position: number): number {
+  const value = COLOR_VALUES[color];
+  if (value === undefined || value < 0) {
+    throw new RangeError(`invalid digit band color at position ${position}: ${String(color)}`);
+  }
+  return value;
+}
+
+function multiplierValue(color: ColorName): number {
+  const value = MULTIPLIERS[color];
+  if (value === undefined) {
+    throw new RangeError(`invalid multiplier band color: ${String(color)}`);
+  }
+  return value;
+}
+
+function toleranceValue(color: string): number {
+  const value = TOLERANCES[color];
+  if (value === undefined) {
+    throw new RangeError(`invalid tolerance band color: ${String(color)}`);
+  }
+  return value;
+}
+
 /**
  * Decode resistor color bands to get resistance value
  * @param input - Resistor band information (count and colors)
  * @returns Decoded resistance, tolerance, and formatted string
+ * @throws {RangeError} bandCount not 4/5/6, missing bands, gold/silver used as a digit,
+ *   or an unknown color in a digit/multiplier/tolerance/tempCoeff position
  */
 export function resistorDecode(input: ResistorBands): ResistorResult {
   const { bandCount, bands } = input;
+
+  if (bandCount !== 4 && bandCount !== 5 && bandCount !== 6) {
+    throw new RangeError(`bandCount must be 4, 5, or 6 (got ${String(bandCount)})`);
+  }
+  if (!bands || bands.length < bandCount) {
+    throw new RangeError(`expected ${bandCount} band colors, got ${bands ? bands.length : 0}`);
+  }
 
   let resistance: number;
   let tolerance: number;
@@ -112,29 +146,32 @@ export function resistorDecode(input: ResistorBands): ResistorResult {
 
   if (bandCount === 4) {
     // 4-band: digit1, digit2, multiplier, tolerance
-    const digit1 = COLOR_VALUES[bands[0]];
-    const digit2 = COLOR_VALUES[bands[1]];
-    const multiplier = MULTIPLIERS[bands[2]];
-    tolerance = TOLERANCES[bands[3]] ?? 20;
+    const digit1 = digitValue(bands[0], 1);
+    const digit2 = digitValue(bands[1], 2);
+    const multiplier = multiplierValue(bands[2]);
+    tolerance = toleranceValue(bands[3]);
 
     resistance = (digit1 * 10 + digit2) * multiplier;
   } else if (bandCount === 5) {
     // 5-band: digit1, digit2, digit3, multiplier, tolerance
-    const digit1 = COLOR_VALUES[bands[0]];
-    const digit2 = COLOR_VALUES[bands[1]];
-    const digit3 = COLOR_VALUES[bands[2]];
-    const multiplier = MULTIPLIERS[bands[3]];
-    tolerance = TOLERANCES[bands[4]] ?? 20;
+    const digit1 = digitValue(bands[0], 1);
+    const digit2 = digitValue(bands[1], 2);
+    const digit3 = digitValue(bands[2], 3);
+    const multiplier = multiplierValue(bands[3]);
+    tolerance = toleranceValue(bands[4]);
 
     resistance = (digit1 * 100 + digit2 * 10 + digit3) * multiplier;
   } else {
     // 6-band: digit1, digit2, digit3, multiplier, tolerance, tempCoeff
-    const digit1 = COLOR_VALUES[bands[0]];
-    const digit2 = COLOR_VALUES[bands[1]];
-    const digit3 = COLOR_VALUES[bands[2]];
-    const multiplier = MULTIPLIERS[bands[3]];
-    tolerance = TOLERANCES[bands[4]] ?? 20;
+    const digit1 = digitValue(bands[0], 1);
+    const digit2 = digitValue(bands[1], 2);
+    const digit3 = digitValue(bands[2], 3);
+    const multiplier = multiplierValue(bands[3]);
+    tolerance = toleranceValue(bands[4]);
     tempCoeff = TEMP_COEFFICIENTS[bands[5]];
+    if (tempCoeff === undefined) {
+      throw new RangeError(`invalid tempCoeff band color: ${String(bands[5])}`);
+    }
 
     resistance = (digit1 * 100 + digit2 * 10 + digit3) * multiplier;
   }

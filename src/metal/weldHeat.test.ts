@@ -291,6 +291,106 @@ describe('weldHeat', () => {
     });
   });
 
+  describe('clamp disclosure (ISSUE-20260713 silent clamp)', () => {
+    // Regression pins from the issue's execution evidence.
+    it('flags the 700 HV ceiling for stainless (GMAW 6 mm, 26V/220A/350 mm/min → raw ≈ 1153 HV)', () => {
+      const result = weldHeat({
+        process: 'gmaw',
+        voltage: 26,
+        current: 220,
+        travelSpeed: 350,
+        baseMetal: 'stainlessSteel',
+        thickness: 6,
+      });
+
+      expect(result.hazHardnessMax).toBe(700);
+      expect(result.hazHardnessClamped).toBe(true);
+      // The capped value must not be presented as the expected hardness
+      expect(result.recommendations.some(r => r.includes('exceeds model ceiling'))).toBe(true);
+      expect(result.recommendationCodes.some(r => r.code === 'hazHardnessCapped' && r.params.cap === 700)).toBe(true);
+      expect(result.recommendationCodes.some(r => r.code === 'highHazHardness')).toBe(false);
+      expect(result.recommendationCodes).toHaveLength(result.recommendations.length);
+    });
+
+    it('flags the ceiling for cast iron (raw HV ≈ 4200 — genuine white-iron HAZ exceeds 700)', () => {
+      const result = weldHeat({
+        process: 'smaw',
+        voltage: 24,
+        current: 120,
+        travelSpeed: 200,
+        baseMetal: 'castIron',
+        thickness: 10,
+      });
+
+      expect(result.hazHardnessMax).toBe(700);
+      expect(result.hazHardnessClamped).toBe(true);
+    });
+
+    it('does not flag hardness inside the model range and keeps highHazHardness wording', () => {
+      const result = weldHeat({
+        process: 'gmaw',
+        voltage: 25,
+        current: 200,
+        travelSpeed: 300,
+        baseMetal: 'lowAlloySteel',
+        thickness: 15,
+      });
+
+      expect(result.hazHardnessMax).toBeLessThan(700);
+      expect(result.hazHardnessClamped).toBe(false);
+      expect(result.recommendationCodes.some(r => r.code === 'hazHardnessCapped')).toBe(false);
+    });
+
+    it('flags the t8/5 floor for thin-sheet GTAW (12V/70A/400 mm/min → raw ≈ 0.39 s)', () => {
+      const result = weldHeat({
+        process: 'gtaw',
+        voltage: 12,
+        current: 70,
+        travelSpeed: 400,
+        baseMetal: 'mildSteel',
+        thickness: 1,
+      });
+
+      expect(result.coolingTime_t85).toBe(0.5);
+      expect(result.coolingTimeClamped).toBe(true);
+    });
+
+    it('reports why thin-sheet thickness sweeps look unresponsive (all floored to 0.5 s)', () => {
+      const thin = weldHeat({ process: 'gtaw', voltage: 12, current: 70, travelSpeed: 400, baseMetal: 'mildSteel', thickness: 0.8 });
+      const thick = weldHeat({ process: 'gtaw', voltage: 12, current: 70, travelSpeed: 400, baseMetal: 'mildSteel', thickness: 3 });
+
+      // Identical floored outputs — but both disclose the clamp instead of looking broken
+      expect(thin.coolingTime_t85).toBe(0.5);
+      expect(thick.coolingTime_t85).toBe(0.5);
+      expect(thin.coolingTimeClamped).toBe(true);
+      expect(thick.coolingTimeClamped).toBe(true);
+    });
+
+    it('does not flag cooling time inside the model range', () => {
+      const result = weldHeat({
+        process: 'gmaw',
+        voltage: 25,
+        current: 200,
+        travelSpeed: 300,
+        baseMetal: 'mildSteel',
+        thickness: 10,
+      });
+
+      expect(result.coolingTime_t85).toBeGreaterThan(0.5);
+      expect(result.coolingTime_t85).toBeLessThan(300);
+      expect(result.coolingTimeClamped).toBe(false);
+    });
+
+    it('mild steel current sweep stays unclamped and responsive (contrast to stainless flatline)', () => {
+      const low = weldHeat({ process: 'gmaw', voltage: 26, current: 120, travelSpeed: 350, baseMetal: 'mildSteel', thickness: 6 });
+      const high = weldHeat({ process: 'gmaw', voltage: 26, current: 300, travelSpeed: 350, baseMetal: 'mildSteel', thickness: 6 });
+
+      expect(low.hazHardnessClamped).toBe(false);
+      expect(high.hazHardnessClamped).toBe(false);
+      expect(low.hazHardnessMax).not.toBe(high.hazHardnessMax);
+    });
+  });
+
   describe('edge cases', () => {
     it('should throw for zero current', () => {
       expect(() => weldHeat({

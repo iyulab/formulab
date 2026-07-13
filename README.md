@@ -11,12 +11,12 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **209 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **210 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,779 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,868 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
@@ -24,17 +24,17 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
 | Quality | 21 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
-| Metal | 34 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
+| Metal | 33 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
 | Logistics | 17 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
-| Chemical | 15 | — | Darcy-Weisbach, Fourier, API 520, ISA |
-| Electronics | 13 | — | IPC-2221 |
-| Construction | 16 | — | AISC, Timoshenko |
+| Chemical | 12 | — | Darcy-Weisbach, Fourier, API 520, ISA |
+| Electronics | 12 | — | IPC-2221 |
+| Construction | 15 | — | AISC, Timoshenko |
 | Automotive | 9 | — | AASHTO, SAE J1772 |
 | Energy | 15 | — | NREL PVWatts, ISO 50001 |
 | Food | 7 | — | HACCP, ICH Q1A |
 | Utility | 18 | — | — |
-| Battery | 11 | — | IEEE 1188, IEC 62620, Battery University |
+| Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
 | Machining | 12 | — | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
 | IE | 5 | — | MTM/MOST, Wright's learning curve |

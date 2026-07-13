@@ -228,3 +228,14 @@ describe('concreteMix', () => {
     });
   });
 });
+
+describe('concreteMix contract restoration (2026-07 audit)', () => {
+  it('throws RangeError for an unknown grade (was uncontrolled TypeError)', () => {
+    expect(() => concreteMix({ grade: '99' as never, volume: 1 })).toThrow(RangeError);
+  });
+
+  it('throws RangeError for volume <= 0 (documented contract, previously unimplemented)', () => {
+    expect(() => concreteMix({ grade: '25', volume: 0 })).toThrow(RangeError);
+    expect(() => concreteMix({ grade: '25', volume: -1 })).toThrow(RangeError);
+  });
+});

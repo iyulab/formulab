@@ -121,6 +121,9 @@ export interface SolarOutputResult {
   annualOutputKwh: number;    // kWh per year (365 days)
   capacityFactor: number;     // actual / theoretical ratio (0-1)
   tiltEfficiency: number;     // efficiency based on tilt/orientation (0-1)
+  tiltEfficiencyFloored: boolean; // true when the tilt and/or azimuth factor hit the model's
+                                  // 0.5 floor (e.g. north-facing arrays) — the output is then an
+                                  // optimistic bound, not an estimate; real yield can be lower
 }
 
 /**
