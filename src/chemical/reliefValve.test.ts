@@ -123,6 +123,7 @@ describe('reliefValve', () => {
       expect(result.orificeExceedsMax).toBe(true);
       expect(result.percentUtilized).toBeCloseTo(256.38, 1);
       expect(result.capacityAtOrifice).toBeCloseTo(19502.16, 0);
+      expect(result.suggestedMinValves).toBe(3); // ceil(43005.5 / 16774) = ceil(2.564)
     });
 
     it('flags steam relief beyond T (30,000 kg/h @ 1,500 kPa(g))', () => {
@@ -139,6 +140,7 @@ describe('reliefValve', () => {
       expect(result.selectedOrifice).toBe('T');
       expect(result.orificeExceedsMax).toBe(true);
       expect(result.percentUtilized).toBeGreaterThan(100);
+      expect(result.suggestedMinValves).toBe(2); // ceil(25960.5 / 16774) = ceil(1.548)
     });
 
     it('does not flag when T still covers the required area (boundary)', () => {
@@ -155,6 +157,7 @@ describe('reliefValve', () => {
       expect(result.requiredArea).toBeLessThanOrEqual(16774);
       expect(result.orificeExceedsMax).toBe(false);
       expect(result.percentUtilized).toBeLessThanOrEqual(100);
+      expect(result.suggestedMinValves).toBe(1);
     });
 
     it('does not flag ordinary in-range selections', () => {
@@ -181,6 +184,7 @@ describe('reliefValve', () => {
 
       expect(result.requiredArea).toBe(0);
       expect(result.orificeExceedsMax).toBe(false);
+      expect(result.suggestedMinValves).toBe(1); // degenerate zero-area case still suggests one valve
     });
   });
 

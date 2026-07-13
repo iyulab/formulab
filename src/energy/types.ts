@@ -109,9 +109,10 @@ export interface SolarOutputInput {
   panelCount: number;        // number of panels
   peakSunHours: number;      // hours/day (PSH)
   systemEfficiency: number;  // 0-1 (default ~0.80, accounts for inverter, wiring, soiling, degradation)
-  tiltAngle: number;         // degrees from horizontal
-  latitude: number;          // degrees (for optimal tilt estimation)
-  azimuthOffset: number;     // degrees from south (0 = due south)
+  tiltAngle: number;         // degrees from horizontal (0-90)
+  latitude: number;          // degrees, -90..90 (geometry uses |latitude|)
+  azimuthOffset: number;     // degrees from the equator-facing direction (0 = due south in
+                             // the northern hemisphere, due north in the southern; ±180 = away)
 }
 
 export interface SolarOutputResult {
@@ -120,10 +121,10 @@ export interface SolarOutputResult {
   monthlyOutputKwh: number;   // kWh per month (30 days)
   annualOutputKwh: number;    // kWh per year (365 days)
   capacityFactor: number;     // actual / theoretical ratio (0-1)
-  tiltEfficiency: number;     // efficiency based on tilt/orientation (0-1)
-  tiltEfficiencyFloored: boolean; // true when the tilt and/or azimuth factor hit the model's
-                                  // 0.5 floor (e.g. north-facing arrays) — the output is then an
-                                  // optimistic bound, not an estimate; real yield can be lower
+  tiltEfficiency: number;     // annual tilt/orientation factor relative to the best
+                              // equator-facing tilt (0-1; isotropic-sky model, no floor —
+                              // north-facing arrays land near their physical ~0.4, not a
+                              // clamped 0.5)
 }
 
 /**

@@ -120,14 +120,21 @@ describe('aql', () => {
   });
 
   describe('AQL substitution disclosure (ISSUE-20260713 silent clamp)', () => {
-    it('flags AQL 10 snapped down to the 6.5 column (10 is a real ISO 2859-1 AQL)', () => {
+    it('no longer adjusts AQL 10 — it is a real table column since the 10/15/25 extension', () => {
       const result = aql({ lotSize: 1000, aqlLevel: 10, inspectionLevel: 'II' });
 
-      expect(result.aqlUsed).toBe(6.5);
+      expect(result.aqlUsed).toBe(10);
+      expect(result.aqlAdjusted).toBe(false);
+      // ISO 2859-1 Table 2-A: J (n=80) at AQL 10 → Ac 14 / Re 15
+      expect(result.acceptNumber).toBe(14);
+      expect(result.rejectNumber).toBe(15);
+    });
+
+    it('flags AQL 40 snapped down to the 25 column (embedded table now ends at 25)', () => {
+      const result = aql({ lotSize: 1000, aqlLevel: 40, inspectionLevel: 'II' });
+
+      expect(result.aqlUsed).toBe(25);
       expect(result.aqlAdjusted).toBe(true);
-      // Plan returned is the 6.5 plan: J (n=80) → Ac 10 / Re 11
-      expect(result.acceptNumber).toBe(10);
-      expect(result.rejectNumber).toBe(11);
     });
 
     it('flags AQL below the table snapped UP to 0.065 (silently looser plan)', () => {
@@ -145,7 +152,7 @@ describe('aql', () => {
     });
 
     it('does not flag exact column hits', () => {
-      for (const level of [0.065, 0.4, 1.0, 2.5, 6.5]) {
+      for (const level of [0.065, 0.4, 1.0, 2.5, 6.5, 10, 15, 25]) {
         const result = aql({ lotSize: 1000, aqlLevel: level, inspectionLevel: 'II' });
         expect(result.aqlUsed).toBe(level);
         expect(result.aqlAdjusted).toBe(false);
@@ -157,6 +164,55 @@ describe('aql', () => {
 
       expect(result.aqlUsed).toBe(0);
       expect(result.aqlAdjusted).toBe(true);
+    });
+  });
+
+  describe('ISO 2859-1 Table 2-A golden cells — AQL 10/15/25 extension', () => {
+    // Transcribed from ISO 2859-1:1999(E) Table 2-A scan, cross-verified against
+    // MIL-STD-105E Table II-A (identical master table). Arrow cells resolve per the
+    // documented simplification (redirected Ac/Re with this letter's own sample size).
+    it('direct cells on the diagonal', () => {
+      // C (n=5, lot 25 @ II) at AQL 10 → Ac 1 / Re 2
+      const c10 = aql({ lotSize: 25, aqlLevel: 10, inspectionLevel: 'II' });
+      expect([c10.sampleCode, c10.acceptNumber, c10.rejectNumber]).toEqual(['C', 1, 2]);
+
+      // F (n=20, lot 150 @ II) at AQL 15 → Ac 7 / Re 8
+      const f15 = aql({ lotSize: 150, aqlLevel: 15, inspectionLevel: 'II' });
+      expect([f15.sampleCode, f15.acceptNumber, f15.rejectNumber]).toEqual(['F', 7, 8]);
+
+      // H (n=50, lot 500 @ II) at AQL 25 → Ac 21 / Re 22
+      const h25 = aql({ lotSize: 500, aqlLevel: 25, inspectionLevel: 'II' });
+      expect([h25.sampleCode, h25.acceptNumber, h25.rejectNumber]).toEqual(['H', 21, 22]);
+
+      // K (n=125, lot 3200 @ II) at AQL 10 → Ac 21 / Re 22 (last direct cell in the column)
+      const k10 = aql({ lotSize: 3200, aqlLevel: 10, inspectionLevel: 'II' });
+      expect([k10.sampleCode, k10.acceptNumber, k10.rejectNumber]).toEqual(['K', 21, 22]);
+    });
+
+    it('down-arrow cells at the top of the columns (A/B at 10, A at 15 → redirected 1/2)', () => {
+      // A (n=2, lot 8 @ S-1): AQL 10 is a down-arrow chain to C's 1/2
+      const a10 = aql({ lotSize: 8, aqlLevel: 10, inspectionLevel: 'S-1' });
+      expect([a10.sampleCode, a10.acceptNumber, a10.rejectNumber]).toEqual(['A', 1, 2]);
+
+      // A at 25 is a DIRECT cell: 1/2 (first direct cell of the 25 column)
+      const a25 = aql({ lotSize: 8, aqlLevel: 25, inspectionLevel: 'S-1' });
+      expect([a25.acceptNumber, a25.rejectNumber]).toEqual([1, 2]);
+
+      // B (n=3, lot 15 @ II) at 15 is a DIRECT cell: 1/2; at 25 direct: 2/3
+      const b15 = aql({ lotSize: 15, aqlLevel: 15, inspectionLevel: 'II' });
+      expect([b15.sampleCode, b15.acceptNumber, b15.rejectNumber]).toEqual(['B', 1, 2]);
+      const b25 = aql({ lotSize: 15, aqlLevel: 25, inspectionLevel: 'II' });
+      expect([b25.acceptNumber, b25.rejectNumber]).toEqual([2, 3]);
+    });
+
+    it('up-arrow cells below the last direct cell (J at 25, L at 10 → redirected 21/22)', () => {
+      // J (n=80, lot 1000 @ II) at AQL 25 → up-arrow to H's 21/22
+      const j25 = aql({ lotSize: 1000, aqlLevel: 25, inspectionLevel: 'II' });
+      expect([j25.sampleCode, j25.acceptNumber, j25.rejectNumber]).toEqual(['J', 21, 22]);
+
+      // L (n=200, lot 10000 @ II) at AQL 10 → up-arrow to K's 21/22
+      const l10 = aql({ lotSize: 10000, aqlLevel: 10, inspectionLevel: 'II' });
+      expect([l10.sampleCode, l10.acceptNumber, l10.rejectNumber]).toEqual(['L', 21, 22]);
     });
   });
 

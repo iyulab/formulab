@@ -256,7 +256,7 @@ All 15 domains were fully audited against source on 2026-07-13. Most functions f
 | `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness ≤ 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
 | `degreeDay()` | `throw` | Empty dailyTemps |
 | `motorEfficiency()` | `throw` | currentEfficiency ≤ 0, newEfficiency ≤ 0 (paybackPeriod null without positive upgradeCost/annualSavings) |
-| `solarOutput()` | `throw` | panelWattage/panelCount/peakSunHours ≤ 0, systemEfficiency outside (0, 1] |
+| `solarOutput()` | `throw` | panelWattage/panelCount/peakSunHours ≤ 0, systemEfficiency outside (0, 1], tiltAngle outside [0, 90], latitude outside [-90, 90] |
 
 ### Food (7 functions)
 

@@ -253,6 +253,10 @@ export interface ReliefValveResult {
   orificeExceedsMax: boolean; // true when requiredArea exceeds the largest API 526 orifice
                               // ('T', 16,774 mm²) — selectedOrifice is then NOT adequate on its
                               // own; multiple valves in parallel (or a custom device) are required
+  suggestedMinValves: number; // ceil(requiredArea / area of 'T') — FIRST-ORDER minimum count of
+                              // parallel 'T' valves; 1 when a single valve covers the area.
+                              // An actual multi-valve installation must be re-sized per API 520
+                              // (inlet/back-pressure corrections change per-valve capacity)
 }
 
 /**

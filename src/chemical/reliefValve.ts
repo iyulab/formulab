@@ -34,6 +34,9 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  * still reports 'T' as the closest standard size but sets `orificeExceedsMax: true` — a single
  * valve cannot provide the required capacity (multiple valves in parallel are needed). Callers
  * should surface this to the user; `percentUtilized` will be > 100 in that case.
+ * `suggestedMinValves` gives the first-order parallel count (`ceil(requiredArea / T)`); an
+ * actual multi-valve installation must be re-sized per API 520, since inlet and back-pressure
+ * corrections change each valve's capacity.
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
@@ -104,6 +107,9 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     }
   }
   const orificeExceedsMax = requiredArea > selectedOrifice.area;
+  // First-order minimum parallel-'T' count; 1 covers requiredArea = 0 (liquid dp <= 0 edge)
+  const maxOrificeArea = API_ORIFICES[API_ORIFICES.length - 1].area;
+  const suggestedMinValves = Math.max(1, Math.ceil(requiredArea / maxOrificeArea));
 
   // Capacity at selected orifice
   const capacityAtOrifice = requiredArea > 0
@@ -122,5 +128,6 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     capacityAtOrifice: roundTo(capacityAtOrifice, 2),
     percentUtilized: roundTo(percentUtilized, 2),
     orificeExceedsMax,
+    suggestedMinValves,
   };
 }

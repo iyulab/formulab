@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-07-13
+
+Owner-approved follow-ups to the 0.17.0 silent-clamp audit.
+
+### Changed
+
+- **`energy/solarOutput()` tilt/orientation model rebuilt** (⚠️ output values change). The
+  former cos-approximation floored both correction factors at 0.5, pinning every away-facing
+  array at exactly 50% of south-facing regardless of tilt. The factor is now computed
+  physically: isotropic-sky transposition (Liu & Jordan) with standard solar geometry
+  (Duffie & Beckman eq. 1.6.2) integrated over the year, normalized to the best
+  equator-facing tilt (scanned 0–90°, so the ratio is ≤ 1 by construction — no clamp
+  exists). Model assumptions documented in-source: diffuse fraction 0.3, albedo 0.2.
+  Anchors at latitude 37: south/latitude-tilt ≈ 1.0, SE ≈ 0.96, E/W ≈ 0.85, flat ≈ 0.88,
+  north 30° ≈ 0.61, north 60° ≈ 0.38 — consistent with fixed-orientation literature
+  (Lave & Kleissl 2011: north ≈ 0.6–0.7) and PVWatts-derived tables. Note: the original
+  audit guessed north should be 30–40%; the literature does not support that — the real
+  defect was the hard 50% pin and tilt-insensitivity, both gone now.
+  `tiltEfficiencyFloored` (introduced in 0.17.0, never published) is removed; new
+  validation throws for tiltAngle outside [0, 90] and latitude outside [-90, 90].
+  `azimuthOffset` is documented hemisphere-neutrally (degrees from the equator-facing
+  direction).
+
+### Added
+
+- **`quality/aql()` — AQL 10/15/25 columns.** The embedded ISO 2859-1 Table 2-A now covers
+  0.065–25 (was 0.065–6.5), so AQL 10 — a real, commonly used level — no longer reports
+  `aqlAdjusted: true` with a substituted 6.5 plan. Transcribed cell-by-cell from the
+  ISO 2859-1:1999(E) Table 2-A scan and cross-verified against MIL-STD-105E Table II-A
+  (identical master table); arrow cells resolve per the documented simplification.
+  Cell-level golden tests pin direct, down-arrow, and up-arrow cells. Per ISO 2859-1,
+  AQLs above 10 apply to nonconformities-per-100-items inspection only (documented).
+- **`chemical/reliefValve()` → `suggestedMinValves`** (additive). First-order minimum count
+  of parallel 'T' valves (`ceil(requiredArea / 16,774)`); 1 when a single valve suffices.
+  Documented as a first-order figure — an actual multi-valve installation must be re-sized
+  per API 520.
+
 ## [0.17.0] - 2026-07-13
 
 ### Added — clamp/snap disclosure (ISSUE-20260713 audit)

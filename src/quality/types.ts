@@ -89,7 +89,10 @@ export type InspectionLevel = 'I' | 'II' | 'III' | 'S-1' | 'S-2' | 'S-3' | 'S-4'
 export interface AqlInput {
   /** Lot size (number of units in the batch) */
   lotSize: number;
-  /** Acceptable Quality Level (e.g., 0.065, 0.1, 0.25, 0.4, 0.65, 1.0, 1.5, 2.5, 4.0, 6.5) */
+  /**
+   * Acceptable Quality Level (e.g., 0.065, 0.1, 0.25, 0.4, 0.65, 1.0, 1.5, 2.5, 4.0, 6.5,
+   * 10, 15, 25). Per ISO 2859-1, values above 10 apply to nonconformities per 100 items only.
+   */
   aqlLevel: number;
   /** Inspection level (I, II, III for general; S-1 to S-4 for special) */
   inspectionLevel: InspectionLevel;
@@ -108,12 +111,12 @@ export interface AqlResult {
   samplingPercent: number;
   /**
    * The AQL column actually applied from the embedded ISO 2859-1 table
-   * (0.065–6.5). 0 for the negative-aqlLevel zero-plan sentinel.
+   * (0.065–25). 0 for the negative-aqlLevel zero-plan sentinel.
    */
   aqlUsed: number;
   /**
    * true when `aqlUsed !== aqlLevel` — the requested AQL is not a column of the
-   * embedded table (e.g. 10 → 6.5, 0.01 → 0.065, 5.0 → 4.0) and the returned plan
+   * embedded table (e.g. 40 → 25, 0.01 → 0.065, 5.0 → 4.0) and the returned plan
    * is for a DIFFERENT quality level than requested.
    */
   aqlAdjusted: boolean;
