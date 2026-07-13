@@ -198,6 +198,7 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 |----------|-------------|
 | `metalWeight()` | Weight calculation for various shapes |
 | `bendAllowance()` | Sheet metal bend allowance |
+| `springback()` | Sheet metal springback / overbend compensation |
 | `flatPattern()` | Flat pattern length calculation |
 | `kFactorReverse()` | K-factor reverse engineering |
 | `pressTonnage()` | Press brake tonnage |

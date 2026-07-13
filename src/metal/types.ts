@@ -46,6 +46,24 @@ export interface BendAllowanceResult {
   warnings: string[];
 }
 
+export interface SpringbackInput {
+  thickness: number;        // mm (T)
+  bendRadius: number;       // mm (R_i, inside radius of the tool)
+  bendAngle: number;        // degrees (0 < angle < 180), the target angle after unloading
+  material?: BendingMaterial;  // preset yield strength / Young's modulus (default mildSteel)
+  yieldStrength?: number;   // MPa — required when material is 'custom'
+  elasticModulus?: number;  // GPa — required when material is 'custom'
+}
+
+export interface SpringbackResult {
+  springbackFactor: number; // Ks = R_i / R_f (≤ 1; 1 = no springback)
+  finalRadius: number;      // mm (R_f, radius after unloading)
+  springbackAngle: number;  // degrees the bend opens up on unloading
+  overbendAngle: number;    // degrees to bend to so the part lands on the target angle
+  yieldStrength: number;    // MPa (used)
+  elasticModulus: number;   // GPa (used)
+}
+
 export interface FlatPatternInput {
   shapeType: ShapeType;
   thickness: number;        // mm
@@ -286,6 +304,7 @@ export interface MaterialResult {
   density: number;          // g/cm3
   tensileStrength: number;  // MPa
   yieldStrength: number;    // MPa
+  youngsModulus: number;    // GPa (E) — elastic modulus; needed by springback/deflection
   elongation: number;       // %
   hardness: string;         // e.g., "HB 200"
   thermalConductivity: number; // W/(m-K)
@@ -296,6 +315,7 @@ export interface MaterialSpec {
   density: number;
   tensileStrength: number;
   yieldStrength: number;
+  youngsModulus: number;    // GPa
   elongation: number;
   hardness: string;
   thermalConductivity: number;

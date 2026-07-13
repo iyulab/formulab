@@ -60,6 +60,7 @@ All public functions follow the error policy above. As of v0.10.0, no functions 
 |----------|---------------|------------|
 | `metalWeight()` | `throw` | Non-positive dimensions, outerDiameter ≤ innerDiameter |
 | `bendAllowance()` | `throw` | thickness ≤ 0, bendAngle out of range |
+| `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus |
 | `flatPattern()` | `throw` | Invalid dimensions |
 | `kFactorReverse()` | `throw` | Invalid dimensions |
 | `pressTonnage()` | `throw` | Missing operation-specific fields |

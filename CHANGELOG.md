@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-07-13
+
+### Added
+
+- **`metal/springback()` — sheet-metal springback and overbend compensation.** Computes the
+  springback factor `Ks = R_i/R_f = 4x³ − 3x + 1` (with `x = Y·R_i/(E·T)`), the final radius
+  after unloading, the angle the bend opens up, and the overbend angle needed to land on the
+  target angle (Kalpakjian & Schmid; ASM Metals Handbook Vol. 14B). Material presets mirror
+  `bendAllowance()`'s enum (mildSteel / stainless304 / aluminum5052 / aluminum6061) so a bend
+  workflow keeps one material selection, plus `custom` with explicit yield strength and
+  Young's modulus. Invalid geometry and incomplete `custom` material throw `RangeError`.
+
+  Previously `bendAllowance()` only *warned* that an extreme bend angle "may cause springback
+  issues" without quantifying it; this closes that gap.
+
+- **`MaterialResult.youngsModulus` (GPa).** The material lookup returned yield strength but no
+  elastic modulus, so springback/deflection work could not be driven from a material grade.
+  Reference values (ASM Handbook · MatWeb) added for all 15 grades.
+
+  ⚠️ **Additive to the result object.** Consumers spreading `MaterialResult` into their own
+  types get one extra field; no existing field changed.
+
 ## [0.14.2] - 2026-07-07
 
 ### Documentation

@@ -10,6 +10,8 @@ export type {
   ShapeType,
   BendAllowanceInput,
   BendAllowanceResult,
+  SpringbackInput,
+  SpringbackResult,
   FlatPatternInput,
   FlatPatternResult,
   KFactorReverseInput,
@@ -125,6 +127,7 @@ export { isMetalWeightInput, isBoltInput } from './guards.js';
 // Functions
 export { metalWeight } from './metalWeight.js';
 export { bendAllowance } from './bendAllowance.js';
+export { springback } from './springback.js';
 export { flatPattern } from './flatPattern.js';
 export { kFactorReverse } from './kFactorReverse.js';
 export { pressTonnage } from './pressTonnage.js';

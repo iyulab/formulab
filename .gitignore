@@ -32,3 +32,5 @@ docs/api/
 *.temp
 .cache/
 nul
+# Agent working notes (cycle logs, research) — not part of the package
+claudedocs/
