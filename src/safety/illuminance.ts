@@ -5,7 +5,7 @@ import type { IlluminanceInput, IlluminanceResult } from './types.js';
  * Simple CU lookup by room index (linear interpolation).
  * Based on typical reflectance values (ceiling 70%, wall 50%, floor 20%).
  */
-const CU_TABLE: [number, number][] = [
+export const CU_TABLE: [number, number][] = [
   [0.6, 0.22],
   [1.0, 0.34],
   [1.5, 0.45],
@@ -15,6 +15,9 @@ const CU_TABLE: [number, number][] = [
   [4.0, 0.65],
   [5.0, 0.68],
 ];
+
+/** Room-index range the CU table actually covers — outside it, lookupCU() clamps. */
+export const CU_TABLE_RANGE: readonly [number, number] = [CU_TABLE[0][0], CU_TABLE[CU_TABLE.length - 1][0]];
 
 function lookupCU(roomIndex: number): number {
   if (roomIndex <= CU_TABLE[0][0]) return CU_TABLE[0][1];
@@ -70,8 +73,13 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   // Room Index (Cavity Ratio)
   const roomIndex = (roomLength * roomWidth) / (hm * (roomLength + roomWidth));
 
-  // Coefficient of Utilization
+  // Coefficient of Utilization. The CU table only covers room indices in CU_TABLE_RANGE;
+  // outside it lookupCU() clamps to the boundary CU, which realistic industrial rooms do hit
+  // (a 10 m-high warehouse gives RI ≈ 0.55, a 50×30 m factory floor RI ≈ 8.7). Report that so
+  // the caller can tell the user the CU is a boundary approximation rather than a table value.
   const cu = cuOverride ?? lookupCU(roomIndex);
+  const roomIndexClamped =
+    cuOverride === undefined && (roomIndex < CU_TABLE_RANGE[0] || roomIndex > CU_TABLE_RANGE[1]);
 
   // Number of luminaires: N = (E × A) / (Φ × CU × MF)
   const nExact = (targetLux * area) / (lumensPerLuminaire * cu * mf);
@@ -94,6 +102,8 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
     fixturesNeeded,
     actualLux: roundTo(actualLux, 4),
     roomIndex: roundTo(roomIndex, 4),
+    cu: roundTo(cu, 4),
+    roomIndexClamped,
     totalLumens: roundTo(totalLumens, 4),
     powerDensity: powerDensity !== null ? roundTo(powerDensity, 4) : null,
     recommendedSpacing: roundTo(recommendedSpacing, 4),

@@ -191,6 +191,9 @@ export interface IlluminanceResult {
   fixturesNeeded: number;       // count (rounded up)
   actualLux: number;            // lux (with rounded fixture count)
   roomIndex: number;
+  cu: number;                   // coefficient of utilization actually used (override or table)
+  roomIndexClamped: boolean;    // true when roomIndex fell outside CU_TABLE_RANGE and the CU
+                                // was clamped to the boundary value (approximation, not a table hit)
   totalLumens: number;          // lm
   powerDensity: number | null;  // W/m²
   recommendedSpacing: number;   // m (max spacing = 1.5 × Hm)

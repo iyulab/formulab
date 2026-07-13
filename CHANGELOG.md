@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2026-07-13
+
+### Added
+
+- **`safety/illuminance()` now discloses CU-table clamping.** The coefficient-of-utilization
+  table only covers room indices 0.6–5.0; outside that range the lookup silently clamped to the
+  boundary CU and the result gave no hint. Realistic industrial rooms do land outside it — a
+  10 m-high warehouse gives RI ≈ 0.55, a 50×30 m factory floor RI ≈ 8.7 — so the approximation
+  was invisible exactly where it mattered.
+
+  `IlluminanceResult` gains **`cu`** (the coefficient actually used) and **`roomIndexClamped`**
+  (true when the room index fell outside the table and the CU was clamped; false when the caller
+  supplied `cu` itself, since no lookup happened). `CU_TABLE` and `CU_TABLE_RANGE` are now
+  exported so a consumer can state the valid range in its own notice.
+
+  ⚠️ **Additive to the result object.** No existing field changed.
+
 ## [0.15.0] - 2026-07-13
 
 ### Added

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { illuminance } from './illuminance.js';
+import { illuminance, CU_TABLE, CU_TABLE_RANGE } from './illuminance.js';
 
 describe('illuminance', () => {
   describe('basic fixture calculation', () => {
@@ -212,6 +212,45 @@ describe('illuminance', () => {
 
       expect(result.fixturesNeeded).toBeGreaterThan(0);
       expect(result.actualLux).toBeGreaterThanOrEqual(200);
+    });
+  });
+
+  describe('CU table range / clamping disclosure', () => {
+    it('exposes the CU actually used', () => {
+      const r = illuminance({ roomLength: 12, roomWidth: 8, luminaireHeight: 2.8, targetLux: 500, lumensPerLuminaire: 3500 });
+
+      expect(r.roomIndex).toBeGreaterThan(CU_TABLE_RANGE[0]);
+      expect(r.roomIndex).toBeLessThan(CU_TABLE_RANGE[1]);
+      expect(r.cu).toBeGreaterThan(0);
+      expect(r.roomIndexClamped).toBe(false);
+    });
+
+    it('CU_TABLE_RANGE matches the first and last room index in the table', () => {
+      expect(CU_TABLE_RANGE).toEqual([CU_TABLE[0][0], CU_TABLE[CU_TABLE.length - 1][0]]);
+    });
+
+    it('flags a clamp below the table (high-bay warehouse: 10x10 m room, 10 m mounting => RI 0.55)', () => {
+      const r = illuminance({ roomLength: 10, roomWidth: 10, luminaireHeight: 10, targetLux: 200, lumensPerLuminaire: 20000 });
+
+      expect(r.roomIndex).toBeLessThan(CU_TABLE_RANGE[0]);
+      expect(r.roomIndexClamped).toBe(true);
+      expect(r.cu).toBe(CU_TABLE[0][1]);            // clamped to the lowest tabulated CU
+    });
+
+    it('flags a clamp above the table (large factory floor: 50x30 m, 3 m mounting => RI 8.7)', () => {
+      const r = illuminance({ roomLength: 50, roomWidth: 30, luminaireHeight: 3, targetLux: 300, lumensPerLuminaire: 10000 });
+
+      expect(r.roomIndex).toBeGreaterThan(CU_TABLE_RANGE[1]);
+      expect(r.roomIndexClamped).toBe(true);
+      expect(r.cu).toBe(CU_TABLE[CU_TABLE.length - 1][1]);  // clamped to the highest tabulated CU
+    });
+
+    it('does not flag a clamp when the caller supplies its own CU', () => {
+      const r = illuminance({ roomLength: 50, roomWidth: 30, luminaireHeight: 3, targetLux: 300, lumensPerLuminaire: 10000, cu: 0.5 });
+
+      expect(r.roomIndex).toBeGreaterThan(CU_TABLE_RANGE[1]);
+      expect(r.cu).toBe(0.5);
+      expect(r.roomIndexClamped).toBe(false);      // no table lookup happened
     });
   });
 });
