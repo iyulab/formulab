@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.19.0] - 2026-07-14
 
+> **Not published to npm as a separate version.** This commit was pushed to `main`
+> together with 0.20.0, so a single publish run fired and these changes shipped inside
+> **0.20.0**. Consumers needing the springback fix must install `formulab@>=0.20.0` —
+> `0.19.0` does not exist on the registry.
+
 Resolution of ISSUE-20260714 (springback model singularity), execution-verified in triage.
 
 ### Changed
