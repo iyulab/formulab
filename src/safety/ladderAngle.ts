@@ -5,11 +5,18 @@ const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
 
 /**
+ * OSHA 4:1 rule compliant setup-angle range, in degrees. The single source of truth
+ * for the 70°/80° thresholds `ladderAngle()` checks `isCompliant` against — consumers
+ * that draw the compliant band should import this rather than hardcoding the numbers.
+ */
+export const LADDER_COMPLIANT_ANGLE_RANGE = { min: 70, max: 80 } as const;
+
+/**
  * Calculate ladder setup angle and OSHA compliance.
  *
  * OSHA 4:1 Rule: For every 4 feet of height, the base should be 1 foot out.
  * This gives an ideal angle of atan(4/1) ≈ 75.96° (commonly cited as 75.5°).
- * Compliant range: 70°–80°.
+ * Compliant range: see {@link LADDER_COMPLIANT_ANGLE_RANGE} (70°–80°).
  *
  * Provide ladderLength and either height or baseDistance.
  * If both height and baseDistance are provided, ladderLength is recalculated.
@@ -76,18 +83,19 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   // Reach height = wall contact height + ~1m (3 feet) above contact point
   const reachHeight = (height ?? 0) + 1.0;
 
-  // OSHA compliance: 70° - 80°
-  const isCompliant = angle >= 70 && angle <= 80;
+  // OSHA compliance: see LADDER_COMPLIANT_ANGLE_RANGE
+  const isCompliant =
+    angle >= LADDER_COMPLIANT_ANGLE_RANGE.min && angle <= LADDER_COMPLIANT_ANGLE_RANGE.max;
 
   // Generate warnings
-  if (angle < 70) {
+  if (angle < LADDER_COMPLIANT_ANGLE_RANGE.min) {
     warnings.push('Angle too shallow (< 70°): ladder may slide out at base');
-  } else if (angle > 80) {
+  } else if (angle > LADDER_COMPLIANT_ANGLE_RANGE.max) {
     warnings.push('Angle too steep (> 80°): ladder may tip backwards');
   }
 
   if (ladderLength > 0 && (height ?? 0) > 0) {
-    if (angle >= 70 && angle <= 80 && (height ?? 0) > ladderLength * 0.97) {
+    if (isCompliant && (height ?? 0) > ladderLength * 0.97) {
       warnings.push('Ladder may not extend sufficiently above landing surface');
     }
   }

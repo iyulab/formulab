@@ -6,7 +6,7 @@ export { noiseExposure } from './noiseExposure.js';
 export { wbgtCalculate } from './wbgtCalculate.js';
 export { havsCalculate } from './havsCalculate.js';
 export { respiratorCalculate } from './respiratorCalculate.js';
-export { ladderAngle } from './ladderAngle.js';
+export { ladderAngle, LADDER_COMPLIANT_ANGLE_RANGE } from './ladderAngle.js';
 export { illuminance, CU_TABLE, CU_TABLE_RANGE } from './illuminance.js';
 export { thermalComfort } from './thermalComfort.js';
 export { ergonomicRisk } from './ergonomicRisk.js';

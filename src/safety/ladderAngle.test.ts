@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { ladderAngle } from './ladderAngle.js';
+import { ladderAngle, LADDER_COMPLIANT_ANGLE_RANGE } from './ladderAngle.js';
+
+/** atan(height/baseDistance) = angle  ⇒  height = baseDistance · tan(angle) */
+const heightForAngle = (angleDeg: number, baseDistance = 1) =>
+  baseDistance * Math.tan((angleDeg * Math.PI) / 180);
 
 describe('ladderAngle', () => {
   describe('basic angle calculation', () => {
@@ -98,6 +102,56 @@ describe('ladderAngle', () => {
       });
 
       expect(result.isCompliant).toBe(true);
+    });
+  });
+
+  describe('LADDER_COMPLIANT_ANGLE_RANGE', () => {
+    it('is the OSHA 4:1 compliant range, 70°-80°', () => {
+      expect(LADDER_COMPLIANT_ANGLE_RANGE).toEqual({ min: 70, max: 80 });
+    });
+
+    it('isCompliant agrees with the constant exactly at the min boundary', () => {
+      const result = ladderAngle({
+        ladderLength: 0,
+        height: heightForAngle(LADDER_COMPLIANT_ANGLE_RANGE.min),
+        baseDistance: 1,
+      });
+
+      expect(result.angle).toBeCloseTo(LADDER_COMPLIANT_ANGLE_RANGE.min, 4);
+      expect(result.isCompliant).toBe(true);
+    });
+
+    it('isCompliant agrees with the constant exactly at the max boundary', () => {
+      const result = ladderAngle({
+        ladderLength: 0,
+        height: heightForAngle(LADDER_COMPLIANT_ANGLE_RANGE.max),
+        baseDistance: 1,
+      });
+
+      expect(result.angle).toBeCloseTo(LADDER_COMPLIANT_ANGLE_RANGE.max, 4);
+      expect(result.isCompliant).toBe(true);
+    });
+
+    it('isCompliant agrees with the constant just below the min boundary', () => {
+      const result = ladderAngle({
+        ladderLength: 0,
+        height: heightForAngle(LADDER_COMPLIANT_ANGLE_RANGE.min - 0.5),
+        baseDistance: 1,
+      });
+
+      expect(result.angle).toBeLessThan(LADDER_COMPLIANT_ANGLE_RANGE.min);
+      expect(result.isCompliant).toBe(false);
+    });
+
+    it('isCompliant agrees with the constant just above the max boundary', () => {
+      const result = ladderAngle({
+        ladderLength: 0,
+        height: heightForAngle(LADDER_COMPLIANT_ANGLE_RANGE.max + 0.5),
+        baseDistance: 1,
+      });
+
+      expect(result.angle).toBeGreaterThan(LADDER_COMPLIANT_ANGLE_RANGE.max);
+      expect(result.isCompliant).toBe(false);
     });
   });
 

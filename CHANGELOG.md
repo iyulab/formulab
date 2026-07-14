@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-07-14
+
+### Added
+
+- **`safety/LADDER_COMPLIANT_ANGLE_RANGE`** (additive). `ladderAngle()`'s OSHA 4:1
+  compliant range (70°–80°) was only exposed as the derived boolean `isCompliant` —
+  a consumer wanting to draw the compliant band on a diagram had no way to get the
+  thresholds themselves without hardcoding a second copy of `70`/`80`, which drifts
+  silently if the range is ever revised. `ladderAngle()` now reads its own compliance
+  check from this exported constant (`{ min: 70, max: 80 }`), so there is exactly one
+  source of truth. Re-exported from `formulab/safety` and the package root.
+
 ## [0.19.0] - 2026-07-14
 
 Resolution of ISSUE-20260714 (springback model singularity), execution-verified in triage.
