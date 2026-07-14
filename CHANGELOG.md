@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-07-14
+
+Resolution of ISSUE-20260714 (springback model singularity), execution-verified in triage.
+
+### Changed
+
+- **`metal/springback()` rejects fully-elastic bends** (⚠️ inputs that previously returned
+  values now throw). The Kalpakjian springback factor Ks = 4x³ − 3x + 1 = (x + 1)(2x − 1)²
+  has a double root at x = Y·R_i/(E·T) = 0.5 — exactly the elastic limit (max bending
+  strain T/2R_i ≤ yield strain Y/E). The unguarded cubic returned `Infinity` at x = 0.5
+  (violating the no-NaN/Infinity error policy) and, past x ≈ 0.87, Ks > 1 — negative
+  springback with a *shrinking* final radius (e.g. mild steel t=0.5, R=400 → springback
+  angle −45°), silently presented as genuine results. `springback()` now throws
+  `RangeError` for x ≥ 0.5 with the physical reason (the sheet never yields, so no
+  permanent set exists); the JSDoc documents the domain derivation. Reachable with
+  realistic thin-sheet/large-radius inputs (aluminum 5052 at t=0.5 mm crosses at R ≈ 91 mm).
+
+### Added
+
+- **`metal/springback()` → `overbendExceeds180`** (additive). Even inside the model
+  domain the required overbend can pass 180° (thin sheet, large radius, target near
+  180° — e.g. mild steel t=0.5, R=10, target 175° → 189.18°), which no single
+  press-brake stroke can execute. The result now discloses it instead of leaving the
+  judgment to consumers. Compared before rounding, boundary pinned on both sides.
+- **`metal/springback()` → `radiusBelow2T`** (additive). The cited validity R_i > 2T
+  (neutral axis at mid-thickness) was documented but silent at runtime; tight bends are
+  routine, so they stay computable and the accuracy caveat is disclosed.
+
 ## [0.18.0] - 2026-07-13
 
 Owner-approved follow-ups to the 0.17.0 silent-clamp audit.

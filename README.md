@@ -16,7 +16,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,875 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,888 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status

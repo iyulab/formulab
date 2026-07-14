@@ -63,7 +63,7 @@ All 15 domains were fully audited against source on 2026-07-13. Most functions f
 |----------|---------------|------------|
 | `metalWeight()` | `throw` | Non-positive dimensions, outerDiameter ≤ innerDiameter |
 | `bendAllowance()` | `safe` | — (out-of-range inputs produce warning strings, not throws) |
-| `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus |
+| `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
 | `flatPattern()` | `safe` | — (no input validation) |
 | `kFactorReverse()` | `safe` | — (no input validation) |
 | `pressTonnage()` | `throw` | Missing operation-specific fields |

@@ -56,10 +56,12 @@ export interface SpringbackInput {
 }
 
 export interface SpringbackResult {
-  springbackFactor: number; // Ks = R_i / R_f (≤ 1; 1 = no springback)
+  springbackFactor: number; // Ks = R_i / R_f, 0 < Ks ≤ 1 on the model domain x < 0.5 (1 = no springback; may display as 0 at 4 dp very near the boundary)
   finalRadius: number;      // mm (R_f, radius after unloading)
   springbackAngle: number;  // degrees the bend opens up on unloading
   overbendAngle: number;    // degrees to bend to so the part lands on the target angle
+  overbendExceeds180: boolean; // true when the required tool angle is ≥ 180° — the target angle is not reachable in a single bend (the model's honest prediction, disclosed rather than hidden)
+  radiusBelow2T: boolean;   // true when R_i ≤ 2·T — below the model's stated validity (neutral axis no longer at mid-thickness); values are still computed but grow less accurate
   yieldStrength: number;    // MPa (used)
   elasticModulus: number;   // GPa (used)
 }
