@@ -16,7 +16,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,888 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,906 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
@@ -70,6 +70,8 @@ The following functions include tests verified against published reference value
 | `flangeSpec()` | ASME B16.5 | Class 150/300/600 flange dimensions |
 | `pipeSpec()` | ASME B36.10 | SCH40/80/160 wall thickness |
 | `awgProperties()` | ANSI/AWG | AWG 0-40 diameter, resistance |
+| `pressFit()` | Shigley's Mechanical Engineering Design | Same-material solid-shaft interface pressure (39.36 MPa), nu-independence |
+| `spring()` | Shigley's Mechanical Engineering Design | Spring rate (Eq. 10-9), Wahl factor (Eq. 10-5), corrected shear stress (Eq. 10-7) |
 
 ### Edge Case Handling
 

@@ -218,4 +218,51 @@ describe('pressFit', () => {
       expect(result.holdingTorque).toBeGreaterThan(0);
     });
   });
+
+  // Golden-value regression guard. Every other test above is qualitative
+  // (>0, sign, monotonicity, range) and so cannot tell a correct C-factor from a
+  // wrong one. This one pins the interface pressure (and derived force/torque) to
+  // a value derived BY HAND from Shigley's same-material, solid-shaft interference
+  // equation, so it fails if the physics regresses.
+  //
+  // Derivation (steel-on-steel, solid shaft, d_o = 100):
+  //   delta = 50.025 - 50.000 = 0.025 mm
+  //   d     = (50.025 + 50.000) / 2 = 50.0125 mm      (code uses the average)
+  //   E     = 210 GPa = 210_000 MPa
+  //   ratio = (d_o^2 + d^2)/(d_o^2 - d^2)
+  //         = (10000 + 2501.2502)/(10000 - 2501.2502) = 1.667111
+  //   C     = ratio + 1 = 2.667111                    (+1, NOT +nu — the shaft yields too)
+  //   p     = delta * E / (d * C) = 5250 / 133.3889 = 39.36 MPa
+  //   F     = pi * d * L * p * mu = 46.38 kN
+  //   T     = pi * d^2 * L * p * mu / 2 / 1000 = 1160 N*m
+  //
+  // The superseded rigid-shaft model (C = ratio + nu) gave p = 53.4 MPa / F = 62.88 kN,
+  // ~36% too high; the tolerances below are tight enough to reject those values.
+  describe('golden values (Shigley same-material solid shaft)', () => {
+    const sample = {
+      shaftDiameter: 50.025,
+      holeDiameter: 50.000,
+      hubOuterDiameter: 100,
+      contactLength: 50,
+      youngsModulus: 210,
+      poissonRatio: 0.3,
+      frictionCoefficient: 0.15,
+    };
+
+    it('should match the hand-derived Shigley interface pressure (39.36 MPa)', () => {
+      expect(pressFit(sample).interfacePressure).toBeCloseTo(39.36, 1);
+    });
+
+    it('should match the hand-derived assembly force (46.38 kN) and holding torque (1160 N*m)', () => {
+      const result = pressFit(sample);
+      expect(result.assemblyForceKN).toBeCloseTo(46.38, 1);
+      expect(result.holdingTorque).toBeCloseTo(1160, -1); // within ~5 N*m
+    });
+
+    it('should be independent of Poisson ratio (nu cancels for same-material solid shaft)', () => {
+      const withLowNu = pressFit({ ...sample, poissonRatio: 0.1 });
+      const withHighNu = pressFit({ ...sample, poissonRatio: 0.45 });
+      expect(withLowNu.interfacePressure).toBe(withHighNu.interfacePressure);
+    });
+  });
 });

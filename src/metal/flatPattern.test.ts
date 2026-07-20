@@ -1,7 +1,53 @@
 import { describe, it, expect } from 'vitest';
 import { flatPattern } from './flatPattern.js';
+import { bendAllowance } from './bendAllowance.js';
+import { kFactorReverse } from './kFactorReverse.js';
 
 describe('flatPattern', () => {
+  // Golden guard. flatPattern shares the BA/OSSB/BD machinery with bendAllowance
+  // and is inverted by kFactorReverse, so it can be pinned three independent ways:
+  // a hand-worked value, agreement with bendAllowance, and a K round-trip. The
+  // existing tests were mostly qualitative (>0, comparative), which cannot catch an
+  // L-vs-U deduction slip (one BD vs two).
+  //
+  // mildSteel (K=0.44), T=2, R=3, 90deg:
+  //   BA = (pi/2)(3 + 0.44*2) = 6.0947 ; OSSB = (3+2)tan45 = 5 ; BD = 2*5 - 6.0947 = 3.9053
+  //   L-shape (A=50,B=30):     flat = 80  - 3.9053  = 76.0947
+  //   U-shape (A=50,B=30,C=40): flat = 120 - 2*3.9053 = 112.1894  (two bends)
+  describe('golden values (hand-worked + cross-checks)', () => {
+    const common = { thickness: 2, bendAngle: 90, insideRadius: 3, material: 'mildSteel' as const };
+
+    it('should match the hand-worked L-shape and U-shape flat lengths', () => {
+      const l = flatPattern({ ...common, shapeType: 'lShape', flangeA: 50, flangeB: 30 });
+      expect(l.bendAllowance).toBeCloseTo(6.0947, 3);
+      expect(l.bendDeduction).toBeCloseTo(3.9053, 3);
+      expect(l.flatLength).toBeCloseTo(76.0947, 3);
+
+      const u = flatPattern({ ...common, shapeType: 'uShape', flangeA: 50, flangeB: 30, flangeC: 40 });
+      expect(u.flatLength).toBeCloseTo(112.1894, 3); // two bend deductions
+    });
+
+    it('should agree with bendAllowance on BA and BD', () => {
+      const fp = flatPattern({ ...common, shapeType: 'lShape', flangeA: 50, flangeB: 30 });
+      const ba = bendAllowance({ thickness: 2, bendAngle: 90, insideRadius: 3, kFactor: 0.44 });
+      expect(fp.bendAllowance).toBeCloseTo(ba.bendAllowance, 9);
+      expect(fp.bendDeduction).toBeCloseTo(ba.bendDeduction, 9);
+    });
+
+    it('should round-trip through kFactorReverse (L-shape)', () => {
+      const fp = flatPattern({ ...common, shapeType: 'lShape', flangeA: 50, flangeB: 30 });
+      const back = kFactorReverse({
+        thickness: 2,
+        bendAngle: 90,
+        insideRadius: 3,
+        measuredFlatLength: fp.flatLength,
+        legA: 50,
+        legB: 30,
+      });
+      expect(back.kFactor).toBeCloseTo(0.44, 9);
+    });
+  });
+
   describe('L-shape calculations', () => {
     it('should calculate flat length for L-shape bend', () => {
       const result = flatPattern({

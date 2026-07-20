@@ -2,6 +2,35 @@ import { describe, it, expect } from 'vitest';
 import { vibration } from './vibration.js';
 
 describe('vibration', () => {
+  // Golden guard. The spring-mass frequency is pinned elsewhere, but the
+  // Euler-Bernoulli beam path was only compared (mode ordering, stiff>soft), never
+  // pinned to a value — a wrong lambda or a units slip in the EI/rhoA term would
+  // survive. This pins the cantilever fundamental and section properties by hand.
+  //
+  // Steel cantilever, rectangular 20x10 mm, L=500 mm (E=200 GPa, rho=7850):
+  //   I = w h^3 / 12 = 20*1000/12 = 1666.67 mm^4 ;  A = 200 mm^2
+  //   EI/(rho A) = (200e9 * 1666.67e-12)/(7850 * 200e-6) = 333.33/1.57 = 212.31
+  //   f1 = (1.875104^2 / (2 pi * 0.5^2)) * sqrt(212.31) = 32.62 Hz    (Euler-Bernoulli)
+  //   higher modes scale as lambda_n^2, so f2/f1 = (4.694091/1.875104)^2.
+  describe('golden values (Euler-Bernoulli cantilever, steel)', () => {
+    it('should match the hand-derived fundamental frequency and section properties', () => {
+      const result = vibration({
+        system: 'cantilever',
+        material: 'steel',
+        crossSection: 'rectangular',
+        width: 20,
+        height: 10,
+        length: 500,
+      });
+      expect(result.momentOfInertia).toBeCloseTo(1666.67, 1);
+      expect(result.crossSectionalArea).toBeCloseTo(200, 5);
+      expect(result.frequencies[0].frequency).toBeCloseTo(32.62, 1);
+      expect(
+        result.frequencies[1].frequency / result.frequencies[0].frequency,
+      ).toBeCloseTo((4.694091 / 1.875104) ** 2, 2);
+    });
+  });
+
   describe('spring-mass system', () => {
     it('should calculate natural frequency for spring-mass', () => {
       const result = vibration({

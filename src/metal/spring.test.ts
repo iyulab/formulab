@@ -2,6 +2,35 @@ import { describe, it, expect } from 'vitest';
 import { spring } from './spring.js';
 
 describe('spring', () => {
+  // Golden guard. Spring index and shear modulus are pinned elsewhere, but the
+  // actual physics — spring rate k, Wahl factor Ks, and corrected shear stress —
+  // was only ever asserted qualitatively (>0, >1, monotonic). A wrong exponent in
+  // k = Gd^4/(8D^3 n) or a mis-typed Wahl formula would slip through. This pins all
+  // three to a worked Shigley example.
+  //
+  // Inputs: d=2mm, D=20mm, n=10, music wire (G=79300 MPa), F=100 N.
+  //   C  = D/d = 10
+  //   Ks = (4C-1)/(4C-4) + 0.615/C = 39/36 + 0.0615 = 1.1448   (Shigley Eq. 10-5, Wahl)
+  //   k  = G d^4 / (8 D^3 n) = 79300*16 / (8*8000*10) = 1.9825 N/mm   (Shigley Eq. 10-9)
+  //   tau= Ks * 8FD/(pi d^3) = 1.1448 * 16000/(8*pi) = 728.8 MPa       (Shigley Eq. 10-7)
+  describe('golden values (Shigley worked example)', () => {
+    const sample = {
+      wireDiameter: 2,
+      meanCoilDiameter: 20,
+      activeCoils: 10,
+      material: 'musicWire' as const,
+      force: 100,
+    };
+
+    it('should match hand-derived spring rate, Wahl factor and shear stress', () => {
+      const result = spring(sample);
+      expect(result.springIndex).toBeCloseTo(10, 6);
+      expect(result.stressCorrectionFactor).toBeCloseTo(1.1448, 3);
+      expect(result.springRate).toBeCloseTo(1.9825, 2);
+      expect(result.shearStress).toBeCloseTo(728.8, 0);
+    });
+  });
+
   describe('spring rate calculation', () => {
     it('should calculate spring rate for music wire', () => {
       const result = spring({

@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.1] - 2026-07-20
+
+### Fixed
+
+- **`metal/pressFit` interface pressure was ~36% too high** (correctness). The
+  C-factor used the **rigid-shaft** model `C = (d_o²+d²)/(d_o²−d²) + nu`, which
+  assumes only the hub deforms. But `pressFit` takes a single `E`/`poissonRatio`,
+  i.e. shaft and hub are the **same material**, so the solid shaft *also* compresses
+  and absorbs part of the interference. Shigley's same-material, solid-shaft
+  derivation cancels the two Poisson terms and leaves `C = (d_o²+d²)/(d_o²−d²) + 1`.
+  For a steel-on-steel sample (shaft 50.025, hole 50.000, hub OD 100, L 50,
+  E 210 GPa) the interface pressure drops from **53.4 MPa to 39.4 MPa**, matching
+  Shigley; assembly force and holding torque (and the derived hub-hoop / shaft-radial
+  stresses) scale by the same factor.
+
+  > ⚠️ **Behavioral change for consumers.** Every `pressFit` output except
+  > `interference` decreases by ~26% (÷1.356). Re-validate any downstream limits or
+  > displayed values.
+
+  A hand-derived golden test now pins the interface pressure to Shigley's value so
+  this cannot silently regress. A consequence of the nu cancellation: for this
+  model the result is **independent of `poissonRatio`**; the field is retained (it
+  belongs to the material spec and the deferred dissimilar-material model will need
+  it) but no longer affects the output.
+
 ## [0.20.0] - 2026-07-14
 
 ### Added

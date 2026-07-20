@@ -1,7 +1,58 @@
 import { describe, it, expect } from 'vitest';
 import { kFactorReverse } from './kFactorReverse.js';
+import { bendAllowance } from './bendAllowance.js';
 
 describe('kFactorReverse', () => {
+  // Golden guard. `kFactorReverse` is the exact inverse of `bendAllowance`, yet
+  // every case below was previously asserted only qualitatively (>0, or a loose
+  // 0.3-0.6 band) — the same vacuous-test pattern that let a ~36% physics error
+  // hide in `pressFit`. These tests run the forward calc with a KNOWN K, take its
+  // flat length, and require the reverse to recover that exact K. A sign or algebra
+  // error in the inverse would break the round-trip regardless of the loose bands.
+  describe('golden values (inverse of bendAllowance)', () => {
+    const cases = [
+      { thickness: 2, insideRadius: 3, bendAngle: 90, kFactor: 0.33, legA: 50, legB: 40 },
+      { thickness: 5, insideRadius: 8, bendAngle: 90, kFactor: 0.44, legA: 100, legB: 60 },
+      { thickness: 1.5, insideRadius: 2, bendAngle: 45, kFactor: 0.40, legA: 40, legB: 30 },
+      { thickness: 3, insideRadius: 4, bendAngle: 120, kFactor: 0.45, legA: 100, legB: 80 },
+    ];
+
+    for (const c of cases) {
+      it(`recovers K=${c.kFactor} (T=${c.thickness}, R=${c.insideRadius}, ${c.bendAngle}deg)`, () => {
+        const fwd = bendAllowance({
+          thickness: c.thickness,
+          bendAngle: c.bendAngle,
+          insideRadius: c.insideRadius,
+          kFactor: c.kFactor,
+        });
+        const measuredFlatLength = c.legA + c.legB - fwd.bendDeduction;
+        const result = kFactorReverse({
+          thickness: c.thickness,
+          bendAngle: c.bendAngle,
+          insideRadius: c.insideRadius,
+          measuredFlatLength,
+          legA: c.legA,
+          legB: c.legB,
+        });
+        expect(result.kFactor).toBeCloseTo(c.kFactor, 6);
+      });
+    }
+
+    it('matches a hand-worked value (K=0.33 at flat 85.74911mm)', () => {
+      // T=2, R=3, 90deg: BA=(pi/2)(3+0.33*2)=5.74911; OSSB=(3+2)tan45=5;
+      // BD=2*5-5.74911=4.25089; flat=50+40-4.25089=85.74911.
+      const result = kFactorReverse({
+        thickness: 2,
+        bendAngle: 90,
+        insideRadius: 3,
+        measuredFlatLength: 85.74911,
+        legA: 50,
+        legB: 40,
+      });
+      expect(result.kFactor).toBeCloseTo(0.33, 4);
+    });
+  });
+
   describe('basic K-factor calculation', () => {
     it('should reverse calculate K-factor from measured flat length', () => {
       const result = kFactorReverse({

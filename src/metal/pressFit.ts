@@ -7,20 +7,39 @@ import type { PressFitInput, PressFitResult } from './types.js';
  * Formulas:
  * - Interference: delta = d_shaft - d_hole
  * - Interface pressure: p = delta * E / (d * C)
- *   where C = (d_o^2 + d^2)/(d_o^2 - d^2) + nu (for solid shaft)
+ *   where C = (d_o^2 + d^2)/(d_o^2 - d^2) + 1
  * - Assembly force: F = pi * d * L * p * mu
  * - Holding torque: T = pi * d^2 * L * p * mu / 2
+ *
+ * Model assumptions baked into the `+ 1` constant (see C-factor below):
+ * both members are the **same material** (a single E, nu is supplied) and the
+ * shaft is **solid** (inner radius = 0). Under these two assumptions Shigley's
+ * general interference equation collapses so that the shaft's own compression
+ * (p*d/E)(1 - nu) adds to the hub's expansion (p*d/E)[(d_o^2+d^2)/(d_o^2-d^2) + nu],
+ * and the two nu terms cancel, leaving a net `+ 1`. A rigid-shaft model (hub
+ * deforms alone) would instead keep `+ nu`; using it here — where the shaft is
+ * the same material and therefore also yields — overstates p by ~36% for typical
+ * steel-on-steel fits. Supporting a hollow shaft or a true dissimilar-material
+ * pair (separate E_shaft/E_hub) would require replacing this branch, not tuning
+ * the constant.
+ *
+ * A consequence of the nu cancellation: for this same-material, solid-shaft model
+ * the interface pressure and every derived stress are **independent of Poisson's
+ * ratio**. `input.poissonRatio` is therefore accepted (it belongs to the material
+ * spec and the deferred dissimilar-material model will need it) but intentionally
+ * not read here — changing it does not change the result.
  *
  * Reference: Shigley's Mechanical Engineering Design
  */
 export function pressFit(input: PressFitInput): PressFitResult {
+  // Note: poissonRatio is deliberately not destructured — see JSDoc (nu cancels
+  // out of every output for the same-material, solid-shaft model).
   const {
     shaftDiameter,
     holeDiameter,
     hubOuterDiameter,
     contactLength,
     youngsModulus,
-    poissonRatio,
     frictionCoefficient,
   } = input;
 
@@ -66,11 +85,13 @@ export function pressFit(input: PressFitInput): PressFitResult {
   // Convert Young's modulus from GPa to MPa
   const E = youngsModulus * 1000; // MPa
 
-  // Calculate C factor for thick-walled cylinder with solid shaft
-  // C = (d_o^2 + d^2)/(d_o^2 - d^2) + nu
+  // C factor for a same-material, solid-shaft interference fit (see JSDoc).
+  // C = (d_o^2 + d^2)/(d_o^2 - d^2) + 1
+  // The `+ 1` (not `+ nu`) accounts for the solid shaft also compressing under the
+  // contact pressure; the two Poisson terms cancel, so nu drops out entirely.
   const d_sq = d * d;
   const d_o_sq = d_o * d_o;
-  const C = (d_o_sq + d_sq) / (d_o_sq - d_sq) + poissonRatio;
+  const C = (d_o_sq + d_sq) / (d_o_sq - d_sq) + 1;
 
   // Interface pressure (MPa)
   // p = delta * E / (d * C)
