@@ -657,6 +657,34 @@ export interface WeldingResult {
 }
 
 /**
+ * Weld Strength Types
+ *
+ * Filler-metal electrode classification. The numeric part is the minimum tensile
+ * strength of the deposited weld metal in ksi (E70 = 70 ksi). {@link weldStrength}
+ * maps each to an SI value; see FEXX table in weldStrength.ts.
+ */
+export type WeldElectrodeClass = 'E60' | 'E70' | 'E80' | 'E90' | 'E100' | 'E110';
+
+export interface WeldStrengthInput {
+  legSize: number;              // mm — equal-leg fillet leg length
+  weldLength: number;           // mm — total effective weld length
+  weldCount?: number;           // number of welds sharing the load (default 1)
+  electrode: WeldElectrodeClass;
+  appliedLoad: number;          // N — applied shear load (0 = capacity-only query)
+}
+
+export interface WeldStrengthResult {
+  throat: number;               // mm — effective throat, 0.707 x leg
+  effectiveArea: number;        // mm^2 — throat x length x count
+  allowableShearStress: number; // MPa — AISC ASD, 0.30 x FEXX
+  allowableLoad: number;        // N — weld capacity, Fw x Aw
+  actualStress: number;         // MPa — appliedLoad / Aw
+  utilization: number;          // ratio — actualStress / Fw (>1 = overloaded)
+  minRequiredLeg: number;       // mm — smallest equal leg that carries appliedLoad
+  isSafe: boolean;              // utilization <= 1
+}
+
+/**
  * Material Grade Converter Types
  */
 export type MaterialStandard = 'ASTM' | 'EN' | 'JIS' | 'GB' | 'KS';

@@ -11,12 +11,12 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **210 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **211 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,906 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **2,921 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
@@ -72,6 +72,7 @@ The following functions include tests verified against published reference value
 | `awgProperties()` | ANSI/AWG | AWG 0-40 diameter, resistance |
 | `pressFit()` | Shigley's Mechanical Engineering Design | Same-material solid-shaft interface pressure (39.36 MPa), nu-independence |
 | `spring()` | Shigley's Mechanical Engineering Design | Spring rate (Eq. 10-9), Wahl factor (Eq. 10-5), corrected shear stress (Eq. 10-7) |
+| `weldStrength()` | AISC 360 ASD / AWS D1.1 | Equal-leg fillet: throat 0.707·leg, allowable shear 0.30·FEXX (E70=144.9 MPa), capacity/utilization |
 
 ### Edge Case Handling
 
@@ -221,6 +222,7 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `vibration()` | Natural frequency analysis |
 | `weldHeat()` | Weld heat input calculation |
 | `welding()` | Welding parameters |
+| `weldStrength()` | Fillet weld strength / capacity (AISC ASD) |
 | `materialGradeConverter()` | ASTM/EN/JIS/GB/KS grade cross-reference |
 | `pipeSpec()` | ANSI/ASME pipe dimensions lookup |
 | `flangeSpec()` | ASME B16.5 flange dimensions lookup |

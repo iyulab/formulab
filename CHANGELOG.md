@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2026-07-20
+
+### Added
+
+- **`metal/weldStrength`** — load-carrying capacity of an equal-leg fillet weld
+  (AISC 360 ASD / AWS D1.1). Given leg size, weld length/count, electrode class, and
+  applied shear load, it returns the effective throat (`0.707 × leg`), effective area,
+  allowable shear stress (`0.30 × FEXX`), allowable load (capacity), actual stress,
+  utilization, the minimum leg that carries the load, and an `isSafe` verdict.
+  - Electrode classes `E60`–`E110` map to their exact SI `FEXX` (1 ksi = 6.894757 MPa,
+    rounded to the nearest MPa: E70 = 483, E100 = 689, E110 = 758).
+  - **v1 scope is deliberately conservative** (matches the common baseline calculators),
+    documented in the JSDoc: ASD only (LRFD deferred), longitudinal/conservative
+    `0.30 × FEXX` with no directional strength increase, weld-metal check only
+    (base-metal rupture is the engineer's responsibility), and equal-leg 90° joints.
+    Each is an additive extension point for future demand.
+  - A hand-derived golden test pins the AISC ASD model (E70, leg 6 mm, L 100 mm,
+    P 50 kN → capacity 61.47 kN, utilization 0.8135, min leg 4.881 mm).
+  - `appliedLoad = 0` is a valid capacity-only query; throws `RangeError` on non-positive
+    leg/length, `weldCount < 1`, or negative load.
+
 ## [0.20.1] - 2026-07-20
 
 ### Fixed

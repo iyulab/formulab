@@ -84,6 +84,7 @@ All 15 domains were fully audited against source on 2026-07-13. Most functions f
 | `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); innerDiameter ≥ outerDiameter |
 | `weldHeat()` | `throw` | voltage ≤ 0, current ≤ 0, travelSpeed ≤ 0, thickness ≤ 0 |
 | `welding()` | `throw` | thickness ≤ 0 |
+| `weldStrength()` | `throw` | legSize ≤ 0, weldLength ≤ 0, weldCount < 1, appliedLoad < 0 |
 | `materialGradeConverter()` | `null` | Unknown grade returns null equivalents |
 | `pipeSpec()` | `throw` | Unknown size/schedule |
 | `flangeSpec()` | `throw` | Unknown size/class |

@@ -105,6 +105,10 @@ export type {
   WeldingInput,
   WeldingRod,
   WeldingResult,
+  // Weld Strength
+  WeldElectrodeClass,
+  WeldStrengthInput,
+  WeldStrengthResult,
   // Material Grade Converter
   MaterialStandard,
   MaterialGradeConverterInput,
@@ -148,6 +152,7 @@ export { tolerance } from './tolerance.js';
 export { vibration } from './vibration.js';
 export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';
+export { weldStrength } from './weldStrength.js';
 export { materialGradeConverter } from './materialGradeConverter.js';
 export { pipeSpec } from './pipeSpec.js';
 export { flangeSpec } from './flangeSpec.js';
