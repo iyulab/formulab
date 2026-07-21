@@ -109,6 +109,10 @@ export type {
   WeldElectrodeClass,
   WeldStrengthInput,
   WeldStrengthResult,
+  // Column Buckling
+  ColumnEndCondition,
+  ColumnBucklingInput,
+  ColumnBucklingResult,
   // Material Grade Converter
   MaterialStandard,
   MaterialGradeConverterInput,
@@ -153,6 +157,7 @@ export { vibration } from './vibration.js';
 export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';
 export { weldStrength } from './weldStrength.js';
+export { columnBuckling } from './columnBuckling.js';
 export { materialGradeConverter } from './materialGradeConverter.js';
 export { pipeSpec } from './pipeSpec.js';
 export { flangeSpec } from './flangeSpec.js';

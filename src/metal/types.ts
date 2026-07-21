@@ -685,6 +685,35 @@ export interface WeldStrengthResult {
 }
 
 /**
+ * Column Buckling (Euler) Types
+ *
+ * Idealized end-restraint condition → effective-length factor K (AISC theoretical):
+ * pinned-pinned 1.0, fixed-fixed 0.5, fixed-free 2.0, fixed-pinned 0.7.
+ */
+export type ColumnEndCondition = 'pinned-pinned' | 'fixed-fixed' | 'fixed-free' | 'fixed-pinned';
+
+export interface ColumnBucklingInput {
+  youngsModulus: number;   // MPa — elastic modulus E
+  momentOfInertia: number; // mm^4 — least (weak-axis) second moment of area I
+  area: number;            // mm^2 — cross-sectional area A
+  length: number;          // mm — unbraced column length L
+  endCondition: ColumnEndCondition;
+  yieldStrength: number;   // MPa — yield strength sigma_y (sets the elastic/inelastic transition)
+}
+
+export interface ColumnBucklingResult {
+  effectiveLengthFactor: number; // K from end condition
+  effectiveLength: number;       // mm — K x L
+  criticalLoad: number;          // N — Euler Pcr = pi^2 E I / (K L)^2
+  criticalStress: number;        // MPa — sigma_cr = Pcr / A
+  radiusOfGyration: number;      // mm — r = sqrt(I / A)
+  slendernessRatio: number;      // KL / r
+  transitionSlenderness: number; // Cc = pi x sqrt(2 E / sigma_y)
+  yieldLoad: number;             // N — squash load A x sigma_y (reference)
+  isElastic: boolean;            // slenderness >= Cc — Euler valid (false = short column, Euler over-predicts)
+}
+
+/**
  * Material Grade Converter Types
  */
 export type MaterialStandard = 'ASTM' | 'EN' | 'JIS' | 'GB' | 'KS';

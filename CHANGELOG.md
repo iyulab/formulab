@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2026-07-21
+
+### Added
+
+- **`metal/columnBuckling`** — Euler elastic critical buckling load of a straight,
+  prismatic, axially loaded column. Given the elastic modulus, least moment of inertia,
+  area, unbraced length, end condition, and yield strength, it returns the effective
+  length factor `K`, effective length, Euler critical load `Pcr = π²EI/(KL)²`, critical
+  stress, radius of gyration, slenderness ratio, transition slenderness `Cc = π√(2E/σy)`,
+  squash (yield) load, and an `isElastic` verdict.
+  - End conditions map to AISC theoretical `K`: pinned-pinned 1.0, fixed-fixed 0.5,
+    fixed-free 2.0, fixed-pinned 0.7.
+  - **Slenderness validity guard** — `isElastic` is `slenderness ≥ Cc`. For short/stubby
+    columns (`slenderness < Cc`) inelastic buckling governs and raw Euler over-predicts;
+    `Pcr` is returned honestly (never clamped) alongside the flag and the reference
+    `yieldLoad`, so a consumer can warn instead of drawing an unreachable capacity.
+  - **v1 scope** (documented in the JSDoc): elastic Euler only (inelastic/Johnson flagged,
+    not computed), idealized theoretical `K`, concentric axial load on a prismatic member.
+  - `RangeError` on non-positive `youngsModulus`, `momentOfInertia`, `area`, `length`,
+    or `yieldStrength`.
+  - Reference: AISC 360 Chapter E; Euler (1744).
+
 ## [0.21.0] - 2026-07-20
 
 ### Added
