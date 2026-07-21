@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2026-07-21
+
+### Added
+
+- **`metal/beamDeflection`** — maximum elastic deflection of a prismatic beam and its
+  serviceability check. Given the support type (simple / cantilever / fixed-fixed),
+  load type (uniform / concentrated / combined), span, elastic modulus, moment of
+  inertia, the load magnitudes, and a serviceability limit ratio, it returns the maximum
+  deflection `δ_max`, its location, the allowable deflection `span/ratio`, their ratio
+  (utilization), and an `isSafe` verdict.
+  - Closed-form maxima: simple `5wL⁴/384EI` & `PL³/48EI`; cantilever `wL⁴/8EI` & `PL³/3EI`;
+    fixed-fixed `wL⁴/384EI` & `PL³/192EI`. Combined = exact linear superposition (the
+    uniform peak and the canonically placed point peak coincide, so δ_max is the true
+    combined maximum).
+  - **mm/N/MPa units** — E in MPa, I in mm⁴, span in mm, w in N/mm, P in N → δ in mm, so
+    the moment of inertia flows straight from `momentOfInertia` (which returns mm⁴).
+  - **`beamDeflectionCurve`** — samples the elastic deflected shape `v(x)` for
+    visualization; its peak equals `beamDeflection`'s `maxDeflection` by construction
+    (same shape functions, no second physics).
+  - **v1 scope** (documented in the JSDoc): elastic small-deflection prismatic beam; the
+    point load acts at the canonical maximum-deflection location (midspan for
+    simple/fixed, free end for cantilever); off-centre point loads are deferred.
+  - `RangeError` on non-positive `span`, `youngsModulus`, `momentOfInertia`, or
+    `deflectionLimitRatio`, or a missing load required by the load type.
+  - Reference: standard mechanics-of-materials tables (e.g. Roark's Formulas for Stress
+    and Strain).
+
 ## [0.22.0] - 2026-07-21
 
 ### Added

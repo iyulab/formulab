@@ -714,6 +714,46 @@ export interface ColumnBucklingResult {
 }
 
 /**
+ * Beam Deflection Types
+ *
+ * Support condition and load type for an elastic, prismatic (constant EI) beam.
+ * The concentrated (point) load acts at the canonical maximum-deflection location for
+ * each support — midspan for simple/fixed, the free end for cantilever — so that a
+ * combined uniform+point case superposes at a single point (linear-elastic, exact).
+ */
+export type BeamSupportType = 'simple' | 'cantilever' | 'fixed';
+export type BeamLoadType = 'uniform' | 'concentrated' | 'combined';
+
+export interface BeamDeflectionInput {
+  support: BeamSupportType;
+  loadType: BeamLoadType;
+  span: number;                 // mm — beam span/length L
+  youngsModulus: number;        // MPa — elastic modulus E
+  momentOfInertia: number;      // mm^4 — second moment of area I about the bending axis
+  uniformLoad?: number;         // N/mm — distributed load w (uniform/combined)
+  pointLoad?: number;           // N — concentrated load P at the canonical location (concentrated/combined)
+  deflectionLimitRatio: number; // serviceability limit denominator, e.g. 360 → allowable = L/360
+}
+
+export interface BeamDeflectionResult {
+  maxDeflection: number;         // mm — maximum deflection δ_max
+  maxDeflectionLocation: number; // mm — distance from the left/fixed end where δ_max occurs
+  allowableDeflection: number;   // mm — serviceability limit, span / deflectionLimitRatio
+  deflectionRatio: number;       // δ_max / allowable (>1 = fails the serviceability limit)
+  isSafe: boolean;               // δ_max <= allowable
+}
+
+/**
+ * A single sampled point of the elastic deflected shape v(x), for visualizing the
+ * bent beam. Same shape functions that produce {@link BeamDeflectionResult.maxDeflection}
+ * (its max equals maxDeflection by construction) — no second physics.
+ */
+export interface BeamDeflectionCurvePoint {
+  position: number;   // mm — x from the left/fixed end
+  deflection: number; // mm — v(x), downward positive
+}
+
+/**
  * Material Grade Converter Types
  */
 export type MaterialStandard = 'ASTM' | 'EN' | 'JIS' | 'GB' | 'KS';

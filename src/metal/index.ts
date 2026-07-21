@@ -113,6 +113,12 @@ export type {
   ColumnEndCondition,
   ColumnBucklingInput,
   ColumnBucklingResult,
+  // Beam Deflection
+  BeamSupportType,
+  BeamLoadType,
+  BeamDeflectionInput,
+  BeamDeflectionResult,
+  BeamDeflectionCurvePoint,
   // Material Grade Converter
   MaterialStandard,
   MaterialGradeConverterInput,
@@ -158,6 +164,7 @@ export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';
 export { weldStrength } from './weldStrength.js';
 export { columnBuckling } from './columnBuckling.js';
+export { beamDeflection, beamDeflectionCurve } from './beamDeflection.js';
 export { materialGradeConverter } from './materialGradeConverter.js';
 export { pipeSpec } from './pipeSpec.js';
 export { flangeSpec } from './flangeSpec.js';
