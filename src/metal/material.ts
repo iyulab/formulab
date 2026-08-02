@@ -1,10 +1,21 @@
 import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } from './types.js';
 
 /**
- * Young's modulus (E, GPa) is the room-temperature reference value for each grade
- * (ASM Handbook Vol. 1/2 · MatWeb datasheets). It is a material constant, not a
- * heat-treat-sensitive strength, so one value per grade is the standard treatment.
- * Required by springback() and any deflection calculation.
+ * Room-temperature reference properties, one entry per grade
+ * (ASM Handbook Vol. 1/2 · MatWeb datasheets).
+ *
+ * Young's modulus (E, GPa) is a material constant rather than a heat-treat-sensitive
+ * strength, so a single value per grade is the standard treatment. Published sources
+ * disagree in the last digit for several grades — mill data, conversions from psi and
+ * alloy-specific measurements all circulate — so these are the conventional figures
+ * from within each grade's published spread, not one authority's point values. No
+ * source takes precedence over another here; the golden block in this module's test
+ * file pins every modulus and records per grade how it was checked.
+ *
+ * This table is exposed as a lookup for callers rather than as an internal dependency.
+ * Functions that need a modulus of their own (springback, vibration, tool and boring-bar
+ * deflection) carry category-level presets, which are coarser than these grade-level
+ * values and may differ from them within the same published band.
  */
 const MATERIAL_DATA: Record<MaterialCategory, Record<string, MaterialSpec>> = {
   steel: {
