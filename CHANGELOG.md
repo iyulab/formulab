@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.1] - 2026-08-02
+
+### Changed
+
+- **`metal/material`** — documentation and test coverage only. No property value,
+  signature or output changed.
+  - Every grade's Young's modulus is now pinned by a golden test that records, per
+    grade, how the figure was checked against published data. These are transcribed
+    reference values rather than computed results, so nothing else in the suite could
+    catch a typo in one, and a wrong modulus propagates silently into any caller that
+    sizes a beam, a column or a press fit. Two structural guards accompany them: one
+    fails if a grade is added without a golden entry, the other catches a unit slip
+    (MPa or psi where GPa is expected) that a per-grade equality check cannot see.
+  - The table header no longer claims the table is required by `springback()` or by
+    deflection calculations. It is not — those functions carry their own category-level
+    presets, which are coarser than these grade-level values and can differ from them
+    inside the same published band. The header now says so, and records that the
+    modulus figures are conventional values from within each grade's published spread
+    rather than one authority's point values, since the two cited sources disagree in
+    the last digit for several grades and neither takes precedence.
+
 ## [0.23.0] - 2026-07-21
 
 ### Added
