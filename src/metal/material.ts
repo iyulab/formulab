@@ -8,9 +8,14 @@ import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } fr
  * strength, so a single value per grade is the standard treatment. Published sources
  * disagree in the last digit for several grades — mill data, conversions from psi and
  * alloy-specific measurements all circulate — so these are the conventional figures
- * from within each grade's published spread, not one authority's point values. No
- * source takes precedence over another here; the golden block in this module's test
- * file pins every modulus and records per grade how it was checked.
+ * from within each grade's published spread rather than one authority's point values.
+ *
+ * Within a family, though, the entries follow one tabulation: the copper alloys are all
+ * CDA figures, converted from the ksi those tables publish. A grade left off the family's
+ * source is an inconsistency, not an alternative reading, and C1100 was moved onto CDA
+ * with its siblings for that reason. The golden block in this module's test file pins
+ * every modulus, names the source each was checked against, and asserts the copper
+ * family against the published ksi so it cannot drift apart again unnoticed.
  *
  * This table is exposed as a lookup for callers rather than as an internal dependency.
  * Functions that need a modulus of their own (springback, vibration, tool and boring-bar
@@ -35,7 +40,7 @@ const MATERIAL_DATA: Record<MaterialCategory, Record<string, MaterialSpec>> = {
     'A7075-T6':  { density: 2.81, tensileStrength: 572, yieldStrength: 503, youngsModulus: 71.7, elongation: 11, hardness: 'HB 150', thermalConductivity: 130, meltingPoint: 635 },
   },
   copper: {
-    'C1100': { density: 8.94, tensileStrength: 220, yieldStrength: 70, youngsModulus: 115, elongation: 45, hardness: 'HB 45', thermalConductivity: 391, meltingPoint: 1083 },
+    'C1100': { density: 8.94, tensileStrength: 220, yieldStrength: 70, youngsModulus: 117, elongation: 45, hardness: 'HB 45', thermalConductivity: 391, meltingPoint: 1083 },
     'C2600': { density: 8.53, tensileStrength: 325, yieldStrength: 95, youngsModulus: 110, elongation: 65, hardness: 'HB 55-80', thermalConductivity: 120, meltingPoint: 940 },
     'C5191': { density: 8.80, tensileStrength: 520, yieldStrength: 195, youngsModulus: 110, elongation: 45, hardness: 'HB 160', thermalConductivity: 67, meltingPoint: 1025 },
   },

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1] - 2026-08-04
+
+### Fixed
+
+- **`metal/material`** — the Young's modulus reported for C1100 copper is 117 GPa, not 115.
+
+  The three copper grades in this table are CDA figures, and the CDA tables publish modulus
+  in ksi: C26000 and C51900 both read 16000 ksi, which the stored values round to 110 GPa.
+  C1100 reads 17000 ksi, or 117.2 GPa, and was stored as 115 — a figure that circulates
+  widely enough to look unremarkable on its own.
+
+  That is what made it hard to see. Checked in isolation every value in the table sits
+  inside some published spread, so no single entry looks wrong; only lining the family up
+  against one tabulation showed that two grades followed it and the third did not. A value
+  that disagrees with its own family's source is an inconsistency rather than an alternative
+  reading, which is the distinction that decided this change — elsewhere in the table,
+  grades that genuinely sit inside a spread are left alone, because moving a defensible
+  figure to another defensible figure is churn.
+
+  Callers that read `youngsModulus` for C1100 to size a beam, a column or a press fit will
+  see results shift by about 1.9 %. Nothing else in the table moved.
+
+### Changed
+
+- The Young's modulus golden block now names the published source each of the fifteen values
+  was checked against, replacing entries that pointed at a sibling grade instead of at data.
+  The copper family is additionally asserted against the ksi figures its tables publish, so
+  a future edit has to disagree with the source rather than merely with a previous edit.
+
 ## [0.25.0] - 2026-08-03
 
 ### Added

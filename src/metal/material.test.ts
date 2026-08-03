@@ -101,10 +101,17 @@ describe('material', () => {
  * a beam, a column or a press fit. This block pins all fifteen so a change has to be
  * deliberate.
  *
- * `source` records where each number was checked against published data, and how exactly it
- * agreed. Two entries sit inside the published spread rather than on a single citation and
- * say so; they are pinned as-is because moving a defensible value to another defensible
- * value is churn, not a correction.
+ * `source` names the published data each number was checked against and states how it agreed.
+ * Where a grade sits inside a published spread rather than on a single citation, the entry
+ * says so and names the ends of the spread: such a value is pinned as-is, because moving a
+ * defensible figure to another defensible figure is churn, not a correction.
+ *
+ * That last rule has one limit worth stating, because it decided a change here. When siblings
+ * in the same family are taken from one tabulation and a third is not, the odd one out is an
+ * inconsistency rather than an alternative reading — the copper alloys are all CDA figures,
+ * so the one that was not got moved onto CDA with the others. Each copper entry therefore
+ * carries the CDA value in ksi, which is the form that source publishes, so a future drift
+ * away from it is visible in the golden block itself.
  */
 const YOUNGS_MODULUS_GOLDEN: {
   category: 'steel' | 'stainless' | 'aluminum' | 'copper' | 'titanium';
@@ -112,31 +119,35 @@ const YOUNGS_MODULUS_GOLDEN: {
   gpa: number;
   source: string;
 }[] = [
-  // Carbon and alloy steels: modulus is essentially composition-independent. Published values
-  // cluster at 190-215 GPa (ASTM A36 ~200, AISI 4340 190-210); 205 is the conventional value.
-  { category: 'steel', grade: 'SS400', gpa: 205, source: 'within published 190-215 GPa band for carbon/alloy steel' },
-  { category: 'steel', grade: 'S45C', gpa: 205, source: 'as SS400' },
-  { category: 'steel', grade: 'SCM440', gpa: 205, source: 'as SS400' },
-  { category: 'steel', grade: 'SK5', gpa: 205, source: 'as SS400' },
+  // Carbon and alloy steels. Modulus is essentially composition-independent across this family,
+  // so one figure covers all four rather than each carrying its own citation; the equivalents
+  // tabulate together at 205 GPa (29.7e6 psi).
+  { category: 'steel', grade: 'SS400', gpa: 205, source: 'carbon steel, within the published 190-215 GPa band; 205 is the conventional figure' },
+  { category: 'steel', grade: 'S45C', gpa: 205, source: 'AISI 1045 equivalent, published 205-206 GPa' },
+  { category: 'steel', grade: 'SCM440', gpa: 205, source: 'AISI 4140 equivalent, published 205 GPa (29.7e6 psi)' },
+  { category: 'steel', grade: 'SK5', gpa: 205, source: 'carbon tool steel; modulus is composition-independent within the family' },
 
   // Austenitic stainless is distinctly lower than carbon steel; ferritic sits near it.
-  { category: 'stainless', grade: 'SUS304', gpa: 193, source: 'standard austenitic 304/316 value (193 GPa / 28e6 psi)' },
-  { category: 'stainless', grade: 'SUS316', gpa: 193, source: 'matches published 316 value exactly' },
-  { category: 'stainless', grade: 'SUS430', gpa: 200, source: 'ferritic 430, published 200 GPa' },
+  { category: 'stainless', grade: 'SUS304', gpa: 193, source: 'AISI 304 equivalent, published 193 GPa (28e6 psi)' },
+  { category: 'stainless', grade: 'SUS316', gpa: 193, source: 'AISI 316 equivalent, published 193 GPa (28e6 psi)' },
+  { category: 'stainless', grade: 'SUS430', gpa: 200, source: 'AISI 430 equivalent, ferritic, published 200 GPa' },
 
-  // Aluminium: published tables round to 69/70/72; the stored values carry the extra digit.
-  { category: 'aluminum', grade: 'A6061-T6', gpa: 68.9, source: 'agrees with published 69 GPa (10e6 psi)' },
-  { category: 'aluminum', grade: 'A5052-H32', gpa: 70.3, source: 'agrees with published 70 GPa' },
-  { category: 'aluminum', grade: 'A7075-T6', gpa: 71.7, source: 'agrees with published 72 GPa' },
+  // Aluminium: tables that round to two digits give 69/70/72; the stored values carry the digit
+  // the alloy datasheets publish.
+  { category: 'aluminum', grade: 'A6061-T6', gpa: 68.9, source: 'alloy datasheet value 68.9 GPa (10.0e6 psi)' },
+  { category: 'aluminum', grade: 'A5052-H32', gpa: 70.3, source: 'alloy datasheet value 70.3 GPa (10.2e6 psi)' },
+  { category: 'aluminum', grade: 'A7075-T6', gpa: 71.7, source: 'alloy datasheet value 71.7 GPa (10.4e6 psi)' },
 
-  // Copper alloys.
-  { category: 'copper', grade: 'C1100', gpa: 115, source: 'published range 115-117 GPa (16.7-17e6 psi); pinned at the lower, widely tabulated figure' },
-  { category: 'copper', grade: 'C2600', gpa: 110, source: 'matches published cartridge brass value exactly' },
-  { category: 'copper', grade: 'C5191', gpa: 110, source: 'phosphor bronze, published ~110 GPa (16e6 psi)' },
+  // Copper alloys — all three from the CDA alloy tables, which publish modulus in ksi. Storing
+  // the ksi figure alongside keeps the three comparable: they agreed at 16000 ksi twice and
+  // disagreed once, which is what identified C1100 as the outlier rather than an alternative.
+  { category: 'copper', grade: 'C1100', gpa: 117, source: 'CDA C11000, 17000 ksi = 117.2 GPa, rounded as its siblings are' },
+  { category: 'copper', grade: 'C2600', gpa: 110, source: 'CDA C26000 cartridge brass, 16000 ksi = 110.3 GPa' },
+  { category: 'copper', grade: 'C5191', gpa: 110, source: 'CDA C51900 phosphor bronze, 16000 ksi = 110.3 GPa' },
 
   // Titanium.
-  { category: 'titanium', grade: 'Ti-6Al-4V', gpa: 113.8, source: 'matches published annealed Ti-6Al-4V value exactly' },
-  { category: 'titanium', grade: 'CP-Ti Grade2', gpa: 105, source: 'published range 102.7-105 GPa for grade 2; pinned at the upper, commonly quoted figure' },
+  { category: 'titanium', grade: 'Ti-6Al-4V', gpa: 113.8, source: 'annealed Ti-6Al-4V datasheet value 113.8 GPa (16.5e6 psi)' },
+  { category: 'titanium', grade: 'CP-Ti Grade2', gpa: 105, source: 'published spread 102.7 GPa (14.9e3 ksi, mill datasheet) to 105 GPa; pinned at the upper, commonly tabulated figure' },
 ];
 
 describe("Young's modulus golden values", () => {
@@ -154,6 +165,21 @@ describe("Young's modulus golden values", () => {
       for (const grade of getGrades(category)) {
         expect(covered).toContain(`${category}/${grade}`);
       }
+    }
+  });
+
+  it('keeps the copper family on the ksi figures its tables publish', () => {
+    // The per-grade equality checks above cannot see this: each copper value was defensible on
+    // its own, and only comparing the three against one tabulation showed that two followed it
+    // and one did not. Converting from the published unit rather than restating the GPa figure
+    // means a future edit has to disagree with the source, not merely with a previous edit.
+    const KSI_TO_GPA = 6.894757 / 1000;
+    const CDA_MODULUS_KSI: Record<string, number> = { C1100: 17000, C2600: 16000, C5191: 16000 };
+
+    for (const [grade, ksi] of Object.entries(CDA_MODULUS_KSI)) {
+      const modulus = material({ category: 'copper', grade })!.youngsModulus;
+
+      expect(modulus).toBe(Math.round(ksi * KSI_TO_GPA));
     }
   });
 
