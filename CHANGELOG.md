@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2026-08-03
+
+### Added
+
+- **`metal/tolerance`** — `ISO286_SIZE_RANGES`, the nominal size ranges the tolerance
+  tables cover, each stated as `{ over, upTo }` in millimetres.
+
+  A caller could not enumerate them: `tolerance()` takes one size and returns one zone,
+  so anything presenting results per size range — a lookup table, a range selector — had
+  to restate the bounds on its own side. That is a second source for the same figures,
+  and the day the covered span moves the caller keeps listing the old one. The exported
+  ranges are derived from the same list the lookup uses, and tests assert the two agree:
+  every advertised upper bound is accepted, the size just past the last one is rejected,
+  and no two ranges resolve to the same grade.
+
 ## [0.24.2] - 2026-08-03
 
 ### Fixed

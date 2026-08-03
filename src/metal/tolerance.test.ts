@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tolerance } from './tolerance.js';
+import { tolerance, ISO286_SIZE_RANGES } from './tolerance.js';
 
 describe('tolerance', () => {
   describe('H basis hole tolerances', () => {
@@ -175,6 +175,38 @@ describe('tolerance', () => {
         deviationLetter: 'x', // Invalid
         itGrade: 7,
       })).toThrow(RangeError);
+    });
+  });
+
+  /**
+   * The exported ranges exist so a caller can enumerate them instead of restating them.
+   * That only holds if they describe the same sizes the function actually accepts, so
+   * these check the two against each other rather than against a copied list.
+   */
+  describe('ISO286_SIZE_RANGES', () => {
+    it('covers a contiguous span with no gap or overlap between ranges', () => {
+      for (let i = 1; i < ISO286_SIZE_RANGES.length; i++) {
+        expect(ISO286_SIZE_RANGES[i].over).toBe(ISO286_SIZE_RANGES[i - 1].upTo);
+      }
+    });
+
+    it('accepts every upper bound it advertises', () => {
+      for (const { upTo } of ISO286_SIZE_RANGES) {
+        expect(() => tolerance({ nominalSize: upTo, fitType: 'hole', deviationLetter: 'H', itGrade: 7 })).not.toThrow();
+      }
+    });
+
+    it('rejects sizes past the last range, so the advertised span is the real one', () => {
+      const last = ISO286_SIZE_RANGES[ISO286_SIZE_RANGES.length - 1];
+      expect(() => tolerance({ nominalSize: last.upTo, fitType: 'hole', deviationLetter: 'H', itGrade: 7 })).not.toThrow();
+      expect(() => tolerance({ nominalSize: last.upTo + 0.1, fitType: 'hole', deviationLetter: 'H', itGrade: 7 }))
+        .toThrow(RangeError);
+    });
+
+    it('gives every range a distinct grade, so no two collapse onto one lookup', () => {
+      const bands = ISO286_SIZE_RANGES.map(({ upTo }) =>
+        tolerance({ nominalSize: upTo, fitType: 'hole', deviationLetter: 'H', itGrade: 7 }).toleranceBand);
+      expect(new Set(bands).size).toBe(bands.length);
     });
   });
 

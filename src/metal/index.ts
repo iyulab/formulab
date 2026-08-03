@@ -161,7 +161,7 @@ export { screw, getDesignations } from './screw.js';
 export { spring } from './spring.js';
 export { tap } from './tap.js';
 export { thread, getMetricSizes, getUnifiedSizes } from './thread.js';
-export { tolerance } from './tolerance.js';
+export { tolerance, ISO286_SIZE_RANGES } from './tolerance.js';
 export { vibration } from './vibration.js';
 export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';

@@ -8,6 +8,19 @@ const SIZE_RANGES: [number, number][] = [
 ];
 
 /**
+ * The nominal size ranges the tolerance tables cover, in millimetres, from the smallest
+ * upward. A size belongs to the range where `over < size <= upTo`, matching how the
+ * standard states its own bounds.
+ *
+ * Exported because a caller cannot enumerate the ranges by probing `tolerance()`, and
+ * restating them on its side would be a second source for the same figures: the day the
+ * covered range moves, the caller would keep listing the old one. Anything that presents
+ * results per size range — a lookup table, a range selector — should read them here.
+ */
+export const ISO286_SIZE_RANGES: ReadonlyArray<{ readonly over: number; readonly upTo: number }> =
+  SIZE_RANGES.map(([over, upTo]) => Object.freeze({ over, upTo }));
+
+/**
  * Standard tolerance grades in micrometres, one entry per size range above.
  *
  * These are the tabulated grades, not the tolerance unit `i = 0.45·∛D + 0.001·D` the
