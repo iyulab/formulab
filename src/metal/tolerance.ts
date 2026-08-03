@@ -84,15 +84,31 @@ export function tolerance(input: ToleranceInput): ToleranceResult {
     upperDev = toleranceVal / 2;
     lowerDev = -toleranceVal / 2;
   } else if (fitType === 'hole') {
-    // Hole basis: fundamental deviation is lower deviation
-    const fd = Math.abs(deviations[idx]); // holes always positive or zero
+    const fd = deviations[idx];
     if (letter === 'h') {
       // H basis: 0 to +tolerance
       lowerDev = 0;
       upperDev = toleranceVal;
+    } else if (fd <= 0) {
+      // Letters a-h: the hole deviation mirrors the shaft one, EI = -es. Since es is
+      // negative or zero for these letters, EI comes out positive and the hole sits
+      // entirely above nominal.
+      lowerDev = -fd;
+      upperDev = -fd + toleranceVal;
     } else {
-      lowerDev = fd;
-      upperDev = fd + toleranceVal;
+      // Letters j-zc: ES = -ei + delta, EI = ES - IT (ISO 286-1). The delta term is
+      // what keeps a hole class usable against the shaft class one grade finer -- it is
+      // the difference between this grade and the next finer one. Without it the zone
+      // lands in the wrong place entirely, and because the result still looks like a
+      // plausible pair of micrometre figures nothing downstream can notice.
+      //
+      // ISO 286-1 applies delta to K/M/N through IT8 and to P and beyond through IT7;
+      // above those grades delta is zero.
+      const deltaApplies = ['k', 'm', 'n'].includes(letter) ? itGrade <= 8 : itGrade <= 7;
+      const finer = deltaApplies ? getToleranceValue(nominalSize, itGrade - 1) : 0;
+      const delta = deltaApplies && finer > 0 ? toleranceVal - finer : 0;
+      upperDev = -fd + delta;
+      lowerDev = upperDev - toleranceVal;
     }
   } else {
     // Shaft: fundamental deviation is upper deviation

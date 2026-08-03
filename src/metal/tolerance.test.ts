@@ -212,4 +212,61 @@ describe('tolerance', () => {
       expect(result).not.toBeNull();
     });
   });
+
+  /**
+   * Golden values transcribed from the ISO 286-2 limit deviation tables, not produced by
+   * this implementation. They are asserted with a 1 um allowance because the standard
+   * tolerance grade here comes from the ISO 286-1 formula while the published table rounds
+   * each grade to a whole micrometre.
+   *
+   * These exist because the hole side of the letters above H was previously computed by
+   * taking the absolute value of the shaft fundamental deviation. For letters a-h that
+   * happens to be right, so every test in the suite passed; for k, m, n and p it placed
+   * the zone on the wrong side of nominal and dropped the ISO 286-1 delta term. The
+   * output stayed a plausible-looking pair of micrometre figures, which is why nothing
+   * downstream could notice. A tolerance table is only worth having if it agrees with
+   * the table.
+   */
+  describe('hole deviations against the ISO 286-2 table', () => {
+    const UM = 1;
+    const cases: Array<[string, number, string, number, number, number]> = [
+      // label,        nominal, letter, grade, ISO lower, ISO upper
+      ['18-30 H7', 25, 'H', 7, 0, 21],
+      ['18-30 G7', 25, 'G', 7, 7, 28],
+      ['18-30 F8', 25, 'F', 8, 20, 53],
+      ['18-30 K7', 25, 'K', 7, -15, 6],
+      ['18-30 M7', 25, 'M', 7, -21, 0],
+      ['18-30 N7', 25, 'N', 7, -28, -7],
+      ['18-30 P7', 25, 'P', 7, -35, -14],
+      ['6-10 K7', 8, 'K', 7, -10, 5],
+      ['6-10 N7', 8, 'N', 7, -19, -4],
+      ['6-10 P7', 8, 'P', 7, -24, -9],
+    ];
+
+    for (const [label, nominalSize, deviationLetter, itGrade, lower, upper] of cases) {
+      it(`matches the table for ${label}`, () => {
+        const r = tolerance({ nominalSize, fitType: 'hole', deviationLetter, itGrade });
+
+        expect(r.lowerDeviation).toBeGreaterThan(lower - UM);
+        expect(r.lowerDeviation).toBeLessThan(lower + UM);
+        expect(r.upperDeviation).toBeGreaterThan(upper - UM);
+        expect(r.upperDeviation).toBeLessThan(upper + UM);
+      });
+    }
+
+    // The letters above H put the hole zone at or below nominal; the letters at or below
+    // H put it at or above. Stating it as a structural rule catches a sign regression in
+    // a letter that has no transcribed row above.
+    it('places the zone on the side of nominal the letter implies', () => {
+      for (const letter of ['D', 'E', 'F', 'G', 'H']) {
+        const r = tolerance({ nominalSize: 25, fitType: 'hole', deviationLetter: letter, itGrade: 7 });
+        expect(r.lowerDeviation).toBeGreaterThanOrEqual(0);
+      }
+      for (const letter of ['K', 'M', 'N', 'P']) {
+        const r = tolerance({ nominalSize: 25, fitType: 'hole', deviationLetter: letter, itGrade: 7 });
+        expect(r.upperDeviation).toBeLessThanOrEqual(6.1); // K7 is the least negative of the four
+        expect(r.lowerDeviation).toBeLessThan(0);
+      }
+    });
+  });
 });

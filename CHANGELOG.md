@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.1] - 2026-08-03
+
+### Fixed
+
+- **`metal/tolerance`** — hole classes above H no longer disagree with the ISO 286-2 table.
+
+  The hole branch took the absolute value of the shaft fundamental deviation, on the
+  stated assumption that hole deviations are "always positive or zero". That holds for
+  the letters A through H and fails for everything above them, where the zone sits below
+  nominal. Taking the absolute value discarded that sign *and* dropped the delta term
+  that ISO 286-1 requires on the hole side, so the zone landed in the wrong place
+  entirely — for a 25 mm K7 hole the table gives −15/+6 um and the function returned
+  +2/+22.9 um.
+
+  Nothing caught it because the output stayed a plausible pair of micrometre figures and
+  every existing case in the suite used an H-basis hole, where the absolute value happens
+  to be correct. Golden values for both sides of H are now transcribed from the table and
+  pinned across two size ranges, with a structural test covering the letters that have no
+  transcribed row.
+
+  The hole branch now follows ISO 286-1 directly: `EI = -es` for A through H, and
+  `ES = -ei + delta`, `EI = ES - IT` above them, where delta is the difference between
+  the grade and the next finer one and applies through IT8 for K/M/N and through IT7 for
+  P and beyond.
+
+  **This changes computed output** for `fitType: 'hole'` with the letters K, M, N and P.
+  The previous values were wrong, so consumers pinning them should update against the
+  table. Shaft calculations, `fit()`, and every other letter are unaffected.
+
 ## [0.24.0] - 2026-08-03
 
 ### Added
