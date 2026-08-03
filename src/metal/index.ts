@@ -82,6 +82,8 @@ export type {
   FitType,
   ToleranceInput,
   ToleranceResult,
+  FitInput,
+  FitResult,
   // Vibration
   VibrationSystem,
   CrossSection,
@@ -149,6 +151,7 @@ export { bearing } from './bearing.js';
 export { bolt, getKFactor, getStandardPitch } from './bolt.js';
 export { cutting } from './cutting.js';
 export { cuttingStock } from './cuttingStock.js';
+export { fit } from './fit.js';
 export { gear } from './gear.js';
 export { hardness, CONVERSION_TABLE } from './hardness.js';
 export { material, getCategories, getGrades } from './material.js';

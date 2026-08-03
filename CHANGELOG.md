@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2026-08-03
+
+### Added
+
+- **`metal/fit`** — combines a hole and a shaft tolerance class into an ISO 286 fit.
+
+  `tolerance()` computes one tolerance zone at a time, but ISO 286 is used in practice
+  as a pair: a drawing carries `Ø30 H7/g6`, and what the designer needs from it is the
+  clearance or interference that pair produces. Callers were left to run the function
+  twice and perform the extreme-condition subtraction themselves, which is exactly where
+  sign errors live — the tightest pairing is the *smallest* hole with the *largest*
+  shaft, and getting that backwards yields a plausible-looking number.
+
+  `fit({ nominalSize, holeDeviation, holeGrade, shaftDeviation, shaftGrade })` returns
+  both member zones alongside `minClearance`, `maxClearance` and `fitClass`. Clearance is
+  a single signed quantity in micrometres — positive is a gap, negative is interference —
+  so there is no second field to keep in sync with the first. The classification follows
+  ISO 286-1 and introduces no threshold of its own: clearance when even the tightest
+  pairing leaves a gap, interference when even the loosest one overlaps, transition when
+  the sign changes inside the range.
+
+  This is a composition of two existing calls and adds no new table data. `tolerance()`
+  is unchanged and remains the right entry point when only one zone is wanted.
+
+  Golden values in the accompanying tests are transcribed from the ISO 286-2 limit
+  deviation tables rather than produced by this implementation. They are asserted with a
+  stated tolerance of 0.7 um, because `tolerance()` derives the standard tolerance grade
+  from the ISO 286-1 formula while the published table rounds each grade to a whole
+  micrometre; the two therefore disagree slightly, and hiding that behind a loose
+  assertion would have made the golden test stop being one.
+
 ## [0.23.1] - 2026-08-02
 
 ### Changed

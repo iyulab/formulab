@@ -219,6 +219,7 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `tap()` | Tap drill size |
 | `thread()` | Thread dimensions |
 | `tolerance()` | ISO tolerance (IT grades) |
+| `fit()` | ISO 286 hole/shaft fit — clearance, interference, fit class |
 | `vibration()` | Natural frequency analysis |
 | `weldHeat()` | Weld heat input calculation |
 | `welding()` | Welding parameters |

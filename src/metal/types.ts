@@ -493,6 +493,26 @@ export interface ToleranceResult {
   toleranceBand: number;      // um
 }
 
+/** A hole/shaft pair, the unit ISO 286 is actually used in (`Ø30 H7/g6`). */
+export interface FitInput {
+  nominalSize: number;        // mm
+  holeDeviation: string;      // uppercase letter, e.g. 'H'
+  holeGrade: number;          // IT grade, 5-14
+  shaftDeviation: string;     // lowercase letter, e.g. 'g'
+  shaftGrade: number;         // IT grade, 5-14
+}
+
+export interface FitResult {
+  designation: string;        // e.g., "30 H7/g6"
+  hole: ToleranceResult;
+  shaft: ToleranceResult;
+  /** um; positive is a gap, negative is interference. Tightest pairing. */
+  minClearance: number;
+  /** um; positive is a gap, negative is interference. Loosest pairing. */
+  maxClearance: number;
+  fitClass: 'clearance' | 'transition' | 'interference';
+}
+
 /**
  * Vibration Types
  */
