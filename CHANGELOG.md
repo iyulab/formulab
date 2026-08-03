@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.2] - 2026-08-03
+
+### Fixed
+
+- **`metal/tolerance`** — standard tolerance grades are read from the tabulated ISO 286-1
+  values instead of being derived from the tolerance unit `i = 0.45·∛D + 0.001·D`.
+
+  The published grades were derived from that unit, but the standard rounds each derived
+  value to a preferred one, so recomputing it does not reproduce the table — and rounding
+  the result back does not repair it: at 6-10 mm the unit gives IT7 = 14.4, which rounds
+  to 14, while the table reads 15.
+
+  At the fine grades the disagreement stayed under a micrometre, which is how it went
+  unnoticed. It did not stay there. It widened with the grade, reaching 16.5 um at IT14,
+  and it was worst in the smallest size range, where the unit was evaluated at the range
+  maximum rather than at the geometric mean the standard uses: IT13 at 2 mm came out 163
+  um against a tabulated 140, and IT8 at 2 mm was off by 16 %. A function that names
+  ISO 286 has to agree with the table, not with the derivation behind it, so the
+  tabulated grades IT5-IT14 across the twelve size ranges are now carried directly.
+
+  Every deviation this function produces moves by the same amount, and so does every
+  clearance and interference limit `fit()` composes from it. Callers pinning golden
+  values against the standard will find them exact where they previously needed a
+  sub-micrometre allowance; the allowance in this library's own golden tests has been
+  removed rather than kept as slack.
+
+- **`metal/tolerance`** — hole classes K, M, N and P at IT5 no longer lose their deviation
+  term.
+
+  `ES = -ei + delta` needs the grade one step finer than the requested one, and IT4 sat
+  below the range the function carried. The lookup returned nothing, the term silently
+  became zero, and the whole zone shifted by it — a 25 mm K5 hole came out at -11.2/-2 um
+  against a tabulated -8/+1. IT4 is now carried for this purpose while the accepted input
+  range stays IT5-IT14.
+
 ## [0.24.1] - 2026-08-03
 
 ### Fixed

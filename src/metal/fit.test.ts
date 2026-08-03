@@ -6,15 +6,13 @@ import { fit } from './fit.js';
  * from this implementation. Deriving them from the code under test would only prove the
  * code agrees with itself.
  *
- * One caveat is deliberate and is asserted with a tolerance rather than hidden: the
- * underlying `tolerance()` computes the standard tolerance grade from the ISO 286-1
- * formula (`i = 0.45·∛D + 0.001·D`) instead of reading the tabulated grade. The
- * published table rounds each grade to a whole micrometre, so the two disagree by up
- * to about 0.6 um. Every expectation below therefore states the tabulated figure and
- * allows that documented gap — an assertion that silently absorbed a larger drift
- * would stop being a golden test.
+ * These once carried a sub-micrometre allowance, because the underlying `tolerance()`
+ * derived the standard tolerance grade from the ISO 286-1 tolerance unit rather than
+ * reading the tabulated grade, and the two disagree by up to about 0.6 um. The grades
+ * are now read from the table, so the allowance is gone and every figure below is
+ * asserted exactly. Clearance limits are whole micrometres in the standard; if one of
+ * these ever needs an allowance again, the grade lookup has regressed.
  */
-const UM = 0.7; // documented gap between the formula-derived grade and the tabulated one
 
 describe('fit', () => {
   describe('clearance fit — H7/g6, the reference running fit', () => {
@@ -23,9 +21,8 @@ describe('fit', () => {
     it('reproduces the tabulated clearance range at 25 mm', () => {
       const r = fit({ nominalSize: 25, holeDeviation: 'H', holeGrade: 7, shaftDeviation: 'g', shaftGrade: 6 });
 
-      expect(r.minClearance).toBeCloseTo(7, 0);
-      expect(r.maxClearance).toBeGreaterThan(41 - UM);
-      expect(r.maxClearance).toBeLessThan(41 + UM);
+      expect(r.minClearance).toBe(7);
+      expect(r.maxClearance).toBe(41);
       expect(r.fitClass).toBe('clearance');
       expect(r.designation).toBe('25 H7/g6');
     });
@@ -34,9 +31,8 @@ describe('fit', () => {
     it('reproduces the tabulated clearance range at 8 mm', () => {
       const r = fit({ nominalSize: 8, holeDeviation: 'H', holeGrade: 7, shaftDeviation: 'g', shaftGrade: 6 });
 
-      expect(r.minClearance).toBeCloseTo(5, 0);
-      expect(r.maxClearance).toBeGreaterThan(29 - UM);
-      expect(r.maxClearance).toBeLessThan(29 + UM);
+      expect(r.minClearance).toBe(5);
+      expect(r.maxClearance).toBe(29);
       expect(r.fitClass).toBe('clearance');
     });
   });
@@ -48,9 +44,8 @@ describe('fit', () => {
     it('reports negative clearance across the whole range at 25 mm', () => {
       const r = fit({ nominalSize: 25, holeDeviation: 'H', holeGrade: 7, shaftDeviation: 'p', shaftGrade: 6 });
 
-      expect(r.minClearance).toBeLessThan(-35 + UM);
-      expect(r.maxClearance).toBeLessThan(0);
-      expect(r.maxClearance).toBeGreaterThan(-1 - UM);
+      expect(r.minClearance).toBe(-35);
+      expect(r.maxClearance).toBe(-1);
       expect(r.fitClass).toBe('interference');
     });
   });
@@ -63,8 +58,8 @@ describe('fit', () => {
     it('straddles zero at 25 mm', () => {
       const r = fit({ nominalSize: 25, holeDeviation: 'H', holeGrade: 7, shaftDeviation: 'k', shaftGrade: 6 });
 
-      expect(r.minClearance).toBeLessThan(0);
-      expect(r.maxClearance).toBeGreaterThan(0);
+      expect(r.minClearance).toBe(-15);
+      expect(r.maxClearance).toBe(19);
       expect(r.fitClass).toBe('transition');
     });
   });

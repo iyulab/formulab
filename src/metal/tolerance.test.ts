@@ -215,9 +215,9 @@ describe('tolerance', () => {
 
   /**
    * Golden values transcribed from the ISO 286-2 limit deviation tables, not produced by
-   * this implementation. They are asserted with a 1 um allowance because the standard
-   * tolerance grade here comes from the ISO 286-1 formula while the published table rounds
-   * each grade to a whole micrometre.
+   * this implementation. They are asserted exactly: the standard tolerance grade is read
+   * from the tabulated values, so there is no rounding gap left to absorb. An allowance
+   * here would only hide the next drift.
    *
    * These exist because the hole side of the letters above H was previously computed by
    * taking the absolute value of the shaft fundamental deviation. For letters a-h that
@@ -227,8 +227,56 @@ describe('tolerance', () => {
    * downstream could notice. A tolerance table is only worth having if it agrees with
    * the table.
    */
+  /**
+   * The standard tolerance grade itself, read off an H hole where the band is the grade.
+   *
+   * Every cell here is one the tolerance-unit formula gets wrong, which is the point: the
+   * formula is what the published grades were derived from, but the standard rounds each
+   * derived value to a preferred one, and rounding it back does not recover the table.
+   * At 6-10 the formula gives IT7 = 14.4, which rounds to 14 while the table reads 15 --
+   * so "compute and round" is not a repair, only the table is.
+   */
+  describe('standard tolerance grades against the ISO 286-1 table', () => {
+    const cases: Array<[string, number, number, number]> = [
+      // label,   nominal, grade, tabulated grade in um
+      ['6-10 IT7', 8, 7, 15],
+      ['18-30 IT7', 25, 7, 21],
+      ['30-50 IT6', 40, 6, 16],
+      ['50-80 IT6', 60, 6, 19],
+      ['80-120 IT8', 100, 8, 54],
+      ['120-180 IT9', 150, 9, 100],
+      ['180-250 IT11', 200, 11, 290],
+      ['315-400 IT14', 350, 14, 1400],
+      ['0-3 IT5', 2, 5, 4],
+    ];
+
+    for (const [label, nominalSize, itGrade, grade] of cases) {
+      it(`reads ${label} from the table`, () => {
+        const r = tolerance({ nominalSize, fitType: 'hole', deviationLetter: 'H', itGrade });
+
+        expect(r.toleranceBand).toBe(grade);
+        expect(r.upperDeviation).toBe(grade);
+      });
+    }
+
+    it('grows monotonically with the grade and with the size', () => {
+      const band = (nominalSize: number, itGrade: number) =>
+        tolerance({ nominalSize, fitType: 'hole', deviationLetter: 'H', itGrade }).toleranceBand;
+
+      for (const nominalSize of [2, 25, 100, 350]) {
+        for (let g = 5; g < 14; g++) {
+          expect(band(nominalSize, g)).toBeLessThan(band(nominalSize, g + 1));
+        }
+      }
+      for (const g of [5, 7, 11, 14]) {
+        for (const [smaller, larger] of [[2, 25], [25, 100], [100, 350]]) {
+          expect(band(smaller, g)).toBeLessThan(band(larger, g));
+        }
+      }
+    });
+  });
+
   describe('hole deviations against the ISO 286-2 table', () => {
-    const UM = 1;
     const cases: Array<[string, number, string, number, number, number]> = [
       // label,        nominal, letter, grade, ISO lower, ISO upper
       ['18-30 H7', 25, 'H', 7, 0, 21],
@@ -241,16 +289,21 @@ describe('tolerance', () => {
       ['6-10 K7', 8, 'K', 7, -10, 5],
       ['6-10 N7', 8, 'N', 7, -19, -4],
       ['6-10 P7', 8, 'P', 7, -24, -9],
+      // The finest grade offered. Its deviation term needs the grade one step finer,
+      // which is below the offered range -- when that row is missing the term silently
+      // drops to zero and the whole zone shifts by it.
+      ['18-30 K5', 25, 'K', 5, -8, 1],
+      ['18-30 M5', 25, 'M', 5, -14, -5],
+      ['18-30 N5', 25, 'N', 5, -21, -12],
+      ['18-30 P5', 25, 'P', 5, -28, -19],
     ];
 
     for (const [label, nominalSize, deviationLetter, itGrade, lower, upper] of cases) {
       it(`matches the table for ${label}`, () => {
         const r = tolerance({ nominalSize, fitType: 'hole', deviationLetter, itGrade });
 
-        expect(r.lowerDeviation).toBeGreaterThan(lower - UM);
-        expect(r.lowerDeviation).toBeLessThan(lower + UM);
-        expect(r.upperDeviation).toBeGreaterThan(upper - UM);
-        expect(r.upperDeviation).toBeLessThan(upper + UM);
+        expect(r.lowerDeviation).toBe(lower);
+        expect(r.upperDeviation).toBe(upper);
       });
     }
 

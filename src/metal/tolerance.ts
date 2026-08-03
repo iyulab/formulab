@@ -7,10 +7,35 @@ const SIZE_RANGES: [number, number][] = [
   [50, 80], [80, 120], [120, 180], [180, 250], [250, 315], [315, 400],
 ];
 
-// IT grade multipliers (IT5 to IT14)
-const IT_MULTIPLIERS: Record<number, number> = {
-  5: 7, 6: 10, 7: 16, 8: 25, 9: 40, 10: 64, 11: 100, 12: 160, 13: 250, 14: 400,
+/**
+ * Standard tolerance grades in micrometres, one entry per size range above.
+ *
+ * These are the tabulated grades, not the tolerance unit `i = 0.45·∛D + 0.001·D` the
+ * table was derived from. The standard rounds each computed grade to a preferred value,
+ * so the two disagree by up to roughly half a micrometre — and not always in the
+ * direction ordinary rounding would take: at 6-10 mm the formula gives IT7 = 14.4 while
+ * the table reads 15. A calculator that states ISO 286 has to agree with the table.
+ *
+ * IT4 is carried even though it is below the range offered as an input grade: the
+ * deviation rule for K, M, N and P upwards needs the next finer grade, and without IT4
+ * those hole zones would quietly lose that term at IT5.
+ */
+const IT_GRADES: Record<number, number[]> = {
+  4: [3, 4, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18],
+  5: [4, 5, 6, 8, 9, 11, 13, 15, 18, 20, 23, 25],
+  6: [6, 8, 9, 11, 13, 16, 19, 22, 25, 29, 32, 36],
+  7: [10, 12, 15, 18, 21, 25, 30, 35, 40, 46, 52, 57],
+  8: [14, 18, 22, 27, 33, 39, 46, 54, 63, 72, 81, 89],
+  9: [25, 30, 36, 43, 52, 62, 74, 87, 100, 115, 130, 140],
+  10: [40, 48, 58, 70, 84, 100, 120, 140, 160, 185, 210, 230],
+  11: [60, 75, 90, 110, 130, 160, 190, 220, 250, 290, 320, 360],
+  12: [100, 120, 150, 180, 210, 250, 300, 350, 400, 460, 520, 570],
+  13: [140, 180, 220, 270, 330, 390, 460, 540, 630, 720, 810, 890],
+  14: [250, 300, 360, 430, 520, 620, 740, 870, 1000, 1150, 1300, 1400],
 };
+
+// Grades accepted as an input. IT4 exists in the table only to serve the deviation rule.
+const MIN_INPUT_GRADE = 5;
 
 // Fundamental deviations in um per size range index
 // Positive = material added, Negative = material removed
@@ -41,14 +66,10 @@ function getToleranceValue(nominal: number, itGrade: number): number {
   const idx = getSizeRangeIndex(nominal);
   if (idx < 0) return 0;
 
-  const range = SIZE_RANGES[idx];
-  const D = Math.sqrt(range[0] * range[1]) || range[1]; // geometric mean
-  const i = 0.45 * Math.cbrt(D) + 0.001 * D; // standard tolerance unit
+  const grade = IT_GRADES[itGrade];
+  if (!grade) return 0;
 
-  const multiplier = IT_MULTIPLIERS[itGrade];
-  if (!multiplier) return 0;
-
-  return roundTo(multiplier * i, 1);
+  return grade[idx];
 }
 
 /**
@@ -65,10 +86,10 @@ export function tolerance(input: ToleranceInput): ToleranceResult {
     throw new RangeError('nominal size out of range');
   }
 
-  const toleranceVal = getToleranceValue(nominalSize, itGrade);
-  if (toleranceVal === 0) {
+  if (!IT_GRADES[itGrade] || itGrade < MIN_INPUT_GRADE) {
     throw new RangeError('unknown IT grade: ' + itGrade);
   }
+  const toleranceVal = getToleranceValue(nominalSize, itGrade);
 
   const letter = deviationLetter.toLowerCase();
   const deviations = FUNDAMENTAL_DEVIATIONS[letter === 'js' ? 'js' : letter];
