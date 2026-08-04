@@ -216,34 +216,34 @@ const POISSONS_RATIO_GOLDEN: {
 }[] = [
   // Steels. Tabulations give the family 0.27-0.30 and put the two grades that are cited
   // individually (AISI 1045, 4140 equivalents) at 0.29, so one figure covers the family.
-  { category: 'steel', grade: 'SS400', ratio: 0.29, source: 'carbon steel family 0.27-0.30; 0.29 is the conventional figure' },
-  { category: 'steel', grade: 'S45C', ratio: 0.29, source: 'AISI 1045 equivalent, published 0.29' },
-  { category: 'steel', grade: 'SCM440', ratio: 0.29, source: 'AISI 4140 equivalent, published 0.29' },
+  { category: 'steel', grade: 'SS400', ratio: 0.29, source: 'carbon steel family tabulated 0.27-0.30; 0.29 sits mid-band' },
+  { category: 'steel', grade: 'S45C', ratio: 0.29, source: 'AISI 1045 equivalent, published 0.29 (grade datasheet)' },
+  { category: 'steel', grade: 'SCM440', ratio: 0.29, source: 'AISI 4140 equivalent, published 0.29 (grade datasheet)' },
   { category: 'steel', grade: 'SK5', ratio: 0.29, source: 'carbon tool steel; v is composition-independent within the family' },
 
   // Stainless. The published spread is wider than for carbon steel (0.265-0.31 across
   // sources, individual citations at 0.28 and 0.29) and does not separate austenitic from
   // ferritic by more than that spread, so all three carry the conventional 0.29.
-  { category: 'stainless', grade: 'SUS304', ratio: 0.29, source: 'AISI 304 equivalent; sources span 0.28-0.30, 0.29 conventional' },
-  { category: 'stainless', grade: 'SUS316', ratio: 0.29, source: 'AISI 316 equivalent; sources span 0.28-0.31, 0.29 conventional' },
-  { category: 'stainless', grade: 'SUS430', ratio: 0.29, source: 'AISI 430 equivalent, ferritic; within the same 0.27-0.30 band' },
+  { category: 'stainless', grade: 'SUS304', ratio: 0.29, source: 'AISI 304 equivalent; two tabulations read 0.28 and 0.30, so 0.29 is their midpoint' },
+  { category: 'stainless', grade: 'SUS316', ratio: 0.29, source: 'AISI 316 equivalent; read at 0.28 against a family figure of 0.30, midpoint 0.29' },
+  { category: 'stainless', grade: 'SUS430', ratio: 0.29, source: 'AISI 430 equivalent, ferritic; no grade-level reading found, carried on the stainless family 0.28-0.30' },
 
-  // Aluminium is the tightest family in the table: 0.330-0.334 across wrought alloys, which
-  // is narrower than the two decimals stored here, so one figure is not a compromise.
-  { category: 'aluminum', grade: 'A6061-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
-  { category: 'aluminum', grade: 'A5052-H32', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
-  { category: 'aluminum', grade: 'A7075-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
+  // Aluminium: one tabulation gives 0.330-0.334 across wrought alloys, another 0.33-0.35 for
+  // 6061 specifically. 0.33 is the figure both contain, so it is a reading rather than a split.
+  { category: 'aluminum', grade: 'A6061-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334 in one tabulation, 0.33-0.35 for 6061 in another; 0.33 is the value both contain' },
+  { category: 'aluminum', grade: 'A5052-H32', ratio: 0.33, source: 'wrought aluminium 0.330-0.334 in one tabulation, 0.33-0.35 for 6061 in another; 0.33 is the value both contain' },
+  { category: 'aluminum', grade: 'A7075-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334 in one tabulation, 0.33-0.35 for 6061 in another; 0.33 is the value both contain' },
 
   // Copper alloys keep v on the same source as their modulus: CDA publishes E and G in ksi,
   // and v = E/(2G) - 1 follows from the pair. The check below recomputes it from those ksi
   // figures rather than restating 0.33 here.
-  { category: 'copper', grade: 'C1100', ratio: 0.33, source: 'CDA C11000 E/G 17000/6400 ksi -> 0.328' },
+  { category: 'copper', grade: 'C1100', ratio: 0.33, source: 'CDA C11000 E/G 17000/6400 ksi -> 0.328; general tables give copper 0.34, but this family follows CDA as its modulus does' },
   { category: 'copper', grade: 'C2600', ratio: 0.33, source: 'CDA C26000 E/G 16000/6000 ksi -> 0.333, matching 0.331 tabulated for 70-30 brass' },
   { category: 'copper', grade: 'C5191', ratio: 0.33, source: 'CDA C51900 E/G 16000/6000 ksi -> 0.333' },
 
   // Titanium. Sources put Ti-6Al-4V at 0.33 (handbook) and 0.342 (alloy datasheet); 0.34 is
   // the two-decimal figure inside that spread and inside the family band 0.32-0.34.
-  { category: 'titanium', grade: 'Ti-6Al-4V', ratio: 0.34, source: 'handbook 0.33 / datasheet 0.342, family band 0.32-0.34' },
+  { category: 'titanium', grade: 'Ti-6Al-4V', ratio: 0.34, source: 'handbook 0.33, alloy datasheet 0.342, family bands 0.32-0.34 and 0.34-0.37; 0.34 is inside all of them' },
 ];
 
 /**

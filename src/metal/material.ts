@@ -19,10 +19,11 @@ import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } fr
  *
  * Poisson's ratio (v) is carried at the precision the literature actually supports, which is
  * lower than the modulus. Every tabulation that covers more than one alloy publishes v by
- * family, not by grade: 0.27-0.30 for steels, 0.330-0.334 for wrought aluminum, 0.33-0.34 for
- * copper, 0.32-0.34 for titanium. So the entries here are family figures written per grade,
- * and two decimals is the honest width -- a third digit would claim agreement that does not
- * exist between sources.
+ * family, not by grade: 0.27-0.30 for steels, 0.28-0.30 for stainless, 0.330-0.334 for wrought
+ * aluminum, 0.33-0.34 for copper, 0.32-0.34 for titanium. So the entries here are family
+ * figures written per grade, and two decimals is the honest width -- a third digit would claim
+ * agreement that does not exist between sources. Where two tabulations bracket a family, the
+ * stored figure is their midpoint and the golden block names both ends.
  *
  * The copper family is derived from CDA's own pair, keeping v on the same source as the
  * modulus above it: v = E/(2G) - 1 from the published ksi (C11000 17000/6400 -> 0.328,
