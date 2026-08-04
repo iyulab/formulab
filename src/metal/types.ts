@@ -310,6 +310,12 @@ export interface MaterialResult {
   tensileStrength: number;  // MPa
   yieldStrength: number;    // MPa
   youngsModulus: number;    // GPa (E) — elastic modulus; needed by springback/deflection
+  /**
+   * Poisson's ratio (v), dimensionless. Optional: published tabulations agree on this
+   * only at family level, and a grade whose sources disagree by more than a rounding
+   * step carries no value rather than a fabricated one.
+   */
+  poissonsRatio?: number;
   elongation: number;       // %
   hardness: string;         // e.g., "HB 200"
   thermalConductivity: number; // W/(m-K)
@@ -321,6 +327,7 @@ export interface MaterialSpec {
   tensileStrength: number;
   yieldStrength: number;
   youngsModulus: number;    // GPa
+  poissonsRatio?: number;   // dimensionless (v); absent where sources disagree
   elongation: number;
   hardness: string;
   thermalConductivity: number;

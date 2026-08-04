@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0] - 2026-08-04
+
+### Added
+
+- **`metal/material`** — grades now carry Poisson's ratio, where the published data supports one.
+
+  Callers doing FEA need `v` alongside `E` and density, and the lookup had two of the three.
+  It is optional on both `MaterialSpec` and `MaterialResult`, and one grade deliberately has
+  no value: a grade whose sources disagree returns no key at all rather than a chosen number.
+
+  The precision is deliberately lower than the modulus beside it. Every tabulation that covers
+  more than one alloy publishes `v` by family rather than by grade (0.27-0.30 for steels,
+  0.330-0.334 for wrought aluminium, 0.33-0.34 for copper, 0.32-0.34 for titanium), so these
+  are family figures written per grade and two decimals is the honest width; a third digit
+  would claim agreement between sources that does not exist.
+
+  The copper alloys stay on the same source as their modulus. CDA publishes elastic and shear
+  modulus in ksi, and `v = E/(2G) - 1` follows from that pair: 17000/6400 for C11000 and
+  16000/6000 for C26000 and C51900, which independently agrees with the 0.331 tabulated for
+  70-30 brass. The golden block recomputes from those ksi figures rather than restating the
+  stored value, for the same reason the modulus check does.
+
+  CP-Ti Grade 2 carries no ratio. Its sources give 0.34 and 0.37 — a 9% disagreement rather
+  than a last-digit one — and it is the only commercially pure grade in the table, so no
+  sibling settles it. The absence is asserted by a test, so filling it later has to be an
+  argued change rather than a quiet one.
 ## [0.25.1] - 2026-08-04
 
 ### Fixed

@@ -195,6 +195,131 @@ describe("Young's modulus golden values", () => {
   });
 });
 
+/**
+ * Golden values for Poisson's ratio (v), and the one grade that deliberately has none.
+ *
+ * This block exists for a different reason than the modulus block above it. A modulus is
+ * tabulated per grade and can be checked against one citation; v is not. Every source that
+ * covers more than a single alloy publishes it by family, so what has to be pinned here is
+ * not only the number but the decision behind it: which family figure was taken, how wide
+ * the published spread was, and — for the grade left empty — why no figure was chosen.
+ *
+ * `unresolved` is the part that earns its keep. Without it, a later edit could quietly fill
+ * CP-Ti Grade 2 with either of its two disagreeing sources and every test would still pass;
+ * with it, the absence is asserted, so filling the gap has to be an argued change.
+ */
+const POISSONS_RATIO_GOLDEN: {
+  category: 'steel' | 'stainless' | 'aluminum' | 'copper' | 'titanium';
+  grade: string;
+  ratio: number;
+  source: string;
+}[] = [
+  // Steels. Tabulations give the family 0.27-0.30 and put the two grades that are cited
+  // individually (AISI 1045, 4140 equivalents) at 0.29, so one figure covers the family.
+  { category: 'steel', grade: 'SS400', ratio: 0.29, source: 'carbon steel family 0.27-0.30; 0.29 is the conventional figure' },
+  { category: 'steel', grade: 'S45C', ratio: 0.29, source: 'AISI 1045 equivalent, published 0.29' },
+  { category: 'steel', grade: 'SCM440', ratio: 0.29, source: 'AISI 4140 equivalent, published 0.29' },
+  { category: 'steel', grade: 'SK5', ratio: 0.29, source: 'carbon tool steel; v is composition-independent within the family' },
+
+  // Stainless. The published spread is wider than for carbon steel (0.265-0.31 across
+  // sources, individual citations at 0.28 and 0.29) and does not separate austenitic from
+  // ferritic by more than that spread, so all three carry the conventional 0.29.
+  { category: 'stainless', grade: 'SUS304', ratio: 0.29, source: 'AISI 304 equivalent; sources span 0.28-0.30, 0.29 conventional' },
+  { category: 'stainless', grade: 'SUS316', ratio: 0.29, source: 'AISI 316 equivalent; sources span 0.28-0.31, 0.29 conventional' },
+  { category: 'stainless', grade: 'SUS430', ratio: 0.29, source: 'AISI 430 equivalent, ferritic; within the same 0.27-0.30 band' },
+
+  // Aluminium is the tightest family in the table: 0.330-0.334 across wrought alloys, which
+  // is narrower than the two decimals stored here, so one figure is not a compromise.
+  { category: 'aluminum', grade: 'A6061-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
+  { category: 'aluminum', grade: 'A5052-H32', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
+  { category: 'aluminum', grade: 'A7075-T6', ratio: 0.33, source: 'wrought aluminium 0.330-0.334' },
+
+  // Copper alloys keep v on the same source as their modulus: CDA publishes E and G in ksi,
+  // and v = E/(2G) - 1 follows from the pair. The check below recomputes it from those ksi
+  // figures rather than restating 0.33 here.
+  { category: 'copper', grade: 'C1100', ratio: 0.33, source: 'CDA C11000 E/G 17000/6400 ksi -> 0.328' },
+  { category: 'copper', grade: 'C2600', ratio: 0.33, source: 'CDA C26000 E/G 16000/6000 ksi -> 0.333, matching 0.331 tabulated for 70-30 brass' },
+  { category: 'copper', grade: 'C5191', ratio: 0.33, source: 'CDA C51900 E/G 16000/6000 ksi -> 0.333' },
+
+  // Titanium. Sources put Ti-6Al-4V at 0.33 (handbook) and 0.342 (alloy datasheet); 0.34 is
+  // the two-decimal figure inside that spread and inside the family band 0.32-0.34.
+  { category: 'titanium', grade: 'Ti-6Al-4V', ratio: 0.34, source: 'handbook 0.33 / datasheet 0.342, family band 0.32-0.34' },
+];
+
+/**
+ * Grades that carry no ratio, and the reason. Listed rather than omitted: a grade missing
+ * from both lists is an undecided grade, and the coverage test below fails on it.
+ */
+const POISSONS_RATIO_UNRESOLVED: { category: 'titanium'; grade: string; reason: string }[] = [
+  {
+    category: 'titanium',
+    grade: 'CP-Ti Grade2',
+    reason:
+      'sources give 0.34 and 0.37 — a 9% disagreement, not a last-digit one — and this is the ' +
+      'only commercially pure grade here, so no sibling settles it',
+  },
+];
+
+describe("Poisson's ratio golden values", () => {
+  it.each(POISSONS_RATIO_GOLDEN)('$category/$grade is $ratio — $source', ({ category, grade, ratio }) => {
+    const result = material({ category, grade });
+
+    expect(result).not.toBeNull();
+    expect(result!.poissonsRatio).toBe(ratio);
+  });
+
+  it.each(POISSONS_RATIO_UNRESOLVED)('$category/$grade carries no ratio — $reason', ({ category, grade }) => {
+    const result = material({ category, grade });
+
+    expect(result).not.toBeNull();
+    expect(result!.poissonsRatio).toBeUndefined();
+    expect('poissonsRatio' in result!).toBe(false);
+  });
+
+  it('accounts for every grade the table exposes, as a value or as a stated gap', () => {
+    const decided = new Set([
+      ...POISSONS_RATIO_GOLDEN.map((g) => `${g.category}/${g.grade}`),
+      ...POISSONS_RATIO_UNRESOLVED.map((g) => `${g.category}/${g.grade}`),
+    ]);
+
+    for (const category of getCategories()) {
+      for (const grade of getGrades(category)) {
+        expect(decided).toContain(`${category}/${grade}`);
+      }
+    }
+  });
+
+  it('keeps the copper family on the CDA pair its tables publish', () => {
+    // Same reasoning as the modulus check: deriving from the published ksi rather than
+    // restating the stored figure means a future edit has to disagree with the source.
+    const CDA_ELASTIC_KSI: Record<string, { e: number; g: number }> = {
+      C1100: { e: 17000, g: 6400 },
+      C2600: { e: 16000, g: 6000 },
+      C5191: { e: 16000, g: 6000 },
+    };
+
+    for (const [grade, { e, g }] of Object.entries(CDA_ELASTIC_KSI)) {
+      const derived = e / (2 * g) - 1;
+      const stored = material({ category: 'copper', grade })!.poissonsRatio;
+
+      expect(stored).toBe(Number(derived.toFixed(2)));
+    }
+  });
+
+  it('stays inside the isotropic limit, so a slipped decimal cannot pass', () => {
+    // v >= 0.5 is incompressible and v <= 0 does not occur in these metals, so this catches
+    // the class of typo that a per-grade equality check cannot: one entered as 3.3 or 0.033
+    // would still satisfy its own assertion if that assertion were edited alongside it.
+    for (const { category, grade } of POISSONS_RATIO_GOLDEN) {
+      const ratio = material({ category, grade })!.poissonsRatio!;
+
+      expect(ratio).toBeGreaterThan(0.2);
+      expect(ratio).toBeLessThan(0.5);
+    }
+  });
+});
+
+
 describe('getCategories', () => {
   it('should return all material categories', () => {
     const categories = getCategories();

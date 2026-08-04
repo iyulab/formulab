@@ -17,6 +17,24 @@ import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } fr
  * every modulus, names the source each was checked against, and asserts the copper
  * family against the published ksi so it cannot drift apart again unnoticed.
  *
+ * Poisson's ratio (v) is carried at the precision the literature actually supports, which is
+ * lower than the modulus. Every tabulation that covers more than one alloy publishes v by
+ * family, not by grade: 0.27-0.30 for steels, 0.330-0.334 for wrought aluminum, 0.33-0.34 for
+ * copper, 0.32-0.34 for titanium. So the entries here are family figures written per grade,
+ * and two decimals is the honest width -- a third digit would claim agreement that does not
+ * exist between sources.
+ *
+ * The copper family is derived from CDA's own pair, keeping v on the same source as the
+ * modulus above it: v = E/(2G) - 1 from the published ksi (C11000 17000/6400 -> 0.328,
+ * C26000 and C51900 16000/6000 -> 0.333), which independently matches the 0.331 tabulated
+ * for 70-30 brass.
+ *
+ * CP-Ti Grade 2 carries no ratio. Its sources are not a last-digit disagreement but 0.34
+ * against 0.37, and it is the only commercially pure grade here, so there is no sibling to
+ * settle it -- the same reason its modulus was left alone when the copper family was
+ * corrected. An absent value is not a gap waiting to be filled: filling it would mean
+ * choosing between sources on no evidence.
+ *
  * This table is exposed as a lookup for callers rather than as an internal dependency.
  * Functions that need a modulus of their own (springback, vibration, tool and boring-bar
  * deflection) carry category-level presets, which are coarser than these grade-level
@@ -24,28 +42,28 @@ import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } fr
  */
 const MATERIAL_DATA: Record<MaterialCategory, Record<string, MaterialSpec>> = {
   steel: {
-    'SS400':  { density: 7.85, tensileStrength: 400, yieldStrength: 245, youngsModulus: 205, elongation: 21, hardness: 'HB 120-160', thermalConductivity: 50, meltingPoint: 1510 },
-    'S45C':   { density: 7.85, tensileStrength: 570, yieldStrength: 345, youngsModulus: 205, elongation: 17, hardness: 'HB 167-229', thermalConductivity: 49, meltingPoint: 1505 },
-    'SCM440': { density: 7.85, tensileStrength: 980, yieldStrength: 830, youngsModulus: 205, elongation: 12, hardness: 'HB 285-352', thermalConductivity: 42, meltingPoint: 1500 },
-    'SK5':    { density: 7.85, tensileStrength: 690, yieldStrength: 400, youngsModulus: 205, elongation: 20, hardness: 'HRC 58-63', thermalConductivity: 41, meltingPoint: 1495 },
+    'SS400':  { density: 7.85, tensileStrength: 400, yieldStrength: 245, youngsModulus: 205, poissonsRatio: 0.29, elongation: 21, hardness: 'HB 120-160', thermalConductivity: 50, meltingPoint: 1510 },
+    'S45C':   { density: 7.85, tensileStrength: 570, yieldStrength: 345, youngsModulus: 205, poissonsRatio: 0.29, elongation: 17, hardness: 'HB 167-229', thermalConductivity: 49, meltingPoint: 1505 },
+    'SCM440': { density: 7.85, tensileStrength: 980, yieldStrength: 830, youngsModulus: 205, poissonsRatio: 0.29, elongation: 12, hardness: 'HB 285-352', thermalConductivity: 42, meltingPoint: 1500 },
+    'SK5':    { density: 7.85, tensileStrength: 690, yieldStrength: 400, youngsModulus: 205, poissonsRatio: 0.29, elongation: 20, hardness: 'HRC 58-63', thermalConductivity: 41, meltingPoint: 1495 },
   },
   stainless: {
-    'SUS304': { density: 7.93, tensileStrength: 520, yieldStrength: 205, youngsModulus: 193, elongation: 40, hardness: 'HB 187', thermalConductivity: 16.3, meltingPoint: 1450 },
-    'SUS316': { density: 7.98, tensileStrength: 520, yieldStrength: 205, youngsModulus: 193, elongation: 40, hardness: 'HB 187', thermalConductivity: 16.3, meltingPoint: 1400 },
-    'SUS430': { density: 7.70, tensileStrength: 450, yieldStrength: 205, youngsModulus: 200, elongation: 22, hardness: 'HB 183', thermalConductivity: 26.1, meltingPoint: 1480 },
+    'SUS304': { density: 7.93, tensileStrength: 520, yieldStrength: 205, youngsModulus: 193, poissonsRatio: 0.29, elongation: 40, hardness: 'HB 187', thermalConductivity: 16.3, meltingPoint: 1450 },
+    'SUS316': { density: 7.98, tensileStrength: 520, yieldStrength: 205, youngsModulus: 193, poissonsRatio: 0.29, elongation: 40, hardness: 'HB 187', thermalConductivity: 16.3, meltingPoint: 1400 },
+    'SUS430': { density: 7.70, tensileStrength: 450, yieldStrength: 205, youngsModulus: 200, poissonsRatio: 0.29, elongation: 22, hardness: 'HB 183', thermalConductivity: 26.1, meltingPoint: 1480 },
   },
   aluminum: {
-    'A6061-T6':  { density: 2.70, tensileStrength: 310, yieldStrength: 276, youngsModulus: 68.9, elongation: 12, hardness: 'HB 95', thermalConductivity: 167, meltingPoint: 652 },
-    'A5052-H32': { density: 2.68, tensileStrength: 228, yieldStrength: 193, youngsModulus: 70.3, elongation: 12, hardness: 'HB 60', thermalConductivity: 138, meltingPoint: 649 },
-    'A7075-T6':  { density: 2.81, tensileStrength: 572, yieldStrength: 503, youngsModulus: 71.7, elongation: 11, hardness: 'HB 150', thermalConductivity: 130, meltingPoint: 635 },
+    'A6061-T6':  { density: 2.70, tensileStrength: 310, yieldStrength: 276, youngsModulus: 68.9, poissonsRatio: 0.33, elongation: 12, hardness: 'HB 95', thermalConductivity: 167, meltingPoint: 652 },
+    'A5052-H32': { density: 2.68, tensileStrength: 228, yieldStrength: 193, youngsModulus: 70.3, poissonsRatio: 0.33, elongation: 12, hardness: 'HB 60', thermalConductivity: 138, meltingPoint: 649 },
+    'A7075-T6':  { density: 2.81, tensileStrength: 572, yieldStrength: 503, youngsModulus: 71.7, poissonsRatio: 0.33, elongation: 11, hardness: 'HB 150', thermalConductivity: 130, meltingPoint: 635 },
   },
   copper: {
-    'C1100': { density: 8.94, tensileStrength: 220, yieldStrength: 70, youngsModulus: 117, elongation: 45, hardness: 'HB 45', thermalConductivity: 391, meltingPoint: 1083 },
-    'C2600': { density: 8.53, tensileStrength: 325, yieldStrength: 95, youngsModulus: 110, elongation: 65, hardness: 'HB 55-80', thermalConductivity: 120, meltingPoint: 940 },
-    'C5191': { density: 8.80, tensileStrength: 520, yieldStrength: 195, youngsModulus: 110, elongation: 45, hardness: 'HB 160', thermalConductivity: 67, meltingPoint: 1025 },
+    'C1100': { density: 8.94, tensileStrength: 220, yieldStrength: 70, youngsModulus: 117, poissonsRatio: 0.33, elongation: 45, hardness: 'HB 45', thermalConductivity: 391, meltingPoint: 1083 },
+    'C2600': { density: 8.53, tensileStrength: 325, yieldStrength: 95, youngsModulus: 110, poissonsRatio: 0.33, elongation: 65, hardness: 'HB 55-80', thermalConductivity: 120, meltingPoint: 940 },
+    'C5191': { density: 8.80, tensileStrength: 520, yieldStrength: 195, youngsModulus: 110, poissonsRatio: 0.33, elongation: 45, hardness: 'HB 160', thermalConductivity: 67, meltingPoint: 1025 },
   },
   titanium: {
-    'Ti-6Al-4V':    { density: 4.43, tensileStrength: 950, yieldStrength: 880, youngsModulus: 113.8, elongation: 14, hardness: 'HRC 36', thermalConductivity: 6.7, meltingPoint: 1660 },
+    'Ti-6Al-4V':    { density: 4.43, tensileStrength: 950, yieldStrength: 880, youngsModulus: 113.8, poissonsRatio: 0.34, elongation: 14, hardness: 'HRC 36', thermalConductivity: 6.7, meltingPoint: 1660 },
     'CP-Ti Grade2': { density: 4.51, tensileStrength: 345, yieldStrength: 275, youngsModulus: 105, elongation: 20, hardness: 'HB 200', thermalConductivity: 16.4, meltingPoint: 1668 },
   },
 };
@@ -83,6 +101,9 @@ export function material(input: MaterialInput): MaterialResult {
     tensileStrength: spec.tensileStrength,
     yieldStrength: spec.yieldStrength,
     youngsModulus: spec.youngsModulus,
+    // Spread with `...` rather than always assigning: a grade with no agreed ratio must
+    // come back without the key, not with `undefined` sitting where a number is expected.
+    ...(spec.poissonsRatio === undefined ? {} : { poissonsRatio: spec.poissonsRatio }),
     elongation: spec.elongation,
     hardness: spec.hardness,
     thermalConductivity: spec.thermalConductivity,
