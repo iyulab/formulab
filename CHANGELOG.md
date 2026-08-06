@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.2] - 2026-08-06
+
+### Changed
+
+- **Formulas that do come from a standard now name it — and one table says it could not be checked.**
+
+  The previous release covered constants whose origin was unstated. This one covers the
+  opposite case: calculations that follow a published standard exactly, while the code said
+  nothing about it. A reader could not tell which figures were fixed by a standard and which
+  were the library's own choices, and that is the difference between a value that must not
+  drift and one that may.
+
+  - `metal/bearing` — the rating life exponents cite ISO 281, and the doc now says what makes
+    the result the *basic* rating life rather than a modified one.
+  - `metal/tap` — the profile factors cite ISO 68-1, and the 75% thread engagement default is
+    now named for what it is: a shop convention layered on top of that geometry, prescribed by
+    nothing.
+  - `metal/screw` — the diameter/pitch series and the clearance hole series are tabulated, not
+    derived, so a disagreement is a transcription error. The doc says so and cites the series.
+  - `electronics/resistor` — the colour code cites IEC 60062, and the doc distinguishes a
+    definition from a measurement.
+  - `metal/roughness` — records that the grade notation and the profile parameters behind Ra
+    and Rz were superseded at the end of 2021, while the values themselves are unchanged.
+
+- **`safety/wbgt` — the index formula is sourced; the exposure limits are marked unverified.**
+
+  The weightings match ISO 7243 exactly and now cite it. The limit table beside them does not
+  get the same treatment: it has long been described as threshold limit values, but the
+  published table it would come from is not freely available, and secondary sources disagree
+  on both the figures and which column belongs to acclimatized workers. The values are left
+  as they are — substituting one unverified figure for another is not an improvement — and
+  the uncertainty is stated where a caller will see it, together with the fact that the
+  caution band is a margin chosen here rather than part of the index.
+
 ## [0.26.1] - 2026-08-06
 
 ### Changed

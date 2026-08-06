@@ -9,6 +9,14 @@ import type { BearingInput, BearingResult } from './types.js';
  * p = 3 for ball bearings
  * p = 10/3 for roller bearings
  *
+ * The exponents are not free parameters: they come from the Lundberg-Palmgren fatigue
+ * model and are what makes this the *basic* rating life, the life 90% of a large group
+ * of apparently identical bearings reaches or exceeds. A caller wanting a modified life
+ * has to apply the reliability and operating-condition factors on top; this returns the
+ * unadjusted figure.
+ *
+ * @reference ISO 281, basic dynamic load rating and basic rating life.
+ *
  * @throws RangeError if dynamicLoadRating, equivalentLoad, or rpm is not positive
  */
 export function bearing(input: BearingInput): BearingResult {

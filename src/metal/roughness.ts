@@ -11,6 +11,12 @@ import type { RoughnessInput, RoughnessResult } from './types.js';
  * common Rz = 4 x Ra rule of thumb, and any single Ra corresponds to a spread of Rz
  * values in practice, widening as the surface gets rougher. Results derived from the
  * Rz column are estimates, not conversions between specified quantities.
+ *
+ * The grade-number notation and the profile-parameter definitions behind Ra and Rz were
+ * both withdrawn at the end of 2021 and superseded by the ISO 21920 series. The values
+ * are unchanged and the notation is still in wide use on drawings, which is why it is
+ * still carried here, but callers writing new documentation should expect the newer
+ * series to be cited instead.
  */
 const ISO_1302_TABLE = [
   { n: 1, ra: 0.025, rz: 0.1 },

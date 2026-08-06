@@ -1,7 +1,14 @@
 import type { ResistorBands, ResistorResult, ColorName } from './types.js';
 
 /**
- * Color code values for resistor bands
+ * Digit value carried by each band colour.
+ *
+ * This is a definition rather than a measurement: the colour-to-digit assignment is what
+ * the marking code says it is, so a wrong entry here is a decoding error, not an
+ * inaccuracy. Gold and silver carry no digit and are negative sentinels, meaningful only
+ * in the multiplier and tolerance positions.
+ *
+ * @reference IEC 60062, marking codes for resistors and capacitors.
  */
 const COLOR_VALUES: Record<ColorName, number> = {
   black: 0,

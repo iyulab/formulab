@@ -13,6 +13,13 @@ import type { TapInput, TapResult } from './types.js';
  * For Unified threads (UNC/UNF):
  * - Convert TPI to pitch: p = 25.4 / TPI
  * - Same formulas apply
+ *
+ * The 0.866025 and 1.0825 factors are the geometry of the 60 degree basic profile, not
+ * chosen constants. The thread percentage is a shop choice on top of that geometry: 75%
+ * is the usual default because it keeps most of the strength for much less tapping
+ * torque, but it is a convention, and no standard prescribes it.
+ *
+ * @reference ISO 68-1, basic profile for ISO general purpose metric screw threads.
  */
 export function tap(input: TapInput): TapResult {
   const { standard, majorDiameter, pitch: inputPitch, threadPercentage = 75 } = input;

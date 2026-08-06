@@ -1,6 +1,17 @@
 import { roundTo } from '../utils.js';
 import type { ScrewInput, ScrewResult, ScrewSpec } from './types.js';
 
+/**
+ * Nominal diameters with their coarse and fine pitches, and clearance hole diameters.
+ *
+ * The diameter and pitch pairings are the metric thread series; the clearance holes are
+ * the close and normal (free) series for the same nominal sizes. Neither is a derived
+ * figure - both are tabulated, so a value that disagrees with the standard is a
+ * transcription error rather than a rounding difference.
+ *
+ * @reference ISO 261 (general plan) and ISO 262 (selected sizes) for the thread series;
+ * ISO 273 for clearance holes.
+ */
 const SCREW_TABLE: Record<string, ScrewSpec> = {
   'M1.6': { nominal: 1.6, coarsePitch: 0.35, finePitch: 0.2, clearanceClose: 1.7, clearanceFree: 2.0 },
   'M2':   { nominal: 2, coarsePitch: 0.4, finePitch: 0.25, clearanceClose: 2.2, clearanceFree: 2.6 },
