@@ -2,8 +2,16 @@ import { roundTo } from '../utils.js';
 import type { BendAllowanceInput, BendAllowanceResult, BendingMaterial } from './types.js';
 
 /**
- * Default K-factor values by material
- * K-factor represents the position of the neutral axis relative to thickness
+ * Default K-factor values by material.
+ *
+ * K-factor is the neutral-axis position as a fraction of thickness. It is empirical:
+ * it varies with forming method, tooling and lot, so the source matters as much as
+ * the number.
+ *
+ * These are conventional air-bending defaults in common shop use; no normative source
+ * is attached to them. They are a starting point, not a specification. Callers that
+ * need a traceable figure should pass `input.kFactor` explicitly, or derive one from a
+ * measured flat length via `kFactorReverse`.
  */
 const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
   mildSteel: 0.44,
@@ -14,7 +22,12 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
 };
 
 /**
- * Minimum bend radius multiplier (x thickness) by material
+ * Minimum bend radius multiplier (x thickness) by material.
+ *
+ * Like the K-factor table above, these are conventional shop defaults, not values
+ * drawn from a specific standard's table. Treat them as a starting point for a
+ * feasibility check, not a specification limit; verify against tooling and material
+ * datasheets for production use.
  */
 const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
   mildSteel: 1.0,
