@@ -5,14 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.1] - 2026-08-06
+
+### Fixed
+
+- Restored the code spans that went missing from the previous entry, which left it naming
+  neither the module it describes nor the function it contrasts against.
+
 ## [0.27.0] - 2026-08-06
 
 ### Added
 
-- ** — the lot size ranges the sampling tables are indexed by are now exported.**
+- **`quality/aql` — the lot size ranges the sampling tables are indexed by are now exported.**
 
   A caller that wants to present one row per lot size range could not get the boundaries out
-  of : it returns a plan, not the bounds that produced it. The only way was to restate
+  of `aql()`: it returns a plan, not the bounds that produced it. The only way was to restate
   the series on the consumer side, which makes a second source for the same figures — the day
   a boundary moves, the consumer keeps listing the old one.
 
