@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.2] - 2026-08-06
+
+### Changed
+
+- Repository tooling only, no change to the published API. Added an audit that lists
+  constants which decide a verdict without saying where they come from, sorting them into
+  sourced, explicitly-unsourced, and silent. It reports rather than fails: it follows data
+  flow one hop, so a table reached through a local and compared through a field is not
+  seen, and a check that under-reports must not gate. Run it with
+  `npm run audit:constant-provenance`.
+
 ## [0.27.1] - 2026-08-06
 
 ### Fixed
