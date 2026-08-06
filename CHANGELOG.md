@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.0] - 2026-08-06
+
+### Added
+
+- ** — the lot size ranges the sampling tables are indexed by are now exported.**
+
+  A caller that wants to present one row per lot size range could not get the boundaries out
+  of : it returns a plan, not the bounds that produced it. The only way was to restate
+  the series on the consumer side, which makes a second source for the same figures — the day
+  a boundary moves, the consumer keeps listing the old one.
+
+  Two things about the ranges are worth knowing before tabulating them, and both are pinned
+  by tests. The plan is constant across a range, so a row per range is honest for the code
+  letter and the accept and reject numbers. The **sample size is not**: a plan can call for
+  more units than the smallest lots in its range contain, and the sample is then the whole
+  lot. Read the sample size at the top of a range, where nothing is capped.
+
 ## [0.26.2] - 2026-08-06
 
 ### Changed

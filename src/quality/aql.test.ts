@@ -1,5 +1,52 @@
 import { describe, it, expect } from 'vitest';
-import { aql } from './aql.js';
+import { aql, AQL_LOT_SIZE_RANGES } from './aql.js';
+
+describe('AQL_LOT_SIZE_RANGES', () => {
+  it('covers the lot sizes without a gap or an overlap', () => {
+    expect(AQL_LOT_SIZE_RANGES.length).toBeGreaterThan(0);
+    expect(AQL_LOT_SIZE_RANGES[0].from).toBe(2);
+    expect(AQL_LOT_SIZE_RANGES[AQL_LOT_SIZE_RANGES.length - 1].upTo).toBe(Infinity);
+    for (let i = 1; i < AQL_LOT_SIZE_RANGES.length; i++) {
+      expect(AQL_LOT_SIZE_RANGES[i].from).toBe(AQL_LOT_SIZE_RANGES[i - 1].upTo + 1);
+      expect(AQL_LOT_SIZE_RANGES[i].upTo).toBeGreaterThan(AQL_LOT_SIZE_RANGES[i].from);
+    }
+  });
+
+  // The point of exporting the ranges is that a caller can present one row per range and
+  // trust the row. That holds for the plan itself, so the check calls aql() at both ends of
+  // every range rather than re-reading the table it is meant to guard.
+  it('gives one plan across each range, so a row per range is honest', () => {
+    for (const { from, upTo } of AQL_LOT_SIZE_RANGES) {
+      const last = Number.isFinite(upTo) ? upTo : from * 10;
+      for (const level of ['I', 'II', 'III'] as const) {
+        const atStart = aql({ lotSize: from, aqlLevel: 2.5, inspectionLevel: level });
+        const atEnd = aql({ lotSize: last, aqlLevel: 2.5, inspectionLevel: level });
+        expect(atEnd.sampleCode).toBe(atStart.sampleCode);
+        expect(atEnd.acceptNumber).toBe(atStart.acceptNumber);
+        expect(atEnd.rejectNumber).toBe(atStart.rejectNumber);
+      }
+    }
+  });
+
+  // The sample size is the one thing that is not constant across a range: a plan may call
+  // for more units than the smallest lots in that range contain, and the sample is then the
+  // whole lot. A caller tabulating one sample size per range has to read it at the top of
+  // the range, where nothing is capped - which is why this behaviour is pinned rather than
+  // smoothed over.
+  it('caps the sample at the lot when the plan asks for more units than exist', () => {
+    const tiny = aql({ lotSize: 2, aqlLevel: 2.5, inspectionLevel: 'III' });
+    const full = aql({ lotSize: 8, aqlLevel: 2.5, inspectionLevel: 'III' });
+    expect(tiny.sampleCode).toBe(full.sampleCode);
+    expect(tiny.sampleSize).toBe(2);
+    expect(tiny.samplingPercent).toBe(100);
+    expect(full.sampleSize).toBeGreaterThan(tiny.sampleSize);
+  });
+
+  it('puts a lot below the tabulated series into the first range', () => {
+    const first = aql({ lotSize: AQL_LOT_SIZE_RANGES[0].from, aqlLevel: 2.5, inspectionLevel: 'II' });
+    expect(aql({ lotSize: 1, aqlLevel: 2.5, inspectionLevel: 'II' }).sampleCode).toBe(first.sampleCode);
+  });
+});
 
 describe('aql', () => {
   describe('basic sampling plan', () => {

@@ -20,6 +20,25 @@ const LOT_SIZE_RANGES: Array<{ max: number; codes: Record<InspectionLevel, strin
   { max: Infinity, codes: { 'S-1': 'D', 'S-2': 'E', 'S-3': 'H', 'S-4': 'K', 'I': 'N', 'II': 'Q', 'III': 'R' } },
 ];
 
+/**
+ * The lot size ranges the sampling tables are indexed by, smallest first. A lot belongs
+ * to the range where `from <= lotSize <= upTo`, and the last range is open-ended.
+ *
+ * Exported because a caller cannot recover the ranges by probing `aql()` — that returns a
+ * plan, not the bounds that produced it — and restating them on its side would be a second
+ * source for the same figures: the day a boundary moves, the caller would keep listing the
+ * old one. Anything that presents results per lot size range, such as a lookup table or a
+ * range selector, should read them here.
+ *
+ * The tabulated series starts at 2. A smaller lot is not rejected: it falls into the first
+ * range and gets that plan, so `from` on the first entry states where the series begins,
+ * not a minimum input.
+ */
+export const AQL_LOT_SIZE_RANGES: ReadonlyArray<{ readonly from: number; readonly upTo: number }> =
+  LOT_SIZE_RANGES.map((range, i) =>
+    Object.freeze({ from: i === 0 ? 2 : LOT_SIZE_RANGES[i - 1].max + 1, upTo: range.max })
+  );
+
 // Sample sizes for each code letter
 const SAMPLE_SIZES: Record<string, number> = {
   A: 2, B: 3, C: 5, D: 8, E: 13, F: 20, G: 32, H: 50,

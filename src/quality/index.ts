@@ -3,7 +3,7 @@ export { oee } from './oee.js';
 export { cpk } from './cpk.js';
 export { cycleTime } from './cycle.js';
 export { taktTime } from './takt.js';
-export { aql } from './aql.js';
+export { aql, AQL_LOT_SIZE_RANGES } from './aql.js';
 export { downtime } from './downtime.js';
 export { dpmo } from './dpmo.js';
 export { lineBalancing } from './lineBalancing.js';
