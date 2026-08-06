@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.1] - 2026-08-06
+
+### Changed
+
+- **Constants that decide a verdict now say where they come from — or that nothing backs them.**
+
+  A constant read through a comparison to produce a warning or a status is doing more work
+  than one that is merely displayed: when its origin is unstated, a caller cannot tell a
+  legal limit from a shop convention, and a threshold that is quietly too narrow or too wide
+  produces a verdict nobody can audit. Every such constant in the library was reviewed. No
+  value changed — replacing an unsourced figure with another unsourced figure is not an
+  improvement.
+
+  - `safety/havsCalculate` — the hand-arm vibration action and limit values now cite
+    Directive 2002/44/EC, Article 3(1), and say so explicitly: the status returned is a
+    statement about that regime, not a universal one. Other jurisdictions set their own
+    figures on their own basis.
+  - `construction/stair` — the auto-calculation riser heights are comfort figures, and they
+    are narrower than any model code permits. They now say that outright, so a result derived
+    from them is not presented as a code check.
+  - `construction/concreteMix` — the mix table claimed to be "based on standard mix design
+    proportions" without naming a standard, which is worse than saying nothing: it asserts a
+    backing that does not exist. It now states that the proportions are conventional, and that
+    the higher grades are outside what a nominal-mix table covers at all.
+  - `metal/roughness` — the grade table's identifier names a standard, but only part of it
+    comes from one. The grade-to-Ra series does; the Rz column does not, because no standard
+    defines a general conversion between the two — they measure different things. The two are
+    now separated in the comment, and results derived from the Rz column are called estimates.
+
 ## [0.26.0] - 2026-08-04
 
 ### Added

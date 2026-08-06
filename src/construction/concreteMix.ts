@@ -1,10 +1,6 @@
 import type { ConcreteGrade, ConcreteInput, ConcreteResult } from './types.js';
 import { roundTo } from '../utils.js';
 
-/**
- * Concrete mix design data by grade
- * Based on standard mix design proportions
- */
 interface MixDesign {
   cementPerM3: number;  // kg cement per m³
   sandRatio: number;    // sand ratio relative to cement
@@ -13,6 +9,15 @@ interface MixDesign {
   ratioString: string;  // display ratio string
 }
 
+/**
+ * Concrete mix proportions by grade.
+ *
+ * These are conventional nominal proportions and cement contents in common use; no
+ * normative source is attached to them, and in particular the higher grades are not
+ * taken from a standard's nominal-mix table — above the lower grades, codes generally
+ * call for a designed mix proven by trial batches rather than a fixed ratio. Treat the
+ * figures as a starting point for estimating quantities, not as a specified mix.
+ */
 const MIX_DESIGNS: Record<ConcreteGrade, MixDesign> = {
   '15': { cementPerM3: 280, sandRatio: 2, gravelRatio: 4, wcRatio: 0.60, ratioString: '1 : 2 : 4' },
   '20': { cementPerM3: 330, sandRatio: 1.5, gravelRatio: 3, wcRatio: 0.55, ratioString: '1 : 1.5 : 3' },

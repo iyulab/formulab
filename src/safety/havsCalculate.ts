@@ -1,12 +1,27 @@
 import type { HavsInput, HavsResult, ToolExposure } from './types.js';
 
-// Exposure Action Value (EAV) = 2.5 m/s²
+/**
+ * Daily exposure action value (EAV) for hand-arm vibration, in m/s² A(8).
+ *
+ * @reference Directive 2002/44/EC, Article 3(1)(b): "the daily exposure action value
+ * standardised to an eight-hour reference period shall be 2,5 m/s2".
+ */
 const EAV = 2.5;
 
-// Exposure Limit Value (ELV) = 5.0 m/s²
+/**
+ * Daily exposure limit value (ELV) for hand-arm vibration, in m/s² A(8).
+ *
+ * @reference Directive 2002/44/EC, Article 3(1)(a): "the daily exposure limit value
+ * standardised to an eight-hour reference period shall be 5 m/s2".
+ *
+ * Both values are those of the European regime and are what `determineStatus` compares
+ * against. Other jurisdictions set their own figures — notably the ACGIH TLV, which is
+ * stated on a different basis — so a status returned here is a statement about the
+ * Directive, not a universal one.
+ */
 const ELV = 5.0;
 
-// Reference period T0 = 8 hours
+/** Reference period T0 for A(8), in hours, per the same article. */
 const T0 = 8;
 
 /**

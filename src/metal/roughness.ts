@@ -1,6 +1,17 @@
 import { roundTo } from '../utils.js';
 import type { RoughnessInput, RoughnessResult } from './types.js';
 
+/**
+ * Roughness grade numbers with their Ra values in micrometres, and an Rz column.
+ *
+ * The N-grade to Ra pairing is the standard series, where each step doubles Ra from
+ * 0.025 at N1 to 50 at N12. **The Rz column is not**: no standard defines a general
+ * conversion between Ra and Rz, because they measure different things — one is an
+ * average deviation, the other a peak-to-valley height. The figures here follow the
+ * common Rz = 4 x Ra rule of thumb, and any single Ra corresponds to a spread of Rz
+ * values in practice, widening as the surface gets rougher. Results derived from the
+ * Rz column are estimates, not conversions between specified quantities.
+ */
 const ISO_1302_TABLE = [
   { n: 1, ra: 0.025, rz: 0.1 },
   { n: 2, ra: 0.05, rz: 0.2 },

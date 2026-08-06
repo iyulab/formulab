@@ -1,10 +1,21 @@
 import type { StairInput, StairResult } from './types.js';
 import { roundTo } from '../utils.js';
 
-// Default comfortable riser height range: 150-180mm
+/**
+ * Riser heights used when the caller asks for auto-calculation, in millimetres.
+ *
+ * These are comfort figures in common use, not limits taken from a building code, and
+ * they are deliberately narrower than any code band: model codes permit risers well
+ * below 150mm and above 180mm. Nothing here decides code compliance, and a result
+ * produced from these values must not be presented as a code check — the applicable
+ * limits depend on jurisdiction and on whether the stair is residential or commercial.
+ *
+ * They only steer the riser count when `riserHeight` is 0 ("auto"); an explicit
+ * `riserHeight` is used as given.
+ */
 const MIN_RISER = 150;
 const MAX_RISER = 180;
-const DEFAULT_RISER = 170; // Target riser height for auto-calculation
+const DEFAULT_RISER = 170;
 
 /**
  * Calculate stair dimensions
