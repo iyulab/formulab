@@ -101,7 +101,8 @@
     "test:watch": "vitest",
     "docs:api": "typedoc",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "prepublishOnly": "npm run clean && npm run build && npm run test"
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "audit:constant-provenance": "node scripts/audit-constant-provenance.mjs src"
   },
   "keywords": [
     "manufacturing",
