@@ -9,8 +9,13 @@ import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
  *
  * All dimensions in mm; results in mm², mm⁴, mm³, mm.
  *
- * Formulas from: Timoshenko "Mechanics of Materials", AISC Steel Manual,
- * Roark's "Formulas for Stress and Strain"
+ * @reference Timoshenko, S. "Mechanics of Materials" — rectangle, circle, hollow-section formulas.
+ * @reference Young, W.C. & Budynas, R.G. "Roark's Formulas for Stress and Strain", 7th Ed. —
+ *            I-beam, T-section, C-channel component-method (parallel-axis) derivations.
+ * @reference AISC Steel Construction Manual — section property naming convention (Ix, Sx, rx, etc.).
+ * These are closed-form section-property formulas, not a table lookup: every shape's Ix/Sx/rx
+ * is independently re-derivable from the definitions above, and the golden tests in
+ * momentOfInertia.test.ts pin hand-computed values for every shape, not just the simple ones.
  *
  * @throws {RangeError} Dimensions must be positive
  * @throws {RangeError} Diameter must be positive

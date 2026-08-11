@@ -188,6 +188,30 @@ describe('reliefValve', () => {
     });
   });
 
+  describe('gas critical-flow coefficient C (golden, API 520 Part I)', () => {
+    // C(k) = 520 x sqrt(k x (2/(k+1))^((k+1)/(k-1))) is the API 520 critical-flow coefficient.
+    // Computed independently of this file: C(1.4) = 356.0604, C(1.3) = 346.9764 — 356 for k=1.4
+    // is the value commonly published for diatomic gases (air, nitrogen) in API 520 Part I
+    // Table 8 and secondary process-safety references. Since area is inversely proportional to
+    // C and every other input below is held identical between the two calls, the steam/gas area
+    // ratio must equal C(1.4)/C(1.3) regardless of the formula's internal unit conversions —
+    // this isolates the k-dependent coefficient from the rest of the sizing arithmetic.
+    it('steam (k=1.3) vs gas (k=1.4) area ratio matches C(1.4)/C(1.3) = 1.02618', () => {
+      const common = {
+        requiredCapacity: 10000,
+        setPressure: 500,
+        backPressure: 0,
+        temperature: 25,
+        molecularWeight: 29,
+      } as const;
+
+      const gas = reliefValve({ ...common, fluidType: 'gas' });
+      const steam = reliefValve({ ...common, fluidType: 'steam' });
+
+      expect(steam.requiredArea / gas.requiredArea).toBeCloseTo(1.02618, 4);
+    });
+  });
+
   describe('percent utilized', () => {
     it('should be <= 100%', () => {
       const result = reliefValve({

@@ -11,6 +11,11 @@ import type { PidInput, PidResult } from './types.js';
  *
  * @reference Ziegler, J.G. & Nichols, N.B. (1942). Optimum Settings for Automatic Controllers.
  * @reference Cohen, G.H. & Coon, G.A. (1953). Theoretical Consideration of Retarded Control.
+ *
+ * Every coefficient below (0.6/0.5/0.125 for Z-N ultimate PID, 1+r/3 through 4L/(11+2r) for
+ * Cohen-Coon, where r = L/T is the dead-time ratio) is the published table value for the cited
+ * method, not a derived or approximated figure — see the golden tests in pid.test.ts for a
+ * worked numeric case per method and controller type.
  */
 export function pid(input: PidInput): PidResult {
   const { method, controllerType } = input;

@@ -77,17 +77,47 @@ describe('pid', () => {
     });
   });
 
-  describe('Cohen-Coon', () => {
-    it('should calculate PID gains', () => {
+  describe('Cohen-Coon (golden, Cohen & Coon 1953 table, K=1 L=1 T=10 → r=0.1)', () => {
+    // Hand-computed from the published Cohen-Coon table, independently of this file's
+    // implementation: P: Kp=(T/L)(1+r/3); PI: Kp=(T/L)(0.9+r/12), Ti=L(30+3r)/(9+20r);
+    // PID: Kp=(T/L)(4/3+r/4), Ti=L(32+6r)/(13+8r), Td=4L/(11+2r). K=1 here so 1/K drops out.
+    it('P: Kp = 10 x (1 + 0.1/3) = 10.3333', () => {
+      const result = pid({
+        method: 'cohen-coon',
+        controllerType: 'P',
+        processGain: 1, deadTime: 1, timeConstant: 10,
+      });
+
+      expect(result.kp).toBeCloseTo(10.3333, 3);
+      expect(result.ti).toBe(0); // Infinity -> serialized as 0
+      expect(result.td).toBe(0);
+    });
+
+    it('PI: Kp = 10 x (0.9 + 0.1/12) = 9.0833, Ti = 30.3/11 = 2.7545', () => {
+      const result = pid({
+        method: 'cohen-coon',
+        controllerType: 'PI',
+        processGain: 1, deadTime: 1, timeConstant: 10,
+      });
+
+      expect(result.kp).toBeCloseTo(9.0833, 3);
+      expect(result.ti).toBeCloseTo(2.7545, 3);
+      expect(result.ki).toBeCloseTo(3.29758, 4);
+      expect(result.td).toBe(0);
+    });
+
+    it('PID: Kp = 10 x (4/3 + 0.1/4) = 13.5833, Ti = 32.6/13.8 = 2.3623, Td = 4/11.2 = 0.3571', () => {
       const result = pid({
         method: 'cohen-coon',
         controllerType: 'PID',
         processGain: 1, deadTime: 1, timeConstant: 10,
       });
 
-      expect(result.kp).toBeGreaterThan(0);
-      expect(result.ti).toBeGreaterThan(0);
-      expect(result.td).toBeGreaterThan(0);
+      expect(result.kp).toBeCloseTo(13.5833, 3);
+      expect(result.ti).toBeCloseTo(2.3623, 3);
+      expect(result.td).toBeCloseTo(0.3571, 3);
+      expect(result.ki).toBeCloseTo(5.75, 3);
+      expect(result.kd).toBeCloseTo(4.8512, 3);
     });
 
     it('should produce different gains than Z-N for same process', () => {

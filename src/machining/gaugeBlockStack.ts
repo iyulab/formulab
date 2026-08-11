@@ -2,8 +2,21 @@ import { roundTo } from '../utils.js';
 import type { GaugeBlockStackInput, GaugeBlockStackResult } from './types.js';
 
 /**
- * Metric 47-piece gauge block set (mm)
- * Standard: Grade 1 metric set per ISO 3650
+ * Metric 47-piece gauge block set (mm) — Mitutoyo Series 516-362 / equivalent Grade 0-2 catalog
+ * sets under DIN EN ISO 3650.
+ *
+ * This array previously also carried a "0.5 step" series (0.5, 1.5, ..., 9.5 — 10 blocks),
+ * inflating it to 56 entries under a "47" name. Cross-checked against two independent catalog
+ * descriptions of the commercial 47-piece set (2026-08-11): the half-mm series is NOT part of
+ * it — it belongs only to the finer 87/88-piece set below, which exists specifically to reach
+ * sub-1mm and .5mm targets the 47-piece set cannot. The array now holds the 46 usable stacking
+ * blocks of the real 46/47-piece composition (9+9+9+9+10); the catalog's 47th piece is a
+ * 1.0005mm zero-reference block used for comparator calibration, not for building stack
+ * dimensions, so it is intentionally not included here.
+ *
+ * A target that requires a block smaller than ~1mm (e.g. exactly 0.5mm) is not achievable from
+ * this set and correctly produces a nonzero `error` — see gaugeBlockStack.test.ts's "cannot reach
+ * a sub-1mm target" case. Use `metric88` for targets needing that resolution.
  */
 const METRIC_47_SET: number[] = [
   // Series 1: 0.001 step (9 blocks)
@@ -12,16 +25,19 @@ const METRIC_47_SET: number[] = [
   1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.07, 1.08, 1.09,
   // Series 3: 0.10 step (9 blocks)
   1.10, 1.20, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90,
-  // Series 4: 0.5 step — ISO 3650 half-mm blocks for sub-1mm remainders
-  0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5,
-  // Series 5: whole mm (9 blocks)
+  // Series 4: whole mm (9 blocks)
   1, 2, 3, 4, 5, 6, 7, 8, 9,
-  // Series 6: tens (10 blocks)
+  // Series 5: tens (10 blocks)
   10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
 ];
 
 /**
- * Metric 88-piece gauge block set (mm) — extended precision
+ * Metric 88-piece gauge block set (mm) — extended precision.
+ *
+ * This array has 87 entries: 9 (0.001 step) + 49 (0.01 step, 1.01-1.49) + 10 (half-mm, 0.5-9.5)
+ * + 9 (whole mm) + 10 (tens), matching the catalog composition of the commercial "87/88-piece"
+ * set (catalog naming varies by vendor). As with the 47-piece set above, the missing 88th piece
+ * is a 1.0005mm zero-reference block not used for stacking; not included here.
  */
 const METRIC_88_SET: number[] = [
   // 0.001 step: 1.001-1.009 (9 blocks)

@@ -27,13 +27,28 @@ describe('gaugeBlockStack', () => {
     }
   });
 
-  it('should handle target of 0.5mm with the 0.5mm block', () => {
-    const result = gaugeBlockStack({ targetDimension: 0.5 });
+  it('should handle target of 0.5mm with the 0.5mm block (metric88 — the set that has one)', () => {
+    // 0.5mm is not achievable from metric47 (see the "cannot reach a sub-1mm target" case
+    // below) — the 47-piece catalog set has no block under ~1mm. metric88 is the set that
+    // exists specifically to cover half-mm and sub-1mm remainders.
+    const result = gaugeBlockStack({ targetDimension: 0.5, availableSet: 'metric88' });
 
     expect(result.error).toBeCloseTo(0, 4);
     expect(result.blockCount).toBe(1);
     expect(result.blocks).toContain(0.5);
   });
+
+  it('metric47 (golden, 46-piece catalog composition) cannot reach a sub-1mm target', () => {
+    // Regression pin for ISSUE found 2026-08-11: METRIC_47_SET previously also carried the
+    // half-mm series (0.5..9.5) copied from the 88-piece set, letting a "47-piece" stack
+    // silently satisfy targets the real commercial 47-piece set cannot build. The smallest
+    // real block is 1.001mm, so a 0.5mm target must now fail to zero out.
+    const result = gaugeBlockStack({ targetDimension: 0.5, availableSet: 'metric47' });
+
+    expect(result.error).toBeGreaterThan(0);
+    expect(result.blocks).not.toContain(0.5);
+  });
+
 
   it('should use metric88 set when specified', () => {
     const result = gaugeBlockStack({

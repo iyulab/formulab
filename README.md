@@ -16,7 +16,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **2,921 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **3,020 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
@@ -24,23 +24,28 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
 | Quality | 21 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
-| Metal | 33 | metalWeight | Machinery's Handbook, ASME B36.10/B16.5 |
+| Metal | 33 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength | Machinery's Handbook, ASME B36.10/B16.5 |
 | Logistics | 17 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
-| Chemical | 12 | — | Darcy-Weisbach, Fourier, API 520, ISA |
-| Electronics | 12 | — | IPC-2221 |
-| Construction | 15 | — | AISC, Timoshenko |
+| Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
+| Electronics | 12 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
+| Construction | 15 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
 | Automotive | 9 | — | AASHTO, SAE J1772 |
 | Energy | 15 | — | NREL PVWatts, ISO 50001 |
 | Food | 7 | — | HACCP, ICH Q1A |
 | Utility | 18 | — | — |
 | Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
-| Machining | 12 | — | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
+| Machining | 12 | truePosition, gaugeBlockStack | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
 | IE | 5 | — | MTM/MOST, Wright's learning curve |
 
 > Functions with golden reference tests have been verified against authoritative engineering sources.
 > See each function's JSDoc for specific references.
+>
+> **Construction note**: only `momentOfInertia()` cites AISC/Timoshenko/Roark's directly; the
+> domain's other 14 functions are self-evident geometry/statics (no external standard needed) or
+> already carry their own "convention, not a code limit" disclosure (`concreteMix`, `stair`) —
+> the "Key References" column above described the whole domain, not each function.
 
 ## Numerical Accuracy & Testing
 
@@ -73,6 +78,12 @@ The following functions include tests verified against published reference value
 | `pressFit()` | Shigley's Mechanical Engineering Design | Same-material solid-shaft interface pressure (39.36 MPa), nu-independence |
 | `spring()` | Shigley's Mechanical Engineering Design | Spring rate (Eq. 10-9), Wahl factor (Eq. 10-5), corrected shear stress (Eq. 10-7) |
 | `weldStrength()` | AISC 360 ASD / AWS D1.1 | Equal-leg fillet: throat 0.707·leg, allowable shear 0.30·FEXX (E70=144.9 MPa), capacity/utilization |
+| `pid()` | Ziegler-Nichols (1942), Cohen-Coon (1953) | Cohen-Coon P/PI/PID gains at r=L/T=0.1 (Kp, Ti, Td, derived Ki/Kd) against the published coefficient table |
+| `reliefValve()` | API 520 Part I | Critical-flow coefficient C(k=1.4)=356.06 vs. C(k=1.3), cross-checked via the steam/gas required-area ratio |
+| `momentOfInertia()` | Timoshenko / Roark's Formulas for Stress and Strain, 7th Ed. | Closed-form Ix/Iy/Sx/Sy/rx/ry pinned for all 7 shapes, including the T-section and C-channel parallel-axis (component-method) derivations, not just the elementary rectangle/circle cases |
+| `truePosition()` | ASME Y14.5-2018 | Diametral true-position formula TP = 2 x radial deviation, MMC bonus tolerance |
+| `gaugeBlockStack()` | Mitutoyo Series 516 / DIN EN ISO 3650 catalog composition | The 47-piece set's real 46-block composition (no half-mm series — that belongs only to the 87/88-piece set); regression-pins that a sub-1mm target correctly fails on the 47-piece set |
+| `resistorDecode()` | IEC 60062 | Digit/multiplier/tolerance color-band decoding for canonical 4/5/6-band values (e.g. brown-black-red-gold = 1kΩ ±5%); the 6-band temperature-coefficient table's brown/red/blue entries only — see the JSDoc note on the rest |
 
 ### Edge Case Handling
 

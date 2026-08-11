@@ -106,9 +106,10 @@ describe('momentOfInertia', () => {
     });
   });
 
-  describe('tSection', () => {
+  describe('tSection (golden, Roark component method — parallel-axis theorem)', () => {
     it('should calculate T-section properties', () => {
-      // bf=100, tf=10, tw=8, hw=90
+      // bf=100, tf=10, tw=8, hw=90 — expected values hand-computed independently (scratch
+      // script re-deriving the parallel-axis method from Roark's, not by calling this function).
       const result = momentOfInertia({
         shape: 'tSection',
         flangeWidth: 100, flangeThickness: 10,
@@ -121,15 +122,22 @@ describe('momentOfInertia', () => {
       // Centroid from bottom: y_bar = (720*45 + 1000*95) / 1720
       // = (32400 + 95000) / 1720 = 127400 / 1720 ≈ 74.07
       expect(result.centroidY).toBeCloseTo(74.07, 1);
-      // Ix should be positive
-      expect(result.Ix).toBeGreaterThan(0);
-      expect(result.Sx).toBeGreaterThan(0);
+      // Ix = web(I0 + Ad^2) + flange(I0 + Ad^2), parallel-axis about y_bar = 74.0698
+      expect(result.Ix).toBeCloseTo(1540844.96, 0);
+      // Iy = (hw*tw^3 + tf*bf^3) / 12 — flanges dominate since bf >> tw
+      expect(result.Iy).toBeCloseTo(837173.33, 0);
+      // Sx = Ix / max(yTop, yBot) — governed by the shorter distance to the extreme fiber
+      expect(result.Sx).toBeCloseTo(20802.62, 0);
+      expect(result.Sy).toBeCloseTo(16743.47, 0);
+      expect(result.rx).toBeCloseTo(29.93, 1);
+      expect(result.ry).toBeCloseTo(22.06, 1);
     });
   });
 
-  describe('cChannel', () => {
+  describe('cChannel (golden, Roark component method — parallel-axis theorem)', () => {
     it('should calculate C-channel properties', () => {
-      // bf=50, H=200, tw=6, tf=10
+      // bf=50, H=200, tw=6, tf=10 — expected values hand-computed independently (scratch
+      // script re-deriving the parallel-axis method from Roark's, not by calling this function).
       const result = momentOfInertia({
         shape: 'cChannel',
         flangeWidth: 50, totalHeight: 200,
@@ -140,8 +148,14 @@ describe('momentOfInertia', () => {
       expect(result.area).toBe(2080);
       // Centroid Y = H/2 = 100 (symmetric about x-axis)
       expect(result.centroidY).toBe(100);
-      expect(result.Ix).toBeGreaterThan(0);
-      expect(result.Iy).toBeGreaterThan(0);
+      // Ix = web + 2*flange (parallel-axis about mid-height)
+      expect(result.Ix).toBeCloseTo(11949333.33, 0);
+      // Iy = web + 2*flange about the shifted centroid xBar = 16.4615mm from the web's back face
+      expect(result.Iy).toBeCloseTo(618650.26, 0);
+      expect(result.Sx).toBeCloseTo(119493.33, 0);
+      expect(result.Sy).toBeCloseTo(15646.80, 0);
+      expect(result.rx).toBeCloseTo(75.79, 1);
+      expect(result.ry).toBeCloseTo(17.25, 1);
       // Ix should be much larger than Iy for C-channel
       expect(result.Ix).toBeGreaterThan(result.Iy);
     });

@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.3] - 2026-08-11
+
+Golden reference test coverage expansion across four previously-uncredited domains (Chemical,
+Construction, Machining, Electronics), including one real behavior fix found along the way.
+
+### Fixed
+
+- **`machining/gaugeBlockStack` — the `metric47` gauge block set was not actually a 47-piece
+  set.** `METRIC_47_SET` carried an extra half-mm series (0.5, 1.5, ..., 9.5 — 10 blocks) that
+  belongs only to the finer 87/88-piece set, inflating it to 56 blocks under a "47" name.
+  Cross-checked against two independent catalog descriptions of the commercial 47-piece set
+  (Mitutoyo Series 516 / DIN EN ISO 3650 equivalents): the real composition is 46 stacking blocks
+  (9+9+9+9+10; the catalog's 47th piece is a 1.0005mm zero-reference block not used for
+  stacking). Practical effect: `gaugeBlockStack({ availableSet: 'metric47' })` could previously
+  recommend a physical block (e.g. a bare 0.5mm block) that a real 47-piece set does not contain.
+  A target requiring a sub-1mm block now correctly fails to zero out on `metric47` — regression-
+  pinned in `gaugeBlockStack.test.ts`. `METRIC_88_SET`'s comment was also corrected: the array
+  has 87 entries, matching its catalog composition (the "88th" piece is the same non-stacking
+  reference block); no behavior change there.
+
+### Added
+
+- **`chemical/pid` — Cohen-Coon P/PI/PID gains now have golden reference tests.** The existing
+  Cohen-Coon test only asserted `> 0`; it is replaced with values hand-computed from the
+  published Cohen & Coon (1953) coefficient table (verified independently against a second
+  public source) at r = L/T = 0.1, covering Kp/Ti/Td and the derived Ki/Kd. The Ziegler-Nichols
+  coefficients were also cross-checked against a second public source and annotated as
+  standard-table values, not derived figures.
+- **`chemical/reliefValve` — the API 520 critical-flow coefficient C now has a golden reference
+  test.** C(k=1.4) = 356.06 matches the value commonly published for diatomic gases in API 520
+  Part I references, independently of this codebase. Verified via the steam(k=1.3)/gas(k=1.4)
+  required-area ratio, which isolates C from the rest of the sizing formula's unit conversions.
+- **`construction/momentOfInertia` — T-section and C-channel golden tests are now fully pinned.**
+  Previously only asserted `> 0`/positivity for Ix/Iy/Sx/Sy; now pinned to values hand-computed
+  independently from Roark's parallel-axis (component) method. `@reference` tags added (was prose
+  only). README's Verification Status table credited the whole Construction domain to
+  "AISC, Timoshenko" — a repo-wide audit found only `momentOfInertia()` actually cites them (the
+  other 14 functions are self-evident geometry or already disclose "convention, not a code
+  limit"); the table and its note now say so.
+- **`construction/truePosition`, `machining/gaugeBlockStack`, `electronics/resistorDecode`
+  credited in golden-test coverage.** All three already had exact pinned expected values against
+  their cited standards (ASME Y14.5, Mitutoyo/DIN EN ISO 3650 catalog composition, IEC 60062) —
+  the README table just hadn't caught up.
+
+### Investigated, not changed
+
+- **`construction/rebar`'s D16/D25 unit-weight overrides remain unconfirmed against a named
+  standard.** Two secondary sources checked were inconclusive (one mislabeled a
+  cross-sectional-area column as unit weight; the other was a different national standard family
+  than this table's Korean/JIS D-series). No value changed — see
+  `claudedocs/issues/ISSUE-formulab-20260811-rebar-unit-weight-standard-unconfirmed.md`.
+- **`electronics/resistor`'s 6-band temperature-coefficient table** — brown/red/blue entries are
+  corroborated by every source checked; the rest of the table could not be cross-verified the
+  same way (a different published TCR scheme uses unrelated figures for the same colors, and it
+  wasn't established whether that's a different standard edition or a real disagreement). No
+  value changed; flagged in JSDoc.
+
 ## [0.27.2] - 2026-08-06
 
 ### Changed

@@ -60,8 +60,11 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     const Z = 1.0; // Compressibility factor
     const M = molecularWeight;
 
-    // C = coefficient depending on ratio of specific heats (k)
-    // For k=1.4: C ≈ 356
+    // C = coefficient depending on ratio of specific heats (k), API 520 Part I eq. for critical
+    // (choked) flow. C(k=1.4) = 356.06, matching the value commonly published for diatomic gases
+    // (air, nitrogen) in API 520 Part I Table 8 / secondary process-safety references — see the
+    // golden test in reliefValve.test.ts, which checks the k=1.4-vs-1.3 area ratio this constant
+    // implies against an independently computed C(1.4)/C(1.3).
     const k = fluidType === 'steam' ? 1.3 : 1.4;
     const C = 520 * Math.sqrt(k * Math.pow(2 / (k + 1), (k + 1) / (k - 1)));
 

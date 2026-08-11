@@ -3,16 +3,23 @@ import { roundTo } from '../utils.js';
 
 /**
  * Rebar unit weights in kg/m
- * Based on standard deformed bar specifications
- * Weight = (d² × 0.00617) where d = diameter in mm
+ *
+ * The D-size designations (D10..D32) are the Korean/JIS deformed-bar naming convention. Most
+ * entries equal the generic d² x 0.00617 nominal-weight formula (d = designation number in mm,
+ * 0.00617 approximating steel density over a circular cross-section); D16 and D25 instead carry
+ * an already-published "standard" figure that differs slightly from that formula (see per-entry
+ * comments) — but the specific standard responsible for those two overrides (KS D 3504? a
+ * particular mill's published table?) is not cited here, and a 2026-08-11 doc audit could not
+ * confirm it from freely available sources (see claudedocs/issues in this repo). Do not swap
+ * these for another unconfirmed secondary-source value without resolving which standard applies.
  */
 const REBAR_UNIT_WEIGHTS: Record<RebarSize, number> = {
   D10: 0.617,  // 10² × 0.00617 = 0.617
   D13: 1.04,   // 13² × 0.00617 ≈ 1.04
-  D16: 1.56,   // 16² × 0.00617 ≈ 1.58 (standard 1.56)
+  D16: 1.56,   // 16² × 0.00617 ≈ 1.58 (standard figure used instead: 1.56)
   D19: 2.23,   // 19² × 0.00617 ≈ 2.23
   D22: 2.98,   // 22² × 0.00617 ≈ 2.98
-  D25: 3.98,   // 25² × 0.00617 ≈ 3.85 (standard 3.98)
+  D25: 3.98,   // 25² × 0.00617 ≈ 3.85 (standard figure used instead: 3.98)
   D29: 5.18,   // 29² × 0.00617 ≈ 5.19
   D32: 6.31,   // 32² × 0.00617 ≈ 6.31
 };
