@@ -45,6 +45,12 @@ export function getUnifiedSizes(): string[] {
  * Look up thread dimensions from standard tables.
  *
  * @throws RangeError if the thread size is unknown
+ * @reference ISO 261 — ISO general purpose metric screw threads — General plan (metric
+ *   nominal diameter and pitch series)
+ * @reference ISO 68-1 — ISO general purpose screw threads — Basic profile (minor/pitch
+ *   diameter derivation from major diameter and pitch)
+ * @reference ASME B1.1 — Unified Inch Screw Threads (UN, UNR, and UNJ Thread Forms)
+ *   (unified major diameter, TPI, and tap drill sizes)
  */
 export function thread(input: ThreadInput): ThreadResult {
   if (input.type === 'metric') {
