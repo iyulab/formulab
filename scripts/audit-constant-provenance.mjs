@@ -35,10 +35,17 @@
  *
  * ## Known limits — read before trusting a zero
  *
- * Data flow is followed one hop. A table reached as `const t = TABLE[key]` and then
- * compared through `t.field` is two hops and is NOT reported: that is exactly how the
- * heat-stress limits were missed on the first pass. This under-reports, which is why it
- * reports rather than fails, and why it is an audit rather than a gate.
+ * Data flow is followed at most two hops: `const t = TABLE[key]` reaching a comparison
+ * directly (`t.field > x`, one hop) or through one further rename (`const v = t.field`
+ * then `v > x`, two hops — this is exactly the shape that let the WBGT heat-stress
+ * limits through on the first pass: `thresholds = WBGT_THRESHOLDS[workload]` then
+ * `threshold = thresholds.acclimatized` via a ternary). A third rename
+ * (`const w = v; ... w > x`) is NOT followed — tracking arbitrary-depth chains turns
+ * this from a narrow, defensible filter into a general dataflow analyzer, and the
+ * false-positive growth from matching unrelated same-named locals elsewhere in a large
+ * file is exactly the kind of noise that gets an audit ignored (see the comment above).
+ * This still under-reports beyond two hops, which is why it reports rather than fails,
+ * and why it is an audit rather than a gate.
  *
  * It also needs source, not build output: compiled output drops module-private doc
  * comments, and the controls above will fail loudly rather than report a false all-clear.
@@ -100,12 +107,27 @@ for (const file of sources(SRC)) {
     const name = declared[1];
 
     // Read forward to the end of the initializer so numeric tables are recognised too.
+    // Brace/bracket counting only starts *after* the top-level `=`: a multi-line type
+    // annotation (`const T: Record<K, { a: number; b: number }>` split across lines,
+    // as WBGT's threshold table is) contains its own `{...}` before the real value
+    // does, and counting from line one stops at the annotation's closing brace before
+    // ever reaching the actual numbers — silently dropping the constant below (no
+    // digit in the captured body), which is exactly how WBGT_THRESHOLDS went unseen.
+    const ASSIGN_OP = /(?<![=!<>])=(?![=>])/;
     let body = '';
     let depth = 0;
     let opened = false;
+    let pastEquals = false;
     for (let k = i; k < Math.min(i + 200, lines.length); k++) {
       body += lines[k] + '\n';
-      for (const ch of lines[k]) {
+      let scan = lines[k];
+      if (!pastEquals) {
+        const eq = ASSIGN_OP.exec(lines[k]);
+        if (!eq) continue;
+        pastEquals = true;
+        scan = lines[k].slice(eq.index + 1);
+      }
+      for (const ch of scan) {
         if (ch === '{' || ch === '[') { depth++; opened = true; }
         else if (ch === '}' || ch === ']') depth--;
       }
@@ -131,8 +153,26 @@ for (const file of sources(SRC)) {
       const assign = /const\s+([a-zA-Z_$][\w$]*)\s*=/.exec(lines[k]);
       if (assign) {
         const local = new RegExp('\\b' + assign[1] + '\\b');
-        for (let k2 = k + 1; k2 < Math.min(lines.length, k + 30); k2++) {
+        const assignStart = /(?:const|let)\s+([a-zA-Z_$][\w$]*)\s*=/;
+        const propOf = new RegExp('\\b' + assign[1] + '\\.[a-zA-Z_$]');
+        for (let k2 = k + 1; k2 < Math.min(lines.length, k + 30) && !hop; k2++) {
           if (local.test(lines[k2]) && COMPARISON.test(lines[k2])) { hop = true; break; }
+          // Second hop: a table-lookup result's *property* is pulled into a new
+          // local before the comparison. That rename severs the first hop's
+          // identifier, so it needs its own forward scan. The assignment and the
+          // property access can land on different lines (WBGT's acclimatized/
+          // unacclimatized split is a ternary spanning three lines), so the RHS
+          // is read as a short joined window rather than assumed single-line.
+          const assignStart2 = assignStart.exec(lines[k2]);
+          if (assignStart2) {
+            const rhs = lines.slice(k2, Math.min(lines.length, k2 + 4)).join('\n');
+            if (propOf.test(rhs)) {
+              const local2 = new RegExp('\\b' + assignStart2[1] + '\\b');
+              for (let k3 = k2 + 1; k3 < Math.min(lines.length, k2 + 30); k3++) {
+                if (local2.test(lines[k3]) && COMPARISON.test(lines[k3])) { hop = true; break; }
+              }
+            }
+          }
         }
       }
       if ((direct || hop) && VERDICT_SINK.test(window)) {
@@ -162,6 +202,10 @@ if (bend.length === 0) {
   failures.push('the minimum bend radius table is no longer classified DECLARED: ' + JSON.stringify(bend.map((r) => [r.name, r.bucket])));
 }
 if (of('SOURCED').length === 0) failures.push('nothing classified SOURCED, so the source detector is dead rather than the code clean');
+const wbgt = rows.filter((r) => r.file.endsWith('safety/wbgtCalculate.ts'));
+if (!wbgt.some((r) => r.name === 'WBGT_THRESHOLDS' && r.bucket === 'DECLARED')) {
+  failures.push('WBGT_THRESHOLDS is no longer reached through the two-hop chain (table -> ternary-selected field -> comparison), so the two-hop scan regressed: ' + JSON.stringify(wbgt.map((r) => [r.name, r.bucket])));
+}
 
 console.log('=== controls ===');
 if (failures.length) {

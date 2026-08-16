@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.8] - 2026-08-16
+
+`npm run audit:constant-provenance` (dev-only, not part of the published library surface)
+fixes for two independent gaps that let a judgment-bearing constant go unclassified.
+
+### Fixed
+
+- **A constant whose type annotation spans multiple lines and contains an object-literal
+  shape (`const T: Record<K, { a: number; b: number }> = {...}`) was silently skipped.**
+  The initializer scan counted braces from the declaration line onward, so the type
+  annotation's own `{...}` closed the scan before it ever reached the real value —
+  the constant was dropped for having "no digits" in what the scanner thought was its
+  body. Brace/bracket counting now starts only after the top-level `=`.
+- **A table value threaded through a second rename before the comparison that reads it
+  (`const row = TABLE[key]; const limit = cond ? row.a : row.b; ... x > limit`) was not
+  followed.** Only the direct one-hop case (`row.field` compared in place) was tracked.
+  The scan now follows one further rename, reading the assignment's right-hand side as a
+  short multi-line window so a ternary split across lines is not missed either. Chains
+  beyond two hops remain unfollowed by design — see the script's own doc comment for why.
+- Added a regression control (alongside the existing bend-constants control) so a future
+  change to either scan silently regressing is a hard failure, not a quiet drop.
+
 ## [0.27.7] - 2026-08-16
 
 Golden reference test coverage expansion across six domains (Machining, Environmental, Energy,
