@@ -1,7 +1,10 @@
 import { roundTo } from '../utils.js';
 import type { ChargingLossInput, ChargingLossResult } from './types.js';
 
-// Default charger efficiencies by type
+// Default charger efficiencies by type — typical real-world AC-DC conversion efficiency for
+// each charging level, not a value specified by SAE J1772/IEC 61851 themselves (those standards
+// define connector, voltage/current, and protocol requirements, not a numeric efficiency table).
+// Callers with measured hardware efficiency should pass `chargerEfficiency` explicitly.
 const DEFAULT_CHARGER_EFFICIENCY: Record<string, number> = {
   ac_l1: 0.85,
   ac_l2: 0.90,
@@ -17,8 +20,15 @@ const DEFAULT_CHARGER_EFFICIENCY: Record<string, number> = {
  *   - totalLoss = energyConsumed − energyDelivered
  *   - chargingTime = energyConsumed / effectivePower
  *
- * @reference SAE J1772 — Electric Vehicle Charging
- * @reference IEC 61851 — Electric vehicle conductive charging system
+ * @reference SAE J1772 — Electric Vehicle Charging (connector, voltage/current levels, and
+ *   communication protocol — the source for the charging-level *categories* this function
+ *   accepts, not for the default efficiency percentages below).
+ * @reference IEC 61851 — Electric vehicle conductive charging system (charging modes/safety).
+ *
+ * `DEFAULT_CHARGER_EFFICIENCY` and the ambient-temperature derating curve are this library's own
+ * typical-value defaults, not numbers specified by either standard — documented here rather than
+ * left implicitly "standard-verified"; the energy/loss/time arithmetic itself is exact closed-form
+ * and golden-tested against hand-computed values.
  */
 export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
   const {

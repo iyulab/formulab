@@ -12,6 +12,16 @@ describe('windOutput', () => {
       expect(result.adjustedWindSpeed).toBeGreaterThan(6);
     });
 
+    it('should match the Hellmann power law golden value', () => {
+      // V_hub = 6 × (80/10)^0.143 = 6 × 8^0.143 = 8.0778 (independently computed),
+      // rounded to 2 decimals by the implementation → 8.08
+      const result = windOutput({
+        ratedPower: 2000, hubHeight: 80, averageWindSpeed: 6,
+      });
+
+      expect(result.adjustedWindSpeed).toBeCloseTo(8.08, 2);
+    });
+
     it('should not change speed when hub = reference height', () => {
       const result = windOutput({
         ratedPower: 2000, hubHeight: 10, averageWindSpeed: 6,
@@ -80,6 +90,19 @@ describe('windOutput', () => {
 
       expect(result.sweptArea).toBeCloseTo(Math.PI * 40 * 40, 0);
       expect(result.betzLimit).toBeGreaterThan(0);
+    });
+
+    it('should match the Betz limit closed-form golden value (Cp_max = 16/27)', () => {
+      // hub = referenceHeight → no Hellmann adjustment, adjustedWindSpeed = 8 exactly.
+      // sweptArea = π × 40² = 5026.5482 m²
+      // P_betz = (16/27) × 0.5 × 1.225 kg/m³ × A × v³ / 1000 = 934.1188 kW (independently computed)
+      const result = windOutput({
+        ratedPower: 2000, hubHeight: 10, averageWindSpeed: 8, referenceHeight: 10,
+        rotorDiameter: 80,
+      });
+
+      expect(result.adjustedWindSpeed).toBeCloseTo(8, 4);
+      expect(result.betzLimit).toBeCloseTo(934.1188, 2);
     });
 
     it('should return null when rotor diameter not given', () => {

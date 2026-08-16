@@ -8,9 +8,10 @@ describe('cuspHeight', () => {
       stepover: 1,
     });
 
-    // h = 5 - √(25 - 0.25) = 5 - √24.75 = 5 - 4.97494 = 0.02506
+    // h = 5 - √(25 - 0.25) = 5 - √24.75 = 5 - 4.974937 = 0.025063 mm
     expect(result.cuspHeight).toBeCloseTo(0.025, 2);
-    expect(result.surfaceRoughness).toBeGreaterThan(0);
+    // Ra ≈ h(mm) × 1000 / 4 = 0.025063 × 1000 / 4 = 6.2657 μm
+    expect(result.surfaceRoughness).toBeCloseTo(6.27, 1);
   });
 
   it('should calculate cusp height for 10mm radius, 2mm stepover', () => {

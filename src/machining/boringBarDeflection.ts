@@ -2,12 +2,18 @@ import { roundTo } from '../utils.js';
 import type { BoringBarDeflectionInput, BoringBarDeflectionResult, BoringBarMaterial } from './types.js';
 
 /**
- * Young's modulus for boring bar materials (GPa)
+ * Young's modulus for boring bar materials (GPa).
+ *
+ * carbide/steel are cemented-carbide and alloy-steel textbook values. heavyMetal is a
+ * tungsten-nickel-iron/copper heavy alloy (the material used in damped boring bar cores, e.g.
+ * Densimet/Inermet-class 90-97wt% W grades) — manufacturer data sheets report 276-365 GPa across
+ * that composition range (Buffalo Tungsten MT-17/MT-18 series); 300 GPa is a representative
+ * mid-range value, not a single standard-specified constant.
  */
 const BAR_MODULUS: Record<BoringBarMaterial, number> = {
   carbide: 550,
   steel: 200,
-  heavyMetal: 250,
+  heavyMetal: 300,
 };
 
 /**
@@ -18,8 +24,12 @@ const BAR_MODULUS: Record<BoringBarMaterial, number> = {
  *   δ = F × L³ / (3 × E × I)
  *   L/D ratio determines stability recommendation
  *
- * @reference Sandvik Coromant — Boring bar selection guide.
- *   L/D < 4: steel, L/D 4-6: carbide, L/D 6-10: heavy metal/damped
+ * @reference Beam deflection: standard cantilever theory (Oberg, E. et al. "Machinery's
+ *   Handbook", 31st Ed.). The L/D < 4 / 4-6 / 6-10 material-selection bands are a general
+ *   shop-practice rule of thumb, not a numeric table published by a single named source —
+ *   Sandvik Coromant's own published overhang limits are structured differently (by dampened
+ *   vs. non-dampened adapter, not by bar material) and run higher, up to 10-18×D for its damped
+ *   product lines. Treat the bands here as a starting-point heuristic, not a cited standard.
  *
  * @param input - Boring bar deflection parameters
  * @returns BoringBarDeflectionResult with deflection, L/D ratio, and recommendation

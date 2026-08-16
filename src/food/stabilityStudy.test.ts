@@ -38,6 +38,25 @@ describe('stabilityStudy', () => {
 
       expect(result.r2).toBeGreaterThan(0.9);
     });
+
+    it('should match independently-computed golden values for the full regression', () => {
+      // k(40°C)=2, k(50°C)=4, k(60°C)=8 (exact — degradation = k×time through origin).
+      // Least-squares Arrhenius fit of ln(k) vs 1/T over those three points, independently
+      // recomputed outside the implementation: Ea=60.10 kJ/mol, R²=0.9997,
+      // predictedShelfLife(25°C, criterion=10)=16.1, Q10=2.20, accelerationFactor(60°C/25°C)=12.77.
+      const result = stabilityStudy({
+        dataPoints: typicalData,
+        shelfLifeCriterion: 10,
+        storageTemp: 25,
+      });
+
+      expect(result.rateConstants.map(r => r.rateConstant).sort((a, b) => a - b)).toEqual([2, 4, 8]);
+      expect(result.activationEnergy).toBeCloseTo(60.10, 1);
+      expect(result.r2).toBeCloseTo(0.9997, 3);
+      expect(result.predictedShelfLife).toBeCloseTo(16.1, 1);
+      expect(result.q10).toBeCloseTo(2.20, 1);
+      expect(result.accelerationFactor).toBeCloseTo(12.77, 1);
+    });
   });
 
   describe('shelf life prediction', () => {

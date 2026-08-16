@@ -65,6 +65,30 @@ describe('boringBarDeflection', () => {
     expect(carbide.deflection).toBeLessThan(steel.deflection);
   });
 
+  it('should calculate deflection for a heavy-metal (tungsten alloy) bar', () => {
+    // E = 300 GPa = 300,000 MPa (representative value for 90-97wt% W heavy alloy,
+    // manufacturer data sheets report 276-365 GPa across that composition range)
+    // I = π × 20⁴ / 64 = 7853.98 mm⁴
+    // δ = 200 × 60³ / (3 × 300000 × 7853.98)
+    //   = 43200000 / 7068583470.6 ≈ 0.006112 mm
+    const result = boringBarDeflection({
+      barDiameter: 20, overhang: 60, cuttingForce: 200, material: 'heavyMetal',
+    });
+
+    expect(result.youngsModulus).toBe(300);
+    expect(result.deflection).toBeCloseTo(0.006112, 5);
+
+    // Stiffer than steel (200 GPa) but more compliant than carbide (550 GPa)
+    const steel = boringBarDeflection({
+      barDiameter: 20, overhang: 60, cuttingForce: 200, material: 'steel',
+    });
+    const carbide = boringBarDeflection({
+      barDiameter: 20, overhang: 60, cuttingForce: 200, material: 'carbide',
+    });
+    expect(result.deflection).toBeLessThan(steel.deflection);
+    expect(result.deflection).toBeGreaterThan(carbide.deflection);
+  });
+
   it('should compute stiffness independently of force', () => {
     const withForce = boringBarDeflection({ barDiameter: 20, overhang: 60, cuttingForce: 200 });
     const zeroForce = boringBarDeflection({ barDiameter: 20, overhang: 60, cuttingForce: 0 });

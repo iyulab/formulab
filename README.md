@@ -30,13 +30,13 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 12 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
 | Construction | 15 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
-| Automotive | 9 | — | AASHTO, SAE J1772 |
-| Energy | 15 | — | NREL PVWatts, ISO 50001 |
-| Food | 7 | — | HACCP, ICH Q1A |
+| Automotive | 9 | chargingLoss | AASHTO, SAE J1772 |
+| Energy | 15 | degreeDay, windOutput | NREL PVWatts, ISO 50001 |
+| Food | 7 | waterActivity, stabilityStudy | HACCP, ICH Q1A |
 | Utility | 18 | — | — |
-| Battery | 10 | — | IEEE 1188, IEC 62620, Battery University |
-| Environmental | 10 | — | GHG Protocol, IPCC AR6, IEA 2023 |
-| Machining | 12 | truePosition, gaugeBlockStack | Machinery's Handbook, ASME Y14.5, Sandvik Coromant |
+| Battery | 10 | stateOfHealth, thermalRunaway | IEEE 1188, IEC 62620, Battery University |
+| Environmental | 10 | gwpCalculator | GHG Protocol, IPCC AR6, IEA 2023 |
+| Machining | 12 | all 12 functions — truePosition, gaugeBlockStack, boltCircle, sineBarHeight, effectiveDiameter, radialChipThinning, cuspHeight, boringBarDeflection, toolDeflection, cycleTimeEstimator, threadOverWires, triangleSolver | Machinery's Handbook, ASME Y14.5/B1.2, Sandvik Coromant |
 | IE | 5 | — | MTM/MOST, Wright's learning curve |
 
 > Functions with golden reference tests have been verified against authoritative engineering sources.

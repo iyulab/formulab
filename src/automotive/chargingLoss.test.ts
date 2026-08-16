@@ -109,6 +109,24 @@ describe('chargingLoss', () => {
 
       expect(result.overallEfficiency).toBeCloseTo(93.1, 0);
     });
+
+    it('should match hand-computed golden values for the full loss breakdown', () => {
+      // overallEff = 0.95 × 0.98 = 0.931
+      // energyConsumed = 60 / 0.931 = 64.44683 (independently computed), rounds to 64.45
+      // totalLoss = 4.44683 → 4.45, chargerLoss = 64.44683×0.05 = 3.22234 → 3.22,
+      // batteryLoss = (64.44683-3.22234)×0.02 = 1.22449 → 1.22, chargingTime = 64.44683/11 = 5.8588 → 5.86
+      const result = chargingLoss({
+        batteryCapacity: 75, chargerPower: 11, chargerType: 'ac_l2',
+        chargerEfficiency: 0.95, batteryEfficiency: 0.98,
+        soc: 20, targetSoc: 100,
+      });
+
+      expect(result.energyConsumed).toBeCloseTo(64.45, 2);
+      expect(result.totalLoss).toBeCloseTo(4.45, 2);
+      expect(result.chargerLoss).toBeCloseTo(3.22, 2);
+      expect(result.batteryLoss).toBeCloseTo(1.22, 2);
+      expect(result.chargingTime).toBeCloseTo(5.86, 2);
+    });
   });
 
   describe('edge cases', () => {

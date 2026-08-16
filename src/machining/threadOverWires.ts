@@ -14,7 +14,12 @@ import type { ThreadOverWiresInput, ThreadOverWiresResult } from './types.js';
  *   For 55° (Whitworth): bestWire = P / (2 × cos(27.5°))
  *   For 29° (Acme): bestWire = P / (2 × cos(14.5°))
  *
- * @reference Oberg, E. et al. "Machinery's Handbook", 31st Ed. — Thread measurement.
+ * @reference Oberg, E. et al. "Machinery's Handbook", 31st Ed. — Thread measurement; ASME
+ *   B1.2 — Gages and Gaging for Unified Inch Screw Threads (formalizes the 3-wire method this
+ *   implements). The pitch-diameter-relative form used here (M = E + 3W − P·cot(α/2)/2) is
+ *   algebraically identical to the more commonly quoted major-diameter-relative form for 60°
+ *   threads (M = D − 1.5155P + 3W): substituting E = D − 0.6495P into the latter reduces to the
+ *   former, since 0.6495 + 0.866025 ≈ 1.5155.
  *
  * @param input - Thread over wires parameters
  * @returns ThreadOverWiresResult with measurement, best wire, and pitch diameter

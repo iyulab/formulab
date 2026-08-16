@@ -11,6 +11,12 @@ import type { WindOutputInput, WindOutputResult } from './types.js';
  *
  * @reference IEC 61400 — Wind energy generation systems
  * @reference Manwell, J.F. "Wind Energy Explained", 2nd Ed. Wiley.
+ *
+ * `adjustedWindSpeed` (Hellmann power law) and `betzLimit` (Cp_max = 16/27) are exact closed-form
+ * physics and golden-tested. `capacityFactor` is this function's own numerical approximation of a
+ * Rayleigh-distribution power curve integral — no single published worked example exists to
+ * golden-test it against, so its tests are relational (bounds, monotonicity) rather than golden;
+ * documented here per this project's no-invented-golden-values rule rather than left unstated.
  */
 export function windOutput(input: WindOutputInput): WindOutputResult {
   const {

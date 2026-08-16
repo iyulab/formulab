@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.7] - 2026-08-16
+
+Golden reference test coverage expansion across six domains (Machining, Environmental, Energy,
+Battery, Automotive, Food), plus one real defect fix found along the way.
+
+### Fixed
+
+- **`machining/boringBarDeflection` — the `heavyMetal` material option used an understated
+  Young's modulus.** 250 GPa was below the 276-365 GPa range published across manufacturer data
+  sheets for the tungsten heavy alloys (90-97wt% W) actually used in damped boring bar cores.
+  Corrected to 300 GPa, a documented representative value for that composition range.
+  `boringBarDeflection({ material: 'heavyMetal' })` previously overestimated deflection for this
+  material by roughly 20%.
+
+### Added
+
+- Golden reference tests credited or added across: `machining` (`boltCircle`, `sineBarHeight`,
+  `effectiveDiameter`, `radialChipThinning`, `cuspHeight`, `boringBarDeflection`,
+  `toolDeflection`, `cycleTimeEstimator`, `threadOverWires`, `triangleSolver` — the domain is now
+  fully covered), `environmental` (`gwpCalculator`), `energy` (`degreeDay`, `windOutput`),
+  `battery` (`stateOfHealth`, `thermalRunaway`), `automotive` (`chargingLoss`), `food`
+  (`waterActivity`, `stabilityStudy`).
+- `threadOverWires()` now additionally cites ASME B1.2 for its three-wire thread-gaging method.
+
+### Changed
+
+- Clarified a few `@reference` citations that had attributed general engineering rules of thumb
+  (a boring-bar overhang/material selection guideline; default EV-charger efficiency and
+  temperature-derating values) to specific standards that do not actually publish those numbers.
+  The underlying values are unchanged — only the citation precision.
+
 ## [0.27.6] - 2026-08-16
 
 Documentation-only release, same shape as 0.27.4/0.27.5.
