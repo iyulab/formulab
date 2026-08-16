@@ -14,6 +14,8 @@ const PRESSURE_ANGLE_RAD = (PRESSURE_ANGLE_DEG * Math.PI) / 180;
  * Dedendum: hf = 1.25 x m
  * Circular pitch: p = pi x m
  * Base circle diameter: db = d x cos(pressure angle)
+ *
+ * @reference ISO 21771 — Gears — Cylindrical involute gears and gear pairs — Concepts and geometry
  */
 export function gear(input: GearInput): GearResult {
   const { mode } = input;

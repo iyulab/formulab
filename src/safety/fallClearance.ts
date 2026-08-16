@@ -18,6 +18,8 @@ import type { FallClearanceInput, FallClearanceResult } from './types.js';
  *
  * @param input - Fall clearance parameters
  * @returns Fall clearance results including adequacy assessment and warnings
+ * @reference OSHA 29 CFR 1926.502(d)(16)(iv) — personal fall arrest systems must limit
+ *   deceleration distance to 3.5 ft (1.07 m)
  * @throws {RangeError} workerHeight ≤ 0, or any distance (lanyardLength,
  *   decelerationDistance, harnessStretch, safetyFactor, rescueClearance,
  *   obstacleHeight) is negative.

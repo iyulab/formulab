@@ -20,6 +20,7 @@ const RECOMMENDATIONS: Record<ComponentType, { areaRatio: number; aspectRatio: n
  * @throws {RangeError} Aperture length must be positive for rectangular apertures
  * @param input - Aperture dimensions, stencil thickness, and component type
  * @returns Area ratio, aspect ratio, and pass/fail status
+ * @reference IPC-7525 — Stencil Design Guidelines (area ratio >= 0.66, aspect ratio >= 1.5 recommended minimums)
  */
 export function stencilAperture(input: StencilInput): StencilResult {
   const { shape, apertureWidth, apertureLength, stencilThickness, componentType } = input;
