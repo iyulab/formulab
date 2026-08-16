@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.6] - 2026-08-16
+
+Documentation-only release, same shape as 0.27.4/0.27.5.
+
+### Added
+
+- **`electronics/awg` — `awgProperties()` now cites ASTM B258** for the geometric diameter
+  series its formula reproduces.
+
+No calculation logic changed; output is identical to 0.27.5.
+
 ## [0.27.5] - 2026-08-16
 
 Documentation-only release, same shape as 0.27.4.
