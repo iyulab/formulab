@@ -30,6 +30,9 @@ const CURRENT_DENSITY: Record<AwgMaterial, number> = {
  * @param input - AWG gauge number, material, and temperature
  * @returns Wire properties
  * @throws {RangeError} If AWG is not between 0 and 40
+ * @reference ASTM B258 — Standard Specification for Standard Nominal Diameters and
+ *   Cross-Sectional Areas of AWG Sizes of Solid Round Wires Used as Electrical Conductors
+ *   (the geometric diameter series this formula reproduces)
  */
 export function awgProperties(input: AwgInput): AwgResult {
   const { awg, material, tempC } = input;
