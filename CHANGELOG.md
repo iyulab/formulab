@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.0] - 2026-08-16
+
+### Added
+
+- **`metal/kFactorReverse` gains a measurement-uncertainty range: `kFactorReverseRange()`.**
+  Unlike `bendAllowance`'s K-factor table (a conventional default with no source to draw a
+  range from — see its own doc comment), `kFactorReverse`'s inputs are physical measurements,
+  which do have a defensible uncertainty: the measuring instrument's stated accuracy. Propagates
+  a ±0.02mm default (typical shop-grade digital caliper accuracy) through the four measured
+  inputs (`measuredFlatLength`, `legA`, `legB`, `insideRadius`) via corner-case interval
+  propagation and returns `kFactor` alongside `kFactorMin`/`kFactorMax`. Pass a different
+  `measurementUncertaintyMm` for a different instrument.
+- **New generic `propagate()` utility in `math.ts`** (not part of a domain, shared internal
+  numeric helper like `normalCDF`/`normalInvCDF`). Runs a function at every corner of its
+  uncertain inputs' ± half-widths and returns the resulting min/max — no Monte Carlo, no
+  distribution, deliberately bounded to a small number of uncertain inputs. Powers
+  `kFactorReverseRange()`; available for a future measurement-derived function that needs the
+  same treatment.
+
 ## [0.27.8] - 2026-08-16
 
 `npm run audit:constant-provenance` (dev-only, not part of the published library surface)
