@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.5] - 2026-08-16
+
+Documentation-only release, same shape as 0.27.4.
+
+### Added
+
+- **`metal/thread` — `thread()` now cites ISO 261, ISO 68-1, and ASME B1.1** for its metric
+  nominal-diameter/pitch series, basic-profile derivation, and unified thread-form/tap-drill
+  data respectively.
+
+No calculation logic changed; output is identical to 0.27.4.
+
 ## [0.27.4] - 2026-08-16
 
 Documentation-only release: three functions that already implement a published standard now say
