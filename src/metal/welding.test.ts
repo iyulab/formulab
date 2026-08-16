@@ -83,6 +83,30 @@ describe('welding', () => {
       expect(result.recommendations.some(r => r.designation === 'E4043')).toBe(true);
     });
 
+    /**
+     * AWS A5.3 (SMAW aluminum electrodes) classifies exactly three designations: E1100,
+     * E3003, E4043 — verified against the standard's own scope (ANSI/AWS bookstore listing;
+     * cross-checked against two independent sources). "E5356" does not exist under A5.3: 5356
+     * is a real aluminum filler alloy, but only as GTAW/GMAW wire under AWS A5.10's "ER5356"
+     * designation — a different process than the rod-diameter/current-range SMAW parameters
+     * this function returns. Pins the correction against reintroducing that mismatch.
+     */
+    it('should only recommend real AWS A5.3 SMAW designations, not the A5.10 GTAW/GMAW "ER5356" filler wire', () => {
+      const result = welding({
+        baseMetal: 'aluminum',
+        position: 'flat',
+        thickness: 5,
+      });
+
+      const designations = result.recommendations.map(r => r.designation);
+      const AWS_A5_3_DESIGNATIONS = ['E1100', 'E3003', 'E4043'];
+      for (const d of designations) {
+        expect(AWS_A5_3_DESIGNATIONS).toContain(d);
+      }
+      expect(designations).not.toContain('E5356');
+      expect(designations).not.toContain('ER5356');
+    });
+
     it('should include polarity note for aluminum', () => {
       const result = welding({
         baseMetal: 'aluminum',
@@ -185,6 +209,35 @@ describe('welding', () => {
         position: 'flat',
         thickness: 0,
       })).toThrow();
+    });
+  });
+
+  /**
+   * Structural invariant: every electrode's awsClass matches the AWS specification that
+   * actually classifies its designation family (mild steel → A5.1, low-alloy suffix → A5.5,
+   * stainless -L-16 → A5.4, cast-iron Ni/NiFe/St → A5.15, aluminum → A5.3). Catches a
+   * designation being added under the wrong specification, the same class of defect this
+   * cycle found and fixed for the aluminum entries.
+   */
+  describe('AWS specification consistency', () => {
+    const ALL_BASE_METALS: Array<Parameters<typeof welding>[0]['baseMetal']> = [
+      'mildSteel', 'lowAlloySteel', 'stainlessSteel', 'castIron', 'aluminum',
+    ];
+    const EXPECTED_AWS_CLASS: Record<string, string> = {
+      mildSteel: 'AWS A5.1',
+      lowAlloySteel: 'AWS A5.5',
+      stainlessSteel: 'AWS A5.4',
+      castIron: 'AWS A5.15',
+      aluminum: 'AWS A5.3',
+    };
+
+    it('assigns every electrode the AWS specification matching its base metal', () => {
+      for (const baseMetal of ALL_BASE_METALS) {
+        const result = welding({ baseMetal, position: 'flat', thickness: 6 });
+        for (const rod of result.recommendations) {
+          expect(rod.awsClass).toBe(EXPECTED_AWS_CLASS[baseMetal]);
+        }
+      }
     });
   });
 });

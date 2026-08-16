@@ -11,29 +11,34 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **211 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **203 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
 - **Tree-shakeable** — Import only what you need
-- **3,020 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
+- **3,036 tests** — Coverage thresholds: 90% lines, 95% functions, 85% branches ([CI pipeline](https://github.com/iyulab/formulab/actions/workflows/ci.yml))
 - **Research-based** — Golden reference tests verified against NIOSH 94-110, AIAG/ASTM E2587, JIPM, ASME B16.5, ISO 22514-2, and more
 
 ## Verification Status
 
+> **Functions** counts primary calculation functions only — type guards (8 total, listed
+> separately above) and helper accessor/lookup functions (`getX`) and exported constants
+> (`ALL_CAPS`) are not counted here. Verified against the codebase by
+> `pnpm check:function-counts` (`scripts/count-functions.mjs`).
+
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
 | Quality | 21 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
-| Metal | 33 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength | Machinery's Handbook, ASME B36.10/B16.5 |
+| Metal | 32 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
 | Logistics | 17 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
 | Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
-| Electronics | 12 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
-| Construction | 15 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
+| Electronics | 11 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
+| Construction | 13 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
 | Automotive | 9 | chargingLoss | AASHTO, SAE J1772 |
 | Energy | 15 | degreeDay, windOutput | NREL PVWatts, ISO 50001 |
-| Food | 7 | waterActivity, stabilityStudy | HACCP, ICH Q1A |
-| Utility | 18 | — | — |
+| Food | 6 | waterActivity, stabilityStudy | HACCP, ICH Q1A |
+| Utility | 16 | — | — |
 | Battery | 10 | stateOfHealth, thermalRunaway | IEEE 1188, IEC 62620, Battery University |
 | Environmental | 10 | gwpCalculator | GHG Protocol, IPCC AR6, IEA 2023 |
 | Machining | 12 | all 12 functions — truePosition, gaugeBlockStack, boltCircle, sineBarHeight, effectiveDiameter, radialChipThinning, cuspHeight, boringBarDeflection, toolDeflection, cycleTimeEstimator, threadOverWires, triangleSolver | Machinery's Handbook, ASME Y14.5/B1.2, Sandvik Coromant |
@@ -322,7 +327,7 @@ import { batteryRuntime, evCharging, torque, brakingDistance, chargingLoss } fro
 |----------|-------------|
 | `brakingDistance()` | Stopping distance (AASHTO method) |
 | `batteryRuntime()` | Battery capacity/runtime |
-| `evCharging()` | EV charging time estimation |
+| `evCharging()` | EV charging time estimation *(deprecated — use `chargingLoss()`)* |
 | `fuelEconomy()` | Fuel economy conversion |
 | `gearRatio()` | Gear ratio calculation |
 | `tireCompare()` | Tire size comparison |

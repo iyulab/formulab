@@ -9,6 +9,10 @@ import type { ChargingInput, ChargingResult } from './types.js';
  * - Energy From Grid (kWh) = Energy Needed / Efficiency
  * - Charging Time (h) = Energy From Grid / Charger Power
  *
+ * @deprecated Use {@link chargingLoss} instead — it computes the same energy and charging-time
+ *   values from a single combined efficiency, and additionally provides a charger/battery loss
+ *   breakdown with standard citations, charger-type default efficiencies, and ambient-temperature
+ *   derating. `evCharging` is unchanged and will keep working; no removal is planned.
  * @param input - Charging parameters
  * @returns Charging result with energy and time
  * @throws RangeError if socEndPercent is not greater than socStartPercent,

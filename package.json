@@ -1,7 +1,7 @@
 {
   "name": "formulab",
-  "version": "0.28.0",
-  "description": "Manufacturing & Engineering calculation formulas library - 211 industrial calculations across 15 domains for OEE, Cpk, SPC, FMEA, Nelson Rules, metal weight, CNC machining, GD&T, battery, environmental, pipe flow, logistics, IE time study, and more",
+  "version": "0.28.1",
+  "description": "Manufacturing & Engineering calculation formulas library - 203 industrial calculations across 15 domains for OEE, Cpk, SPC, FMEA, Nelson Rules, metal weight, CNC machining, GD&T, battery, environmental, pipe flow, logistics, IE time study, and more",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -102,7 +102,9 @@
     "docs:api": "typedoc",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "audit:constant-provenance": "node scripts/audit-constant-provenance.mjs src"
+    "audit:constant-provenance": "node scripts/audit-constant-provenance.mjs src",
+    "check:dependency-drift": "node scripts/check-dependency-drift.mjs",
+    "check:function-counts": "node scripts/count-functions.mjs"
   },
   "keywords": [
     "manufacturing",

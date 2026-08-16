@@ -88,6 +88,11 @@ function getToleranceValue(nominal: number, itGrade: number): number {
 /**
  * Calculate ISO tolerance band for a given nominal size and tolerance class.
  *
+ * @reference ISO 286-1:2010 (tolerance-grade table, IT4-IT14) and ISO 286-2:2010 (fundamental
+ *   deviation tables for hole/shaft letters). Cell-level values are transcribed from and
+ *   golden-tested against the published tables — see `tolerance.test.ts`'s "against the ISO
+ *   286-1/286-2 table" describe blocks, including the ISO 286-1 delta-term correction (K/M/N/P
+ *   above H) documented there.
  * @throws RangeError if the nominal size is out of range, the IT grade is unknown,
  *   or the deviation letter is unknown
  */

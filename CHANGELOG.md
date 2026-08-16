@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.1] - 2026-08-16
+
+Golden reference test coverage for the Metal domain's remaining two functions, a deprecation
+notice, and doc/tooling accuracy fixes.
+
+### Fixed
+
+- **`metal/welding` — the aluminum electrode list included a designation that doesn't exist.**
+  `E5356` is not classified under AWS A5.3 (the specification this function's SMAW rod-diameter/
+  current-range output represents) — AWS A5.3 covers exactly three SMAW aluminum electrodes
+  (E1100, E3003, E4043); "5356" only exists as a GTAW/GMAW filler-wire alloy under AWS A5.10's
+  `ER5356` designation, a different welding process. Replaced with `E3003` (a real A5.3
+  designation). `welding({ baseMetal: 'aluminum', ... })` could previously recommend a rod that
+  doesn't exist.
+
+### Added
+
+- Golden reference tests credited for `metal/tolerance` (already golden — cell-level ISO 286-1/
+  286-2 transcriptions with a documented prior defect fix, just missing a formal citation) and
+  `metal/welding` (cross-checked against all five AWS specifications it uses).
+- Two new dev-only scripts (not part of the published library surface, same category as
+  `audit-constant-provenance.mjs`): `check:dependency-drift` (checks `pnpm outdated` + the
+  declared Node engine floor's EOL date; backed by a new monthly-scheduled CI workflow that
+  files/updates a tracking issue on drift) and `check:function-counts` (verifies README's
+  Verification Status table against the codebase using a documented counting convention).
+
+### Changed
+
+- **`automotive/evCharging` is deprecated in favor of `chargingLoss`.** `chargingLoss` computes
+  the same energy/charging-time values from the same inputs and additionally provides a charger/
+  battery loss breakdown, charger-type default efficiencies, ambient-temperature derating, and
+  cited standards. `evCharging` is unchanged and not scheduled for removal.
+- Corrected the project's own function/test-count claims, which had drifted out of sync with
+  each other and with the codebase: README's Features bullet, Verification Status table (5
+  domains), and test count; `package.json`'s description field. All now verified by
+  `check:function-counts` rather than hand-maintained.
+
 ## [0.28.0] - 2026-08-16
 
 ### Added

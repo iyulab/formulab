@@ -1,7 +1,14 @@
 import { roundTo } from '../utils.js';
 import type { WeldingInput, WeldingResult, WeldingRod, WeldingBaseMetal } from './types.js';
 
-// Electrode database by base metal
+/**
+ * Electrode recommendation database by base metal, covering the SMAW (stick) process only.
+ *
+ * @reference AWS A5.1 (mild steel), AWS A5.5 (low-alloy steel), AWS A5.4 (stainless steel),
+ *   AWS A5.15 (cast iron), AWS A5.3 (aluminum — the SMAW-specific specification; distinct from
+ *   AWS A5.10, which covers bare aluminum filler *rod/wire* for GTAW/GMAW under an "ER" prefix,
+ *   not SMAW electrodes).
+ */
 const ELECTRODES: Record<WeldingBaseMetal, WeldingRod[]> = {
   mildSteel: [
     { designation: 'E6010', awsClass: 'AWS A5.1', characteristics: 'Deep penetration, all positions, DC+' },
@@ -26,12 +33,16 @@ const ELECTRODES: Record<WeldingBaseMetal, WeldingRod[]> = {
   ],
   aluminum: [
     { designation: 'E4043', awsClass: 'AWS A5.3', characteristics: '5% Si, general purpose, 6xxx series' },
-    { designation: 'E5356', awsClass: 'AWS A5.3', characteristics: '5% Mg, higher strength, 5xxx series' },
+    { designation: 'E3003', awsClass: 'AWS A5.3', characteristics: 'Al-Mn alloy, dissimilar aluminum grades, seawater service' },
   ],
 };
 
-// All-position electrodes
-const ALL_POSITION = new Set(['E6010', 'E6013', 'E7018', 'E7018-A1', 'E8018-B2', 'E9018-B3', 'E308L-16', 'E309L-16', 'E316L-16', 'ENi-CI', 'ENiFe-CI', 'ESt', 'E4043', 'E5356']);
+// All-position electrodes. For mild/low-alloy/stainless steel this follows the AWS A5.1-family
+// designation's own position digit (the digit before the coating-type digit: 1 = all positions,
+// 2 = flat/horizontal only — e.g. E7018 vs. E7024). AWS A5.3/A5.15 (aluminum/cast iron) don't
+// encode position in the designation the same way; those two entries reflect general shop
+// practice for covered aluminum/nickel electrodes rather than a standard-stated position code.
+const ALL_POSITION = new Set(['E6010', 'E6013', 'E7018', 'E7018-A1', 'E8018-B2', 'E9018-B3', 'E308L-16', 'E309L-16', 'E316L-16', 'ENi-CI', 'ENiFe-CI', 'ESt', 'E4043', 'E3003']);
 
 // Thickness to rod diameter mapping (mm)
 function getRodDiameter(thickness: number): number {
@@ -44,6 +55,12 @@ function getRodDiameter(thickness: number): number {
 
 /**
  * Recommend welding electrodes based on base metal and joint parameters.
+ *
+ * @reference Electrode designations and position capability per the AWS specifications cited on
+ *   `ELECTRODES` above. Rod-diameter-by-thickness and current-per-diameter (25-45 A/mm) are
+ *   general SMAW shop-practice rules of thumb, not values stated by a specific AWS specification
+ *   — published rules of thumb for both vary noticeably by source, welder skill, and joint
+ *   design, so treat these as a starting point rather than a cited standard.
  */
 export function welding(input: WeldingInput): WeldingResult {
   const { baseMetal, position, thickness } = input;

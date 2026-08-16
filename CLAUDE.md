@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`formulab` is a zero-dependency, tree-shakeable TypeScript library of ~218 industrial/manufacturing calculation functions spread across 15 domains (quality, metal, chemical, electronics, construction, automotive, logistics, energy, safety, food, utility, battery, environmental, machining, ie). It ships as ESM only. Each function is a pure input→output calculation, often verified against a published engineering standard.
+`formulab` is a zero-dependency, tree-shakeable TypeScript library of 203 industrial/manufacturing calculation functions (plus 8 type guards) spread across 15 domains (quality, metal, chemical, electronics, construction, automotive, logistics, energy, safety, food, utility, battery, environmental, machining, ie). It ships as ESM only. Each function is a pure input→output calculation, often verified against a published engineering standard. Function/test counts are verified against the codebase by `pnpm check:function-counts` — see `README.md`'s Verification Status table for the counting convention.
 
 ## Commands
 
