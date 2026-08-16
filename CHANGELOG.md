@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.4] - 2026-08-16
+
+Documentation-only release: three functions that already implement a published standard now say
+so in their doc comments.
+
+### Added
+
+- **`metal/gear` — `gear()` now cites ISO 21771** (Gears — Cylindrical involute gears and gear
+  pairs — Concepts and geometry) for its addendum/dedendum/pressure-angle conventions.
+- **`electronics/stencil` — `stencilAperture()` now cites IPC-7525** for its recommended-minimum
+  area-ratio (0.66) and aspect-ratio (1.5) thresholds.
+- **`safety/fallClearance` — `fallClearance()` now cites OSHA 29 CFR 1926.502(d)(16)(iv)** for
+  the 3.5 ft (1.07 m) maximum deceleration distance already used in its warning threshold.
+
+No calculation logic changed; all three functions produce identical output to 0.27.3.
+
 ## [0.27.3] - 2026-08-11
 
 Golden reference test coverage expansion across four previously-uncredited domains (Chemical,
