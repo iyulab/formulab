@@ -1,4 +1,5 @@
-import type { KFactorReverseInput, KFactorReverseResult } from './types.js';
+import { propagate } from '../math.js';
+import type { KFactorReverseInput, KFactorReverseResult, KFactorReverseRangeResult } from './types.js';
 
 /**
  * Reverse calculate K-factor from measured flat length.
@@ -50,4 +51,44 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
   return {
     kFactor,
   };
+}
+
+/**
+ * K-factor reverse calculation with a defensible range, derived from
+ * measurement uncertainty on the physically-measured inputs rather than
+ * from the K-factor table's own unsourced defaults (see `bendAllowance`'s
+ * `K_FACTOR_TABLE` doc comment -- that table has no range to propagate,
+ * because it has no source at all). `thickness` and `bendAngle` are
+ * treated as exact: they are typically nominal/design values the caller
+ * already knows, not measured on the physical part.
+ *
+ * Uses corner-case interval propagation (`propagate`, `../math.js`), not
+ * Monte Carlo -- an engineer wants a range, not a distribution.
+ *
+ * @param input - same as `kFactorReverse`
+ * @param measurementUncertaintyMm - +/- half-width applied to
+ *   `measuredFlatLength`, `legA`, `legB`, `insideRadius`. Default 0.02 mm
+ *   matches the accuracy commonly specified for a shop-grade digital
+ *   caliper (e.g. Mitutoyo 500-series, +/-0.02 mm across the measuring
+ *   range) -- a property of the instrument the caller states they used,
+ *   not of this formula. Pass a different value for a different
+ *   instrument (a dial or vernier caliper is typically +/-0.03 mm or
+ *   looser).
+ */
+export function kFactorReverseRange(
+  input: KFactorReverseInput,
+  measurementUncertaintyMm = 0.02,
+): KFactorReverseRangeResult {
+  const { value, min, max } = propagate(
+    input,
+    {
+      measuredFlatLength: measurementUncertaintyMm,
+      legA: measurementUncertaintyMm,
+      legB: measurementUncertaintyMm,
+      insideRadius: measurementUncertaintyMm,
+    },
+    kFactorReverse,
+    (result) => result.kFactor,
+  );
+  return { kFactor: value, kFactorMin: min, kFactorMax: max };
 }

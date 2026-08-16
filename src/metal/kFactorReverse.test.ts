@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { kFactorReverse } from './kFactorReverse.js';
+import { kFactorReverse, kFactorReverseRange } from './kFactorReverse.js';
 import { bendAllowance } from './bendAllowance.js';
 
 describe('kFactorReverse', () => {
@@ -210,6 +210,67 @@ describe('kFactorReverse', () => {
       expect(result.kFactor).toBeLessThan(0.50);
     });
 
+  });
+
+  describe('kFactorReverseRange', () => {
+    // Hand-worked against the same T=2, R=3, 90deg case as the golden test
+    // above (measuredFlatLength=85.74911, K nominal ~0.33). kFactor is
+    // exactly linear in (insideRadius, measuredFlatLength, legA, legB) at
+    // fixed thickness/bendAngle -- confirmed by expanding the formula --
+    // so the corner-case delta is exact, not an approximation:
+    //   d(kFactor)/d(R)   = (2/angleRad - 1)/T = (4/pi - 1)/2  ~= 0.13662
+    //   d(kFactor)/d(mfl) = 1/(angleRad*T)     = 2/pi/2        ~= 0.31831
+    //   d(kFactor)/d(legA) = d/d(legB)         = -1/(angleRad*T) ~= -0.31831
+    // Worst-case direction at +-0.02mm: max at R+.02/mfl+.02/legA-.02/legB-.02,
+    // min at the opposite signs. Total delta = 0.02*(0.13662+0.31831*3) ~= 0.02183.
+    it('brackets the golden K=0.33 case within the hand-derived linear delta', () => {
+      const result = kFactorReverseRange({
+        thickness: 2,
+        bendAngle: 90,
+        insideRadius: 3,
+        measuredFlatLength: 85.74911,
+        legA: 50,
+        legB: 40,
+      });
+      expect(result.kFactor).toBeCloseTo(0.33, 4);
+      expect(result.kFactorMax).toBeCloseTo(0.35183, 3);
+      expect(result.kFactorMin).toBeCloseTo(0.30817, 3);
+      // The nominal value is exactly what plain kFactorReverse returns.
+      expect(result.kFactor).toBe(kFactorReverse({
+        thickness: 2, bendAngle: 90, insideRadius: 3,
+        measuredFlatLength: 85.74911, legA: 50, legB: 40,
+      }).kFactor);
+    });
+
+    it('respects a caller-supplied instrument uncertainty (vernier caliper, +-0.05mm)', () => {
+      const tight = kFactorReverseRange({
+        thickness: 2, bendAngle: 90, insideRadius: 3,
+        measuredFlatLength: 85.74911, legA: 50, legB: 40,
+      }, 0.02);
+      const loose = kFactorReverseRange({
+        thickness: 2, bendAngle: 90, insideRadius: 3,
+        measuredFlatLength: 85.74911, legA: 50, legB: 40,
+      }, 0.05);
+      const tightWidth = tight.kFactorMax - tight.kFactorMin;
+      const looseWidth = loose.kFactorMax - loose.kFactorMin;
+      // Linear in the uncertainty half-width, so 0.05/0.02 = 2.5x wider.
+      expect(looseWidth).toBeCloseTo(tightWidth * 2.5, 4);
+    });
+
+    it('always brackets the nominal value (min <= value <= max)', () => {
+      const cases = [
+        { thickness: 1.5, insideRadius: 2, bendAngle: 45, legA: 40, legB: 30, measuredFlatLength: 68 },
+        { thickness: 5, insideRadius: 8, bendAngle: 150, legA: 100, legB: 60, measuredFlatLength: 155 },
+      ];
+      for (const c of cases) {
+        const r = kFactorReverseRange(c);
+        expect(r.kFactorMin).toBeLessThanOrEqual(r.kFactor);
+        expect(r.kFactor).toBeLessThanOrEqual(r.kFactorMax);
+      }
+    });
+  });
+
+  describe('steel channel scenario', () => {
     it('should determine K-factor for steel channel', () => {
       // For 90° bend with R=4, T=3, K≈0.44
       // OSSB = (4+3) × tan(45°) = 7

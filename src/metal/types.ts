@@ -98,6 +98,12 @@ export interface KFactorReverseResult {
   kFactor: number;
 }
 
+export interface KFactorReverseRangeResult {
+  kFactor: number;
+  kFactorMin: number;
+  kFactorMax: number;
+}
+
 /**
  * Press Tonnage Types
  */

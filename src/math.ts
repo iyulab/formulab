@@ -6,6 +6,61 @@
  */
 
 /**
+ * Interval propagation through an arbitrary function by corner-case
+ * evaluation: run `fn` at every combination of each uncertain input's
+ * ± half-width, and take the min/max of the extracted output over those
+ * corners plus the nominal point.
+ *
+ * No Monte Carlo, no distribution -- a caller who wants a defensible range
+ * from a measurement uncertainty (an instrument's stated accuracy, not a
+ * probability model) gets exactly that. Exact for a function monotonic in
+ * each uncertain input; a sound bound for a smooth one over a small
+ * uncertainty window even where the sign of a partial derivative varies
+ * elsewhere in the input space (as it does for `kFactorReverse` across
+ * different bend angles) -- the window itself is small enough that the
+ * function's local behavior around the nominal point is what matters, not
+ * its global shape.
+ *
+ * `2^n` evaluations for `n` uncertain inputs -- deliberately only for small
+ * `n` (a handful of measured quantities feeding one derived value), not a
+ * general sensitivity-analysis tool.
+ *
+ * @param nominal - the input at its stated (measured) values
+ * @param uncertainty - a ± half-width for each input that carries one;
+ *   inputs not listed here are treated as exact
+ * @param fn - the function to propagate through
+ * @param pick - extracts the single numeric output to bound from `fn`'s result
+ */
+export function propagate<TIn extends object, TOut>(
+  nominal: TIn,
+  uncertainty: Partial<Record<keyof TIn, number>>,
+  fn: (input: TIn) => TOut,
+  pick: (output: TOut) => number,
+): { value: number; min: number; max: number } {
+  const keys = (Object.keys(uncertainty) as (keyof TIn)[]).filter(
+    (k) => uncertainty[k] !== undefined,
+  );
+  const value = pick(fn(nominal));
+  let min = value;
+  let max = value;
+
+  const corners = 1 << keys.length;
+  for (let mask = 0; mask < corners; mask++) {
+    const input = { ...nominal };
+    keys.forEach((key, i) => {
+      const half = uncertainty[key]!;
+      const sign = (mask >> i) & 1 ? 1 : -1;
+      (input as Record<string, number>)[key as string] = (nominal[key] as number) + sign * half;
+    });
+    const out = pick(fn(input));
+    if (out < min) min = out;
+    if (out > max) max = out;
+  }
+
+  return { value, min, max };
+}
+
+/**
  * Standard normal CDF approximation using Abramowitz and Stegun.
  *
  * @param x - z-score

@@ -16,6 +16,7 @@ export type {
   FlatPatternResult,
   KFactorReverseInput,
   KFactorReverseResult,
+  KFactorReverseRangeResult,
   // Press Tonnage
   PressOperation,
   BendType,
@@ -145,7 +146,7 @@ export { metalWeight } from './metalWeight.js';
 export { bendAllowance } from './bendAllowance.js';
 export { springback } from './springback.js';
 export { flatPattern } from './flatPattern.js';
-export { kFactorReverse } from './kFactorReverse.js';
+export { kFactorReverse, kFactorReverseRange } from './kFactorReverse.js';
 export { pressTonnage } from './pressTonnage.js';
 export { bearing } from './bearing.js';
 export { bolt, getKFactor, getStandardPitch } from './bolt.js';
