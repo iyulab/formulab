@@ -27,8 +27,16 @@ function getOutdated() {
   } catch (err) {
     const stdout = err.stdout?.toString() ?? '';
     if (!stdout.trim()) return [];
+    // pnpm can prepend plain-text warnings (e.g. "WARN Unsupported engine: wanted:
+    // {"node":">=24"}...") to stdout before the JSON payload. Those warnings can themselves
+    // contain `{` characters, so find the line that is *only* an opening brace — pnpm's
+    // pretty-printed JSON output always starts its own line that way — rather than the first
+    // `{` anywhere in the string.
+    const lines = stdout.split('\n');
+    const jsonStartLine = lines.findIndex((line) => line.trim() === '{');
+    const jsonText = jsonStartLine === -1 ? stdout : lines.slice(jsonStartLine).join('\n');
     try {
-      const parsed = JSON.parse(stdout);
+      const parsed = JSON.parse(jsonText);
       return Object.entries(parsed).map(([name, info]) => ({
         name, current: info.current, latest: info.latest, type: info.dependencyType,
       }));

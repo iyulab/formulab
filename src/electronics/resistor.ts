@@ -60,15 +60,19 @@ const TOLERANCES: Record<string, number> = {
 /**
  * Temperature coefficient values (ppm/C) for the 6th band of a 6-band resistor.
  *
- * brown=100, red=50, blue=10 are corroborated by every source checked (2026-08-11) and are the
- * colors this codebase's own tests already pin. The rest of this table (black/orange/yellow/
- * green/violet/grey) could not be cross-verified the same way: at least one other published TCR
- * color scheme assigns unrelated ppm figures (and even ppm *ranges*, not single values) to the
- * same colors, and it was not established whether that is a different edition of IEC 60062, a
- * different (non-IEC) marking convention, or a genuine disagreement. Left unchanged — see this
- * project's own "don't swap one unsourced value for another" precedent (bendAllowance,
- * wbgtCalculate) — but flagged here rather than presented as uniformly as settled as the
- * digit/multiplier/tolerance tables above, which have no such ambiguity in any source checked.
+ * brown=100, red=50, blue=10 were corroborated by every source checked as of 2026-08-11. The
+ * remaining six colors (black/orange/yellow/green/violet/grey) were left flagged as unconfirmed
+ * at that point, because at least one other published TCR color scheme assigns unrelated ppm
+ * figures (and even ppm *ranges*, not single values) to the same colors — that older scheme
+ * (black≈1000, brown≈500, red≈200, orange≈100, ...) appears to predate IEC 60062:2016 rather
+ * than genuinely disagree with it.
+ *
+ * @reference IEC 60062:2016 TCR color table. Cross-checked 2026-08-19: Panasonic's industrial TCR
+ * reference (industrial.panasonic.com/ww/ds/ss/technical/b27) and Wikipedia's "IEC 60062 color
+ * code" article (which cites IEC 60062:2016 directly) both give the full nine-color table and
+ * agree with every value already in this object, including the six that were previously
+ * unconfirmed — see claudedocs/issues history (formulab repo) for the full corroboration record
+ * and why this still isn't the purchased primary IEC text itself.
  */
 const TEMP_COEFFICIENTS: Record<string, number> = {
   black: 250,

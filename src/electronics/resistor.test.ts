@@ -135,6 +135,64 @@ describe('resistorDecode', () => {
 
       expect(result.tempCoeff).toBe(50);
     });
+
+    // Golden: IEC 60062:2016 TCR color table, cross-checked 2026-08-19 against Panasonic's
+    // industrial TCR reference table (industrial.panasonic.com/ww/ds/ss/technical/b27) and
+    // Wikipedia's "IEC 60062 color code" article (both cite IEC 60062:2016 and agree on all
+    // nine colors) — see claudedocs/issues history for the full corroboration record.
+    it('should decode black temperature coefficient (250ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'black'],
+      });
+
+      expect(result.tempCoeff).toBe(250);
+    });
+
+    it('should decode orange temperature coefficient (15ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'orange'],
+      });
+
+      expect(result.tempCoeff).toBe(15);
+    });
+
+    it('should decode yellow temperature coefficient (25ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'yellow'],
+      });
+
+      expect(result.tempCoeff).toBe(25);
+    });
+
+    it('should decode green temperature coefficient (20ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'green'],
+      });
+
+      expect(result.tempCoeff).toBe(20);
+    });
+
+    it('should decode violet temperature coefficient (5ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'violet'],
+      });
+
+      expect(result.tempCoeff).toBe(5);
+    });
+
+    it('should decode grey temperature coefficient (1ppm/°C)', () => {
+      const result = resistorDecode({
+        bandCount: 6,
+        bands: ['brown', 'black', 'black', 'brown', 'brown', 'grey'],
+      });
+
+      expect(result.tempCoeff).toBe(1);
+    });
   });
 
   describe('tolerance bands', () => {

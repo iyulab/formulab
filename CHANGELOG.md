@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.29.0] - 2026-08-19
 
+### Fixed
+
+- **`check:dependency-drift` silently hid every outdated dependency once the Node engine floor
+  moved above the machine's own Node version.** `pnpm outdated --format json`'s output can be
+  prefixed with a plain-text `WARN Unsupported engine` line that itself contains `{...}`
+  characters; the script's naive "parse from the first `{`" recovery grabbed the warning's brace
+  instead of the real JSON payload's, so `JSON.parse` failed and the script fell back to an
+  unhelpful "check manually" placeholder instead of the actual outdated-package list. Introduced
+  by this same release's engine-floor bump (a Node <24 dev machine now always sees that warning).
+  Now finds the payload by its own line (`{` alone on a line), which pnpm's pretty-printed JSON
+  always starts with, regardless of what precedes it.
+
 ### Changed
 
 - **Raised the minimum supported `Node.js` version from 20 to 24.** Node 20 reached end-of-life
@@ -14,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   was still running on it. `engines.node` is now `>=24` (Active LTS until 2028-04-30), and CI now
   matrixes Node 24 & 26 instead of 20 & 22. No library API changed — this only affects the
   runtime you install the package into.
+
+### Added
+
+- Golden reference tests for `electronics/resistor`'s 6-band temperature-coefficient table's six
+  previously-unconfirmed colors (black, orange, yellow, green, violet, grey) — cross-checked
+  against Panasonic's industrial TCR reference table and Wikipedia's IEC 60062:2016 TCR color
+  table, both agreeing with every value already in this table. No values changed; this closes the
+  confirmation gap that previously covered only brown/red/blue.
 
 ## [0.28.1] - 2026-08-16
 

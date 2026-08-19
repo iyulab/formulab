@@ -10,8 +10,19 @@ import { roundTo } from '../utils.js';
  * an already-published "standard" figure that differs slightly from that formula (see per-entry
  * comments) — but the specific standard responsible for those two overrides (KS D 3504? a
  * particular mill's published table?) is not cited here, and a 2026-08-11 doc audit could not
- * confirm it from freely available sources (see claudedocs/issues in this repo). Do not swap
- * these for another unconfirmed secondary-source value without resolving which standard applies.
+ * confirm it from freely available sources (see claudedocs/issues in this repo).
+ *
+ * A 2026-08-19 follow-up check found two independently-published Korean rebar unit-weight tables
+ * (informational/vendor pages, not the primary KS D 3504 text itself) that closely match D16 and
+ * D25's override figures here — but diverge from this table's *formula*-derived entries for D10,
+ * D13, D29, and D32 by several percent, and disagree with each other on D22. So the provenance
+ * doubt is not confined to D16/D25: the generic-formula entries may also not match the actual
+ * published table. No value here has been changed on that basis — neither source names an
+ * edition, so neither clears this project's citation bar (see the issue draft for the full
+ * comparison).
+ *
+ * Do not swap ANY of these for another unconfirmed secondary-source value without resolving which
+ * standard applies.
  */
 const REBAR_UNIT_WEIGHTS: Record<RebarSize, number> = {
   D10: 0.617,  // 10² × 0.00617 = 0.617
