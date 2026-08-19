@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **pnpm** (`packageManager: pnpm@9.15.0`). Node ≥ 20.
+Package manager is **pnpm** (`packageManager: pnpm@9.15.0`). Node ≥ 24.
 
 ```bash
 pnpm build            # tsc → dist/ (this IS the build; there is no bundler)
@@ -68,5 +68,5 @@ Each function file follows the pattern in `src/quality/cpk.ts`:
 
 ## CI & publishing
 
-- CI (`.github/workflows/ci.yml`) runs on push/PR to `main` over Node 20 & 22: `pnpm install --frozen-lockfile` → `pnpm build` → `pnpm test:coverage`. Coverage thresholds (lines 90 / functions 95 / branches 85 / statements 90, in `vitest.config.ts`) are enforced — dropping below fails CI.
+- CI (`.github/workflows/ci.yml`) runs on push/PR to `main` over Node 24 & 26: `pnpm install --frozen-lockfile` → `pnpm build` → `pnpm test:coverage`. Coverage thresholds (lines 90 / functions 95 / branches 85 / statements 90, in `vitest.config.ts`) are enforced — dropping below fails CI.
 - Publishing is automated: the publish workflow triggers on manual dispatch **or any push to `main` that changes `package.json`**. To release, bump `version` in `package.json` (and update `CHANGELOG.md`); merging that to `main` runs CI then `pnpm publish`.

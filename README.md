@@ -115,7 +115,7 @@ Three functions solve NP-hard combinatorial problems using **heuristic** algorit
 
 GitHub Actions runs on every push to `main` and every pull request:
 
-- **Matrix**: Node.js 20, 22
+- **Matrix**: Node.js 24, 26
 - **Steps**: `pnpm install` → `tsc` (type check) → `vitest run --coverage`
 - **Coverage enforcement**: Fails if below thresholds (lines 90%, functions 95%, branches 85%, statements 90%)
 

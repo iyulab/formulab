@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.0] - 2026-08-19
+
+### Changed
+
+- **Raised the minimum supported `Node.js` version from 20 to 24.** Node 20 reached end-of-life
+  on 2026-04-30 and stopped receiving security patches; the release build itself (`publish.yml`)
+  was still running on it. `engines.node` is now `>=24` (Active LTS until 2028-04-30), and CI now
+  matrixes Node 24 & 26 instead of 20 & 22. No library API changed — this only affects the
+  runtime you install the package into.
+
 ## [0.28.1] - 2026-08-16
 
 Golden reference test coverage for the Metal domain's remaining two functions, a deprecation
