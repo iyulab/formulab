@@ -28,6 +28,10 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
  * drawn from a specific standard's table. Treat them as a starting point for a
  * feasibility check, not a specification limit; verify against tooling and material
  * datasheets for production use.
+ *
+ * aluminum6061 in particular: minimum bend radius for this alloy varies several-fold
+ * with temper (O/T4/T6), so a single multiplier is a rougher approximation here than
+ * for the other materials in this table.
  */
 const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
   mildSteel: 1.0,
