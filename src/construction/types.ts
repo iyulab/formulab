@@ -81,7 +81,26 @@ export interface FormworkResult {
 /**
  * Rebar Weight Calculation Types
  */
-export type RebarSize = 'D10' | 'D13' | 'D16' | 'D19' | 'D22' | 'D25' | 'D29' | 'D32';
+export type RebarSize =
+  | 'D4'
+  | 'D5'
+  | 'D6'
+  | 'D7'
+  | 'D8'
+  | 'D10'
+  | 'D13'
+  | 'D16'
+  | 'D19'
+  | 'D22'
+  | 'D25'
+  | 'D29'
+  | 'D32'
+  | 'D35'
+  | 'D38'
+  | 'D41'
+  | 'D43'
+  | 'D51'
+  | 'D57';
 
 export interface RebarInput {
   size: RebarSize;

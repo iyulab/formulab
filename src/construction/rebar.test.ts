@@ -5,6 +5,26 @@ describe('rebarWeight', () => {
   describe('unit weights', () => {
     // Golden values: KS D 3504:2025 Table 4 (단위 무게 column), read directly from the
     // standard's own official text on 2026-08-28 — see rebar.ts's @reference.
+    it('should return correct unit weight for D4', () => {
+      expect(getRebarUnitWeight('D4')).toBe(0.110);
+    });
+
+    it('should return correct unit weight for D5', () => {
+      expect(getRebarUnitWeight('D5')).toBe(0.173);
+    });
+
+    it('should return correct unit weight for D6', () => {
+      expect(getRebarUnitWeight('D6')).toBe(0.249);
+    });
+
+    it('should return correct unit weight for D7', () => {
+      expect(getRebarUnitWeight('D7')).toBe(0.302);
+    });
+
+    it('should return correct unit weight for D8', () => {
+      expect(getRebarUnitWeight('D8')).toBe(0.389);
+    });
+
     it('should return correct unit weight for D10', () => {
       expect(getRebarUnitWeight('D10')).toBe(0.560);
     });
@@ -37,13 +57,40 @@ describe('rebarWeight', () => {
       expect(getRebarUnitWeight('D32')).toBe(6.23);
     });
 
+    // Golden values for the standard's heavy-section sizes (D35-D57).
+    it('should return correct unit weight for D35', () => {
+      expect(getRebarUnitWeight('D35')).toBe(7.51);
+    });
+
+    it('should return correct unit weight for D38', () => {
+      expect(getRebarUnitWeight('D38')).toBe(8.95);
+    });
+
+    it('should return correct unit weight for D41', () => {
+      expect(getRebarUnitWeight('D41')).toBe(10.5);
+    });
+
+    it('should return correct unit weight for D43', () => {
+      expect(getRebarUnitWeight('D43')).toBe(11.4);
+    });
+
+    it('should return correct unit weight for D51', () => {
+      expect(getRebarUnitWeight('D51')).toBe(15.9);
+    });
+
+    it('should return correct unit weight for D57', () => {
+      expect(getRebarUnitWeight('D57')).toBe(20.2);
+    });
+
     // Structural invariant from the standard's own 비고 1: unit weight = 0.00785 x nominal
     // cross-section area (S = 0.7854 x d^2) — pins the table to its own formula, not just to
     // hand-copied numbers, so a future transcription slip in one entry is still caught.
     it('every unit weight reproduces the standard\'s own S = 0.7854 x d^2, weight = 0.00785 x S formula', () => {
       const nominalDiameters: Record<string, number> = {
+        D4: 4.23, D5: 5.29, D6: 6.35, D7: 7.00, D8: 7.94,
         D10: 9.53, D13: 12.7, D16: 15.9, D19: 19.1,
         D22: 22.2, D25: 25.4, D29: 28.6, D32: 31.8,
+        D35: 34.9, D38: 38.1, D41: 41.3, D43: 43.0, D51: 50.8, D57: 57.3,
       };
       for (const [size, d] of Object.entries(nominalDiameters)) {
         const s = 0.7854 * d ** 2;
@@ -117,6 +164,32 @@ describe('rebarWeight', () => {
       // Weight = 6.23 × 120 = 747.6 kg
       expect(result.totalLength).toBe(120);
       expect(result.totalWeight).toBe(747.6);
+    });
+
+    it('should calculate for D4 (smallest supported size)', () => {
+      const result = rebarWeight({
+        size: 'D4',
+        length: 10,
+        quantity: 20,
+      });
+
+      // Total length = 200 m
+      // Weight = 0.110 × 200 = 22.0 kg
+      expect(result.totalLength).toBe(200);
+      expect(result.totalWeight).toBe(22.0);
+    });
+
+    it('should calculate for D57 (largest supported size)', () => {
+      const result = rebarWeight({
+        size: 'D57',
+        length: 12,
+        quantity: 5,
+      });
+
+      // Total length = 60 m
+      // Weight = 20.2 × 60 = 1212.0 kg
+      expect(result.totalLength).toBe(60);
+      expect(result.totalWeight).toBe(1212.0);
     });
   });
 

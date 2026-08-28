@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.31.0] - 2026-08-28
+
+### Added
+
+- **`construction/rebar` gains eleven new sizes: D4, D5, D6, D7, D8, D35, D38, D41, D43, D51,
+  D57.** `RebarSize`, `getRebarUnitWeight()`, and `rebarWeight()` now cover every size KS D
+  3504:2025's Table 4 publishes, with no gap in the band (previously D10-D32 only). Values are
+  read directly from the standard's own published table and cross-checked against its disclosed
+  unit-weight formula, the same rigor as the existing D10-D32 entries.
+
 ## [0.30.0] - 2026-08-28
 
 ### Fixed

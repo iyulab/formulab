@@ -25,6 +25,22 @@ const simplySuportedLambda = (n: number): number => n * Math.PI;
 /**
  * Calculate natural frequencies for various vibration systems.
  *
+ * @formula springMass: f = (1 / 2π) √(k / m)
+ * @formula cantilever / simplySupported (transverse beam bending): f_n = (λ_n² / 2πL²) √(EI / ρA),
+ *   where λ_n is the mode's dimensionless characteristic value — the roots of the cantilever's
+ *   own transcendental frequency equation for cantilever (λ_1..λ_3 = 1.875104, 4.694091,
+ *   7.854757), or nπ for simply supported (pinned-pinned)
+ * @formula shaftDisk (torsional, single lumped disk on a shaft): f = (1 / 2π) √(GJ / (L·I_p)),
+ *   where I_p = (1/2) · m_disk · r_disk² is the disk's polar mass moment of inertia
+ * @reference Blevins, R.D., "Formulas for Dynamics, Acoustics and Vibration", Wiley, 2016
+ *   (successor to "Formulas for Natural Frequency and Mode Shape", 1979) — Euler-Bernoulli beam
+ *   theory tables for the cantilever/simply-supported characteristic values and mode shapes used
+ *   here. Rao, S.S., "Mechanical Vibrations" — spring-mass single-DOF and lumped-disk torsional
+ *   shaft formulas, the standard textbook derivations for both.
+ * @units input geometry/diskRadius in mm, length in mm, springConstant in N/m, mass/diskMass in
+ *   kg, youngsModulus/shearModulus in GPa, density in kg/m³; output frequency in Hz,
+ *   angularFrequency in rad/s, period in s, momentOfInertia/polarMomentOfInertia in mm⁴,
+ *   crossSectionalArea in mm²
  * @throws RangeError if a required geometry or system parameter is not positive,
  *   or if innerDiameter is not less than outerDiameter for a hollow section
  */

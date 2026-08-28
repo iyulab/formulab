@@ -315,7 +315,7 @@ import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formula
 | `stair()` | Stair dimension calculation |
 | `getAggregateDensity()` | Aggregate bulk density lookup |
 | `aggregateCoverage()` | Aggregate coverage area from volume and depth |
-| `getRebarUnitWeight()` | Rebar unit weight lookup (D10-D32) |
+| `getRebarUnitWeight()` | Rebar unit weight lookup (D4-D8, D10-D32, D35-D57) |
 
 ### Automotive (9 functions)
 
