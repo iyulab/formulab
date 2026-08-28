@@ -183,6 +183,7 @@ export function vibration(input: VibrationInput): VibrationResult {
   return {
     frequencies,
     momentOfInertia: roundTo(I, 2),
+    ...(system === 'shaftDisk' ? { polarMomentOfInertia: roundTo(J, 2) } : {}),
     crossSectionalArea: roundTo(A, 2),
     materialProps,
   };

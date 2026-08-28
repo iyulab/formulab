@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.0] - 2026-08-28
+
+### Fixed
+
+- **`quality/gageRR`'s `percentTolerance` (%P/T) was inflated by an unexplained ×6**, on top of a
+  value (`grr`) that is already scaled to AIAG's 5.15σ spread — the same scale `percentGRR` uses
+  with no such multiplier. Since `status` takes the worse of `percentGRR` and `percentTolerance`,
+  this could report a measurement system as "unacceptable" (>30%) when its true %P/T was
+  acceptable or marginal — always in the direction of over-flagging, never under-flagging, but
+  still a real defect. No other `gageRR` output changed.
+
+- **`construction/rebar`'s unit-weight table (`getRebarUnitWeight()`/`rebarWeight()`) corrected
+  six of its eight D10-D32 entries against KS D 3504:2025's own published table** (D10, D13, D19,
+  D22, D29, D32 were off by 1-10%; D16 and D25 were already correct). The previous values came
+  from a generic diameter-squared approximation formula that was never itself a cited source for
+  this table; the corrected values are read directly from the standard and cross-checked against
+  its own disclosed unit-weight formula.
+
+### Added
+
+- **`metal/vibration`'s `VibrationResult` gains an optional `polarMomentOfInertia` field (J).**
+  For `system: 'shaftDisk'`, the torsional natural frequency was always correctly computed from
+  the polar moment of inertia J, but the result only ever exposed the unrelated bending moment of
+  inertia I (via `momentOfInertia`) — so the field callers could read never matched the quantity
+  that actually drove the frequency. `polarMomentOfInertia` is now populated for `shaftDisk` only;
+  `momentOfInertia` is unchanged for the beam systems it already served correctly. Additive,
+  non-breaking.
+
+- **`environmental/scope2Emissions` now supports market-based dual reporting** alongside its
+  existing location-based (grid-average) calculation, per GHG Protocol Scope 2 Guidance (2015)'s
+  dual-reporting requirement. New optional inputs — `contractedKwh`, `supplierFactor`,
+  `residualMixFactor` — let callers express a supplier-specific/contractual (REC, PPA) emission
+  factor for the covered portion of consumption and a residual-mix factor for the rest; supplying
+  any of them adds `marketBasedCo2Kg`/`marketBasedCo2Tonnes` to the result. `locationBasedCo2Kg`/
+  `locationBasedCo2Tonnes` were also added as explicit aliases of the existing `co2Kg`/`co2Tonnes`,
+  which are unchanged for backward compatibility. This library does not embed a region-keyed
+  residual-mix emission-factor table — those figures are jurisdiction- and year-specific published
+  data (e.g. AIB in Europe); callers supply their own from their disclosure source. Additive,
+  non-breaking.
+
 ## [0.29.0] - 2026-08-19
 
 ### Fixed

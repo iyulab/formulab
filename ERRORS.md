@@ -286,7 +286,7 @@ All 15 domains were fully audited against source on 2026-07-13. Most functions f
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `scope1Emissions()` | `safe` | — |
-| `scope2Emissions()` | `throw` | region 'custom' without customFactor |
+| `scope2Emissions()` | `throw` | region 'custom' without customFactor; market-based requested (contractedKwh/supplierFactor/residualMixFactor given) with contractedKwh negative; contractedKwh>0 and no supplierFactor; contractedKwh > electricityKwh; uncontracted remainder > 0 with no residualMixFactor |
 | `scope3Emissions()` | `safe` | — |
 | `gwpCalculator()` | `safe` | — |
 | `esgSummary()` | `safe` | yearsElapsed/yearsRemaining ≤ 0 → rate fields 0 (sentinel) |

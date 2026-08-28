@@ -211,6 +211,38 @@ describe('vibration', () => {
       expect(result.frequencies.length).toBe(1);
       expect(result.frequencies[0].frequency).toBeGreaterThan(0);
     });
+
+    // ISSUE(docket iyulab/formulab#127): the torsional frequency above is driven by the polar
+    // moment J, not the bending moment I that momentOfInertia reports — J was computed
+    // internally but never exposed. Golden: J = pi*d^4/32 for a solid circular shaft (d=25mm).
+    it('exposes the polar moment of inertia (J) actually used by the torsional frequency', () => {
+      const result = vibration({
+        system: 'shaftDisk',
+        material: 'steel',
+        length: 300,
+        crossSection: 'circular',
+        diameter: 25,
+        diskMass: 5,
+        diskRadius: 100,
+      });
+
+      expect(result.polarMomentOfInertia).toBeCloseTo(38349.52, 1);
+      // I (bending) and J (torsion) differ for a solid circular section (J = 2I) — confirms
+      // momentOfInertia was never silently aliased to J.
+      expect(result.polarMomentOfInertia).not.toBeCloseTo(result.momentOfInertia, 0);
+    });
+
+    it('does not expose polarMomentOfInertia for beam systems (I is the relevant quantity there)', () => {
+      const result = vibration({
+        system: 'cantilever',
+        material: 'steel',
+        length: 300,
+        crossSection: 'circular',
+        diameter: 25,
+      });
+
+      expect(result.polarMomentOfInertia).toBeUndefined();
+    });
   });
 
   describe('material properties', () => {

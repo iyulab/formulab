@@ -95,7 +95,7 @@ describe('gageRR', () => {
         [r[2], r[3]],
         [r[4], r[5]],
       ]);
-      const result = gageRR({ measurements, tolerance: 10 });
+      const result = gageRR({ measurements, tolerance: 5 });
       expect(result.percentGRR).toBeLessThanOrEqual(10);
       expect(result.percentTolerance).toBeGreaterThan(30);
       expect(result.status).toBe('unacceptable');
@@ -114,11 +114,21 @@ describe('gageRR', () => {
     });
 
     it('downgrades to marginal when %Tolerance lands in the 10–30 band while %GRR is acceptable', () => {
-      const result = gageRR({ measurements: classicMeasurements, tolerance: 2.0 });
+      const result = gageRR({ measurements: classicMeasurements, tolerance: 0.3 });
       expect(result.percentGRR).toBeLessThanOrEqual(10);
       expect(result.percentTolerance).toBeGreaterThan(10);
       expect(result.percentTolerance).toBeLessThanOrEqual(30);
       expect(result.status).toBe('marginal');
+    });
+
+    // ISSUE(docket iyulab/formulab#132): percentTolerance previously carried an unexplained x6
+    // on top of the already-5.15sigma-scaled grr, inflating it 6x versus percentGRR's identical
+    // scale. This pins the invariant the code's own comment already claims: %GRR-of-tolerance and
+    // %GRR-of-TV share one scale, so when tolerance == tv the two percentages must be identical.
+    it('percentTolerance equals percentGRR when tolerance == TV (same-scale invariant)', () => {
+      const unscaled = gageRR({ measurements: classicMeasurements });
+      const scaled = gageRR({ measurements: classicMeasurements, tolerance: unscaled.tv });
+      expect(scaled.percentTolerance).toBeCloseTo(scaled.percentGRR, 1);
     });
   });
 

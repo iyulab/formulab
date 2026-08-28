@@ -561,7 +561,8 @@ export interface FrequencyMode {
 
 export interface VibrationResult {
   frequencies: FrequencyMode[];
-  momentOfInertia: number;     // mm4
+  momentOfInertia: number;             // mm4 (I, bending) — meaningful for cantilever/simplySupported
+  polarMomentOfInertia?: number;       // mm4 (J, torsion) — populated only for system === 'shaftDisk'
   crossSectionalArea: number;  // mm2
   materialProps: {
     E: number;                 // GPa

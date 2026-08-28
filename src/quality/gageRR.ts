@@ -108,9 +108,11 @@ export function gageRR(input: GageRRInput): GageRRResult {
   // %GRR
   const percentGRR = tv > 0 ? roundTo((grr / tv) * 100, 2) : 0;
 
-  // %Tolerance
+  // %Tolerance — grr is already 5.15sigma-scaled (K1/K2/K3 = 5.15/d2*), same scale as the
+  // tolerance band, so no further multiplier belongs here (matches %GRR = grr/tv x 100, which
+  // has none either).
   const percentTolerance = tolerance != null && tolerance > 0
-    ? roundTo((grr / tolerance) * 100 * 6, 2)
+    ? roundTo((grr / tolerance) * 100, 2)
     : null;
 
   // ndc

@@ -33,13 +33,23 @@ export interface Scope2EmissionsInput {
   electricityKwh: number;    // kWh consumed
   region: GridRegion;
   customFactor?: number;     // gCO2/kWh (for custom region)
+  // Market-based method (GHG Protocol Scope 2 Guidance dual reporting) — all optional; supplying
+  // any of the three below computes marketBasedCo2Kg/Tonnes alongside the always-present
+  // location-based result.
+  contractedKwh?: number;      // kWh covered by supplier-specific/contractual instruments (REC/PPA); defaults to 0
+  supplierFactor?: number;     // gCO2/kWh — the contracted portion's specific emission factor; required if contractedKwh > 0
+  residualMixFactor?: number;  // gCO2/kWh — applies to electricityKwh - contractedKwh; required unless that remainder is 0
 }
 
 export interface Scope2EmissionsResult {
-  co2Kg: number;             // kg CO2
-  co2Tonnes: number;         // tonnes CO2
-  gridFactor: number;        // gCO2/kWh
+  co2Kg: number;              // kg CO2 (location-based; kept for backward compatibility)
+  co2Tonnes: number;          // tonnes CO2 (location-based)
+  gridFactor: number;         // gCO2/kWh
   region: string;
+  locationBasedCo2Kg: number;    // kg CO2 — same value as co2Kg, explicit name for dual reporting
+  locationBasedCo2Tonnes: number; // tonnes CO2
+  marketBasedCo2Kg?: number;      // kg CO2 — present only when market-based inputs were supplied
+  marketBasedCo2Tonnes?: number;  // tonnes CO2
 }
 
 /**

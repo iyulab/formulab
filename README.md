@@ -315,7 +315,7 @@ import { concreteMix, rebarWeight, slope, stair, momentOfInertia } from 'formula
 | `stair()` | Stair dimension calculation |
 | `getAggregateDensity()` | Aggregate bulk density lookup |
 | `aggregateCoverage()` | Aggregate coverage area from volume and depth |
-| `getRebarUnitWeight()` | Rebar unit weight lookup (D10-D51) |
+| `getRebarUnitWeight()` | Rebar unit weight lookup (D10-D32) |
 
 ### Automotive (9 functions)
 
@@ -479,7 +479,7 @@ import { scope1Emissions, scope2Emissions, gwpCalculator, esgSummary } from 'for
 | Function | Description |
 |----------|-------------|
 | `scope1Emissions()` | Fuel combustion direct emissions (6 fuels) |
-| `scope2Emissions()` | Purchased electricity emissions (12 regions) |
+| `scope2Emissions()` | Purchased electricity emissions (12 regions, location-based always + optional market-based dual reporting) |
 | `scope3Emissions()` | Supply chain spend-based emissions (8 categories) |
 | `vocEmissions()` | VOC emissions with capture/destruction |
 | `productCarbonFootprint()` | Product lifecycle carbon footprint |

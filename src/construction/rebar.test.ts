@@ -3,12 +3,14 @@ import { rebarWeight, getRebarUnitWeight } from './rebar.js';
 
 describe('rebarWeight', () => {
   describe('unit weights', () => {
+    // Golden values: KS D 3504:2025 Table 4 (단위 무게 column), read directly from the
+    // standard's own official text on 2026-08-28 — see rebar.ts's @reference.
     it('should return correct unit weight for D10', () => {
-      expect(getRebarUnitWeight('D10')).toBe(0.617);
+      expect(getRebarUnitWeight('D10')).toBe(0.560);
     });
 
     it('should return correct unit weight for D13', () => {
-      expect(getRebarUnitWeight('D13')).toBe(1.04);
+      expect(getRebarUnitWeight('D13')).toBe(0.995);
     });
 
     it('should return correct unit weight for D16', () => {
@@ -16,11 +18,11 @@ describe('rebarWeight', () => {
     });
 
     it('should return correct unit weight for D19', () => {
-      expect(getRebarUnitWeight('D19')).toBe(2.23);
+      expect(getRebarUnitWeight('D19')).toBe(2.25);
     });
 
     it('should return correct unit weight for D22', () => {
-      expect(getRebarUnitWeight('D22')).toBe(2.98);
+      expect(getRebarUnitWeight('D22')).toBe(3.04);
     });
 
     it('should return correct unit weight for D25', () => {
@@ -28,11 +30,26 @@ describe('rebarWeight', () => {
     });
 
     it('should return correct unit weight for D29', () => {
-      expect(getRebarUnitWeight('D29')).toBe(5.18);
+      expect(getRebarUnitWeight('D29')).toBe(5.04);
     });
 
     it('should return correct unit weight for D32', () => {
-      expect(getRebarUnitWeight('D32')).toBe(6.31);
+      expect(getRebarUnitWeight('D32')).toBe(6.23);
+    });
+
+    // Structural invariant from the standard's own 비고 1: unit weight = 0.00785 x nominal
+    // cross-section area (S = 0.7854 x d^2) — pins the table to its own formula, not just to
+    // hand-copied numbers, so a future transcription slip in one entry is still caught.
+    it('every unit weight reproduces the standard\'s own S = 0.7854 x d^2, weight = 0.00785 x S formula', () => {
+      const nominalDiameters: Record<string, number> = {
+        D10: 9.53, D13: 12.7, D16: 15.9, D19: 19.1,
+        D22: 22.2, D25: 25.4, D29: 28.6, D32: 31.8,
+      };
+      for (const [size, d] of Object.entries(nominalDiameters)) {
+        const s = 0.7854 * d ** 2;
+        const expectedWeight = Math.round(0.00785 * s * 1000) / 1000;
+        expect(getRebarUnitWeight(size as never)).toBeCloseTo(expectedWeight, 1);
+      }
     });
   });
 
@@ -71,9 +88,9 @@ describe('rebarWeight', () => {
       });
 
       // Total length = 600 m
-      // Weight = 0.617 × 600 = 370.2 kg
+      // Weight = 0.560 × 600 = 336.0 kg
       expect(result.totalLength).toBe(600);
-      expect(result.totalWeight).toBe(370.2);
+      expect(result.totalWeight).toBe(336.0);
     });
 
     it('should calculate for D25', () => {
@@ -97,9 +114,9 @@ describe('rebarWeight', () => {
       });
 
       // Total length = 120 m
-      // Weight = 6.31 × 120 = 757.2 kg
+      // Weight = 6.23 × 120 = 747.6 kg
       expect(result.totalLength).toBe(120);
-      expect(result.totalWeight).toBe(757.2);
+      expect(result.totalWeight).toBe(747.6);
     });
   });
 
@@ -140,7 +157,9 @@ describe('rebarWeight', () => {
         quantity: 670,
       });
 
-      expect(result => result.totalWeight).not.toBeUndefined();
+      // Total length = 6700 m; weight = 0.560 × 6700 = 3752.0 kg
+      expect(slabRebar.totalLength).toBe(6700);
+      expect(slabRebar.totalWeight).toBe(3752.0);
     });
 
     it('should calculate for beam reinforcement', () => {
@@ -157,9 +176,9 @@ describe('rebarWeight', () => {
         quantity: 2,
       });
 
-      // Bottom = 2.98 × 26 = 77.48 kg
+      // Bottom = 3.04 × 26 = 79.04 kg
       // Top = 1.56 × 13 = 20.28 kg
-      expect(bottom.totalWeight).toBe(77.48);
+      expect(bottom.totalWeight).toBe(79.04);
       expect(top.totalWeight).toBe(20.28);
     });
 
@@ -172,8 +191,8 @@ describe('rebarWeight', () => {
       });
 
       // Total length = 1200 m
-      // Weight = 6.31 × 1200 = 7572 kg = 7.57 tonnes
-      expect(result.totalWeight).toBe(7572);
+      // Weight = 6.23 × 1200 = 7476 kg = 7.48 tonnes
+      expect(result.totalWeight).toBe(7476);
     });
   });
 
@@ -197,7 +216,7 @@ describe('rebarWeight', () => {
       });
 
       expect(result.totalLength).toBe(50);
-      expect(result.totalWeight).toBe(30.85);
+      expect(result.totalWeight).toBe(28.0);
     });
   });
 });
