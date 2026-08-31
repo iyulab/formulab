@@ -145,6 +145,119 @@ describe('gageRR', () => {
     });
   });
 
+  describe('ANOVA method', () => {
+    // AIAG MSA 4th Ed. ANOVA worked example (5 parts x 3 operators x 3 trials), sourced from
+    // spcforexcel.com's published walkthrough of the standard's method — cross-referenced ANOVA
+    // table (SS/df/MS/F/p) and resulting pooled variance components (Equipment 0.0468, Operator
+    // 0.0512, GRR 0.0980, Part 0.7980) used as golden values below.
+    // https://www.spcforexcel.com/knowledge/measurement-systems-analysis-gage-rr/anova-gage-rr-part-3/
+    const anovaMeasurements: number[][][] = [
+      [[3.29, 3.41, 3.64], [3.08, 3.25, 3.07], [3.04, 2.89, 2.85]], // Part 1 (A, B, C)
+      [[2.44, 2.32, 2.42], [2.53, 1.78, 2.32], [1.62, 1.87, 2.04]], // Part 2
+      [[4.34, 4.17, 4.27], [4.19, 3.94, 4.34], [3.88, 4.09, 3.67]], // Part 3
+      [[3.47, 3.50, 3.64], [3.01, 4.03, 3.20], [3.14, 3.20, 3.11]], // Part 4
+      [[2.20, 2.08, 2.16], [2.44, 1.80, 1.72], [1.54, 1.93, 1.55]], // Part 5
+    ];
+
+    it('defaults to average-range when method is omitted', () => {
+      const result = gageRR({ measurements: classicMeasurements });
+      expect(result.method).toBe('average-range');
+      expect(result.interaction).toBeUndefined();
+    });
+
+    it('reports method: "anova" and interaction diagnostics', () => {
+      const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+      expect(result.method).toBe('anova');
+      expect(result.interaction).toBeDefined();
+    });
+
+    it('matches the source-reported interaction F-statistic and p-value, and pools it (p > 0.25)', () => {
+      const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+      expect(result.interaction!.fStatistic).toBeCloseTo(0.142, 2);
+      expect(result.interaction!.pValue).toBeCloseTo(0.9964, 2);
+      expect(result.interaction!.pooled).toBe(true);
+      expect(result.interaction!.variance).toBe(0); // pooled away
+    });
+
+    it('matches the source-derived EV/AV/GRR/PV (5.15sigma of the pooled variance components)', () => {
+      const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+      // sqrt(variance) x 5.15, variance components from the source's ANOVA table (see above)
+      expect(result.ev).toBeCloseTo(Math.sqrt(0.0468) * 5.15, 1);
+      expect(result.av).toBeCloseTo(Math.sqrt(0.0512) * 5.15, 1);
+      expect(result.grr).toBeCloseTo(Math.sqrt(0.0980) * 5.15, 1);
+      expect(result.pv).toBeCloseTo(Math.sqrt(0.7980) * 5.15, 1);
+    });
+
+    it('satisfies the same structural invariants as the average-range method', () => {
+      const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+      expect(result.tv ** 2).toBeCloseTo(result.grr ** 2 + result.pv ** 2, 2);
+      expect(result.grr ** 2).toBeCloseTo(result.ev ** 2 + result.av ** 2, 2);
+      expect(result.percentGRR).toBeGreaterThan(0);
+      expect(result.percentGRR).toBeLessThanOrEqual(100);
+    });
+
+    it('classifies this real-world example as unacceptable (%GRR ~33%, exceeds the 30% band)', () => {
+      const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+      expect(result.percentGRR).toBeGreaterThan(30);
+      expect(result.status).toBe('unacceptable');
+    });
+
+    it('does not pool a genuinely significant interaction (p <= 0.25) and folds it into AV instead', () => {
+      // Constructed so operator effect flips direction across parts (classic interaction
+      // signature) while repeatability stays tight, driving MS_interaction well above MS_equipment.
+      const interactingData: number[][][] = [
+        [[1.0, 1.02], [5.0, 5.02]],
+        [[5.0, 5.02], [1.0, 1.02]],
+        [[1.0, 1.02], [5.0, 5.02]],
+        [[5.0, 5.02], [1.0, 1.02]],
+      ];
+      const result = gageRR({ measurements: interactingData, method: 'anova' });
+      expect(result.interaction!.pooled).toBe(false);
+      expect(result.interaction!.pValue).toBeLessThan(0.25);
+      expect(result.interaction!.variance).toBeGreaterThan(0);
+    });
+
+    it('throws for fewer than 2 parts, operators, or trials', () => {
+      expect(() => gageRR({
+        measurements: [[[1, 2], [1, 2]]], method: 'anova',
+      })).toThrow(RangeError);
+      expect(() => gageRR({
+        measurements: [[[1, 2]], [[1, 2]]], method: 'anova',
+      })).toThrow(RangeError);
+      expect(() => gageRR({
+        measurements: [[[1], [1]], [[1], [1]]], method: 'anova',
+      })).toThrow(RangeError);
+    });
+
+    it('reports F=Infinity, p=0, not pooled when equipment variance is exactly 0 but interaction is not', () => {
+      // Same crossing operator x part pattern as above, but with zero within-cell (trial-to-trial)
+      // variation, so MS_equipment = 0 while MS_interaction > 0 -- the F = x/0 edge case.
+      const zeroEquipInteracting: number[][][] = [
+        [[1.0, 1.0], [5.0, 5.0]],
+        [[5.0, 5.0], [1.0, 1.0]],
+        [[1.0, 1.0], [5.0, 5.0]],
+        [[5.0, 5.0], [1.0, 1.0]],
+      ];
+      const result = gageRR({ measurements: zeroEquipInteracting, method: 'anova' });
+      expect(result.interaction!.fStatistic).toBe(Infinity);
+      expect(result.interaction!.pValue).toBe(0);
+      expect(result.interaction!.pooled).toBe(false);
+      expect(Number.isNaN(result.grr)).toBe(false);
+    });
+
+    it('handles identical measurements (zero variation) without producing NaN', () => {
+      const zeroVar: number[][][] = [
+        [[5.0, 5.0], [5.0, 5.0]],
+        [[4.0, 4.0], [4.0, 4.0]],
+        [[3.0, 3.0], [3.0, 3.0]],
+      ];
+      const result = gageRR({ measurements: zeroVar, method: 'anova' });
+      expect(result.ev).toBe(0);
+      expect(Number.isNaN(result.grr)).toBe(false);
+      expect(Number.isNaN(result.percentGRR)).toBe(false);
+    });
+  });
+
   describe('edge cases', () => {
     it('should handle 2 operators × 3 trials', () => {
       const data: number[][][] = [

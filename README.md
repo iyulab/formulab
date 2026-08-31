@@ -199,7 +199,7 @@ import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formula
 | `ppm()` | Parts Per Million conversion |
 | `rpn()` | Risk Priority Number (FMEA) |
 | `yieldCalc()` | First Pass Yield / RTY |
-| `gageRR()` | Gage R&R (AIAG MSA Average & Range) |
+| `gageRR()` | Gage R&R (AIAG MSA — Average & Range or ANOVA method, `input.method`) |
 | `cmk()` | Machine capability index Cm/Cmk |
 | `weibull()` | Weibull reliability analysis |
 | `paretoAnalysis()` | Pareto 80/20 ABC classification |

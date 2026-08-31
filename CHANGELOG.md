@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2026-08-31
+
+### Added
+
+- **`quality/gageRR()` gains the AIAG MSA 4th Edition ANOVA method**, alongside the existing
+  Average and Range method. Opt in with `input.method: 'anova'` (default remains
+  `'average-range'`, fully backward-compatible). The ANOVA method separates the Part×Operator
+  interaction from repeatability via a two-factor crossed random-effects ANOVA, pooling the
+  interaction into the equipment term when it is not statistically significant (F-test, p > 0.25,
+  per AIAG convention) — a distinction the Average-Range method cannot make. `GageRRResult` gains
+  an additive `method` field (always present) and an `interaction` object (present only for the
+  ANOVA method: `variance`, `fStatistic`, `pValue`, `pooled`). Golden-tested against a published
+  AIAG MSA worked example (5 parts × 3 operators × 3 trials) cross-referencing its full ANOVA
+  table and resulting variance components.
+- `src/math.ts` gains `fCDF(f, df1, df2)`, an F-distribution CDF (regularized incomplete beta
+  function) used by the above — verified against standard published F-table critical values.
+
 ## [0.31.0] - 2026-08-28
 
 ### Added

@@ -52,7 +52,7 @@ All 15 domains were fully audited against source on 2026-07-13. Most functions f
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `safe` | — |
-| `gageRR()` | `throw` | Insufficient data |
+| `gageRR()` | `throw` | Insufficient data; `method: 'anova'` also throws for fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `safe` | empty measurements or computed stdDev ≤ 0 → returns zero-valued result; does not throw |
 | `weibull()` | `throw` | < 3 data points |
 | `paretoAnalysis()` | `throw` | Empty items |

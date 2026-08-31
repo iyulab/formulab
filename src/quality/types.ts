@@ -348,11 +348,12 @@ export interface YieldResult {
 export interface GageRRInput {
   measurements: number[][][]; // [part][operator][trial]
   tolerance?: number;         // specification range (USL-LSL)
+  method?: 'average-range' | 'anova'; // AIAG MSA 4th Ed. method (default 'average-range')
 }
 
 export interface GageRRResult {
   ev: number;                 // Equipment Variation (Repeatability)
-  av: number;                 // Appraiser Variation (Reproducibility)
+  av: number;                 // Appraiser Variation (Reproducibility) — includes interaction when not pooled
   grr: number;                // GRR = √(EV² + AV²)
   pv: number;                 // Part Variation
   tv: number;                 // Total Variation
@@ -360,6 +361,14 @@ export interface GageRRResult {
   percentTolerance: number | null; // %GRR of tolerance
   ndc: number;                // Number of distinct categories
   status: 'acceptable' | 'marginal' | 'unacceptable';
+  method: 'average-range' | 'anova';
+  /** Present only when method === 'anova': Operator×Part interaction diagnostics. */
+  interaction?: {
+    variance: number;         // interaction variance component (0 when pooled into equipment)
+    fStatistic: number;       // F(interaction) = MS_interaction / MS_equipment
+    pValue: number;           // P(F >= fStatistic)
+    pooled: boolean;          // true when pValue > 0.25 (AIAG convention) — interaction pooled into equipment
+  };
 }
 
 /**
