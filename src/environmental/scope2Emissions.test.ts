@@ -2,26 +2,26 @@ import { describe, it, expect } from 'vitest';
 import { scope2Emissions } from './scope2Emissions.js';
 
 describe('scope2Emissions', () => {
-  it('should calculate US average: 10000 kWh × 386 gCO2/kWh = 3860 kgCO2', () => {
+  it('should calculate US average: 10000 kWh × 384 gCO2/kWh = 3840 kgCO2', () => {
     const result = scope2Emissions({ electricityKwh: 10000, region: 'US_average' });
-    expect(result.co2Kg).toBeCloseTo(3860, 0);
-    expect(result.co2Tonnes).toBeCloseTo(3.86, 2);
-    expect(result.gridFactor).toBe(386);
+    expect(result.co2Kg).toBeCloseTo(3840, 0);
+    expect(result.co2Tonnes).toBeCloseTo(3.84, 2);
+    expect(result.gridFactor).toBe(384);
   });
 
-  it('should calculate Korea: 10000 kWh × 415 = 4150 kgCO2', () => {
+  it('should calculate Korea: 10000 kWh × 417 = 4170 kgCO2', () => {
     const result = scope2Emissions({ electricityKwh: 10000, region: 'Korea' });
-    expect(result.co2Kg).toBeCloseTo(4150, 0);
+    expect(result.co2Kg).toBeCloseTo(4170, 0);
   });
 
-  it('should calculate France (low-carbon): 10000 kWh × 56 = 560 kgCO2', () => {
+  it('should calculate France (low-carbon): 10000 kWh × 41 = 410 kgCO2', () => {
     const result = scope2Emissions({ electricityKwh: 10000, region: 'France' });
-    expect(result.co2Kg).toBeCloseTo(560, 0);
+    expect(result.co2Kg).toBeCloseTo(410, 0);
   });
 
-  it('should calculate India (high-carbon): 10000 kWh × 708 = 7080 kgCO2', () => {
+  it('should calculate India (high-carbon): 10000 kWh × 670 = 6700 kgCO2', () => {
     const result = scope2Emissions({ electricityKwh: 10000, region: 'India' });
-    expect(result.co2Kg).toBeCloseTo(7080, 0);
+    expect(result.co2Kg).toBeCloseTo(6700, 0);
   });
 
   it('should handle custom region with custom factor', () => {
@@ -44,7 +44,7 @@ describe('scope2Emissions', () => {
   it('should handle large consumption (factory)', () => {
     // Factory: 5,000,000 kWh/year in China
     const result = scope2Emissions({ electricityKwh: 5000000, region: 'China' });
-    expect(result.co2Tonnes).toBeCloseTo(2775, 0);
+    expect(result.co2Tonnes).toBeCloseTo(2625, 0);
   });
 
   it('should compare regions for same consumption', () => {
@@ -83,7 +83,7 @@ describe('scope2Emissions', () => {
       });
       expect(result.marketBasedCo2Kg).toBe(0);
       // Location-based stays at the grid average regardless of what was contracted.
-      expect(result.co2Kg).toBeCloseTo(3860, 0);
+      expect(result.co2Kg).toBeCloseTo(3840, 0);
     });
 
     it('blends contracted and residual-mix portions: 4000kWh@50 + 6000kWh@500 = 3200 kgCO2', () => {

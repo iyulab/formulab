@@ -2,22 +2,31 @@ import { roundTo } from '../utils.js';
 import type { GridRegion, Scope2EmissionsInput, Scope2EmissionsResult } from './types.js';
 
 /**
- * Grid emission factors (gCO2/kWh)
- * @reference IEA 2023 Emission Factors
+ * Grid emission factors (gCO2/kWh), most recent full calendar year.
+ * @reference Our World in Data — "Carbon intensity of electricity generation"
+ *   (ourworldindata.org/grapher/carbon-intensity-electricity), sourced from Ember's Yearly
+ *   Electricity Data; 2025 figures, accessed 2026-09-02. Cross-checked against Umweltbundesamt
+ *   (German Federal Environment Agency) national statistics for Germany (2025: ~328 gCO2/kWh,
+ *   within 1% of the Ember-sourced 330 used here).
+ * @remarks Replaces the previous "IEA 2023 Emission Factors" table (docket
+ *   `iyulab/formulab` #173 / `iyulab/online-tools` ISSUE-formulab-20260902 — the prior figures
+ *   could not be reproduced against any accessible source, IEA's own Emissions Factors data
+ *   product requires a paid license). Update annually against the same Our World in Data series
+ *   when a new calendar year of data lands (structural drift, not a one-off fix).
  */
 const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
-  US_average: 386,
-  EU_average: 230,
-  China: 555,
-  India: 708,
-  Japan: 457,
-  Korea: 415,
-  UK: 207,
-  Germany: 350,
-  France: 56,
-  Brazil: 75,
-  Australia: 656,
-  Canada: 110,
+  US_average: 384,
+  EU_average: 210,
+  China: 525,
+  India: 670,
+  Japan: 477,
+  Korea: 417,
+  UK: 217,
+  Germany: 330,
+  France: 41,
+  Brazil: 110,
+  Australia: 525,
+  Canada: 191,
 };
 
 /**
@@ -26,7 +35,7 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  *
  * @formula location-based: CO2(kg) = kWh × gridFactor / 1000
  * @formula market-based: CO2(kg) = (contractedKwh × supplierFactor + (kWh − contractedKwh) × residualMixFactor) / 1000
- * @reference GHG Protocol Scope 2, IEA Emission Factors 2023 (location-based grid factors);
+ * @reference GHG Protocol Scope 2, Our World in Data / Ember Yearly Electricity Data 2025 (location-based grid factors, see `GRID_EMISSION_FACTORS` above);
  *   GHG Protocol Scope 2 Guidance (2015) Ch.4-6 (market-based dual reporting — this library does
  *   not embed residual-mix emission factors, since they are jurisdiction- and year-specific
  *   published figures; callers supply `residualMixFactor` from their own residual-mix disclosure

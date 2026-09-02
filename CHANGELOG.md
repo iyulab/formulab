@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.1] - 2026-09-02
+
+### Fixed
+
+- **`environmental/scope2Emissions()` grid emission factors were stale and unreproducible.**
+  `GRID_EMISSION_FACTORS` carried an "IEA 2023 Emission Factors" citation whose values could not
+  be reproduced against any accessible source — IEA's own Emissions Factors data product requires
+  a paid license, and the specific figures previously cited (attempted in docket `#173`) did not
+  match any independently verifiable dataset. Replaced with Our World in Data's "Carbon intensity
+  of electricity generation" series (sourced from Ember's Yearly Electricity Data, 2025 figures —
+  a freely reproducible, actively maintained global dataset), cross-checked against Umweltbundesamt
+  (German Federal Environment Agency) national statistics for Germany (within 1%). All 12 region
+  factors changed, in both directions — the largest swings are Canada (110 → 191 gCO2/kWh, +74%,
+  a 3-year rising trend in the source data toward more gas generation) and Brazil (75 → 110, +47%,
+  reduced hydro output), against France (56 → 41, -27%, continued nuclear-heavy low-carbon
+  generation) and Australia (656 → 525, -20%, continued coal-to-renewables buildout).
+  `scope2Emissions()` callers using the default region factors will see different
+  `co2Kg`/`co2Tonnes` output for the same input — this is a data correction, not an API change.
+
 ## [0.32.0] - 2026-08-31
 
 ### Added
