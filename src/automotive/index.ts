@@ -4,7 +4,7 @@ export { batteryRuntime } from './batteryRuntime.js';
 export { evCharging } from './evCharging.js';
 export { fuelEconomy } from './fuelEconomy.js';
 export { gearRatio } from './gearRatio.js';
-export { tireCompare } from './tireCompare.js';
+export { tireCompare, tireLoadCapacityKg } from './tireCompare.js';
 export { torque } from './torque.js';
 export { power } from './power.js';
 export { chargingLoss } from './chargingLoss.js';

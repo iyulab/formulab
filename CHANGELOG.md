@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.33.0] - 2026-09-02
+
+### Added
+
+- **`automotive/tireCompare()` gains ISO 4000-1 / ETRTO Load Index support**, including HL (High
+  Load) ratings used by heavy EVs. `TireSpec.loadIndex` (optional, 60-130) resolves to
+  `TireData.maxLoadKg` via the new exported `tireLoadCapacityKg()` lookup; when both tires in a
+  comparison supply it, `TireResult` additionally carries `loadCapacityDiffKg` and
+  `loadCapacityReduced` — a replacement-tire safety check flagging when tire2 is rated to carry
+  less than tire1 (the case that matters for heavy EVs, which need HL-rated tires and can't
+  safely drop back to a lower-index replacement). SL/XL/HL are not separate tables: they are
+  construction/reference-pressure classes that determine which Load Index a given tire size can
+  be rated at — the Load Index-to-kg mapping itself is universal, so no separate "HL table" was
+  needed once the standard one was verified. Golden-tested against ISO 4000-1 figures (cell-level
+  extraction, cross-checked against the UK MOT Inspection Manual's independent table and
+  published XL/HL comparison figures — all points agreed exactly). `loadIndex` is fully optional;
+  omitting it on either tire preserves the exact prior `tireCompare()` output.
+
 ## [0.32.1] - 2026-09-02
 
 ### Fixed

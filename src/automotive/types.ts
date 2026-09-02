@@ -77,6 +77,8 @@ export interface TireSpec {
   width: number;     // mm
   aspect: number;    // %
   rim: number;       // inches
+  /** ISO 4000-1 / ETRTO load index (60-130). Optional — omit to skip load capacity comparison. */
+  loadIndex?: number;
 }
 
 export interface TireInput {
@@ -88,6 +90,8 @@ export interface TireData {
   diameter: number;       // mm
   circumference: number;  // mm
   revsPerKm: number;
+  /** Max load per tire (kg), present only when the spec supplied `loadIndex`. */
+  maxLoadKg?: number;
 }
 
 export interface TireResult {
@@ -96,6 +100,12 @@ export interface TireResult {
   diameterDiff: number;        // mm
   diameterDiffPercent: number; // %
   speedoCorrection: number;    // %
+  /** tire2's max load minus tire1's (kg) — present only when both specs supplied `loadIndex`. */
+  loadCapacityDiffKg?: number;
+  /** true when tire2's load index rates it to carry less than tire1 — a replacement tire that
+   *  cannot legally/safely substitute for the original (relevant for heavy EVs needing HL-rated
+   *  tires). Present only when both specs supplied `loadIndex`. */
+  loadCapacityReduced?: boolean;
 }
 
 /**

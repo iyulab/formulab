@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tireCompare } from './tireCompare.js';
+import { tireCompare, tireLoadCapacityKg } from './tireCompare.js';
 
 describe('tireCompare', () => {
   describe('tire dimension calculation', () => {
@@ -159,6 +159,85 @@ describe('tireCompare', () => {
 
       // Higher aspect = larger diameter
       expect(result.tire1.diameter).toBeGreaterThan(result.tire2.diameter);
+    });
+  });
+
+  // docket iyulab/online-tools ISSUE-formulab (NT-157): EV load-index / HL support.
+  // Golden values cross-verified against ISO 4000-1 (via en.wikipedia.org/wiki/Tire_code, cell
+  // extraction 2026-09-02), the UK MOT Inspection Manual Appendix B (÷2, different reference
+  // pressure class but consistent ratio), and published XL/HL comparison figures.
+  describe('tireLoadCapacityKg (ISO 4000-1 / ETRTO Load Index)', () => {
+    it('matches published golden reference points', () => {
+      expect(tireLoadCapacityKg(70)).toBe(335);
+      expect(tireLoadCapacityKg(91)).toBe(615); // commonly-cited passenger-tire reference value
+      expect(tireLoadCapacityKg(98)).toBe(750); // XL example from Continental's HL announcement
+      expect(tireLoadCapacityKg(100)).toBe(800);
+      expect(tireLoadCapacityKg(101)).toBe(825); // HL example — same table, no separate HL column
+      expect(tireLoadCapacityKg(126)).toBe(1700); // heavy EV pickup range (e.g. Hummer EV XL)
+    });
+
+    it('throws for an index below the supported range', () => {
+      expect(() => tireLoadCapacityKg(59)).toThrow(RangeError);
+    });
+
+    it('throws for an index above the supported range', () => {
+      expect(() => tireLoadCapacityKg(131)).toThrow(RangeError);
+    });
+
+    it('accepts both boundary values', () => {
+      expect(tireLoadCapacityKg(60)).toBe(250);
+      expect(tireLoadCapacityKg(130)).toBe(1900);
+    });
+  });
+
+  describe('load capacity comparison (via tireCompare)', () => {
+    it('omits load capacity fields when neither spec supplies loadIndex', () => {
+      const result = tireCompare({
+        tire1: { width: 205, aspect: 55, rim: 16 },
+        tire2: { width: 215, aspect: 55, rim: 16 },
+      });
+      expect(result.tire1.maxLoadKg).toBeUndefined();
+      expect(result.loadCapacityDiffKg).toBeUndefined();
+      expect(result.loadCapacityReduced).toBeUndefined();
+    });
+
+    it('reports maxLoadKg for the one spec with loadIndex but omits the diff when only one is supplied', () => {
+      const result = tireCompare({
+        tire1: { width: 205, aspect: 55, rim: 16, loadIndex: 91 },
+        tire2: { width: 215, aspect: 55, rim: 16 },
+      });
+      expect(result.tire1.maxLoadKg).toBe(615);
+      expect(result.tire2.maxLoadKg).toBeUndefined();
+      expect(result.loadCapacityDiffKg).toBeUndefined();
+      expect(result.loadCapacityReduced).toBeUndefined();
+    });
+
+    it('reports each maxLoadKg and the diff when both specs supply loadIndex', () => {
+      const result = tireCompare({
+        tire1: { width: 245, aspect: 45, rim: 19, loadIndex: 98 },
+        tire2: { width: 245, aspect: 45, rim: 19, loadIndex: 101 },
+      });
+      expect(result.tire1.maxLoadKg).toBe(750);
+      expect(result.tire2.maxLoadKg).toBe(825);
+      expect(result.loadCapacityDiffKg).toBe(75);
+      expect(result.loadCapacityReduced).toBe(false);
+    });
+
+    it('flags loadCapacityReduced when the replacement tire is rated to carry less', () => {
+      // Real-world safety check: swapping to a lower-load-index tire than the OEM spec.
+      const result = tireCompare({
+        tire1: { width: 275, aspect: 65, rim: 18, loadIndex: 123 }, // OEM heavy EV pickup spec
+        tire2: { width: 275, aspect: 65, rim: 18, loadIndex: 116 }, // undersized replacement
+      });
+      expect(result.loadCapacityDiffKg).toBeLessThan(0);
+      expect(result.loadCapacityReduced).toBe(true);
+    });
+
+    it('propagates the RangeError when a supplied loadIndex is out of range', () => {
+      expect(() => tireCompare({
+        tire1: { width: 205, aspect: 55, rim: 16, loadIndex: 50 },
+        tire2: { width: 205, aspect: 55, rim: 16 },
+      })).toThrow(RangeError);
     });
   });
 });

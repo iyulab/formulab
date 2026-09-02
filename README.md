@@ -11,7 +11,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **203 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **204 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -35,12 +35,12 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 11 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
 | Construction | 13 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
-| Automotive | 9 | chargingLoss | AASHTO, SAE J1772 |
+| Automotive | 10 | chargingLoss, tireLoadCapacityKg | AASHTO, SAE J1772, ISO 4000-1 |
 | Energy | 15 | degreeDay, windOutput | NREL PVWatts, ISO 50001 |
 | Food | 6 | waterActivity, stabilityStudy | HACCP, ICH Q1A |
 | Utility | 16 | — | — |
 | Battery | 10 | stateOfHealth, thermalRunaway | IEEE 1188, IEC 62620, Battery University |
-| Environmental | 10 | gwpCalculator | GHG Protocol, IPCC AR6, IEA 2023 |
+| Environmental | 10 | gwpCalculator | GHG Protocol, IPCC AR6, Our World in Data/Ember |
 | Machining | 12 | all 12 functions — truePosition, gaugeBlockStack, boltCircle, sineBarHeight, effectiveDiameter, radialChipThinning, cuspHeight, boringBarDeflection, toolDeflection, cycleTimeEstimator, threadOverWires, triangleSolver | Machinery's Handbook, ASME Y14.5/B1.2, Sandvik Coromant |
 | IE | 5 | — | MTM/MOST, Wright's learning curve |
 
