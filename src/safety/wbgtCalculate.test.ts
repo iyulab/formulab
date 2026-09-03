@@ -45,7 +45,7 @@ describe('wbgtCalculate', () => {
         isAcclimatized: true,
       });
 
-      expect(result.threshold).toBe(31);
+      expect(result.threshold).toBe(30);
     });
 
     it('should use correct threshold for moderate work, unacclimatized', () => {
@@ -58,7 +58,7 @@ describe('wbgtCalculate', () => {
         isAcclimatized: false,
       });
 
-      expect(result.threshold).toBe(25);
+      expect(result.threshold).toBe(26);
     });
 
     it('should use correct threshold for heavy work, acclimatized', () => {
@@ -88,58 +88,41 @@ describe('wbgtCalculate', () => {
     });
   });
 
-  describe('ISO 7243 Table 1 golden reference (heavy/veryHeavy only)', () => {
-    // Source: ISO 7243 Table 1, "sensible air movement" column, as reproduced with
-    // citation in Parsons K (2006), "Heat Stress Standard ISO 7243 and its Global
-    // Application", Industrial Health 44, 368-379, Table 1. light/moderate are not
-    // pinned here - they remain unverified (see WBGT_THRESHOLDS JSDoc).
-    it('heavy (200 < M < 260 W/m2), acclimatized = 26', () => {
-      const result = wbgtCalculate({
-        dryBulbTemp: 30,
-        wetBulbTemp: 25,
-        globeTemp: 30,
-        isOutdoor: false,
-        workload: 'heavy',
-        isAcclimatized: true,
-      });
-      expect(result.threshold).toBe(26);
-    });
+  describe('ISO 7243:2017 Annex A, Table A.1 golden reference (all five classes)', () => {
+    // Source: ISO 7243:2017, Annex A, Table A.1 - the standard's own reference-value
+    // table, transcribed cell-by-cell (see WBGT_THRESHOLDS JSDoc). Every class/column
+    // pair the table defines is pinned here.
+    const cases: Array<{
+      workload: 'resting' | 'light' | 'moderate' | 'heavy' | 'veryHeavy';
+      isAcclimatized: boolean;
+      expected: number;
+      label: string;
+    }> = [
+      { workload: 'resting', isAcclimatized: true, expected: 33, label: 'Class 0 (Resting), acclimatized' },
+      { workload: 'resting', isAcclimatized: false, expected: 32, label: 'Class 0 (Resting), unacclimatized' },
+      { workload: 'light', isAcclimatized: true, expected: 30, label: 'Class 1 (Low), acclimatized' },
+      { workload: 'light', isAcclimatized: false, expected: 29, label: 'Class 1 (Low), unacclimatized' },
+      { workload: 'moderate', isAcclimatized: true, expected: 28, label: 'Class 2 (Moderate), acclimatized' },
+      { workload: 'moderate', isAcclimatized: false, expected: 26, label: 'Class 2 (Moderate), unacclimatized' },
+      { workload: 'heavy', isAcclimatized: true, expected: 26, label: 'Class 3 (High), acclimatized' },
+      { workload: 'heavy', isAcclimatized: false, expected: 23, label: 'Class 3 (High), unacclimatized' },
+      { workload: 'veryHeavy', isAcclimatized: true, expected: 25, label: 'Class 4 (Very High), acclimatized' },
+      { workload: 'veryHeavy', isAcclimatized: false, expected: 20, label: 'Class 4 (Very High), unacclimatized' },
+    ];
 
-    it('heavy (200 < M < 260 W/m2), unacclimatized = 23', () => {
-      const result = wbgtCalculate({
-        dryBulbTemp: 30,
-        wetBulbTemp: 25,
-        globeTemp: 30,
-        isOutdoor: false,
-        workload: 'heavy',
-        isAcclimatized: false,
+    for (const { workload, isAcclimatized, expected, label } of cases) {
+      it(`${label} = ${expected}`, () => {
+        const result = wbgtCalculate({
+          dryBulbTemp: 30,
+          wetBulbTemp: 25,
+          globeTemp: 30,
+          isOutdoor: false,
+          workload,
+          isAcclimatized,
+        });
+        expect(result.threshold).toBe(expected);
       });
-      expect(result.threshold).toBe(23);
-    });
-
-    it('veryHeavy (M > 260 W/m2), acclimatized = 25', () => {
-      const result = wbgtCalculate({
-        dryBulbTemp: 30,
-        wetBulbTemp: 25,
-        globeTemp: 30,
-        isOutdoor: false,
-        workload: 'veryHeavy',
-        isAcclimatized: true,
-      });
-      expect(result.threshold).toBe(25);
-    });
-
-    it('veryHeavy (M > 260 W/m2), unacclimatized = 20', () => {
-      const result = wbgtCalculate({
-        dryBulbTemp: 30,
-        wetBulbTemp: 25,
-        globeTemp: 30,
-        isOutdoor: false,
-        workload: 'veryHeavy',
-        isAcclimatized: false,
-      });
-      expect(result.threshold).toBe(20);
-    });
+    }
   });
 
   describe('status determination', () => {
@@ -154,7 +137,7 @@ describe('wbgtCalculate', () => {
       });
 
       // WBGT = 0.7×20 + 0.3×25 = 14 + 7.5 = 21.5
-      // Threshold = 31, safe if < 29
+      // Threshold = 30, safe if < 28
       expect(result.wbgt).toBeCloseTo(21.5, 1);
       expect(result.status).toBe('safe');
     });

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.0] - 2026-09-03
+
+### Changed
+
+- **`safety/wbgtCalculate()` heat-stress thresholds now match ISO 7243:2017 exactly, all
+  five workload classes.** The primary standard text (Annex A, Table A.1) became
+  available, superseding the peer-reviewed secondary source `0.33.1` relied on for
+  `heavy`/`veryHeavy`. Reading the standard's own table directly surfaced two things: (1)
+  `light` and `moderate` did **not** match Table A.1's Class 1/Class 2 rows they were
+  meant to represent - they were unrelated figures from an unidentified source, not a
+  correct-but-differently-labeled reading of the standard - and are now corrected: `light`
+  31/28 → **30/29**, `moderate` 28/25 → **28/26** (acclimatized/unacclimatized, °C). (2)
+  ISO 7243 classifies workload into **five** metabolic-rate classes, not four - the
+  library had no slot for the lowest one.
+
+### Added
+
+- **`WorkloadIntensity` gains a `'resting'` member** (Class 0, M < 65 W/m2, ISO 7243:2017
+  Table A.1: 33°C acclimatized / 32°C unacclimatized) - the class the previous 4-member
+  enum had no room for. Additive: existing `'light'`/`'moderate'`/`'heavy'`/`'veryHeavy'`
+  callers are unaffected except for the `light`/`moderate` value correction above.
+
 ## [0.33.1] - 2026-09-03
 
 ### Fixed

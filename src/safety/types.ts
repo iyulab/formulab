@@ -64,7 +64,7 @@ export interface NoiseExposureResult {
 }
 
 // WBGT Types
-export type WorkloadIntensity = 'light' | 'moderate' | 'heavy' | 'veryHeavy';
+export type WorkloadIntensity = 'resting' | 'light' | 'moderate' | 'heavy' | 'veryHeavy';
 
 export interface WbgtInput {
   dryBulbTemp: number;     // C
