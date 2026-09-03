@@ -9,6 +9,11 @@ import type { CusumInput, CusumResult } from './types.js';
  *   - C⁻ₙ = max(0, (μ₀ − K) − xₙ + C⁻ₙ₋₁)
  *   - Signal when C⁺ or C⁻ > H
  *
+ * Default K = σ/2 and H = 5σ match ISO 7870-4:2011's own recommended allowance factor
+ * f = 0,5 and decision-interval factor h = 5 (i.e. K = f·σ, H = h·σ) — read directly
+ * from the standard, not carried over from a secondary source.
+ *
+ * @reference ISO 7870-4:2011, Control charts — Part 4: Cumulative sum charts.
  * @reference Page, E.S. (1954). "Continuous inspection schemes"
  * @reference ISO 50001:2018 — CUSUM for energy monitoring
  * @reference Montgomery, D.C. "Introduction to Statistical Quality Control", Ch. 9

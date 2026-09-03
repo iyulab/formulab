@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.1] - 2026-09-03
+
+### Fixed
+
+- **`quality/controlChart()` X-bar/R factors corrected against ISO 7870-2:2023, Table 2.**
+  `XBAR_R_CONSTANTS` carried an AIAG/ASTM-derived transcription (cross-referenced against
+  MIT 2.810, the Bessegato reference table, and Quality America); re-transcribing against
+  the current ISO standard's own table found five `D3`/`D4` cells off by ±0,001: n=3 D4
+  2.574→**2.575**, n=18 D4 1.608→**1.609**, n=19 D3 0.403→**0.404** and D4 1.597→**1.596**,
+  n=22 D3 0.434→**0.435** and D4 1.566→**1.565**, n=24 D3 0.451→**0.452**. Every other cell
+  in that table, and every cell in `XBAR_S_CONSTANTS`, already matched exactly. Cell-level
+  golden tests added for the five corrected cells.
+
+### Changed
+
+- **`energy/cusum()` gains an `@reference` to ISO 7870-4:2011** (Cumulative sum charts) —
+  its own recommended allowance/decision-interval factors (f = 0,5, h = 5) confirm this
+  function's existing K = σ/2, H = 5σ defaults exactly; no value change.
+
 ## [0.34.0] - 2026-09-03
 
 ### Changed

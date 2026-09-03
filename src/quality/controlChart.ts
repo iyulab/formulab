@@ -2,14 +2,23 @@ import { roundTo } from '../utils.js';
 import type { ControlChartInput, ControlChartResult, ControlLimit, SubgroupStat } from './types.js';
 
 /**
- * SPC Control Chart Constants (AIAG SPC Reference Manual / ASTM E2587-16)
- * Cross-referenced: MIT 2.810, Bessegato reference table, Quality America
+ * SPC Control Chart Constants.
+ *
+ * Transcribed from ISO 7870-2:2023, Table 2 ("Factors for computing control chart
+ * lines") - the current edition's own table, read directly from the standard. This
+ * table previously carried an AIAG/ASTM-derived transcription (cross-referenced against
+ * MIT 2.810, the Bessegato reference table, and Quality America); re-transcribing
+ * against the primary standard corrected D3/D4 at n=3, 18, 19, 22, 24 by ±0.001 - all
+ * other cells (A2, d2, and every A3/B3/B4/c4 cell in XBAR_S_CONSTANTS below) already
+ * matched exactly.
+ *
+ * @reference ISO 7870-2:2023, Table 2.
  *
  * Keyed by subgroup size n (2..25)
  */
 const XBAR_R_CONSTANTS: Record<number, { A2: number; D3: number; D4: number; d2: number }> = {
   2:  { A2: 1.880, D3: 0,     D4: 3.267, d2: 1.128 },
-  3:  { A2: 1.023, D3: 0,     D4: 2.574, d2: 1.693 },
+  3:  { A2: 1.023, D3: 0,     D4: 2.575, d2: 1.693 },
   4:  { A2: 0.729, D3: 0,     D4: 2.282, d2: 2.059 },
   5:  { A2: 0.577, D3: 0,     D4: 2.114, d2: 2.326 },
   6:  { A2: 0.483, D3: 0,     D4: 2.004, d2: 2.534 },
@@ -24,13 +33,13 @@ const XBAR_R_CONSTANTS: Record<number, { A2: number; D3: number; D4: number; d2:
   15: { A2: 0.223, D3: 0.347, D4: 1.653, d2: 3.472 },
   16: { A2: 0.212, D3: 0.363, D4: 1.637, d2: 3.532 },
   17: { A2: 0.203, D3: 0.378, D4: 1.622, d2: 3.588 },
-  18: { A2: 0.194, D3: 0.391, D4: 1.608, d2: 3.640 },
-  19: { A2: 0.187, D3: 0.403, D4: 1.597, d2: 3.689 },
+  18: { A2: 0.194, D3: 0.391, D4: 1.609, d2: 3.640 },
+  19: { A2: 0.187, D3: 0.404, D4: 1.596, d2: 3.689 },
   20: { A2: 0.180, D3: 0.415, D4: 1.585, d2: 3.735 },
   21: { A2: 0.173, D3: 0.425, D4: 1.575, d2: 3.778 },
-  22: { A2: 0.167, D3: 0.434, D4: 1.566, d2: 3.819 },
+  22: { A2: 0.167, D3: 0.435, D4: 1.565, d2: 3.819 },
   23: { A2: 0.162, D3: 0.443, D4: 1.557, d2: 3.858 },
-  24: { A2: 0.157, D3: 0.451, D4: 1.548, d2: 3.895 },
+  24: { A2: 0.157, D3: 0.452, D4: 1.548, d2: 3.895 },
   25: { A2: 0.153, D3: 0.459, D4: 1.541, d2: 3.931 },
 };
 
@@ -107,12 +116,14 @@ const IMR_CONSTANTS = {
  *   - UCL_I = X̄ + E₂·MR̄,  LCL_I = X̄ − E₂·MR̄  (E₂=2.66)
  *   - UCL_MR = D₄·MR̄,      LCL_MR = max(0, D₃·MR̄)
  *
+ * @reference ISO 7870-2:2023, Table 2 (control chart factors - see XBAR_R_CONSTANTS/
+ *   XBAR_S_CONSTANTS above for the transcription note).
  * @reference AIAG (2005). "Statistical Process Control (SPC)", 2nd Ed.
  * @reference ASTM E2587-16. Standard Practice for Use of Control Charts.
  * @reference Wheeler, D. J. & Chambers, D. S. (1992). "Understanding Statistical Process Control".
  *
- * @validation Constants verified against AIAG/ASTM tables for n = 2..25:
- *   n=5: A₂=0.577, D₃=0, D₄=2.114, d₂=2.326
+ * @validation Constants verified cell-by-cell against ISO 7870-2:2023 Table 2 for
+ *   n = 2..25: n=5: A₂=0.577, D₃=0, D₄=2.114, d₂=2.326
  *
  * @throws {RangeError} At least 2 subgroups are required
  * @throws {RangeError} Subgroup size must be between 2 and 25

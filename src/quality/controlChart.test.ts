@@ -277,5 +277,45 @@ describe('controlChart', () => {
       // σ̂ = R̄/d₂ = 0.175/1.128 = 0.1551
       expect(result.sigmaEstimate).toBeCloseTo(0.1551, 3);
     });
+
+    describe('ISO 7870-2:2023 Table 2 (cells corrected from the prior AIAG-derived transcription)', () => {
+      // R̄=2 exactly: two identical subgroups, each range 2 (values 0 and 2, rest 0).
+      // UCL_R = D4×R̄, LCL_R = D3×R̄ - reads the table cell directly off the result.
+      const rBar2Subgroups = (n: number): number[][] => {
+        const subgroup = [0, 2, ...Array(n - 2).fill(0)];
+        return [subgroup, subgroup];
+      };
+
+      it('n=3: D3=0, D4=2.575 (was 2.574)', () => {
+        const result = controlChart({ chartType: 'xbarR', subgroups: rBar2Subgroups(3) });
+        expect(result.rOrSLimits.centerLine).toBeCloseTo(2, 6);
+        expect(result.rOrSLimits.ucl).toBeCloseTo(2 * 2.575, 6);
+        expect(result.rOrSLimits.lcl).toBe(0);
+      });
+
+      it('n=18: D3=0.391, D4=1.609 (D4 was 1.608)', () => {
+        const result = controlChart({ chartType: 'xbarR', subgroups: rBar2Subgroups(18) });
+        expect(result.rOrSLimits.ucl).toBeCloseTo(2 * 1.609, 6);
+        expect(result.rOrSLimits.lcl).toBeCloseTo(2 * 0.391, 6);
+      });
+
+      it('n=19: D3=0.404, D4=1.596 (both were 0.403/1.597)', () => {
+        const result = controlChart({ chartType: 'xbarR', subgroups: rBar2Subgroups(19) });
+        expect(result.rOrSLimits.ucl).toBeCloseTo(2 * 1.596, 6);
+        expect(result.rOrSLimits.lcl).toBeCloseTo(2 * 0.404, 6);
+      });
+
+      it('n=22: D3=0.435, D4=1.565 (both were 0.434/1.566)', () => {
+        const result = controlChart({ chartType: 'xbarR', subgroups: rBar2Subgroups(22) });
+        expect(result.rOrSLimits.ucl).toBeCloseTo(2 * 1.565, 6);
+        expect(result.rOrSLimits.lcl).toBeCloseTo(2 * 0.435, 6);
+      });
+
+      it('n=24: D3=0.452, D4=1.548 (D3 was 0.451)', () => {
+        const result = controlChart({ chartType: 'xbarR', subgroups: rBar2Subgroups(24) });
+        expect(result.rOrSLimits.ucl).toBeCloseTo(2 * 1.548, 6);
+        expect(result.rOrSLimits.lcl).toBeCloseTo(2 * 0.452, 6);
+      });
+    });
   });
 });
