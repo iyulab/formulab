@@ -14,6 +14,7 @@ export { rpn } from './rpn.js';
 export { yieldCalc } from './yield.js';
 export { controlChart } from './controlChart.js';
 export { movingAverageRangeChart } from './movingAverageRangeChart.js';
+export { acceptanceControlChart } from './acceptanceControlChart.js';
 export { gageRR } from './gageRR.js';
 export { cmk } from './cmk.js';
 export { weibull } from './weibull.js';
@@ -87,6 +88,10 @@ export type {
   MovingAverageRangeChartInput,
   MovingWindowStat,
   MovingAverageRangeChartResult,
+  // Acceptance Control Chart types
+  AcceptanceControlChartInput,
+  AcceptanceControlLimit,
+  AcceptanceControlChartResult,
   // Gage R&R types
   GageRRInput,
   GageRRResult,

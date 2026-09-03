@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.0] - 2026-09-03
+
+### Added
+
+- **`quality/acceptanceControlChart()`** — SPC acceptance control chart (ISO 7870-3:2012,
+  Clause 8.1.1 "option a") — derives the acceptable process level (APL), rejectable
+  process level (RPL), acceptance control limit (ACL), and required sample size from
+  one or two specification limits, the inherent within-subgroup standard deviation, and
+  the acceptable/rejectable nonconforming proportions (with α/β risk defaults of 0.05).
+  Supports one-sided and two-sided specifications. Golden-tested against both of the
+  standard's Clause 9 worked examples: Example 1 (bottle filling) reproduces APL/RPL/n
+  exactly, with the ACL figures matching within a small documented tolerance that
+  accounts for a rounding-path discrepancy in the standard's own 1970s nomograph-era
+  worked numbers (not a formula error — independently confirmed via Example 2, whose
+  companion "APL/α/β/n given" procedure reproduces the same underlying APL-ACL-RPL
+  weighting relationship to 3 decimal places exactly). Reuses the existing
+  `normalInvCDF()` primitive — no new statistical machinery introduced.
+
 ## [0.35.0] - 2026-09-03
 
 ### Added

@@ -348,6 +348,31 @@ export interface MovingAverageRangeChartResult {
 }
 
 /**
+ * Acceptance Control Chart (ISO 7870-3) Types
+ */
+export interface AcceptanceControlChartInput {
+  upperSpecLimit?: number;        // U - required unless lowerSpecLimit is given
+  lowerSpecLimit?: number;        // L - required unless upperSpecLimit is given
+  sigma: number;                  // σw, within-subgroup standard deviation (inherent variability)
+  acceptableProportion: number;   // p0, acceptable proportion nonconforming at the APL (0 < p0 < 1)
+  rejectableProportion: number;   // p1, rejectable proportion nonconforming at the RPL (p0 < p1 < 1)
+  alpha?: number;                 // α-risk of not accepting a process centred at the APL (default 0.05)
+  beta?: number;                  // β-risk of not rejecting a process centred at the RPL (default 0.05)
+}
+
+export interface AcceptanceControlLimit {
+  apl: number;   // acceptable process level
+  rpl: number;   // rejectable process level
+  acl: number;   // acceptance control limit
+}
+
+export interface AcceptanceControlChartResult {
+  upper?: AcceptanceControlLimit;
+  lower?: AcceptanceControlLimit;
+  sampleSize: number;   // n - the larger (more stringent) of the two sides for two-sided specs
+}
+
+/**
  * Yield (FPY/RTY) Types
  */
 export interface YieldInput {
