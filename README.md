@@ -11,7 +11,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **204 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **205 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -28,7 +28,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
-| Quality | 21 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA |
+| Quality | 22 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-5 |
 | Metal | 32 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
 | Logistics | 17 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
@@ -75,6 +75,7 @@ The following functions include tests verified against published reference value
 | `oee()` | JIPM TPM Handbook | World-class OEE (A≥90%, P≥95%, Q≥99.9%), perfect 100% |
 | `cpk()` | ISO 22514-2 | Six Sigma Cpk=2.0, minimum capable Cpk≈1.33, off-center penalty |
 | `controlChart()` | AIAG/ASTM E2587-16 | A2, D3, D4, d2 constants for n=2, 3, 5 |
+| `movingAverageRangeChart()` | ISO 7870-5:2014, Clause 6.5 | Worked example (k=3, 25 individuals) recomputed from the standard's raw Table 1 data — per-row moving average/range, R̄/x̄ center lines, UCL/LCL |
 | `cbm()` | Physical formula | 20ft container 33.2m³, 1m³ cube reference |
 | `metalWeight()` | Machinery's Handbook | Steel plate density 7.85 g/cm³ |
 | `flangeSpec()` | ASME B16.5 | Class 150/300/600 flange dimensions |
@@ -177,10 +178,10 @@ console.log(volume.totalCbm); // 0.96 m³
 
 ## Domains
 
-### Quality & Production (21 functions)
+### Quality & Production (22 functions)
 
 ```typescript
-import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formulab/quality';
+import { oee, cpk, taktTime, dpmo, controlChart, movingAverageRangeChart, gageRR, weibull } from 'formulab/quality';
 ```
 
 | Function | Description |
@@ -188,6 +189,7 @@ import { oee, cpk, taktTime, dpmo, controlChart, gageRR, weibull } from 'formula
 | `oee()` | Overall Equipment Effectiveness |
 | `cpk()` | Process Capability Index |
 | `controlChart()` | SPC X-bar/R and X-bar/S charts |
+| `movingAverageRangeChart()` | SPC moving average / moving range chart for individual measurements (destructive testing, slow production rate) |
 | `cycleTime()` | Cycle Time analysis |
 | `taktTime()` | Takt Time calculation |
 | `aql()` | AQL sampling inspection |

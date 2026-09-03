@@ -14,9 +14,12 @@ import type { ControlChartInput, ControlChartResult, ControlLimit, SubgroupStat 
  *
  * @reference ISO 7870-2:2023, Table 2.
  *
- * Keyed by subgroup size n (2..25)
+ * Keyed by subgroup size n (2..25). Exported so other single-technique control
+ * chart functions in this domain (e.g. movingAverageRangeChart.ts) can reuse the
+ * same table by key instead of duplicating it - ISO 7870-5 Clause 6 cites the same
+ * Annex A factors, keyed by window size in place of subgroup size.
  */
-const XBAR_R_CONSTANTS: Record<number, { A2: number; D3: number; D4: number; d2: number }> = {
+export const XBAR_R_CONSTANTS: Record<number, { A2: number; D3: number; D4: number; d2: number }> = {
   2:  { A2: 1.880, D3: 0,     D4: 3.267, d2: 1.128 },
   3:  { A2: 1.023, D3: 0,     D4: 2.575, d2: 1.693 },
   4:  { A2: 0.729, D3: 0,     D4: 2.282, d2: 2.059 },

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.0] - 2026-09-03
+
+### Added
+
+- **`quality/movingAverageRangeChart()`** — SPC moving average / moving range control
+  chart (ISO 7870-5:2014, Clause 6) for individual measurements where destructive
+  testing or a slow production rate makes fixed-size subgroups impractical. Reuses
+  the existing `XBAR_R_CONSTANTS` Annex A factor table (now exported from
+  `controlChart.ts`) keyed by sliding-window size in place of subgroup size — no new
+  constants table introduced. Golden-tested against the standard's Clause 6.5 worked
+  example (watchcase crown pin hole diameter, n=25 individuals, k=3), recomputed
+  independently from the standard's raw Table 1 diameter values rather than its
+  printed summary/formula lines.
+
 ## [0.34.1] - 2026-09-03
 
 ### Fixed

@@ -13,6 +13,7 @@ export { ppm } from './ppm.js';
 export { rpn } from './rpn.js';
 export { yieldCalc } from './yield.js';
 export { controlChart } from './controlChart.js';
+export { movingAverageRangeChart } from './movingAverageRangeChart.js';
 export { gageRR } from './gageRR.js';
 export { cmk } from './cmk.js';
 export { weibull } from './weibull.js';
@@ -82,6 +83,10 @@ export type {
   ControlLimit,
   SubgroupStat,
   ControlChartResult,
+  // Moving Average / Moving Range Chart types
+  MovingAverageRangeChartInput,
+  MovingWindowStat,
+  MovingAverageRangeChartResult,
   // Gage R&R types
   GageRRInput,
   GageRRResult,

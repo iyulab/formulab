@@ -322,6 +322,32 @@ export interface ControlChartResult {
 }
 
 /**
+ * Moving Average / Moving Range Chart (ISO 7870-5) Types
+ */
+export interface MovingAverageRangeChartInput {
+  values: number[];    // individual measurements, in production order
+  windowSize: number;  // k: observations per sliding window (2..25) - keys the same Annex A factors as X-bar/R subgroup size n
+}
+
+export interface MovingWindowStat {
+  index: number;              // 0-based position in `values`
+  movingAverage?: number;     // undefined until the window first fills (index < windowSize - 1)
+  movingRange?: number;
+  outOfControl: boolean;
+}
+
+export interface MovingAverageRangeChartResult {
+  windowSize: number;
+  maLimits: ControlLimit;   // moving average chart control limits
+  mrLimits: ControlLimit;   // moving range chart control limits
+  windowStats: MovingWindowStat[];
+  grandAverage: number;     // mean of the moving averages (center line of the MA chart)
+  sigmaEstimate: number;
+  outOfControlPoints: number[];
+  processCapable: boolean;
+}
+
+/**
  * Yield (FPY/RTY) Types
  */
 export interface YieldInput {
