@@ -88,6 +88,60 @@ describe('wbgtCalculate', () => {
     });
   });
 
+  describe('ISO 7243 Table 1 golden reference (heavy/veryHeavy only)', () => {
+    // Source: ISO 7243 Table 1, "sensible air movement" column, as reproduced with
+    // citation in Parsons K (2006), "Heat Stress Standard ISO 7243 and its Global
+    // Application", Industrial Health 44, 368-379, Table 1. light/moderate are not
+    // pinned here - they remain unverified (see WBGT_THRESHOLDS JSDoc).
+    it('heavy (200 < M < 260 W/m2), acclimatized = 26', () => {
+      const result = wbgtCalculate({
+        dryBulbTemp: 30,
+        wetBulbTemp: 25,
+        globeTemp: 30,
+        isOutdoor: false,
+        workload: 'heavy',
+        isAcclimatized: true,
+      });
+      expect(result.threshold).toBe(26);
+    });
+
+    it('heavy (200 < M < 260 W/m2), unacclimatized = 23', () => {
+      const result = wbgtCalculate({
+        dryBulbTemp: 30,
+        wetBulbTemp: 25,
+        globeTemp: 30,
+        isOutdoor: false,
+        workload: 'heavy',
+        isAcclimatized: false,
+      });
+      expect(result.threshold).toBe(23);
+    });
+
+    it('veryHeavy (M > 260 W/m2), acclimatized = 25', () => {
+      const result = wbgtCalculate({
+        dryBulbTemp: 30,
+        wetBulbTemp: 25,
+        globeTemp: 30,
+        isOutdoor: false,
+        workload: 'veryHeavy',
+        isAcclimatized: true,
+      });
+      expect(result.threshold).toBe(25);
+    });
+
+    it('veryHeavy (M > 260 W/m2), unacclimatized = 20', () => {
+      const result = wbgtCalculate({
+        dryBulbTemp: 30,
+        wetBulbTemp: 25,
+        globeTemp: 30,
+        isOutdoor: false,
+        workload: 'veryHeavy',
+        isAcclimatized: false,
+      });
+      expect(result.threshold).toBe(20);
+    });
+  });
+
   describe('status determination', () => {
     it('should be safe when WBGT < threshold - 2', () => {
       const result = wbgtCalculate({

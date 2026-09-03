@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.33.1] - 2026-09-03
+
+### Fixed
+
+- **`safety/wbgtCalculate()` heat-stress threshold table partially verified.** `WBGT_THRESHOLDS`
+  has carried an unverified "Based on ACGIH TLV guidelines" attribution since it was written -
+  ACGIH's TLV table is copyrighted and not freely available, and ISO 7243's own reference-value
+  table is not in its free sample. A peer-reviewed source reproducing both tables with citation
+  (Parsons K, 2006, "Heat Stress Standard ISO 7243 and its Global Application", Industrial Health
+  44, 368-379) is now available: its Table 1 (ISO 7243) confirms the existing `heavy` (26/23) and
+  `veryHeavy` (25/20) acclimatized/unacclimatized values exactly, against the table's "sensible air
+  movement" column - no value change, `@reference` added, golden tests pinned. `light` and
+  `moderate` do **not** match either that table's rows or ACGIH's TLV table (Table 6 in the same
+  source) and remain unverified pending a source that resolves the mismatch - values unchanged,
+  per the "don't swap one unverified figure for another" policy already documented on this
+  constant. See `WBGT_THRESHOLDS` JSDoc for the full breakdown.
+
 ## [0.33.0] - 2026-09-02
 
 ### Added
