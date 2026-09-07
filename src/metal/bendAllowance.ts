@@ -1,5 +1,12 @@
 import { roundTo } from '../utils.js';
-import type { BendAllowanceInput, BendAllowanceResult, BendingMaterial } from './types.js';
+import { minBendRadiusDin6935 } from './minBendRadius.js';
+import type {
+  BendAllowanceInput,
+  BendAllowanceResult,
+  BendingMaterial,
+  Din6935StrengthClass,
+  MinBendRadiusBasis,
+} from './types.js';
 
 /**
  * Default K-factor values by material.
@@ -29,6 +36,10 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
  * feasibility check, not a specification limit; verify against tooling and material
  * datasheets for production use.
  *
+ * These stay conventions because no normative table has been sourced for these alloys.
+ * Steel is resolved from a standard instead, and reaches this fallback only past the
+ * thicknesses that table covers; the dispatch is at the call site, not here.
+ *
  * aluminum6061 in particular: minimum bend radius for this alloy varies several-fold
  * with temper (O/T4/T6), so a single multiplier is a rougher approximation here than
  * for the other materials in this table.
@@ -40,6 +51,19 @@ const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
   aluminum6061: 1.5,
   custom: 1.5,
 };
+
+/**
+ * DIN 6935 strength class assumed for `mildSteel`.
+ *
+ * The canonical mild steel of the standard's own material list is Q St 37, whose guaranteed
+ * minimum tensile strength puts it in the lowest class — which is also the class with the
+ * smallest radii, so a caller working a stronger steel is under-warned rather than the
+ * limit being overstated for everyone. Callers who know their grade should read
+ * `minBendRadiusDin6935` directly with the right class.
+ *
+ * @reference DIN 6935:2010-01, Table 3 (material list, per DIN 17100).
+ */
+const MILD_STEEL_STRENGTH_CLASS: Din6935StrengthClass = 'upTo390';
 
 /**
  * V-die opening multiplier (standard is 8x thickness)
@@ -57,14 +81,33 @@ const V_DIE_MULTIPLIER = 8;
  * @returns BendAllowanceResult with BA, BD, OSSB, K-factor, recommended V-die, min bend radius
  */
 export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
-  const { thickness, bendAngle, insideRadius, material = 'mildSteel' } = input;
+  const {
+    thickness,
+    bendAngle,
+    insideRadius,
+    material = 'mildSteel',
+    rollingDirection = 'longitudinal',
+  } = input;
   const warnings: string[] = [];
 
   // Get K-factor: use provided or default from table
   const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
 
-  // Calculate minimum bend radius
-  const minBendRadius = MIN_BEND_RADIUS_MULTIPLIER[material] * thickness;
+  // Minimum bend radius: read the normative table where one covers this material, and fall
+  // back to the conventional multiplier only where it does not. A flat multiple of thickness
+  // understates the steel limit in ordinary plate thicknesses, and this figure decides a
+  // warning rather than merely being displayed.
+  const din6935 =
+    material === 'mildSteel'
+      ? minBendRadiusDin6935({
+          thickness,
+          strengthClass: MILD_STEEL_STRENGTH_CLASS,
+          rollingDirection,
+          bendAngle,
+        })
+      : null;
+  const minBendRadius = din6935?.minBendRadius ?? MIN_BEND_RADIUS_MULTIPLIER[material] * thickness;
+  const minBendRadiusBasis: MinBendRadiusBasis = din6935 ? 'din6935' : 'convention';
 
   // Calculate recommended V-die opening
   const recommendedVDie = roundTo(V_DIE_MULTIPLIER * thickness, 0);
@@ -102,6 +145,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
     kFactor,
     recommendedVDie,
     minBendRadius,
+    minBendRadiusBasis,
     warnings,
   };
 }

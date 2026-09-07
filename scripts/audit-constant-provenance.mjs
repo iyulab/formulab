@@ -203,8 +203,15 @@ if (bend.length === 0) {
 }
 if (of('SOURCED').length === 0) failures.push('nothing classified SOURCED, so the source detector is dead rather than the code clean');
 const wbgt = rows.filter((r) => r.file.endsWith('safety/wbgtCalculate.ts'));
-if (!wbgt.some((r) => r.name === 'WBGT_THRESHOLDS' && r.bucket === 'DECLARED')) {
+// What this control guards is the *reach* of the two-hop scan (table -> ternary-selected
+// field -> comparison), not the bucket: WBGT_THRESHOLDS was DECLARED when this check was
+// written and became SOURCED in 0.34.0, once the ISO 7243:2017 text settled the values.
+// Asserting the old bucket made the control fail for the one reason that is not a
+// regression — the codebase getting better — so it asserts presence and a stated origin.
+if (!wbgt.some((r) => r.name === 'WBGT_THRESHOLDS')) {
   failures.push('WBGT_THRESHOLDS is no longer reached through the two-hop chain (table -> ternary-selected field -> comparison), so the two-hop scan regressed: ' + JSON.stringify(wbgt.map((r) => [r.name, r.bucket])));
+} else if (wbgt.some((r) => r.name === 'WBGT_THRESHOLDS' && r.bucket === 'SILENT')) {
+  failures.push('WBGT_THRESHOLDS lost its stated origin, so the doc-comment classifier regressed');
 }
 
 console.log('=== controls ===');

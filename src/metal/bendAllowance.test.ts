@@ -110,7 +110,7 @@ describe('bendAllowance', () => {
   });
 
   describe('minimum bend radius', () => {
-    it('should calculate min bend radius for mild steel', () => {
+    it('reads mild steel from DIN 6935 Table 1, not a flat multiple', () => {
       const result = bendAllowance({
         thickness: 2,
         bendAngle: 90,
@@ -118,8 +118,60 @@ describe('bendAllowance', () => {
         material: 'mildSteel',
       });
 
-      // Min bend radius = 1.0 x thickness = 2mm
-      expect(result.minBendRadius).toBe(2);
+      // Table 1, band over 1.5 up to 2.5, lowest strength class, along the rolling
+      // direction (the default): r = 2.5mm. A flat 1.0x multiplier would say 2mm.
+      expect(result.minBendRadius).toBe(2.5);
+      expect(result.minBendRadiusBasis).toBe('din6935');
+    });
+
+    it('allows the tighter transverse radius when the orientation is stated', () => {
+      const result = bendAllowance({
+        thickness: 4,
+        bendAngle: 90,
+        insideRadius: 5,
+        material: 'mildSteel',
+        rollingDirection: 'transverse',
+      });
+
+      // Table 1, band over 3 up to 4: transverse 5mm against longitudinal 6mm.
+      expect(result.minBendRadius).toBe(5);
+      expect(
+        bendAllowance({
+          thickness: 4,
+          bendAngle: 90,
+          insideRadius: 5,
+          material: 'mildSteel',
+          rollingDirection: 'longitudinal',
+        }).minBendRadius,
+      ).toBe(6);
+    });
+
+    it('warns on a plate combination a flat multiplier would pass silently', () => {
+      // The defect this table replaced: at 10mm the flat 1.0x multiplier put the limit at
+      // 10mm, so a 12mm inside radius drew no warning even though Table 1 requires 20mm
+      // along the rolling direction.
+      const result = bendAllowance({
+        thickness: 10,
+        bendAngle: 90,
+        insideRadius: 12,
+        material: 'mildSteel',
+      });
+
+      expect(result.minBendRadius).toBe(20);
+      expect(result.warnings.some((w) => w.includes('minimum'))).toBe(true);
+    });
+
+    it('falls back to the conventional multiplier past the table', () => {
+      const result = bendAllowance({
+        thickness: 25,
+        bendAngle: 90,
+        insideRadius: 30,
+        material: 'mildSteel',
+      });
+
+      // DIN 6935 Table 1 stops at 20mm; beyond it the conventional 1.0x applies and says so.
+      expect(result.minBendRadius).toBe(25);
+      expect(result.minBendRadiusBasis).toBe('convention');
     });
 
     it('should calculate larger min bend radius for stainless', () => {
@@ -130,8 +182,19 @@ describe('bendAllowance', () => {
         material: 'stainless304',
       });
 
-      // Min bend radius = 2.0 x thickness = 4mm
+      // Min bend radius = 2.0 x thickness = 4mm. DIN 6935 is scoped to flat steel products,
+      // so the alloys keep their conventional multipliers and report that basis.
       expect(result.minBendRadius).toBe(4);
+      expect(result.minBendRadiusBasis).toBe('convention');
+    });
+
+    it('keeps the alloys on conventional multipliers', () => {
+      for (const material of ['aluminum5052', 'aluminum6061', 'custom'] as const) {
+        expect(
+          bendAllowance({ thickness: 3, bendAngle: 90, insideRadius: 5, material })
+            .minBendRadiusBasis,
+        ).toBe('convention');
+      }
     });
   });
 

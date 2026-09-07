@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.0] - 2026-09-07
+
+### Added
+
+- **`metal/minBendRadiusDin6935()`** — minimum permissible bend radius for cold-bent flat
+  steel, read from DIN 6935:2010-01 Table 1. The standard resolves the limit from three
+  inputs at once — thickness band, guaranteed minimum tensile strength class, and whether
+  the bend runs across or along the rolling direction — and applies Clause 3's rule that a
+  bend angle above 120° takes the next value in the table. Golden-tested against the
+  standard's own worked example (6 mm Q St 42-2 bent transverse: 10 mm up to 120°, 12 mm
+  above it), plus the structural invariants the table states: longitudinal never below
+  transverse, stronger classes never below weaker, monotone in thickness. Returns `null`
+  rather than extrapolating past the 20 mm the table covers.
+- **`BendAllowanceResult.minBendRadiusBasis`** — says whether the reported minimum bend
+  radius came from a normative table (`din6935`) or is a shop convention (`convention`),
+  so callers that cite sources can tell the two apart.
+- **`BendAllowanceInput.rollingDirection`** — optional bend orientation for steel. Defaults
+  to `longitudinal`, the more demanding of the two: an unstated orientation must not
+  produce the more permissive limit.
+
+### Changed
+
+- **`metal/bendAllowance()` now reads mild steel's minimum bend radius from DIN 6935
+  Table 1 instead of a flat 1.0× thickness multiplier.** The effective multiple the
+  standard tabulates is not constant — it is 1.0× only at the thinnest band and reaches
+  about 2.0× in ordinary plate — so the flat multiplier understated the limit exactly
+  where sheet metal work most often sits. Because this figure decides a warning rather
+  than merely being displayed, understating it let combinations the standard prohibits
+  pass silently: at 10 mm thickness a 12 mm inside radius drew no warning although Table 1
+  requires 20 mm along the rolling direction. Returned values change for mild steel;
+  the alloys and `custom` keep their conventional multipliers, which are now reported as
+  such. Steel past 20 mm falls back to the multiplier and says so.
+
 ## [0.36.0] - 2026-09-03
 
 ### Added

@@ -28,12 +28,49 @@ export interface MetalWeightResult {
 export type BendingMaterial = 'mildSteel' | 'stainless304' | 'aluminum5052' | 'aluminum6061' | 'custom';
 export type ShapeType = 'lShape' | 'uShape';
 
+/** Whether the bend runs across or along the rolling direction. DIN 6935 Table 1 distinguishes the two. */
+export type Din6935RollingDirection = 'transverse' | 'longitudinal';
+
+/** Guaranteed minimum tensile strength class, in N/mm2. @reference DIN 6935:2010-01, Tables 1 and 3. */
+export type Din6935StrengthClass = 'upTo390' | 'over390UpTo490' | 'over490UpTo640';
+
+export interface MinBendRadiusDin6935Input {
+  thickness: number;                            // mm (table covers up to 20)
+  strengthClass: Din6935StrengthClass;
+  rollingDirection: Din6935RollingDirection;
+  bendAngle?: number;                           // degrees; above 120 the next table value applies
+}
+
+export interface MinBendRadiusDin6935Result {
+  minBendRadius: number;                        // mm, after the >120 degree rule
+  tabulatedRadius: number;                      // mm, the value read straight from Table 1
+  thicknessBandUpper: number;                   // mm, upper bound of the band that was used
+  strengthClass: Din6935StrengthClass;
+  rollingDirection: Din6935RollingDirection;
+  nextSizeUpApplied: boolean;
+}
+
+/**
+ * Where a reported minimum bend radius comes from.
+ *
+ * `din6935` means the figure was read from a normative table; `convention` means it is a
+ * shop default with nothing behind it. Callers that cite sources need to tell the two apart,
+ * and the same result object carries both cases.
+ */
+export type MinBendRadiusBasis = 'din6935' | 'convention';
+
 export interface BendAllowanceInput {
   thickness: number;        // mm
   bendAngle: number;        // degrees (0-180)
   insideRadius: number;     // mm
   kFactor?: number;         // 0.3-0.5 (optional)
   material?: BendingMaterial;
+  /**
+   * Bend orientation relative to the rolling direction. Used for steel, where DIN 6935
+   * tabulates the two separately. Defaults to `longitudinal`, the more demanding of the two:
+   * an unstated orientation must not produce the more permissive limit.
+   */
+  rollingDirection?: Din6935RollingDirection;
 }
 
 export interface BendAllowanceResult {
@@ -43,6 +80,7 @@ export interface BendAllowanceResult {
   kFactor: number;          // used or default
   recommendedVDie: number;  // mm (8 x thickness)
   minBendRadius: number;    // mm
+  minBendRadiusBasis: MinBendRadiusBasis;
   warnings: string[];
 }
 

@@ -10,6 +10,11 @@ export type {
   ShapeType,
   BendAllowanceInput,
   BendAllowanceResult,
+  Din6935RollingDirection,
+  Din6935StrengthClass,
+  MinBendRadiusBasis,
+  MinBendRadiusDin6935Input,
+  MinBendRadiusDin6935Result,
   SpringbackInput,
   SpringbackResult,
   FlatPatternInput,
@@ -144,6 +149,7 @@ export { isMetalWeightInput, isBoltInput } from './guards.js';
 // Functions
 export { metalWeight } from './metalWeight.js';
 export { bendAllowance } from './bendAllowance.js';
+export { minBendRadiusDin6935, DIN_6935_MAX_THICKNESS } from './minBendRadius.js';
 export { springback } from './springback.js';
 export { flatPattern } from './flatPattern.js';
 export { kFactorReverse, kFactorReverseRange } from './kFactorReverse.js';
