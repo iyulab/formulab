@@ -47,4 +47,29 @@ describe('cuspHeight', () => {
     // Ra ≈ h_mm * 1000 / 4 (in μm)
     expect(result.surfaceRoughness).toBeCloseTo(result.cuspHeight * 1000 / 4, 1);
   });
+
+  describe('invalid input', () => {
+    // Without a guard the formula reaches Math.sqrt of a negative number and returns NaN,
+    // which flows straight through a caller into whatever it renders. A stepover wider
+    // than the tool diameter is not a shallow scallop — the passes never meet, and the
+    // formula has nothing to say about the ridge left between them.
+    it('should throw when the stepover exceeds the tool diameter', () => {
+      expect(() => cuspHeight({ toolRadius: 3, stepover: 6.5 })).toThrow(RangeError);
+    });
+
+    it('should accept a stepover of exactly the tool diameter', () => {
+      // The two passes just touch; the ridge is a full tool radius high.
+      expect(cuspHeight({ toolRadius: 3, stepover: 6 }).cuspHeight).toBeCloseTo(3, 6);
+    });
+
+    it('should throw for a non-positive tool radius', () => {
+      expect(() => cuspHeight({ toolRadius: 0, stepover: 1 })).toThrow(RangeError);
+      expect(() => cuspHeight({ toolRadius: -3, stepover: 1 })).toThrow(RangeError);
+    });
+
+    it('should throw for a non-positive stepover', () => {
+      expect(() => cuspHeight({ toolRadius: 3, stepover: 0 })).toThrow(RangeError);
+      expect(() => cuspHeight({ toolRadius: 3, stepover: -1 })).toThrow(RangeError);
+    });
+  });
 });

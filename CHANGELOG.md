@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.1] - 2026-09-09
+
+### Fixed
+
+- **`quality/mtbf()`** — availability and the failure rate were derived from the rounded
+  MTBF and MTTR the function reports rather than from the times it was given. Rounding a
+  mean to two decimals and then dividing by it is not a rounding whisker: when short times
+  are spread over many failures the rounded mean is a large fraction of its own value. One
+  hour of operating time with half an hour of repair over 34 failures reported 75%
+  availability against a true 66.67%, and across a swept grid of plausible inputs a third
+  of the cases differed in the reported digits. Availability now reduces to the time-based
+  ratio of up time to total time (the failure count cancels), and the failure rate is taken
+  from the unrounded mean. The reported MTBF and MTTR are unchanged.
+- **`quality/mtbf()`** — `reliabilityAtMtbf` returned 0 instead of e^-1 when the mean time
+  between failures rounded down to 0.00, and `totalRepairTime` was not validated. Reliability
+  at T = MTBF is e^-1 for any positive MTBF, and a negative repair time now throws
+  `RangeError` like the other invalid inputs.
+
+- **`machining/cuspHeight()`** — returned `NaN` instead of rejecting impossible input. A
+  stepover wider than the tool diameter drove the square root negative, and non-positive
+  radii and stepovers were not checked at all, so a caller received a silent `NaN` and
+  rendered it. All three now throw `RangeError`. A stepover of exactly the tool diameter
+  stays valid: the passes just touch and the ridge is a full tool radius high.
+
+### Changed
+
+- **`quality/mtbf()`** — documented which defined term each output corresponds to, with an
+  `@reference` to EN 13306:2017 (maintenance terminology): 11.3 mean time between failures,
+  11.2 mean operating time between failures, 11.4 mean repair time, 9.18 time between
+  failures, 4.9 time based availability. The function had carried no citation since an
+  earlier, incorrect attribution was removed. Dividing operating time by the failure count
+  is strictly the mean *operating* time between failures (11.2); the name MTBF is kept
+  because that is what the figure is called in practice, and the distinction is now stated
+  rather than left implicit.
+
 ## [0.37.0] - 2026-09-07
 
 ### Added

@@ -12,9 +12,22 @@ import type { CuspHeightInput, CuspHeightResult } from './types.js';
  *
  * @param input - Cusp height parameters
  * @returns CuspHeightResult with scallop height and approximate Ra
+ * @throws RangeError if toolRadius or stepover is not positive, or if stepover exceeds the
+ *   tool diameter (adjacent passes never meet, so the formula has no scallop to describe —
+ *   without the guard the square root goes negative and the result is silently NaN)
  */
 export function cuspHeight(input: CuspHeightInput): CuspHeightResult {
   const { toolRadius, stepover } = input;
+
+  if (!(toolRadius > 0)) {
+    throw new RangeError('toolRadius must be greater than 0');
+  }
+  if (!(stepover > 0)) {
+    throw new RangeError('stepover must be greater than 0');
+  }
+  if (stepover > 2 * toolRadius) {
+    throw new RangeError('stepover must not exceed the tool diameter (2 x toolRadius)');
+  }
 
   const halfStep = stepover / 2;
   const h = toolRadius - Math.sqrt(toolRadius * toolRadius - halfStep * halfStep);

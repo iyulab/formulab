@@ -142,6 +142,37 @@ describe('mtbf', () => {
     });
   });
 
+  describe('rounding of intermediates', () => {
+    // Availability is the 4.9 time-based ratio UT / (UT + DT), which reduces exactly to
+    // totalOperatingTime / (totalOperatingTime + totalRepairTime) — the failure count
+    // cancels. Deriving it from the *reported* (2-decimal) MTBF and MTTR instead loses
+    // that identity: with short times spread over many failures the rounded intermediates
+    // are a large fraction of their own value, and the answer drifts by whole points.
+    it('should derive availability from the raw times, not from the rounded MTBF/MTTR', () => {
+      const result = mtbf({
+        totalOperatingTime: 1,
+        totalRepairTime: 0.5,
+        numberOfFailures: 34,
+      });
+
+      // MTBF = 0.0294..., MTTR = 0.0147... — reported rounded to 0.03 and 0.01.
+      // 0.03 / (0.03 + 0.01) would read 75%. The true ratio is 1 / 1.5 = 66.67%.
+      expect(result.availability).toBeCloseTo(66.67, 2);
+    });
+
+    it('should derive the failure rate from the unrounded MTBF', () => {
+      const result = mtbf({
+        totalOperatingTime: 1,
+        totalRepairTime: 0,
+        numberOfFailures: 3,
+      });
+
+      // MTBF = 0.3333... reported as 0.33; 1 / 0.33 = 3.0303 would be wrong.
+      // lambda = numberOfFailures / totalOperatingTime = 3 exactly.
+      expect(result.failureRate).toBeCloseTo(3, 6);
+    });
+  });
+
   describe('availability benchmarks', () => {
     it('should calculate 99% availability (two nines)', () => {
       // To achieve 99% availability: MTBF / (MTBF + MTTR) = 0.99
