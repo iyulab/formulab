@@ -26,6 +26,12 @@ import type { SafetyStockInput, SafetyStockResult } from './types.js';
 export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   const { avgDemand, demandStdDev, avgLeadTime, leadTimeStdDev, serviceLevel } = input;
 
+  // The z-score is the inverse normal CDF of the service level, which diverges at both
+  // ends: a level of 0 or 1 has no finite z and the whole result follows it to infinity.
+  if (!(serviceLevel > 0) || serviceLevel >= 1) {
+    throw new RangeError('serviceLevel must be greater than 0 and less than 1');
+  }
+
   // Calculate z-score for the desired service level
   const zScore = normalInvCDF(serviceLevel);
 

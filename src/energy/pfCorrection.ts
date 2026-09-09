@@ -24,6 +24,15 @@ export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
     capacitorCostPerKvar,
   } = input;
 
+  // Apparent power divides real power by the power factor; a factor at or below zero has
+  // no apparent power to report, and one above 1 is not a power factor.
+  if (!(currentPf > 0) || currentPf > 1) {
+    throw new RangeError('currentPf must be greater than 0 and at most 1');
+  }
+  if (!(targetPf > 0) || targetPf > 1) {
+    throw new RangeError('targetPf must be greater than 0 and at most 1');
+  }
+
   // Calculate current and target apparent power (kVA)
   const currentKva = kW / currentPf;
   const targetKva = kW / targetPf;

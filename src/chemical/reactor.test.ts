@@ -258,3 +258,12 @@ describe('reactor', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('reactor input domain', () => {
+  it('rejects a zero diameter that would make an output non-finite', () => {
+    expect(() => reactor({ shape: 'spherical', diameter: 0, fillRatio: 0.8 } as never)).toThrow(RangeError);
+  });
+
+});

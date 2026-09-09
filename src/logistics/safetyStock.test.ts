@@ -185,3 +185,16 @@ describe('safetyStock', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('safetyStock input domain', () => {
+  it('rejects a service level of 0 that would make an output non-finite', () => {
+    expect(() => safetyStock({ avgDemand: 100, demandStdDev: 20, avgLeadTime: 7, leadTimeStdDev: 2, serviceLevel: 0 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a service level of 1 that would make an output non-finite', () => {
+    expect(() => safetyStock({ avgDemand: 100, demandStdDev: 20, avgLeadTime: 7, leadTimeStdDev: 2, serviceLevel: 1 } as never)).toThrow(RangeError);
+  });
+
+});

@@ -71,3 +71,15 @@ describe('bmsBalancing', () => {
     expect(result.minVoltage).toBeCloseTo(3.28, 2);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('bmsBalancing input domain', () => {
+  it('rejects balancingCurrentMA that would make an output non-finite', () => {
+    expect(() => bmsBalancing({ cellVoltages: [3.9, 3.8], balancingCurrentMA: 0, cellCapacityAh: 100 })).toThrow(RangeError);
+  });
+
+  it('rejects an empty pack that would make an output non-finite', () => {
+    expect(() => bmsBalancing({ cellVoltages: [], balancingCurrentMA: 100, cellCapacityAh: 100 })).toThrow(RangeError);
+  });
+});

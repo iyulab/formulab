@@ -26,6 +26,19 @@ const RAD = 180 / Math.PI;
 export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult {
   let { a, b, c, A, B, C } = input;
 
+  // A side of zero collapses the law of cosines onto a zero denominator and every angle
+  // comes back NaN; an angle outside (0, 180) is not an angle of a triangle at all.
+  for (const [name, side] of [['a', a], ['b', b], ['c', c]] as const) {
+    if (side !== undefined && !(side > 0)) {
+      throw new RangeError(`side ${name} must be greater than 0`);
+    }
+  }
+  for (const [name, angle] of [['A', A], ['B', B], ['C', C]] as const) {
+    if (angle !== undefined && (!(angle > 0) || angle >= 180)) {
+      throw new RangeError(`angle ${name} must be greater than 0 and less than 180`);
+    }
+  }
+
   // Count known values
   const knownSides = [a, b, c].filter(v => v !== undefined).length;
   const knownAngles = [A, B, C].filter(v => v !== undefined).length;

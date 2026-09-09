@@ -93,3 +93,16 @@ describe('flowControl', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('flowControl input domain', () => {
+  it('rejects a zero inlet pressure that would make an output non-finite', () => {
+    expect(() => flowControl({ flowRate: 10, inletPressure: 0, outletPressure: 0, fluidDensity: 998, fluidType: 'liquid' } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a negative fluid density that would make an output non-finite', () => {
+    expect(() => flowControl({ flowRate: 10, inletPressure: 500, outletPressure: 300, fluidDensity: -1, fluidType: 'liquid' } as never)).toThrow(RangeError);
+  });
+
+});

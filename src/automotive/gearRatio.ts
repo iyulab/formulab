@@ -21,6 +21,12 @@ export function gearRatio(input: GearRatioInput): GearRatioResult {
     throw new RangeError('drivingTeeth must be greater than 0');
   }
 
+  // The output speed divides by the ratio, so a driven gear with no teeth spins infinitely
+  // fast rather than describing a gear pair.
+  if (!(drivenTeeth > 0)) {
+    throw new RangeError('drivenTeeth must be greater than 0');
+  }
+
   const ratio = drivenTeeth / drivingTeeth;
   const outputSpeed = inputSpeed / ratio;
   const outputTorque = inputTorque * ratio * efficiency;

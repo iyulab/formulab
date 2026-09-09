@@ -17,6 +17,13 @@ import type { BoltCircleInput, BoltCircleResult, BoltHole } from './types.js';
 export function boltCircle(input: BoltCircleInput): BoltCircleResult {
   const { boltCircleDiameter, numberOfHoles, startAngle = 0 } = input;
 
+  if (!(boltCircleDiameter > 0)) {
+    throw new RangeError('boltCircleDiameter must be greater than 0');
+  }
+  if (!Number.isInteger(numberOfHoles) || numberOfHoles < 1) {
+    throw new RangeError('numberOfHoles must be an integer of at least 1');
+  }
+
   const radius = boltCircleDiameter / 2;
   const angularSpacing = 360 / numberOfHoles;
 

@@ -288,3 +288,20 @@ describe('vfdSavings', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('vfdSavings input domain', () => {
+  it('rejects a zero full speed that would make an output non-finite', () => {
+    expect(() => vfdSavings({ motorKw: 75, fullSpeedRpm: 0, newSpeedRpm: 1200, runningHoursPerYear: 6000, electricityRate: 0.12, loadFactor: 0.85, vfdCost: 8000, vfdEfficiency: 0.97 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a zero drive efficiency that would make an output non-finite', () => {
+    expect(() => vfdSavings({ motorKw: 75, fullSpeedRpm: 1800, newSpeedRpm: 1200, runningHoursPerYear: 6000, electricityRate: 0.12, loadFactor: 0.85, vfdCost: 8000, vfdEfficiency: 0 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a zero load factor that would make an output non-finite', () => {
+    expect(() => vfdSavings({ motorKw: 75, fullSpeedRpm: 1800, newSpeedRpm: 1200, runningHoursPerYear: 6000, electricityRate: 0.12, loadFactor: 0, vfdCost: 8000, vfdEfficiency: 0.97 } as never)).toThrow(RangeError);
+  });
+
+});

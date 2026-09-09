@@ -63,6 +63,10 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
     throw new RangeError('roomLength, roomWidth, lumensPerLuminaire, and targetLux must all be greater than 0');
   }
 
+  if (!(mf > 0)) {
+    throw new RangeError('mf (maintenance factor) must be greater than 0');
+  }
+
   const area = roomLength * roomWidth;
   const hm = luminaireHeight - workplaneHeight;
 
@@ -80,6 +84,12 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   const cu = cuOverride ?? lookupCU(roomIndex);
   const roomIndexClamped =
     cuOverride === undefined && (roomIndex < CU_TABLE_RANGE[0] || roomIndex > CU_TABLE_RANGE[1]);
+
+  // The luminaire count divides by CU x MF; a zero coefficient of utilization means no
+  // light reaches the workplane, which is not a fixture count.
+  if (!(cu > 0)) {
+    throw new RangeError('cu (coefficient of utilization) must be greater than 0');
+  }
 
   // Number of luminaires: N = (E × A) / (Φ × CU × MF)
   const nExact = (targetLux * area) / (lumensPerLuminaire * cu * mf);

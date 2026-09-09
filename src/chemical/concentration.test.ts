@@ -208,3 +208,16 @@ describe('concentration', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('concentration input domain', () => {
+  it('rejects a zero solution density that would make an output non-finite', () => {
+    expect(() => concentration({ fromUnit: 'molPerL', value: 1, molecularWeight: 58.44, solutionDensity: 0 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a zero molecular weight that would make an output non-finite', () => {
+    expect(() => concentration({ fromUnit: 'molPerL', value: 1, molecularWeight: 0, solutionDensity: 1.0 } as never)).toThrow(RangeError);
+  });
+
+});

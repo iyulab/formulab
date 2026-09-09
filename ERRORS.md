@@ -14,10 +14,26 @@ This document defines formulab's error handling policy and documents the error b
 
 ### Current Status
 
-All 15 domains were fully audited against source on 2026-07-13. Most functions follow the policy above. Two classes of deviation exist:
+All 15 domains were audited against source on 2026-07-13, and again on 2026-09-09 — the second
+time **by execution rather than by reading**. The difference matters: the 2026-07-13 pass read the
+sources and cleared them, but an execution audit that fed every function a degenerate value for each
+of its numeric inputs and checked every output field for finiteness found **44 non-finite outputs
+across 24 functions** still standing. Reading a guard is not the same as watching one hold, and a
+function that already throws somewhere reads as guarded while an unguarded second parameter sits
+beside it (`gearRatio()` validated the driving gear and not the driven one). Those 24 are fixed as
+of 0.38.0; the audit now reports one remaining non-finite output, which is the documented
+`respiratorCalculate()` sentinel named below.
+
+Most functions follow the policy above. Two classes of deviation exist:
 
 1. **Zero-valued sentinels instead of throws (legacy, intentional-leaning).** Much of logistics/energy/food returns a zeroed result for non-positive inputs rather than throwing (marked "sentinel" in the Conditions column below). All sentinel outputs are finite, so the "no silent NaN/Infinity" guarantee holds; migrating them to throws would be a breaking change and is treated as a product decision, not a defect.
 2. **Contract restoration (2026-07).** Ten construction/electronics/environmental functions had documented `throw` rows that the source did not implement — degenerate inputs could emit `NaN`/`Infinity` or an uncontrolled `TypeError` (`rebarWeight`, `concreteMix`, `brick`, `stair`, `resistorDecode`, `traceWidth`, `energyIntensity`, `productCarbonFootprint`, `vocEmissions`, `waterFootprint`). Their validation now matches the rows below; valid-but-degenerate cases (all-zero footprints/stages, zero VOC total) return finite 0-sentinels per the established sentinel pattern.
+
+**Exception — `respiratorCalculate()`.** When `concentration` is 0 (no hazard present),
+`safetyMargin` is `Infinity`. This is an intentional sentinel meaning "any respirator is infinitely
+adequate", documented in the function's `@remarks`, and the function validates its inputs
+(`oel > 0`, `concentration >= 0`) in the ordinary way. It is exempt from the "no Infinity in output
+fields" rule; an execution-based NaN audit must allowlist it.
 
 **Exception — capability-index family.** `cpk()`, `ppk()`, and `cmk()` do **not** throw on a degenerate spread (`stdDev ≤ 0`, or empty/constant measurements for `cmk()`). They return a **zero-valued result** as a sentinel instead. This is intentional and covered by tests. The "no silent NaN/Infinity" guarantee still holds (0 is finite), but these three are exempt from the "validation failures → throw" rule.
 

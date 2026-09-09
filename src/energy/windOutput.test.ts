@@ -130,3 +130,12 @@ describe('windOutput', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('windOutput input domain', () => {
+  it('rejects a negative hub height that would make an output non-finite', () => {
+    expect(() => windOutput({ ratedPower: 2000, hubHeight: -1, averageWindSpeed: 7.5, rotorDiameter: 90 } as never)).toThrow(RangeError);
+  });
+
+});

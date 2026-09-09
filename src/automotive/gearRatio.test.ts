@@ -217,3 +217,12 @@ describe('gearRatio', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('gearRatio input domain', () => {
+  it('rejects a driven gear with no teeth that would make an output non-finite', () => {
+    expect(() => gearRatio({ drivingTeeth: 20, drivenTeeth: 0, inputSpeed: 1500, inputTorque: 50, efficiency: 0.95 } as never)).toThrow(RangeError);
+  });
+
+});

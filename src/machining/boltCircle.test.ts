@@ -82,3 +82,16 @@ describe('boltCircle', () => {
     expect(result.holes[0].y).toBeCloseTo(0, 2);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('boltCircle input domain', () => {
+  it('rejects a hole count of zero that would make an output non-finite', () => {
+    expect(() => boltCircle({ boltCircleDiameter: 100, numberOfHoles: 0 })).toThrow(RangeError);
+  });
+
+  it('rejects a non-integer hole count that would make an output non-finite', () => {
+    expect(() => boltCircle({ boltCircleDiameter: 100, numberOfHoles: 4.5 })).toThrow(RangeError);
+  });
+
+});

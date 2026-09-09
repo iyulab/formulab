@@ -28,6 +28,22 @@ export function vfdSavings(input: VfdSavingsInput): VfdSavingsResult {
     vfdEfficiency,
   } = input;
 
+  // The affinity law works on the speed ratio, and the saving is expressed as a share of
+  // the motor's rated load; none of these three may be zero.
+  if (!(motorKw > 0)) {
+    throw new RangeError('motorKw must be greater than 0');
+  }
+  if (!(fullSpeedRpm > 0)) {
+    throw new RangeError('fullSpeedRpm must be greater than 0');
+  }
+  if (!(loadFactor > 0)) {
+    throw new RangeError('loadFactor must be greater than 0');
+  }
+  // The drive's own losses divide the shaft power by its efficiency.
+  if (!(vfdEfficiency > 0)) {
+    throw new RangeError('vfdEfficiency must be greater than 0');
+  }
+
   // Calculate speed ratio
   const speedRatio = newSpeedRpm / fullSpeedRpm;
 

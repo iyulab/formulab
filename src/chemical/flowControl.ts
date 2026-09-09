@@ -18,6 +18,15 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     temperature = 20, molecularWeight, specificHeatRatio = 1.4,
   } = input;
 
+  // The pressure ratio divides by the inlet pressure and the sizing coefficient takes the
+  // square root of the specific gravity, so neither may be zero or negative.
+  if (!(inletPressure > 0)) {
+    throw new RangeError('inletPressure must be greater than 0');
+  }
+  if (!(fluidDensity > 0)) {
+    throw new RangeError('fluidDensity must be greater than 0');
+  }
+
   const pressureDrop = inletPressure - outletPressure; // kPa
 
   // Reference density: water = 999 kg/m³

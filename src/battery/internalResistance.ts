@@ -12,6 +12,10 @@ import type { InternalResistanceInput, InternalResistanceResult } from './types.
 export function internalResistance(input: InternalResistanceInput): InternalResistanceResult {
   const { openCircuitVoltage, loadVoltage, loadCurrentA } = input;
 
+  if (!(loadCurrentA > 0)) {
+    throw new RangeError('loadCurrentA must be greater than 0');
+  }
+
   const voltageDrop = roundTo(openCircuitVoltage - loadVoltage, 4);
   const resistanceOhm = roundTo(voltageDrop / loadCurrentA, 6);
   const resistanceMilliOhm = roundTo(resistanceOhm * 1000, 3);

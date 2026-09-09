@@ -71,3 +71,15 @@ describe('batteryPackConfig', () => {
     expect(result.totalCells).toBe(4142);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('batteryPackConfig input domain', () => {
+  it('rejects cellVoltage that would make an output non-finite', () => {
+    expect(() => batteryPackConfig({ cellVoltage: 0, cellCapacityAh: 3, targetVoltage: 48, targetCapacityAh: 100 })).toThrow(RangeError);
+  });
+
+  it('rejects cellCapacityAh that would make an output non-finite', () => {
+    expect(() => batteryPackConfig({ cellVoltage: 3.7, cellCapacityAh: 0, targetVoltage: 48, targetCapacityAh: 100 })).toThrow(RangeError);
+  });
+});

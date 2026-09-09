@@ -60,3 +60,11 @@ describe('stateOfHealth', () => {
     expect(result.status).toBe('good');
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('stateOfHealth input domain', () => {
+  it('rejects ratedCapacityAh that would make an output non-finite', () => {
+    expect(() => stateOfHealth({ measuredCapacityAh: 85, ratedCapacityAh: 0 })).toThrow(RangeError);
+  });
+});

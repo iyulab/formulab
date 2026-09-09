@@ -149,3 +149,12 @@ describe('evCharging', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('evCharging input domain', () => {
+  it('rejects zero efficiency that would make an output non-finite', () => {
+    expect(() => evCharging({ batteryCapacityKwh: 60, chargerPowerKw: 11, socStartPercent: 20, socEndPercent: 80, efficiency: 0 } as never)).toThrow(RangeError);
+  });
+
+});

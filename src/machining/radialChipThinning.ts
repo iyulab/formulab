@@ -19,6 +19,16 @@ import type { RadialChipThinningInput, RadialChipThinningResult } from './types.
 export function radialChipThinning(input: RadialChipThinningInput): RadialChipThinningResult {
   const { toolDiameter, radialDepthOfCut, chipLoadTarget } = input;
 
+  // The thinning factor divides by sqrt(ae x (D - ae)); outside 0 < ae < D that radicand
+  // is zero or negative, which is a cut the geometry does not describe rather than an
+  // infinitely thinned chip.
+  if (!(toolDiameter > 0)) {
+    throw new RangeError('toolDiameter must be greater than 0');
+  }
+  if (!(radialDepthOfCut > 0) || radialDepthOfCut >= toolDiameter) {
+    throw new RangeError('radialDepthOfCut must be greater than 0 and less than toolDiameter');
+  }
+
   const D = toolDiameter;
   const ae = radialDepthOfCut;
 

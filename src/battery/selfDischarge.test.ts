@@ -54,3 +54,15 @@ describe('selfDischarge', () => {
     expect(result.monthlyRatePercent).toBeCloseTo(0, 2);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('selfDischarge input domain', () => {
+  it('rejects days that would make an output non-finite', () => {
+    expect(() => selfDischarge({ initialVoltage: 4.1, finalVoltage: 4.0, days: 0, nominalVoltage: 3.7 })).toThrow(RangeError);
+  });
+
+  it('rejects nominalVoltage that would make an output non-finite', () => {
+    expect(() => selfDischarge({ initialVoltage: 4.1, finalVoltage: 4.0, days: 30, nominalVoltage: 0 })).toThrow(RangeError);
+  });
+});

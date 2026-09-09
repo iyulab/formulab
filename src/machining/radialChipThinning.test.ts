@@ -59,3 +59,16 @@ describe('radialChipThinning', () => {
     expect(result.effectiveChipLoad).toBe(0.08);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('radialChipThinning input domain', () => {
+  it('rejects zero tool diameter that would make an output non-finite', () => {
+    expect(() => radialChipThinning({ toolDiameter: 0, radialDepthOfCut: 2, chipLoadTarget: 0.1 })).toThrow(RangeError);
+  });
+
+  it('rejects a radial depth at or beyond the tool diameter that would make an output non-finite', () => {
+    expect(() => radialChipThinning({ toolDiameter: 10, radialDepthOfCut: 10, chipLoadTarget: 0.1 })).toThrow(RangeError);
+  });
+
+});

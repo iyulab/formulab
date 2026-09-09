@@ -19,6 +19,12 @@ export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
     targetCo2Tonnes,
   } = input;
 
+  // The reduction is expressed as a share of the baseline, so a zero baseline has no
+  // percentage to report rather than an infinite one.
+  if (!(baselineCo2Tonnes > 0)) {
+    throw new RangeError('baselineCo2Tonnes must be greater than 0');
+  }
+
   const reductionTonnes = roundTo(baselineCo2Tonnes - currentCo2Tonnes, 2);
   const reductionPercent = roundTo((reductionTonnes / baselineCo2Tonnes) * 100, 2);
 

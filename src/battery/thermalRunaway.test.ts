@@ -66,3 +66,15 @@ describe('thermalRunaway', () => {
     expect(result.heatGenerationW).toBeCloseTo(result.heatDissipationW, 1);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('thermalRunaway input domain', () => {
+  it('rejects heatTransferCoeff that would make an output non-finite', () => {
+    expect(() => thermalRunaway({ ambientTempC: 25, currentA: 50, internalResistanceOhm: 0.002, heatTransferCoeff: 0, surfaceAreaM2: 0.05, runawayTempC: 150 })).toThrow(RangeError);
+  });
+
+  it('rejects surfaceAreaM2 that would make an output non-finite', () => {
+    expect(() => thermalRunaway({ ambientTempC: 25, currentA: 50, internalResistanceOhm: 0.002, heatTransferCoeff: 10, surfaceAreaM2: 0, runawayTempC: 150 })).toThrow(RangeError);
+  });
+});

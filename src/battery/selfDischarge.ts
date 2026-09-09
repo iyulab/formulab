@@ -11,6 +11,13 @@ import type { SelfDischargeInput, SelfDischargeResult } from './types.js';
 export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
   const { initialVoltage, finalVoltage, days, nominalVoltage } = input;
 
+  if (!(days > 0)) {
+    throw new RangeError('days must be greater than 0');
+  }
+  if (!(nominalVoltage > 0)) {
+    throw new RangeError('nominalVoltage must be greater than 0');
+  }
+
   const totalVoltageDrop = initialVoltage - finalVoltage;
   const voltageDropPerDay = roundTo(totalVoltageDrop / days, 6);
   const dailyRatePercent = roundTo((voltageDropPerDay / nominalVoltage) * 100, 4);

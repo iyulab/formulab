@@ -12,6 +12,21 @@ import type { BmsBalancingInput, BmsBalancingResult } from './types.js';
 export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
   const { cellVoltages, balancingCurrentMA, cellCapacityAh } = input;
 
+  if (cellVoltages.length === 0) {
+    throw new RangeError('cellVoltages must not be empty');
+  }
+  // The balancing time divides by the pack average, so a cell at or below zero volts
+  // would drive it to infinity rather than describing a pack that can be balanced.
+  if (!cellVoltages.every((v) => v > 0)) {
+    throw new RangeError('every cell voltage must be greater than 0');
+  }
+  if (!(balancingCurrentMA > 0)) {
+    throw new RangeError('balancingCurrentMA must be greater than 0');
+  }
+  if (!(cellCapacityAh > 0)) {
+    throw new RangeError('cellCapacityAh must be greater than 0');
+  }
+
   const maxVoltage = Math.max(...cellVoltages);
   const minVoltage = Math.min(...cellVoltages);
   const voltageDelta = roundTo(maxVoltage - minVoltage, 4);

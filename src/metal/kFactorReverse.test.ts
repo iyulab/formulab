@@ -292,3 +292,16 @@ describe('kFactorReverse', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('kFactorReverse input domain', () => {
+  it('rejects zero thickness that would make an output non-finite', () => {
+    expect(() => kFactorReverse({ thickness: 0, bendAngle: 90, insideRadius: 2, measuredFlatLength: 95, legA: 50, legB: 50 })).toThrow(RangeError);
+  });
+
+  it('rejects a zero bend angle that would make an output non-finite', () => {
+    expect(() => kFactorReverse({ thickness: 2, bendAngle: 0, insideRadius: 2, measuredFlatLength: 95, legA: 50, legB: 50 })).toThrow(RangeError);
+  });
+
+});

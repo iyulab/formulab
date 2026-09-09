@@ -103,3 +103,12 @@ describe('esgSummary', () => {
     expect(result.onTrack).toBe(false);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('esgSummary input domain', () => {
+  it('rejects a zero baseline that would make an output non-finite', () => {
+    expect(() => esgSummary({ baselineYear: 2020, baselineCo2Tonnes: 0, currentYear: 2024, currentCo2Tonnes: 800, targetYear: 2030, targetCo2Tonnes: 500 } as never)).toThrow(RangeError);
+  });
+
+});

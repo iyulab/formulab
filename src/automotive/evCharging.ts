@@ -28,6 +28,10 @@ export function evCharging(input: ChargingInput): ChargingResult {
     throw new RangeError('chargerPowerKw must be greater than 0');
   }
 
+  if (!(efficiency > 0)) {
+    throw new RangeError('efficiency must be greater than 0');
+  }
+
   const socDiff = (socEndPercent - socStartPercent) / 100;
   const energyNeeded = batteryCapacityKwh * socDiff;
   const energyFromGrid = energyNeeded / efficiency;

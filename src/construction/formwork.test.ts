@@ -263,4 +263,45 @@ describe('formwork', () => {
       expect(result.singleAreaSqm).toBeCloseTo(24.48, 1);
     });
   });
+  describe('derived figures come from the exact area, not the reported one', () => {
+    // A single column of 0.3 x 0.25 x 4.15 has a contact area of exactly 4.565 m2.
+    // Rounding that to 4.57 for display and then multiplying by the quantity scales the
+    // half-centimetre difference by the quantity, and Math.ceil turns the drift into
+    // whole sheets that would be ordered. Over a swept grid of plausible inputs the
+    // sheet count differed in 81 of 1728 cases that way.
+    it('does not let the two-decimal element area drive the sheet count', () => {
+      const result = formwork({
+        elementType: 'column',
+        length: 0.3,
+        width: 0.25,
+        height: 4.15,
+        quantity: 1200,
+        reuses: 1,
+      });
+
+      // 2 x (0.3 + 0.25) x 4.15 x 1200 = 5478 m2 exactly, not 4.57 x 1200 = 5484.
+      expect(result.totalAreaSqm).toBe(5478);
+      expect(result.effectiveAreaSqm).toBe(5478);
+      // ceil(5478 / 2.9768) = 1841, where the rounded path reported 1843.
+      expect(result.plywoodSheets).toBe(1841);
+      // The element area is still reported to two decimals.
+      expect(result.singleAreaSqm).toBe(4.57);
+    });
+
+    it('keeps the reuse division on the exact total as well', () => {
+      const result = formwork({
+        elementType: 'column',
+        length: 0.3,
+        width: 0.25,
+        height: 3.35,
+        quantity: 1200,
+        reuses: 3,
+      });
+
+      // 2 x 0.55 x 3.35 = 3.685 exactly; x 1200 / 3 = 1474 m2.
+      expect(result.totalAreaSqm).toBe(4422);
+      expect(result.effectiveAreaSqm).toBe(1474);
+      expect(result.plywoodSheets).toBe(Math.ceil(1474 / 2.9768));
+    });
+  });
 });

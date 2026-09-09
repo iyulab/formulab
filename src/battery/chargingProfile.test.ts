@@ -78,3 +78,15 @@ describe('chargingProfile', () => {
     expect(result.ccPhaseAh + result.cvPhaseAh).toBeCloseTo(280, 1);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('chargingProfile input domain', () => {
+  it('rejects chargingCurrentA that would make an output non-finite', () => {
+    expect(() => chargingProfile({ capacityAh: 100, chargingCurrentA: 0, cutoffCurrentA: 5 })).toThrow(RangeError);
+  });
+
+  it('rejects capacityAh that would make an output non-finite', () => {
+    expect(() => chargingProfile({ capacityAh: 0, chargingCurrentA: 50, cutoffCurrentA: 5 })).toThrow(RangeError);
+  });
+});

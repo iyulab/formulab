@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.0] - 2026-09-09
+
+### Fixed
+
+- **`construction/formwork()`** — the per-element contact area was rounded to two decimals
+  before being multiplied by the element quantity, which made that quantity the amplifier of
+  a display artefact. Half a square centimetre per element becomes six square metres over
+  twelve hundred of them, and `Math.ceil` then turns the drift into whole sheets of plywood
+  that would actually be ordered: a 0.3 x 0.25 x 4.15 m column at a quantity of 1200 reported
+  1843 sheets over 5484 m2 against a true 1841 over 5478. Across a swept grid of plausible
+  inputs the sheet count differed in 81 of 1728 cases and the total area in 360. Every derived
+  figure now comes from the exact area and rounding happens once, on the way out; the reported
+  per-element area is unchanged.
+
+- **Twenty-four functions returned `NaN` or `Infinity` in output fields** on degenerate input,
+  which `ERRORS.md` explicitly guarantees they will not. An execution-based audit — every
+  function called with each of its numeric inputs driven to zero and to minus one, every output
+  field checked for finiteness — found 44 such outputs. They now throw `RangeError` in line with
+  the documented error policy:
+
+  `batteryPackConfig`, `bmsBalancing`, `boltCircle`, `chargingProfile`, `concentration`,
+  `esgSummary`, `evCharging`, `flowControl`, `gearRatio`, `illuminance`, `internalResistance`,
+  `kFactorReverse` (and `kFactorReverseRange` through it), `pfCorrection`, `radialChipThinning`,
+  `reactor`, `reliefValve`, `safetyStock`, `selfDischarge`, `stateOfHealth`, `thermalRunaway`,
+  `triangleSolver`, `vfdSavings`, `windOutput`.
+
+  Two shapes recur. A function validated one parameter and not its neighbour — `gearRatio()`
+  checked the driving gear's tooth count while a driven gear of zero teeth spun infinitely fast.
+  Or nothing was validated at all and a divisor, a square root or a fractional exponent was left
+  to produce whatever it produced — `triangleSolver()` given a zero-length side divided by `2bc`
+  and returned all three angles as `NaN`, and `safetyStock()` at a service level of 0 or 1 took
+  the inverse normal CDF past its own asymptote.
+
+  Only inputs that actually produced a non-finite output are rejected. Finite results that are
+  physically odd are left alone, and existing zero-sentinel contracts are preserved — a formwork
+  reactor at `fillRatio: 0` still reports an empty vessel rather than throwing.
+
+### Changed
+
+- **`ERRORS.md`** records the 2026-09-09 execution audit and why it found what a source reading
+  had cleared, and names `respiratorCalculate()`'s `Infinity` safety margin as an intentional
+  sentinel exempt from the no-`Infinity` rule.
+
 ## [0.37.1] - 2026-09-09
 
 ### Fixed

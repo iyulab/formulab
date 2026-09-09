@@ -254,3 +254,16 @@ describe('illuminance', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('illuminance input domain', () => {
+  it('rejects a zero coefficient of utilization that would make an output non-finite', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 4000, wattsPerLuminaire: 36, cu: 0 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a zero maintenance factor that would make an output non-finite', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 4000, wattsPerLuminaire: 36, mf: 0 } as never)).toThrow(RangeError);
+  });
+
+});

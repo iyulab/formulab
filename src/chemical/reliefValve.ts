@@ -45,6 +45,15 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     overpressure = 10, dischargeCoefficient,
   } = input;
 
+  // The gas/steam sizing equation divides by sqrt(M) after taking its square root, so a
+  // non-positive molecular weight gives an infinite or imaginary orifice area.
+  if (!(molecularWeight > 0)) {
+    throw new RangeError('molecularWeight must be greater than 0');
+  }
+  if (!(specificGravity > 0)) {
+    throw new RangeError('specificGravity must be greater than 0');
+  }
+
   // Atmospheric pressure
   const patm = 101.325; // kPa
   const P1 = setPressure + patm + (setPressure * overpressure / 100); // kPa absolute (relieving)

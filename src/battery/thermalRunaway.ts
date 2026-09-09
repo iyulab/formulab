@@ -19,6 +19,15 @@ export function thermalRunaway(input: ThermalRunawayInput): ThermalRunawayResult
     runawayTempC,
   } = input;
 
+  // The steady-state rise divides the generated heat by hA; a non-positive coefficient
+  // or area describes a cell that cannot shed heat at all, which is not a temperature.
+  if (!(heatTransferCoeff > 0)) {
+    throw new RangeError('heatTransferCoeff must be greater than 0');
+  }
+  if (!(surfaceAreaM2 > 0)) {
+    throw new RangeError('surfaceAreaM2 must be greater than 0');
+  }
+
   const heatGenerationW = roundTo(currentA * currentA * internalResistanceOhm, 4);
   const hA = heatTransferCoeff * surfaceAreaM2;
   const temperatureRiseC = roundTo(heatGenerationW / hA, 2);

@@ -11,6 +11,19 @@ import type { BatteryPackConfigInput, BatteryPackConfigResult } from './types.js
 export function batteryPackConfig(input: BatteryPackConfigInput): BatteryPackConfigResult {
   const { cellVoltage, cellCapacityAh, targetVoltage, targetCapacityAh } = input;
 
+  if (!(cellVoltage > 0)) {
+    throw new RangeError('cellVoltage must be greater than 0');
+  }
+  if (!(cellCapacityAh > 0)) {
+    throw new RangeError('cellCapacityAh must be greater than 0');
+  }
+  if (!(targetVoltage > 0)) {
+    throw new RangeError('targetVoltage must be greater than 0');
+  }
+  if (!(targetCapacityAh > 0)) {
+    throw new RangeError('targetCapacityAh must be greater than 0');
+  }
+
   const seriesCells = Math.ceil(targetVoltage / cellVoltage);
   const parallelCells = Math.ceil(targetCapacityAh / cellCapacityAh);
   const totalCells = seriesCells * parallelCells;

@@ -15,6 +15,15 @@ import type { ConcentrationInput, ConcentrationResult } from './types.js';
 export function concentration(input: ConcentrationInput): ConcentrationResult {
   const { fromUnit, value, molecularWeight, solutionDensity } = input;
 
+  // Every conversion below divides by one or both of these, so a non-positive value
+  // returns an infinite concentration rather than describing a solution.
+  if (!(molecularWeight > 0)) {
+    throw new RangeError('molecularWeight must be greater than 0');
+  }
+  if (!(solutionDensity > 0)) {
+    throw new RangeError('solutionDensity must be greater than 0');
+  }
+
   let molPerL: number;
   let wtPercent: number;
   let ppm: number;

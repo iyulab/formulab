@@ -12,6 +12,13 @@ import type { StateOfHealthInput, StateOfHealthResult, SohStatus } from './types
 export function stateOfHealth(input: StateOfHealthInput): StateOfHealthResult {
   const { measuredCapacityAh, ratedCapacityAh } = input;
 
+  if (!(ratedCapacityAh > 0)) {
+    throw new RangeError('ratedCapacityAh must be greater than 0');
+  }
+  if (!(measuredCapacityAh >= 0)) {
+    throw new RangeError('measuredCapacityAh must not be negative');
+  }
+
   const sohPercent = roundTo((measuredCapacityAh / ratedCapacityAh) * 100, 2);
   const capacityLoss = roundTo(ratedCapacityAh - measuredCapacityAh, 2);
   const capacityLossPercent = roundTo(100 - sohPercent, 2);

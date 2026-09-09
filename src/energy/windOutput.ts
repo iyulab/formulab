@@ -29,6 +29,15 @@ export function windOutput(input: WindOutputInput): WindOutputResult {
     terrainRoughness = 0.143,
   } = input;
 
+  // The Hellmann power law raises the height ratio to a fractional exponent, so a negative
+  // hub height gives a complex wind speed and every downstream figure becomes NaN.
+  if (!(hubHeight > 0)) {
+    throw new RangeError('hubHeight must be greater than 0');
+  }
+  if (!(referenceHeight > 0)) {
+    throw new RangeError('referenceHeight must be greater than 0');
+  }
+
   // Wind speed at hub height (Hellmann power law)
   const adjustedWindSpeed = averageWindSpeed * Math.pow(hubHeight / referenceHeight, terrainRoughness);
 

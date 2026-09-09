@@ -48,3 +48,11 @@ describe('internalResistance', () => {
     expect(result.voltageDrop).toBeCloseTo(0.01, 3);
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('internalResistance input domain', () => {
+  it('rejects loadCurrentA that would make an output non-finite', () => {
+    expect(() => internalResistance({ openCircuitVoltage: 3.9, loadVoltage: 3.7, loadCurrentA: 0 })).toThrow(RangeError);
+  });
+});

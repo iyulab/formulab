@@ -240,3 +240,16 @@ describe('pfCorrection', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('pfCorrection input domain', () => {
+  it('rejects a zero current power factor that would make an output non-finite', () => {
+    expect(() => pfCorrection({ kW: 100, currentPf: 0, targetPf: 0.95, electricityRate: 0.12, monthlyUsageHours: 720, pfPenaltyRate: 0.05, pfPenaltyThreshold: 0.9, capacitorCostPerKvar: 40 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a target power factor above 1 that would make an output non-finite', () => {
+    expect(() => pfCorrection({ kW: 100, currentPf: 0.8, targetPf: 1.2, electricityRate: 0.12, monthlyUsageHours: 720, pfPenaltyRate: 0.05, pfPenaltyThreshold: 0.9, capacitorCostPerKvar: 40 } as never)).toThrow(RangeError);
+  });
+
+});

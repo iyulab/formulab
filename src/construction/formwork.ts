@@ -12,7 +12,9 @@ const PLYWOOD_SHEET_AREA = 2.9768;
  * @param length - Length in meters
  * @param width - Width in meters
  * @param height - Height in meters
- * @returns Area in m²
+ * @returns Exact area in m², deliberately unrounded — the caller multiplies this by the
+ *   element quantity and divides by the reuse count before anything is displayed, so a
+ *   two-decimal value here would be scaled by the quantity rather than absorbed.
  */
 function calculateSingleArea(
   elementType: ElementType,
@@ -23,23 +25,23 @@ function calculateSingleArea(
   switch (elementType) {
     case 'column':
       // Column: 4 sides = 2*(L+W) * H
-      return roundTo(2 * (length + width) * height, 2);
+      return 2 * (length + width) * height;
 
     case 'beam':
       // Beam: 2 sides + bottom = 2*H*L + W*L
-      return roundTo(2 * height * length + width * length, 2);
+      return 2 * height * length + width * length;
 
     case 'slab':
       // Slab: bottom only = L * W
-      return roundTo(length * width, 2);
+      return length * width;
 
     case 'wall':
       // Wall: 2 sides = 2 * L * H
-      return roundTo(2 * length * height, 2);
+      return 2 * length * height;
 
     case 'footing':
       // Footing: 4 sides = 2*(L+W) * H
-      return roundTo(2 * (length + width) * height, 2);
+      return 2 * (length + width) * height;
 
     default:
       return 0;
@@ -94,25 +96,28 @@ export function formwork(input: FormworkInput): FormworkResult {
     throw new RangeError('quantity must be greater than 0');
   }
 
-  // Calculate area for single element
-  const singleAreaSqm = calculateSingleArea(elementType, length, width, height);
-
-  // Total area = single area × quantity
-  const totalAreaSqm = roundTo(singleAreaSqm * quantity, 2);
+  // Every figure below derives from the exact contact area; rounding happens once, on
+  // the way out. Rounding the single-element area to two decimals and then multiplying
+  // by the quantity makes that quantity the amplifier of a display artefact: half a
+  // square centimetre per element becomes six square metres over twelve hundred of
+  // them, and Math.ceil then turns the drift into whole sheets of plywood that would
+  // actually be ordered.
+  const singleAreaExact = calculateSingleArea(elementType, length, width, height);
+  const totalAreaExact = singleAreaExact * quantity;
 
   // Effective area accounts for reuses
   const effectiveReuses = reuses > 0 ? reuses : 1;
-  const effectiveAreaSqm = roundTo(totalAreaSqm / effectiveReuses, 2);
+  const effectiveAreaExact = totalAreaExact / effectiveReuses;
 
   // Number of plywood sheets needed (round up)
-  const plywoodSheets = effectiveAreaSqm > 0
-    ? Math.ceil(effectiveAreaSqm / PLYWOOD_SHEET_AREA)
+  const plywoodSheets = effectiveAreaExact > 0
+    ? Math.ceil(effectiveAreaExact / PLYWOOD_SHEET_AREA)
     : 0;
 
   return {
-    singleAreaSqm,
-    totalAreaSqm,
-    effectiveAreaSqm,
+    singleAreaSqm: roundTo(singleAreaExact, 2),
+    totalAreaSqm: roundTo(totalAreaExact, 2),
+    effectiveAreaSqm: roundTo(effectiveAreaExact, 2),
     plywoodSheets,
   };
 }

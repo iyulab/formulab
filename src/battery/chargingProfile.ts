@@ -17,6 +17,21 @@ export function chargingProfile(input: ChargingProfileInput): ChargingProfileRes
     ccEndSocPercent = 80,
   } = input;
 
+  if (!(capacityAh > 0)) {
+    throw new RangeError('capacityAh must be greater than 0');
+  }
+  if (!(chargingCurrentA > 0)) {
+    throw new RangeError('chargingCurrentA must be greater than 0');
+  }
+  // The CV phase averages the charging and cutoff currents; a non-positive cutoff would
+  // make that average zero or negative and the phase time infinite.
+  if (!(cutoffCurrentA > 0)) {
+    throw new RangeError('cutoffCurrentA must be greater than 0');
+  }
+  if (!(ccEndSocPercent > 0) || ccEndSocPercent >= 100) {
+    throw new RangeError('ccEndSocPercent must be greater than 0 and less than 100');
+  }
+
   // CC phase delivers ccEndSocPercent of capacity
   const ccPhaseAh = roundTo(capacityAh * (ccEndSocPercent / 100), 2);
   const cvPhaseAh = roundTo(capacityAh - ccPhaseAh, 2);

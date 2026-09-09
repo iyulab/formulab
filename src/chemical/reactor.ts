@@ -20,6 +20,10 @@ import { roundTo } from '../utils.js';
 export function reactor(input: ReactorInput): ReactorResult {
   const { shape, diameter, fillRatio } = input;
 
+  // A zero diameter gives zero volume over zero surface area, which is not a ratio.
+  if (!(diameter > 0)) {
+    throw new RangeError('diameter must be greater than 0');
+  }
   const radius = diameter / 2;
   let totalVolume: number;
   let surfaceArea: number;

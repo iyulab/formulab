@@ -227,3 +227,16 @@ describe('reliefValve', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('reliefValve input domain', () => {
+  it('rejects a zero molecular weight that would make an output non-finite', () => {
+    expect(() => reliefValve({ requiredCapacity: 5000, setPressure: 1000, backPressure: 0, temperature: 100, fluidType: 'gas', molecularWeight: 0 } as never)).toThrow(RangeError);
+  });
+
+  it('rejects a negative molecular weight that would make an output non-finite', () => {
+    expect(() => reliefValve({ requiredCapacity: 5000, setPressure: 1000, backPressure: 0, temperature: 100, fluidType: 'gas', molecularWeight: -1 } as never)).toThrow(RangeError);
+  });
+
+});

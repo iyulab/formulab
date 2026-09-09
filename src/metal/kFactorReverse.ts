@@ -27,6 +27,15 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
     legB,
   } = input;
 
+  // The K-factor divides by the bend angle in radians and again by the thickness, so a
+  // zero in either place yields an infinite K rather than a sheet that cannot be bent.
+  if (!(thickness > 0)) {
+    throw new RangeError('thickness must be greater than 0');
+  }
+  if (!(bendAngle > 0) || bendAngle >= 180) {
+    throw new RangeError('bendAngle must be greater than 0 and less than 180');
+  }
+
   // Convert bend angle to radians
   const bendAngleRad = (bendAngle * Math.PI) / 180;
 

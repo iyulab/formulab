@@ -75,3 +75,16 @@ describe('triangleSolver', () => {
     });
   });
 });
+
+// ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
+// produce them instead of throwing.
+describe('triangleSolver input domain', () => {
+  it('rejects a zero-length side that would make an output non-finite', () => {
+    expect(() => triangleSolver({ a: 0, b: 4, c: 5 })).toThrow(RangeError);
+  });
+
+  it('rejects an angle of 180 degrees or more that would make an output non-finite', () => {
+    expect(() => triangleSolver({ a: 3, b: 4, C: 180 })).toThrow(RangeError);
+  });
+
+});
