@@ -47,6 +47,8 @@ export interface SmtTaktInput {
 
 export interface SmtTaktResult {
   placementTimeSec: number;
+  /** The setup time added to each cycle, as given — `totalCycleTimeSec = placementTimeSec + setupTimeSec` */
+  setupTimeSec: number;
   totalCycleTimeSec: number;
   boardsPerHour: number;
   totalBoardsPerShift: number;

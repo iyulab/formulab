@@ -13,7 +13,7 @@ const M3_TO_FT3 = 35.3147;
  *
  * @param input - Compressed air cost input parameters
  * @returns Compressed air cost result
- * @throws RangeError if compressorPower, runningHours, or airOutput is not positive
+ * @throws RangeError if compressorPower, runningHours, or airOutput is not positive, or electricityRate or maintenanceCost is negative
  */
 export function compressedAirCost(input: CompressedAirCostInput): CompressedAirCostResult {
   const { compressorPower, runningHours, electricityRate, airOutput, maintenanceCost } = input;
@@ -26,6 +26,12 @@ export function compressedAirCost(input: CompressedAirCostInput): CompressedAirC
   }
   if (airOutput <= 0) {
     throw new RangeError('airOutput must be greater than 0');
+  }
+  if (electricityRate < 0) {
+    throw new RangeError('electricityRate must not be negative');
+  }
+  if (maintenanceCost < 0) {
+    throw new RangeError('maintenanceCost must not be negative');
   }
 
   // Calculate electricity cost
@@ -40,6 +46,7 @@ export function compressedAirCost(input: CompressedAirCostInput): CompressedAirC
 
   return {
     electricityCost,
+    maintenanceCost,
     totalCost,
     costPerM3,
     costPerFt3,

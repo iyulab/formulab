@@ -26,6 +26,8 @@ export interface CompressedAirCostInput {
 
 export interface CompressedAirCostResult {
   electricityCost: number;
+  /** The maintenance cost added, as given — `totalCost = electricityCost + maintenanceCost` */
+  maintenanceCost: number;
   totalCost: number;
   costPerM3: number;
   /** Cost per cubic foot of delivered air ($/ft³) */

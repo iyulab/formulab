@@ -191,4 +191,22 @@ describe('compressedAirCost', () => {
       expect(highHours.electricityCost).toBe(lowHours.electricityCost * 2);
     });
   });
+
+  describe('cost parts', () => {
+    it('returns the maintenance cost it added, so total = electricity + maintenance', () => {
+      const r = compressedAirCost({ compressorPower: 37, runningHours: 4000, electricityRate: 0.12, airOutput: 1_000_000, maintenanceCost: 1500 });
+      expect(r.maintenanceCost).toBe(1500);
+      expect(r.electricityCost + r.maintenanceCost).toBeCloseTo(r.totalCost, 10);
+    });
+  });
+
+  describe('input validation — rate and maintenance', () => {
+    const valid = { compressorPower: 37, runningHours: 4000, electricityRate: 0.12, airOutput: 1_000_000, maintenanceCost: 100 };
+    it.each([
+      ['electricityRate is negative', { electricityRate: -0.01 }],
+      ['maintenanceCost is negative', { maintenanceCost: -1 }],
+    ])('throws RangeError when %s', (_label, override) => {
+      expect(() => compressedAirCost({ ...valid, ...override })).toThrow(RangeError);
+    });
+  });
 });

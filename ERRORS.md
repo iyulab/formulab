@@ -141,7 +141,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `reflowProfile()` | `null` | Unknown paste type → returns `undefined` (whole result) |
 | `getPasteTypes()` | `safe` | — (returns paste-type list) |
 | `resistorDecode()` | `throw` | Unknown color in any band position, gold/silver as a digit, bandCount not 4/5/6, missing bands |
-| `smtTakt()` | `throw` | placementRate ≤ 0, componentsPerBoard ≤ 0 |
+| `smtTakt()` | `throw` | placementRate ≤ 0, componentsPerBoard ≤ 0, boardsPerPanel ≤ 0, setupTimeSec < 0, availableTimeMin < 0 |
 | `solderPaste()` | `throw` | padCount ≤ 0, stencilThickness ≤ 0 |
 | `traceWidth()` | `throw` | current ≤ 0, tempRise ≤ 0, copperWeight ≤ 0 |
 | `awgProperties()` | `throw` | AWG not between 0 and 40 |
@@ -273,7 +273,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `transformerLoss()` | `null` | annualLossEnergy/annualLossCost null without operatingHours (+energyCost); ratedCapacity ≤ 0 or negative losses → all-zero result (sentinel) |
 | `vfdSavings()` | `safe` | annualSavings ≤ 0 → paybackYears 0 (sentinel) |
 | `windOutput()` | `null` | sweptArea/betzLimit null without rotorDiameter; non-positive adjusted wind speed → capacityFactor 0 (sentinel) |
-| `compressedAirCost()` | `throw` | compressorPower/runningHours/airOutput ≤ 0 |
+| `compressedAirCost()` | `throw` | compressorPower/runningHours/airOutput ≤ 0; electricityRate or maintenanceCost < 0 |
 | `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness/surfaceCoefficient/boilerEfficiency ≤ 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
 | `degreeDay()` | `throw` | Empty dailyTemps |
 | `motorEfficiency()` | `throw` | currentEfficiency ≤ 0, newEfficiency ≤ 0 (paybackPeriod null without positive upgradeCost/annualSavings) |

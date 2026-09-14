@@ -237,4 +237,25 @@ describe('smtTakt', () => {
       expect(result.placementTimeSec).toBeGreaterThan(100);
     });
   });
+
+  describe('cycle time parts', () => {
+    const result = smtTakt({ placementRate: 36000, componentsPerBoard: 500, boardsPerPanel: 1, setupTimeSec: 12, availableTimeMin: 480 });
+
+    it('returns the setup time it added, so the cycle is placement + setup', () => {
+      expect(result.setupTimeSec).toBe(12);
+      expect(result.placementTimeSec + result.setupTimeSec).toBeCloseTo(result.totalCycleTimeSec, 10);
+    });
+  });
+
+  describe('input validation — setup, shift and panel', () => {
+    const valid = { placementRate: 36000, componentsPerBoard: 500, boardsPerPanel: 1, setupTimeSec: 5, availableTimeMin: 480 };
+    it.each([
+      ['setupTimeSec is negative', { setupTimeSec: -1 }],
+      ['availableTimeMin is negative', { availableTimeMin: -1 }],
+      ['boardsPerPanel is 0', { boardsPerPanel: 0 }],
+      ['boardsPerPanel is negative', { boardsPerPanel: -2 }],
+    ])('throws RangeError when %s', (_label, override) => {
+      expect(() => smtTakt({ ...valid, ...override })).toThrow(RangeError);
+    });
+  });
 });
