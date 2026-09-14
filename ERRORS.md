@@ -21,8 +21,12 @@ of its numeric inputs and checked every output field for finiteness found **44 n
 across 24 functions** still standing. Reading a guard is not the same as watching one hold, and a
 function that already throws somewhere reads as guarded while an unguarded second parameter sits
 beside it (`gearRatio()` validated the driving gear and not the driven one). Those 24 are fixed as
-of 0.38.0; the audit now reports one remaining non-finite output, which is the documented
-`respiratorCalculate()` sentinel named below.
+of 0.38.0. That audit only degenerated top-level numeric fields and found fixtures for part of the
+library; a wider pass that also degenerates values nested in objects and arrays (a cargo dimension,
+a box weight, one failure time) and harvests fixtures for 203 of 207 functions found 17 more
+functions still emitting `NaN`/`Infinity`, two of them only exposed once the first guards were in
+place. Those are guarded in the next release, and the audit now reports exactly the two documented
+sentinels below — `respiratorCalculate()` and `nioshLifting()`.
 
 Most functions follow the policy above. Two classes of deviation exist:
 
@@ -70,7 +74,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `yieldCalc()` | `safe` | — |
 | `gageRR()` | `throw` | Insufficient data; `method: 'anova'` also throws for fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `safe` | empty measurements or computed stdDev ≤ 0 → returns zero-valued result; does not throw |
-| `weibull()` | `throw` | < 3 data points |
+| `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items |
 
 ### Metal (33 functions)
@@ -82,7 +86,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
 | `flatPattern()` | `safe` | — (no input validation) |
 | `kFactorReverse()` | `safe` | — (no input validation) |
-| `pressTonnage()` | `throw` | Missing operation-specific fields |
+| `pressTonnage()` | `throw` | thickness ≤ 0, dieOpening ≤ 0, drawing with punchDiameter ≤ 0, combined without operations |
 | `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
 | `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |
 | `cutting()` | `throw` | toolDiameter ≤ 0 |
@@ -97,7 +101,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0 |
 | `thread()` | `throw` | Unknown size |
 | `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
-| `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); innerDiameter ≥ outerDiameter |
+| `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); custom youngsModulus/density/shearModulus ≤ 0; innerDiameter ≥ outerDiameter |
 | `weldHeat()` | `throw` | voltage ≤ 0, current ≤ 0, travelSpeed ≤ 0, thickness ≤ 0 |
 | `welding()` | `throw` | thickness ≤ 0 |
 | `weldStrength()` | `throw` | legSize ≤ 0, weldLength ≤ 0, weldCount < 1, appliedLoad < 0 |
@@ -122,10 +126,10 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `heatTransfer()` | `throw` | conductivity ≤ 0, area ≤ 0, thickness ≤ 0, coefficient ≤ 0, emissivity out of range, absolute temp ≤ 0 |
 | `ph()` | `throw` | concentrations ≤ 0 |
 | `pipeFlow()` | `throw` | diameter ≤ 0, flowRate ≤ 0 |
-| `reactor()` | `throw` | diameter ≤ 0 |
-| `shelfLife()` | `throw` | Invalid temperatures |
-| `injectionCycle()` | `throw` | Invalid resin parameters |
-| `flowControl()` | `throw` | pressureDrop ≤ 0 |
+| `reactor()` | `throw` | diameter ≤ 0, cylindrical height ≤ 0 |
+| `shelfLife()` | `throw` | q10 ≤ 0 |
+| `injectionCycle()` | `throw` | resin density ≤ 0, injectionRate ≤ 0 (when given). Non-positive thermal diffusivity or ejection ≤ mold temperature → coolingTime 0 (sentinel) |
+| `flowControl()` | `throw` | inletPressure ≤ 0, fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C. pressureDrop ≤ 0 → cv 0 (sentinel) |
 | `reliefValve()` | `throw` | Capacity ≤ 0 |
 | `pid()` | `throw` | Non-positive process params (processGain/deadTime/timeConstant ≤ 0, or ultimateGain/ultimatePeriod ≤ 0) |
 
@@ -201,16 +205,16 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `truePosition()` | `throw` | Negative coordinates |
 | `boltCircle()` | `throw` | diameter ≤ 0, holes ≤ 0 |
-| `sineBarHeight()` | `throw` | angle out of range |
+| `sineBarHeight()` | `throw` | sineBarLength ≤ 0; roundToBlock rounds the stack beyond the bar length |
 | `radialChipThinning()` | `throw` | toolDiameter ≤ 0 |
-| `toolDeflection()` | `throw` | toolDiameter ≤ 0, stickout ≤ 0, cuttingForce < 0 |
+| `toolDeflection()` | `throw` | toolDiameter ≤ 0, stickout ≤ 0, cuttingForce < 0, Young's modulus ≤ 0 |
 | `cuspHeight()` | `throw` | toolDiameter ≤ 0 |
 | `effectiveDiameter()` | `throw` | Invalid depth |
 | `boringBarDeflection()` | `throw` | barDiameter ≤ 0, overhang ≤ 0, cuttingForce < 0 |
 | `threadOverWires()` | `throw` | Invalid thread parameters |
 | `gaugeBlockStack()` | `throw` | Target out of range |
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
-| `cycleTimeEstimator()` | `throw` | Empty operations |
+| `cycleTimeEstimator()` | `throw` | rapid move with rapidRate ≤ 0. Empty operations → zero times (sentinel) |
 
 ### Safety (14 functions)
 
@@ -239,13 +243,13 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `abcAnalysis()` | `safe` | totalValue or totalItems = 0 → all items class 'C' with zeroed values (sentinel; does not throw) |
 | `cbm()` | `safe` | — |
-| `containerFit()` | `safe` | Box larger than container in every orientation → zero-fit result (sentinel) |
+| `containerFit()` | `throw` | cargo dimension ≤ 0. Box larger than container in every orientation → zero-fit result (sentinel) |
 | `eoq()` | `safe` | annualDemand/orderCost/holdingCost ≤ 0 → all-zero result (sentinel; does not throw) |
 | `inventoryTurnover()` | `null` | gmroii = null when grossMargin omitted; averageInventory or cogs ≤ 0 → zeroed result (sentinel) |
 | `loadCapacity()` | `null` | utilization/isOverloaded/safetyMargin = null when actualLoad omitted; non-positive capacity/load-center inputs → zeroed result (sentinel) |
-| `pallet3d()` | `safe` | Empty boxes → empty result with warning 'No boxes provided' (sentinel) |
-| `palletStack()` | `safe` | Box exceeds pallet/maxHeight in all orientations → zero result (sentinel) |
-| `safetyStock()` | `safe` | — |
+| `pallet3d()` | `throw` | box weight ≤ 0. Empty boxes → empty result with warning 'No boxes provided' (sentinel) |
+| `palletStack()` | `throw` | box dimension ≤ 0. Box exceeds pallet/maxHeight in all orientations → zero result (sentinel) |
+| `safetyStock()` | `throw` | serviceLevel ∉ (0, 1), avgLeadTime < 0 |
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
 | `tsp()` | `throw` | Empty nodes (a single node returns a single-node result, does not throw) |
 | `dimWeight()` | `throw` | length/width/height ≤ 0, actualWeight < 0 |
@@ -270,7 +274,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `vfdSavings()` | `safe` | annualSavings ≤ 0 → paybackYears 0 (sentinel) |
 | `windOutput()` | `null` | sweptArea/betzLimit null without rotorDiameter; non-positive adjusted wind speed → capacityFactor 0 (sentinel) |
 | `compressedAirCost()` | `throw` | compressorPower/runningHours/airOutput ≤ 0 |
-| `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness ≤ 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
+| `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness/surfaceCoefficient/boilerEfficiency ≤ 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
 | `degreeDay()` | `throw` | Empty dailyTemps |
 | `motorEfficiency()` | `throw` | currentEfficiency ≤ 0, newEfficiency ≤ 0 (paybackPeriod null without positive upgradeCost/annualSavings) |
 | `solarOutput()` | `throw` | panelWattage/panelCount/peakSunHours ≤ 0, systemEfficiency outside (0, 1], tiltAngle outside [0, 90], latitude outside [-90, 90] |

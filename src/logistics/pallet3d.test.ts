@@ -193,3 +193,9 @@ describe('pallet3d', () => {
     });
   });
 });
+
+describe('pallet3d rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for a weightless box', () => {
+    expect(() => pallet3d({ palletStandard: 'eur', boxes: [{ id: 'box1', length: 400, width: 300, height: 200, weight: 0, quantity: 10, canRotate: 'layered' }] })).toThrow(RangeError);
+  });
+});

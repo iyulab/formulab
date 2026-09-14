@@ -42,10 +42,24 @@ const simplySuportedLambda = (n: number): number => n * Math.PI;
  *   angularFrequency in rad/s, period in s, momentOfInertia/polarMomentOfInertia in mm⁴,
  *   crossSectionalArea in mm²
  * @throws RangeError if a required geometry or system parameter is not positive,
+ *   if a custom youngsModulus, density or shearModulus is given and not positive,
  *   or if innerDiameter is not less than outerDiameter for a hollow section
  */
 export function vibration(input: VibrationInput): VibrationResult {
   const { system, material } = input;
+
+  // Custom material properties enter square roots (√(E·I/ρ·A), √(G·J/…)).
+  if (material === 'custom') {
+    for (const [name, value] of [
+      ['youngsModulus', input.youngsModulus],
+      ['density', input.density],
+      ['shearModulus', input.shearModulus],
+    ] as const) {
+      if (value !== undefined && !(value > 0)) {
+        throw new RangeError(`${name} must be greater than 0`);
+      }
+    }
+  }
 
   // Get material properties
   const props = material === 'custom' && input.youngsModulus && input.density

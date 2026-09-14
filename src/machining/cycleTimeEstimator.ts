@@ -17,6 +17,7 @@ const DEFAULT_RAPID_RATE = 10000; // mm/min
  *
  * @param input - Cycle time parameters
  * @returns CycleTimeEstimatorResult with time breakdown and utilization
+ * @throws RangeError if a rapid move has a rapid rate that is not greater than 0
  */
 export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEstimatorResult {
   const { operations, setupTime = 0, partCount = 1 } = input;
@@ -37,6 +38,9 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
       case 'rapid': {
         if (op.distance !== undefined) {
           const rate = op.rapidRate ?? DEFAULT_RAPID_RATE;
+          if (!(rate > 0)) {
+            throw new RangeError('rapidRate must be greater than 0');
+          }
           rapidTime += (op.distance / rate) * 60;
         }
         break;

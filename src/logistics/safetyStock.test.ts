@@ -198,3 +198,9 @@ describe('safetyStock input domain', () => {
   });
 
 });
+
+describe('safetyStock rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for negative avgLeadTime', () => {
+    expect(() => safetyStock({ avgDemand: 100, demandStdDev: 20, avgLeadTime: -1, leadTimeStdDev: 1, serviceLevel: 0.95 })).toThrow(RangeError);
+  });
+});

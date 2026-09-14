@@ -16,6 +16,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to repeat the OSHA formula to get it, and a repeat that missed the 80 dB cutoff drew bars
   that no longer summed to the reported dose. New type: `NoiseExposureContribution`.
 
+### Fixed
+
+- **Seventeen functions returned `NaN` or `Infinity` for degenerate inputs**, against the
+  documented "no silent NaN/Infinity" policy. They now throw `RangeError` naming the input,
+  only for the inputs that actually produced a non-finite value:
+  `flowControl()` (gas: molecularWeight ≤ 0, temperature at or below absolute zero),
+  `injectionCycle()` (density ≤ 0, injectionRate ≤ 0), `reactor()` (cylindrical height ≤ 0),
+  `shelfLife()` (q10 ≤ 0), `insulationRoi()` (surfaceCoefficient or boilerEfficiency ≤ 0),
+  `containerFit()` / `palletStack()` (a cargo or box dimension ≤ 0), `pallet3d()` (box weight ≤ 0),
+  `safetyStock()` (avgLeadTime < 0), `cycleTimeEstimator()` (rapid rate ≤ 0),
+  `sineBarHeight()` (bar length ≤ 0, or a block increment that rounds the stack past the bar),
+  `toolDeflection()` (Young's modulus ≤ 0), `vibration()` (custom E, density or G ≤ 0),
+  `pressTonnage()` (thickness ≤ 0, die opening ≤ 0, drawing with punch diameter ≤ 0) and
+  `weibull()` (fewer than 2 times, a time ≤ 0, all times identical, missionTime < 0).
+  The earlier audit changed only top-level fields; these sat in nested values or in functions
+  it had no fixture for. `ERRORS.md` rows for these functions now describe what the source does —
+  several claimed throws the code never made (`weibull()` "< 3 data points", `sineBarHeight()`
+  "angle out of range"), and three were listed as `safe`.
+- Because inputs that used to return a value now throw, this is a contract change, not a patch.
+
 ## [0.38.0] - 2026-09-09
 
 ### Fixed

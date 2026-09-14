@@ -70,3 +70,12 @@ describe('sineBarHeight', () => {
     expect(result.height).toBe(250);
   });
 });
+
+describe('sineBarHeight rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero sineBarLength', () => {
+    expect(() => sineBarHeight({ angle: 30, sineBarLength: 0, roundToBlock: 0.5 })).toThrow(RangeError);
+  });
+  it('throws RangeError for a block increment that rounds the stack past the bar length', () => {
+    expect(() => sineBarHeight({ angle: 80, sineBarLength: 100, roundToBlock: 60 })).toThrow(RangeError);
+  });
+});

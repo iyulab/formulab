@@ -26,9 +26,15 @@ function getFloorOrientations(l: number, w: number, h: number, allowRotation: bo
  *
  * @param input - Pallet dimensions, box dimensions, and constraints
  * @returns Stacking configuration
+ * @throws RangeError if any box dimension is not greater than 0
  */
 export function palletStack(input: PalletStackInput): PalletStackResult {
   const { pallet, box, maxHeight, allowRotation } = input;
+
+  // Each pallet dimension and the stack height are divided by a box dimension.
+  if (!(box.length > 0) || !(box.width > 0) || !(box.height > 0)) {
+    throw new RangeError('box length, width and height must be greater than 0');
+  }
 
   // Get all possible orientations
   const orientations = getFloorOrientations(box.length, box.width, box.height, allowRotation);

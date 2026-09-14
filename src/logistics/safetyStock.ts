@@ -22,6 +22,7 @@ import type { SafetyStockInput, SafetyStockResult } from './types.js';
  *
  * @param input - Demand and lead time parameters with service level
  * @returns Safety stock, reorder point, and related metrics
+ * @throws RangeError if serviceLevel is not strictly between 0 and 1, or avgLeadTime is negative
  */
 export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   const { avgDemand, demandStdDev, avgLeadTime, leadTimeStdDev, serviceLevel } = input;
@@ -33,6 +34,11 @@ export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   }
 
   // Calculate z-score for the desired service level
+  // Lead-time demand variance scales with the lead time and is square-rooted.
+  if (!(avgLeadTime >= 0)) {
+    throw new RangeError('avgLeadTime must not be negative');
+  }
+
   const zScore = normalInvCDF(serviceLevel);
 
   // Average demand during lead time

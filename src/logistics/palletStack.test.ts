@@ -146,3 +146,9 @@ describe('palletStack', () => {
     });
   });
 });
+
+describe('palletStack rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for a zero box dimension', () => {
+    expect(() => palletStack({ pallet: { length: 1200, width: 800 }, box: { length: 400, width: 0, height: 300 }, maxHeight: 1500, allowRotation: false })).toThrow(RangeError);
+  });
+});

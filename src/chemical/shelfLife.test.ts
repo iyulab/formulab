@@ -252,3 +252,12 @@ describe('shelfLife', () => {
     });
   });
 });
+
+describe('shelfLife rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero q10', () => {
+    expect(() => shelfLife({ shelfLifeAtRef: 30, refTemp: 25, targetTemp: 15, q10: 0 })).toThrow(RangeError);
+  });
+  it('throws RangeError for negative q10', () => {
+    expect(() => shelfLife({ shelfLifeAtRef: 30, refTemp: 25, targetTemp: 15, q10: -1 })).toThrow(RangeError);
+  });
+});

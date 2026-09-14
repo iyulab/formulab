@@ -92,3 +92,9 @@ describe('cycleTimeEstimator', () => {
     expect(result.totalTime).toBe(result.cycleTime);
   });
 });
+
+describe('cycleTimeEstimator rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for a zero rapidRate', () => {
+    expect(() => cycleTimeEstimator({ operations: [{ type: 'rapid', distance: 100, rapidRate: 0 }] })).toThrow(RangeError);
+  });
+});

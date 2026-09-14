@@ -82,3 +82,9 @@ describe('toolDeflection', () => {
     });
   });
 });
+
+describe('toolDeflection rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero youngsModulus', () => {
+    expect(() => toolDeflection({ toolDiameter: 10, stickout: 50, cuttingForce: 100, youngsModulus: 0 })).toThrow(RangeError);
+  });
+});

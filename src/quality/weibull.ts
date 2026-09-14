@@ -14,9 +14,26 @@ import type { WeibullInput, WeibullResult } from './types.js';
  *
  * @reference Abernethy, R.B. "The New Weibull Handbook", 5th Ed.
  * @reference IEC 61649:2008 — Weibull Analysis
+ * @throws RangeError if fewer than 2 failure times are given, any is not greater than 0, all are identical, or missionTime is negative
  */
 export function weibull(input: WeibullInput): WeibullResult {
   const { failureTimes, missionTime } = input;
+
+  // Median rank regression fits a line through (ln t, ln ln(1/(1−F))): it needs at least two
+  // distinct positive times, or the log is undefined and the slope divides by zero.
+  if (failureTimes.length < 2) {
+    throw new RangeError('At least 2 failure times are required');
+  }
+  if (failureTimes.some((t) => !(t > 0))) {
+    throw new RangeError('All failure times must be greater than 0');
+  }
+  if (failureTimes.every((t) => t === failureTimes[0])) {
+    throw new RangeError('failure times must not all be identical');
+  }
+  // R(t) raises t/η to a fractional power.
+  if (missionTime != null && !(missionTime >= 0)) {
+    throw new RangeError('missionTime must not be negative');
+  }
 
   // Sort failure times ascending
   const sorted = [...failureTimes].sort((a, b) => a - b);

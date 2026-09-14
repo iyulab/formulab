@@ -91,6 +91,7 @@ const RESIN_PROPERTIES: Record<Exclude<ResinType, 'custom'>, ResinProperties> = 
  *
  * @param input - Injection cycle input with resin type and dimensions
  * @returns Cycle time breakdown and total
+ * @throws RangeError if the resin density is not greater than 0, or injectionRate is given and not greater than 0
  */
 export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult {
   const {
@@ -138,7 +139,13 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
   }
 
   // Calculate fill time
-  // Volume = shot weight / density (g / (g/cm^3) = cm^3)
+  // Volume = shot weight / density (g / (g/cm^3) = cm^3); fill time then divides by the rate.
+  if (!(props.density > 0)) {
+    throw new RangeError('density must be greater than 0');
+  }
+  if (injectionRate !== undefined && !(injectionRate > 0)) {
+    throw new RangeError('injectionRate must be greater than 0');
+  }
   const volume = shotWeight / props.density;
   // Default injection rate: estimate based on typical machine (~50-150 cm^3/s)
   const effectiveInjectionRate = injectionRate ?? 80;

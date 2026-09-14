@@ -322,3 +322,12 @@ describe('vibration', () => {
     });
   });
 });
+
+describe('vibration rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for negative custom youngsModulus', () => {
+    expect(() => vibration({ system: 'cantilever', material: 'custom', crossSection: 'rectangular', width: 20, height: 10, length: 500, youngsModulus: -1, density: 7850 })).toThrow(RangeError);
+  });
+  it('throws RangeError for negative custom density', () => {
+    expect(() => vibration({ system: 'cantilever', material: 'custom', crossSection: 'rectangular', width: 20, height: 10, length: 500, youngsModulus: 200, density: -1 })).toThrow(RangeError);
+  });
+});

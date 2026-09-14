@@ -121,3 +121,18 @@ describe('weibull', () => {
     });
   });
 });
+
+describe('weibull rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for a single failure time', () => {
+    expect(() => weibull({ failureTimes: [100] })).toThrow(RangeError);
+  });
+  it('throws RangeError for a non-positive failure time', () => {
+    expect(() => weibull({ failureTimes: [0, 120, 130] })).toThrow(RangeError);
+  });
+  it('throws RangeError for identical failure times', () => {
+    expect(() => weibull({ failureTimes: [100, 100, 100] })).toThrow(RangeError);
+  });
+  it('throws RangeError for a negative missionTime', () => {
+    expect(() => weibull({ failureTimes: [100, 120, 130], missionTime: -1 })).toThrow(RangeError);
+  });
+});

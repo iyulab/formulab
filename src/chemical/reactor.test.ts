@@ -267,3 +267,9 @@ describe('reactor input domain', () => {
   });
 
 });
+
+describe('reactor rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for non-positive cylinder height', () => {
+    expect(() => reactor({ shape: 'cylindrical', diameter: 1, height: -1, fillRatio: 0.8 })).toThrow(RangeError);
+  });
+});

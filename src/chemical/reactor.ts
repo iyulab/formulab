@@ -16,6 +16,7 @@ import { roundTo } from '../utils.js';
  *
  * @param input - Reactor dimensions and fill ratio
  * @returns Reactor volumes and surface area
+ * @throws RangeError if diameter is not greater than 0, or a cylindrical height is not greater than 0
  */
 export function reactor(input: ReactorInput): ReactorResult {
   const { shape, diameter, fillRatio } = input;
@@ -31,6 +32,10 @@ export function reactor(input: ReactorInput): ReactorResult {
   if (shape === 'cylindrical') {
     // Cylindrical reactor
     const h = input.height;
+    // A negative height can cancel the end caps and leave zero surface area to divide by.
+    if (!(h > 0)) {
+      throw new RangeError('height must be greater than 0');
+    }
     // V = PI * r^2 * h
     totalVolume = Math.PI * radius * radius * h;
     // Surface Area = 2 * PI * r^2 (ends) + 2 * PI * r * h (lateral)

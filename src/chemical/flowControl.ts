@@ -11,6 +11,7 @@ import type { FlowControlInput, FlowControlResult } from './types.js';
  *
  * @reference ISA-75.01.01-2012 — Flow equations for sizing control valves
  * @reference IEC 60534-2-1 — Industrial-process control valves
+ * @throws RangeError if inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
  */
 export function flowControl(input: FlowControlInput): FlowControlResult {
   const {
@@ -25,6 +26,15 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
   }
   if (!(fluidDensity > 0)) {
     throw new RangeError('fluidDensity must be greater than 0');
+  }
+  // Gas sizing takes the square root of MW × absolute temperature.
+  if (fluidType !== 'liquid') {
+    if (molecularWeight !== undefined && !(molecularWeight > 0)) {
+      throw new RangeError('molecularWeight must be greater than 0');
+    }
+    if (!(temperature > -273.15)) {
+      throw new RangeError('temperature must be above absolute zero (-273.15 °C)');
+    }
   }
 
   const pressureDrop = inletPressure - outletPressure; // kPa

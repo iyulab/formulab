@@ -172,7 +172,9 @@ function estimateNumberOfDraws(
  *
  * @param input - Press tonnage input parameters
  * @returns PressTonnageResult with forces, draw analysis, and warnings
- * @throws RangeError if operation is 'combined' but no operations array is provided
+ * @throws RangeError if thickness or dieOpening is not greater than 0, if a drawing
+ *   operation has a punchDiameter that is not greater than 0, or if operation is 'combined'
+ *   but no operations array is provided
  */
 export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   const {
@@ -191,6 +193,15 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     blankHolderPressure = DRAW_CONSTANTS.DEFAULT_BLANK_HOLDER_PRESSURE,
     dieRadius = 5 * thickness,
   } = input;
+
+  // Bending divides by the die opening, and the drawing bend factor divides by a die radius
+  // that defaults to 5 × thickness.
+  if (!(thickness > 0)) {
+    throw new RangeError('thickness must be greater than 0');
+  }
+  if (!(dieOpening > 0)) {
+    throw new RangeError('dieOpening must be greater than 0');
+  }
 
   let blankingForce = 0;
   let bendingForce = 0;
@@ -229,6 +240,10 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     // Determine blank diameter and draw ratio
     let D = blankDiameter;
     const d = punchDiameter;
+    // The draw ratio divides by the punch diameter and the Siebel term takes ln(D / d).
+    if (!(d > 0)) {
+      throw new RangeError('punchDiameter must be greater than 0 for drawing');
+    }
 
     // If blank diameter not provided, estimate from drawRatio input
     if (D <= 0 && input.drawRatio && input.drawRatio > 0) {

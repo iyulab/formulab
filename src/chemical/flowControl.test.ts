@@ -106,3 +106,12 @@ describe('flowControl input domain', () => {
   });
 
 });
+
+describe('flowControl rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for non-positive molecularWeight for gas', () => {
+    expect(() => flowControl({ flowRate: 10, inletPressure: 500, outletPressure: 300, fluidDensity: 1.2, fluidType: 'gas', molecularWeight: -1 })).toThrow(RangeError);
+  });
+  it('throws RangeError for temperature at or below absolute zero for gas', () => {
+    expect(() => flowControl({ flowRate: 10, inletPressure: 500, outletPressure: 300, fluidDensity: 1.2, fluidType: 'gas', temperature: -300 })).toThrow(RangeError);
+  });
+});

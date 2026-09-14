@@ -343,3 +343,15 @@ describe('pressTonnage', () => {
     });
   });
 });
+
+describe('pressTonnage rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero thickness', () => {
+    expect(() => pressTonnage({ operation: 'blanking', thickness: 0, tensileStrength: 400, shearStrength: 300, cuttingPerimeter: 314.16 })).toThrow(RangeError);
+  });
+  it('throws RangeError for zero dieOpening', () => {
+    expect(() => pressTonnage({ operation: 'bending', thickness: 2, tensileStrength: 400, shearStrength: 300, bendLength: 100, dieOpening: 0 })).toThrow(RangeError);
+  });
+  it('throws RangeError for zero punchDiameter for drawing', () => {
+    expect(() => pressTonnage({ operation: 'drawing', thickness: 1, tensileStrength: 400, shearStrength: 300, punchDiameter: 0, blankDiameter: 100 })).toThrow(RangeError);
+  });
+});

@@ -114,3 +114,9 @@ describe('containerFit', () => {
     });
   });
 });
+
+describe('containerFit rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for a zero cargo dimension', () => {
+    expect(() => containerFit({ container: { length: 12000, width: 2350, height: 2400 }, cargo: { length: 0, width: 400, height: 500 }, allowRotation: false })).toThrow(RangeError);
+  });
+});

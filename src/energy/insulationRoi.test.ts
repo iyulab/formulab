@@ -199,3 +199,12 @@ describe('insulationRoi', () => {
     });
   });
 });
+
+describe('insulationRoi rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero boilerEfficiency', () => {
+    expect(() => insulationRoi({ surfaceArea: 50, tempDifference: 150, insulationK: 0.04, insulationThickness: 50, operatingHours: 8000, energyCost: 0.05, boilerEfficiency: 0 })).toThrow(RangeError);
+  });
+  it('throws RangeError for non-positive surfaceCoefficient', () => {
+    expect(() => insulationRoi({ surfaceArea: 50, tempDifference: 150, insulationK: 0.04, insulationThickness: 50, operatingHours: 8000, energyCost: 0.05, surfaceCoefficient: -1 })).toThrow(RangeError);
+  });
+});

@@ -357,6 +357,7 @@ function calculateFloorCoverage(placedBoxes: PlacedBox3D[]): number {
  *
  * @param input - Pallet specifications and box types
  * @returns Placement results with metrics
+ * @throws RangeError if any box weight is not greater than 0
  */
 export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   const warnings: string[] = [];
@@ -372,6 +373,13 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
       palletDimensions: { length: 0, width: 0, height: 0 },
       warnings: ['No boxes provided'],
     };
+  }
+
+  // The centre of gravity is weighted by box weight; weightless boxes would divide 0 by 0.
+  for (const box of input.boxes) {
+    if (!(box.weight > 0)) {
+      throw new RangeError('box weight must be greater than 0');
+    }
   }
 
   if (input.boxes.length > 5) {

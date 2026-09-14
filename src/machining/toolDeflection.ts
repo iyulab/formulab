@@ -21,6 +21,7 @@ const TOOL_MODULUS: Record<ToolMaterial, number> = {
  *
  * @param input - Tool deflection parameters
  * @returns ToolDeflectionResult with deflection, inertia, and stiffness
+ * @throws RangeError if toolDiameter, stickout or the Young's modulus is not positive, or cuttingForce is negative
  */
 export function toolDeflection(input: ToolDeflectionInput): ToolDeflectionResult {
   const { toolDiameter, stickout, cuttingForce, material = 'carbide' } = input;
@@ -30,6 +31,7 @@ export function toolDeflection(input: ToolDeflectionInput): ToolDeflectionResult
   if (cuttingForce < 0) throw new RangeError('cuttingForce must be non-negative');
 
   const E = input.youngsModulus ?? TOOL_MODULUS[material];
+  if (!(E > 0)) throw new RangeError('youngsModulus must be positive');
   const E_MPa = E * 1000; // GPa → MPa (N/mm²)
 
   const I = (Math.PI * Math.pow(toolDiameter, 4)) / 64;

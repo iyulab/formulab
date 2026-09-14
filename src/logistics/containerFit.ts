@@ -39,9 +39,15 @@ function getOrientations(l: number, w: number, h: number, allowRotation: boolean
  *
  * @param input - Container and cargo dimensions
  * @returns Number of units that fit
+ * @throws RangeError if any cargo dimension is not greater than 0
  */
 export function containerFit(input: ContainerFitInput): ContainerFitResult {
   const { container, cargo, allowRotation } = input;
+
+  // Each container dimension is divided by a cargo dimension.
+  if (!(cargo.length > 0) || !(cargo.width > 0) || !(cargo.height > 0)) {
+    throw new RangeError('cargo length, width and height must be greater than 0');
+  }
 
   // Get all possible orientations
   const orientations = getOrientations(cargo.length, cargo.width, cargo.height, allowRotation);

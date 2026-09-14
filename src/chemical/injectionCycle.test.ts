@@ -331,3 +331,12 @@ describe('injectionCycle', () => {
     });
   });
 });
+
+describe('injectionCycle rejects inputs that would produce a non-finite result', () => {
+  it('throws RangeError for zero injectionRate', () => {
+    expect(() => injectionCycle({ resin: 'abs', wallThickness: 3, shotWeight: 50, injectionRate: 0 })).toThrow(RangeError);
+  });
+  it('throws RangeError for zero custom density', () => {
+    expect(() => injectionCycle({ resin: 'custom', wallThickness: 3, shotWeight: 50, density: 0 })).toThrow(RangeError);
+  });
+});
