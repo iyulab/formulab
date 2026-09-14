@@ -424,6 +424,10 @@ export interface GageRRResult {
   tv: number;                 // Total Variation
   percentGRR: number;         // %GRR (of TV)
   percentTolerance: number | null; // %GRR of tolerance
+  /** Each component's share of total variance (%): ev + av = grr, grr + pv = 100 (up to rounding). */
+  percentContribution: { ev: number; av: number; grr: number; pv: number };
+  /** Each component as a percentage of TV on the 5.15σ scale; `grr` equals `percentGRR`. */
+  percentStudyVariation: { ev: number; av: number; grr: number; pv: number };
   ndc: number;                // Number of distinct categories
   status: 'acceptable' | 'marginal' | 'unacceptable';
   method: 'average-range' | 'anova';

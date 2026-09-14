@@ -256,6 +256,17 @@ describe('gageRR', () => {
       expect(Number.isNaN(result.grr)).toBe(false);
       expect(Number.isNaN(result.percentGRR)).toBe(false);
     });
+
+      it('matches the source ANOVA variance components as percent contribution and study variation', () => {
+        const result = gageRR({ measurements: anovaMeasurements, method: 'anova' });
+        // Variance components from the source ANOVA table: EV 0.0468, AV 0.0512, GRR 0.0980, PV 0.7980, TV 0.8960
+        expect(result.percentContribution.ev).toBeCloseTo((0.0468 / 0.896) * 100, 0);
+        expect(result.percentContribution.av).toBeCloseTo((0.0512 / 0.896) * 100, 0);
+        expect(result.percentContribution.grr).toBeCloseTo((0.098 / 0.896) * 100, 0);
+        expect(result.percentContribution.pv).toBeCloseTo((0.798 / 0.896) * 100, 0);
+        expect(result.percentStudyVariation.grr).toBe(result.percentGRR);
+        expect(result.percentStudyVariation.pv).toBeCloseTo(Math.sqrt(0.798 / 0.896) * 100, 0);
+      });
   });
 
   describe('edge cases', () => {
@@ -280,6 +291,25 @@ describe('gageRR', () => {
       expect(result.ev).toBe(0);
       expect(result.grr).toBe(0);
       expect(result.percentGRR).toBe(0);
+    });
+  });
+
+  describe('components of variation', () => {
+    it.each(['average-range', 'anova'] as const)('adds up for the %s method: EV + AV = GRR, GRR + PV = 100', (method) => {
+      const { percentContribution: c } = gageRR({ measurements: classicMeasurements, method });
+      expect(c.ev + c.av).toBeCloseTo(c.grr, 1);
+      expect(c.grr + c.pv).toBeCloseTo(100, 1);
+    });
+
+    it('reports zero shares, not NaN, when there is no variation at all', () => {
+      const zeroVar: number[][][] = [
+        [[5.0, 5.0], [5.0, 5.0]],
+        [[4.0, 4.0], [4.0, 4.0]],
+        [[3.0, 3.0], [3.0, 3.0]],
+      ];
+      const { percentContribution, percentStudyVariation } = gageRR({ measurements: zeroVar, method: 'anova' });
+      expect(Object.values(percentContribution).every(Number.isFinite)).toBe(true);
+      expect(Object.values(percentStudyVariation).every(Number.isFinite)).toBe(true);
     });
   });
 });

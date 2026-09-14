@@ -51,6 +51,21 @@ function classify(
   return { percentGRR, percentTolerance, ndc, status };
 }
 
+// Components of variation (AIAG MSA 4th Ed. / the usual software "components of variation" table):
+// %Contribution is each component's share of total variance (EV² + AV² = GRR², GRR² + PV² = TV², so the
+// shares add up); %Study Variation is each component as a fraction of TV on the same 5.15σ scale.
+// With no variation at all (TV = 0) every share is 0, matching percentGRR.
+function componentsOfVariation(
+  ev: number, av: number, grr: number, pv: number, tv: number,
+): Pick<GageRRResult, 'percentContribution' | 'percentStudyVariation'> {
+  const contribution = (x: number) => (tv > 0 ? roundTo((x * x) / (tv * tv) * 100, 2) : 0);
+  const studyVariation = (x: number) => (tv > 0 ? roundTo((x / tv) * 100, 2) : 0);
+  return {
+    percentContribution: { ev: contribution(ev), av: contribution(av), grr: contribution(grr), pv: contribution(pv) },
+    percentStudyVariation: { ev: studyVariation(ev), av: studyVariation(av), grr: studyVariation(grr), pv: studyVariation(pv) },
+  };
+}
+
 /**
  * Gage R&R (Measurement System Analysis) — AIAG MSA 4th Edition, Average and Range Method
  *
@@ -144,6 +159,7 @@ function gageRRAverageRange(input: GageRRInput): GageRRResult {
     tv: roundTo(tv, 4),
     percentGRR,
     percentTolerance,
+    ...componentsOfVariation(ev, av, grr, pv, tv),
     ndc,
     status,
     method: 'average-range',
@@ -289,6 +305,7 @@ function gageRRAnova(input: GageRRInput): GageRRResult {
     tv: roundTo(tv, 4),
     percentGRR,
     percentTolerance,
+    ...componentsOfVariation(ev, av, grr, pv, tv),
     ndc,
     status,
     method: 'anova',
