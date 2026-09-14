@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.43.0] - 2026-09-15
+
+### Added
+
+- **`quality/gageRR()` returns the components of variation** for both methods:
+  `percentContribution` (each of EV, AV, GRR and PV as a share of total variance — EV and AV add up
+  to GRR, GRR and PV to 100 %) and `percentStudyVariation` (each as a percentage of TV;
+  `percentStudyVariation.grr` equals `percentGRR`). Checked against the variance components of the
+  ANOVA worked example already used for the method's golden tests. A study reads as "how much of
+  what I measured is the gauge" only once these are on the page, and deriving them from the rounded
+  5.15σ values put the shares slightly off 100 %.
+
 ## [0.42.0] - 2026-09-15
 
 ### Added
