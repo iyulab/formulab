@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.41.0] - 2026-09-15
+
+### Added
+
+- **`safety/NIOSH_LOAD_CONSTANT_KG`** (23) — the load constant `nioshLifting()` starts from, and the
+  base of its `cascade`. A consumer charting the cascade needs the starting value; exporting it
+  keeps that value from being restated outside the library.
+
 ## [0.40.0] - 2026-09-15
 
 ### Added
