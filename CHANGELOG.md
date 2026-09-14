@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.40.0] - 2026-09-15
+
+### Added
+
+- **`quality/oee()`, `quality/yieldCalc()` and `safety/nioshLifting()` now return `cascade`** — the
+  product each result is built from, expanded into running steps: OEE as 100 % reduced by
+  availability, then performance, then quality; RTY as 100 % reduced by each step's first pass
+  yield; RWL as the 23 kg load constant reduced by HM, VM, DM, AM, FM and CM in equation order.
+  Each step carries its `multiplier`, its signed `change` and the `remaining` value, unrounded, so
+  the changes add up exactly to the last `remaining`. A product cannot be charted as a waterfall
+  by subtracting each factor's loss from the base — 95 % × 90 % × 98 % is 83.79 %, not 83 % — and
+  consumers that derived the steps themselves did it from rounded percentages. New type:
+  `CascadeStep`.
+
+### Changed
+
+- **`oee()` throws `RangeError` for a non-positive `plannedTime`, `runTime`, `idealCycleTime` or
+  `totalCount`, and for `runTime` greater than `plannedTime`.** `ERRORS.md` already documented a
+  throw for `plannedTime ≤ 0`, but the function returned an all-zero result instead, so an empty
+  or impossible shift read as a measured OEE of 0 %. **Breaking** for callers relying on the zeros.
+- **`yieldCalc()` throws `RangeError` for an empty step list and for a step whose `total` is not
+  positive or whose `good` is negative or exceeds `total`.** It previously returned zeros for the
+  first two and a first pass yield above 100 % for the last. **Breaking** for callers relying on the
+  zeros.
+
 ## [0.39.0] - 2026-09-15
 
 ### Added
