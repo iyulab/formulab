@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nioshLifting } from './nioshLifting.js';
+import { nioshLifting, NIOSH_LOAD_CONSTANT_KG } from './nioshLifting.js';
 
 describe('nioshLifting', () => {
   describe('ideal conditions (all multipliers = 1.0)', () => {
@@ -326,6 +326,12 @@ describe('nioshLifting', () => {
       duration: 'medium',
       coupling: 'good',
       loadWeight: 15,
+    });
+
+    it('starts from the exported load constant', () => {
+      expect(NIOSH_LOAD_CONSTANT_KG).toBe(23);
+      const first = result.cascade[0];
+      expect(first.remaining - first.change).toBeCloseTo(NIOSH_LOAD_CONSTANT_KG, 10);
     });
 
     it('applies the multipliers to the load constant in equation order', () => {

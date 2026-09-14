@@ -7,8 +7,12 @@ import type {
   CouplingQuality,
 } from './types.js';
 
-// NIOSH Lifting Equation constants
-const LC = 23; // Load Constant in kg
+/**
+ * NIOSH Lifting Equation load constant (LC), in kg — the recommended weight limit under ideal
+ * conditions, where every multiplier is 1. `nioshLifting()`'s `cascade` starts from this value.
+ */
+export const NIOSH_LOAD_CONSTANT_KG = 23;
+const LC = NIOSH_LOAD_CONSTANT_KG;
 
 // Frequency Multiplier (FM) lookup table — NIOSH 94-110 Table 5
 // Each cell is [FM for V < 75cm, FM for V >= 75cm]; 0 means no weight is acceptable.

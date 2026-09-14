@@ -1,7 +1,7 @@
 // Safety domain formulas
 export { ventilationRate } from './ventilationRate.js';
 export { fallClearance } from './fallClearance.js';
-export { nioshLifting } from './nioshLifting.js';
+export { nioshLifting, NIOSH_LOAD_CONSTANT_KG } from './nioshLifting.js';
 export { noiseExposure } from './noiseExposure.js';
 export { wbgtCalculate } from './wbgtCalculate.js';
 export { havsCalculate } from './havsCalculate.js';
