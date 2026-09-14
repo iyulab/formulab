@@ -21,4 +21,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      # Runs the built library on degenerate inputs harvested from the tests; any NaN/Infinity
+      # output that ERRORS.md does not document as a sentinel fails the build.
+      - run: pnpm check:nonfinite-outputs
       - run: pnpm test:coverage

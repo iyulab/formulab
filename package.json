@@ -104,7 +104,8 @@
     "prepublishOnly": "npm run clean && npm run build && npm run test",
     "audit:constant-provenance": "node scripts/audit-constant-provenance.mjs src",
     "check:dependency-drift": "node scripts/check-dependency-drift.mjs",
-    "check:function-counts": "node scripts/count-functions.mjs"
+    "check:function-counts": "node scripts/count-functions.mjs",
+    "check:nonfinite-outputs": "node scripts/check-nonfinite-outputs.mjs"
   },
   "keywords": [
     "manufacturing",
