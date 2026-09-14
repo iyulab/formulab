@@ -1,4 +1,5 @@
 import { roundTo } from '../utils.js';
+import { multiplicativeCascade } from '../math.js';
 import type { OeeInput, OeeResult } from './types.js';
 
 /**
@@ -18,31 +19,39 @@ import type { OeeInput, OeeResult } from './types.js';
  * @validation World-class benchmarks: A ≥ 90%, P ≥ 95%, Q ≥ 99.9% → OEE ≈ 85%
  *
  * @param input - OEE input parameters with raw production data
- * @returns OEE result with factors (0-1) and percentages (0-100)
- * @throws Error if goodCount > totalCount
+ * @returns OEE result with factors (0-1), percentages (0-100), and `cascade` — 100 % reduced by
+ *   availability, performance, quality in that order (unrounded; last `remaining` is OEE %)
+ * @throws {RangeError} plannedTime, runTime, idealCycleTime or totalCount ≤ 0; runTime > plannedTime;
+ *   goodCount < 0 or > totalCount
  */
 export function oee(input: OeeInput): OeeResult {
   const { rawData } = input;
   const { plannedTime, runTime, totalCount, goodCount, idealCycleTime } = rawData;
 
-  // Validate: goodCount cannot exceed totalCount
+  if (plannedTime <= 0) {
+    throw new RangeError(`Invalid input: plannedTime (${plannedTime}) must be positive`);
+  }
+  if (runTime <= 0) {
+    throw new RangeError(`Invalid input: runTime (${runTime}) must be positive`);
+  }
+  if (runTime > plannedTime) {
+    throw new RangeError(
+      `Invalid input: runTime (${runTime}) cannot exceed plannedTime (${plannedTime})`
+    );
+  }
+  if (idealCycleTime <= 0) {
+    throw new RangeError(`Invalid input: idealCycleTime (${idealCycleTime}) must be positive`);
+  }
+  if (totalCount <= 0) {
+    throw new RangeError(`Invalid input: totalCount (${totalCount}) must be positive`);
+  }
+  if (goodCount < 0) {
+    throw new RangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`);
+  }
   if (goodCount > totalCount) {
     throw new RangeError(
       `Invalid input: goodCount (${goodCount}) cannot exceed totalCount (${totalCount})`
     );
-  }
-
-  // Validate: no negative values allowed
-  if (goodCount < 0) {
-    throw new RangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`);
-  }
-
-  // Handle edge cases - return zeros for invalid inputs
-  if (plannedTime <= 0 || runTime <= 0 || idealCycleTime <= 0 || totalCount < 0) {
-    return {
-      factors: { availability: 0, performance: 0, quality: 0, oee: 0 },
-      percentages: { availability: 0, performance: 0, quality: 0, oee: 0 },
-    };
   }
 
   // Availability = Run Time / Planned Time
@@ -53,10 +62,15 @@ export function oee(input: OeeInput): OeeResult {
   const performance = (idealCycleTime * totalCount) / runTime;
 
   // Quality = Good Count / Total Count
-  const quality = totalCount > 0 ? goodCount / totalCount : 0;
+  const quality = goodCount / totalCount;
 
-  // OEE = Availability x Performance x Quality
-  const oeeValue = availability * performance * quality;
+  // OEE = Availability x Performance x Quality, as running losses from 100 %
+  const cascade = multiplicativeCascade(100, [
+    { factor: 'availability', multiplier: availability },
+    { factor: 'performance', multiplier: performance },
+    { factor: 'quality', multiplier: quality },
+  ] as const);
+  const oeeValue = cascade[cascade.length - 1].remaining / 100;
 
   return {
     factors: {
@@ -71,5 +85,6 @@ export function oee(input: OeeInput): OeeResult {
       quality: roundTo(quality * 100, 1),
       oee: roundTo(oeeValue * 100, 1),
     },
+    cascade,
   };
 }

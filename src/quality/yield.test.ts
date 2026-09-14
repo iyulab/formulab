@@ -79,26 +79,13 @@ describe('yieldCalc', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty steps array', () => {
-      const result = yieldCalc({ steps: [] });
-
-      expect(result.fpyPerStep).toHaveLength(0);
-      expect(result.averageFpy).toBe(0);
-      expect(result.rty).toBe(0);
-      expect(result.totalInput).toBe(0);
-      expect(result.expectedOutput).toBe(0);
-    });
-
-    it('should handle zero total in a step', () => {
-      const result = yieldCalc({
-        steps: [
-          { total: 100, good: 90 },
-          { total: 0, good: 0 },
-        ],
-      });
-
-      expect(result.fpyPerStep[1]).toBe(0);
-      expect(result.rty).toBe(0);
+    it.each([
+      ['there are no steps', []],
+      ['a step has zero total', [{ total: 100, good: 90 }, { total: 0, good: 0 }]],
+      ['a step has negative good units', [{ total: 100, good: -1 }]],
+      ['a step has more good units than total', [{ total: 100, good: 101 }]],
+    ])('throws RangeError when %s', (_label, steps) => {
+      expect(() => yieldCalc({ steps })).toThrow(RangeError);
     });
 
     it('should handle 100% yield', () => {
@@ -123,6 +110,29 @@ describe('yieldCalc', () => {
 
       expect(result.fpyPerStep[0]).toBe(10);
       expect(result.rty).toBe(10);
+    });
+  });
+
+  describe('RTY cascade', () => {
+    const result = yieldCalc({
+      steps: [
+        { total: 100, good: 95 },
+        { total: 100, good: 90 },
+        { total: 100, good: 98 },
+      ],
+    });
+
+    it('takes each step first pass yield out of what earlier steps passed', () => {
+      expect(result.cascade.map((s) => s.factor)).toEqual([0, 1, 2]);
+      expect(result.cascade[0].change).toBeCloseTo(-5, 10);
+      expect(result.cascade[1].change).toBeCloseTo(-9.5, 10);
+      expect(result.cascade[2].change).toBeCloseTo(-1.71, 10);
+    });
+
+    it('lands on RTY, not on 100 minus the summed step losses', () => {
+      const last = result.cascade[result.cascade.length - 1];
+      expect(last.remaining).toBeCloseTo(83.79, 10);
+      expect(result.rty).toBe(83.79);
     });
   });
 

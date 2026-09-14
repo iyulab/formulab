@@ -35,6 +35,7 @@ export type {
   OeeRawData,
   OeeInput,
   OeeResult,
+  CascadeStep,
   // Cpk types
   CpkInput,
   CpkResult,

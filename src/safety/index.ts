@@ -29,6 +29,7 @@ export type {
   WorkDuration,
   NioshInput,
   NioshResult,
+  CascadeStep,
   // Noise Exposure types
   NoiseExposure,
   NoiseExposureInput,

@@ -1,3 +1,7 @@
+import type { CascadeStep } from '../math.js';
+
+export type { CascadeStep };
+
 // Fall Clearance Types
 export interface FallClearanceInput {
   lanyardLength: number;       // m - length of lanyard/SRL
@@ -45,6 +49,11 @@ export interface NioshResult {
   fm: number;
   cm: number;
   riskLevel: 'low' | 'moderate' | 'high';
+  /**
+   * The load constant (23 kg) reduced by HM, VM, DM, AM, FM, CM in equation order.
+   * Unrounded; the last step's `remaining` is RWL.
+   */
+  cascade: CascadeStep<'hm' | 'vm' | 'dm' | 'am' | 'fm' | 'cm'>[];
 }
 
 // Noise Exposure Types

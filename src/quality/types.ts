@@ -1,3 +1,7 @@
+import type { CascadeStep } from '../math.js';
+
+export type { CascadeStep };
+
 /**
  * OEE (Overall Equipment Effectiveness) Types
  */
@@ -26,6 +30,11 @@ export interface OeeResult {
     quality: number;       // 0-100 %
     oee: number;           // 0-100 %
   };
+  /**
+   * 100 % of planned production time reduced by availability, then performance, then quality.
+   * Unrounded; the last step's `remaining` is the OEE percentage.
+   */
+  cascade: CascadeStep<'availability' | 'performance' | 'quality'>[];
 }
 
 /**
@@ -391,6 +400,11 @@ export interface YieldResult {
   totalInput: number;
   /** Expected output after all steps */
   expectedOutput: number;
+  /**
+   * 100 % of input reduced by each step's first pass yield, in step order (`factor` is the
+   * step index). Unrounded; the last step's `remaining` is RTY.
+   */
+  cascade: CascadeStep<number>[];
 }
 
 /**

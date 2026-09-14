@@ -230,3 +230,39 @@ export function fCDF(f: number, df1: number, df2: number): number {
   const x = (df1 * f) / (df1 * f + df2);
   return regularizedIncompleteBeta(x, df1 / 2, df2 / 2);
 }
+
+/**
+ * One step of a multiplicative cascade: a factor applied to what the previous steps left.
+ *
+ * `change` is signed (`remaining − previous remaining`): a multiplier below 1 is a loss,
+ * above 1 a gain. `base + Σ change` equals the last step's `remaining` exactly.
+ */
+export interface CascadeStep<F extends string | number = string> {
+  factor: F;
+  multiplier: number;
+  change: number;
+  remaining: number;
+}
+
+/**
+ * Expand `base × m₁ × m₂ × …` into its running steps, so a result that is a product can be
+ * shown as a waterfall whose bars add up: each multiplier removes its share of what is left,
+ * not of the base. Values are unrounded — rounding each step independently would make the
+ * steps stop adding up to the rounded total.
+ *
+ * @param base - starting value (e.g. 100 %, the NIOSH load constant)
+ * @param factors - multipliers in the order the product applies them
+ * @returns one step per factor, in input order
+ */
+export function multiplicativeCascade<F extends string | number>(
+  base: number,
+  factors: ReadonlyArray<{ factor: F; multiplier: number }>,
+): CascadeStep<F>[] {
+  let remaining = base;
+  return factors.map(({ factor, multiplier }) => {
+    const next = remaining * multiplier;
+    const step = { factor, multiplier, change: next - remaining, remaining: next };
+    remaining = next;
+    return step;
+  });
+}

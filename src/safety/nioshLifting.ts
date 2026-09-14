@@ -1,4 +1,5 @@
 import { roundTo } from '../utils.js';
+import { multiplicativeCascade } from '../math.js';
 import type {
   NioshInput,
   NioshResult,
@@ -147,7 +148,8 @@ function getCouplingMultiplier(
  *   - Risk: low (LI ≤ 1), moderate (1 < LI ≤ 2), high (LI > 2)
  *
  * @param input - NIOSH lifting parameters
- * @returns NIOSH results including RWL, LI, multipliers, and risk level
+ * @returns NIOSH results including RWL, LI, multipliers, risk level, and `cascade` — LC reduced
+ *   by each multiplier in equation order (unrounded; the last step's `remaining` is RWL)
  * @throws {RangeError} any distance, angle, frequency, or loadWeight is negative.
  * @remarks Distances below the equation's domain (H, D < 25 cm) are clamped per the
  *   NIOSH spec rather than rejected. When the frequency multiplier drives RWL to 0
@@ -200,8 +202,16 @@ export function nioshLifting(input: NioshInput): NioshResult {
   // CM: Coupling Multiplier (from lookup table)
   const cm = getCouplingMultiplier(coupling, verticalDistance);
 
-  // Calculate RWL
-  const rwl = LC * hm * vm * dm * am * fm * cm;
+  // Calculate RWL, and the same product as running steps from LC
+  const cascade = multiplicativeCascade(LC, [
+    { factor: 'hm', multiplier: hm },
+    { factor: 'vm', multiplier: vm },
+    { factor: 'dm', multiplier: dm },
+    { factor: 'am', multiplier: am },
+    { factor: 'fm', multiplier: fm },
+    { factor: 'cm', multiplier: cm },
+  ] as const);
+  const rwl = cascade[cascade.length - 1].remaining;
 
   // Calculate Lifting Index (rounded so the returned index and risk level agree)
   const liftingIndex = rwl > 0 ? roundTo(loadWeight / rwl, 2) : Infinity;
@@ -226,5 +236,6 @@ export function nioshLifting(input: NioshInput): NioshResult {
     fm,
     cm,
     riskLevel,
+    cascade,
   };
 }

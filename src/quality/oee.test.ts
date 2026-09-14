@@ -47,63 +47,41 @@ describe('oee', () => {
     });
   });
 
-  describe('edge cases', () => {
-    it('should return zeros for zero plannedTime', () => {
-      const result = oee({
-        rawData: {
-          plannedTime: 0,
-          runTime: 100,
-          totalCount: 100,
-          goodCount: 100,
-          idealCycleTime: 1,
-        },
-      });
+  describe('input validation — degenerate times and counts', () => {
+    const valid = { plannedTime: 100, runTime: 100, totalCount: 100, goodCount: 100, idealCycleTime: 1 };
+    it.each([
+      ['plannedTime is 0', { plannedTime: 0 }],
+      ['plannedTime is negative', { plannedTime: -1 }],
+      ['runTime is 0', { runTime: 0 }],
+      ['runTime is negative', { runTime: -10 }],
+      ['idealCycleTime is 0', { idealCycleTime: 0 }],
+      ['totalCount is 0', { totalCount: 0, goodCount: 0 }],
+      ['runTime exceeds plannedTime', { runTime: 101 }],
+    ])('throws RangeError when %s', (_label, override) => {
+      expect(() => oee({ rawData: { ...valid, ...override } })).toThrow(RangeError);
+    });
+  });
 
-      expect(result.factors.oee).toBe(0);
-      expect(result.percentages.oee).toBe(0);
+  describe('loss cascade', () => {
+    const result = oee({
+      rawData: { plannedTime: 480, runTime: 420, totalCount: 1000, goodCount: 950, idealCycleTime: 0.4 },
     });
 
-    it('should return zeros for negative runTime', () => {
-      const result = oee({
-        rawData: {
-          plannedTime: 100,
-          runTime: -10,
-          totalCount: 100,
-          goodCount: 100,
-          idealCycleTime: 1,
-        },
-      });
-
-      expect(result.factors.oee).toBe(0);
+    it('starts at 100% and takes availability, performance, quality in that order', () => {
+      expect(result.cascade.map((s) => s.factor)).toEqual(['availability', 'performance', 'quality']);
+      expect(result.cascade[0].remaining).toBeCloseTo(87.5, 10);
+      expect(result.cascade[0].change).toBeCloseTo(-12.5, 10);
     });
 
-    it('should return zeros for zero idealCycleTime', () => {
-      const result = oee({
-        rawData: {
-          plannedTime: 100,
-          runTime: 100,
-          totalCount: 100,
-          goodCount: 100,
-          idealCycleTime: 0,
-        },
-      });
-
-      expect(result.factors.oee).toBe(0);
+    it('lands on the OEE percentage', () => {
+      const last = result.cascade[result.cascade.length - 1];
+      expect(last.remaining).toBeCloseTo(result.percentages.oee, 1);
+      expect(100 + result.cascade.reduce((sum, s) => sum + s.change, 0)).toBeCloseTo(last.remaining, 10);
     });
 
-    it('should handle zero totalCount (quality = 0)', () => {
-      const result = oee({
-        rawData: {
-          plannedTime: 100,
-          runTime: 100,
-          totalCount: 0,
-          goodCount: 0,
-          idealCycleTime: 1,
-        },
-      });
-
-      expect(result.factors.quality).toBe(0);
-      expect(result.factors.oee).toBe(0);
+    it('carries a performance above 100% as a gain', () => {
+      const fast = oee({ rawData: { plannedTime: 100, runTime: 100, totalCount: 200, goodCount: 200, idealCycleTime: 1 } });
+      expect(fast.cascade[1].change).toBeCloseTo(100, 10);
     });
   });
 

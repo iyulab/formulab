@@ -55,7 +55,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `oee()` | `throw` | goodCount > totalCount, goodCount < 0, plannedTime ≤ 0 |
+| `oee()` | `throw` | plannedTime, runTime, idealCycleTime or totalCount ≤ 0; runTime > plannedTime; goodCount < 0 or > totalCount |
 | `cpk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `cycleTime()` | `safe` | — |
@@ -71,7 +71,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `ppk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
-| `yieldCalc()` | `safe` | — |
+| `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
 | `gageRR()` | `throw` | Insufficient data; `method: 'anova'` also throws for fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `safe` | empty measurements or computed stdDev ≤ 0 → returns zero-valued result; does not throw |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |

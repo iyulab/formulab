@@ -1,5 +1,34 @@
 import { describe, it, expect } from 'vitest';
-import { propagate, fCDF } from './math.js';
+import { propagate, fCDF, multiplicativeCascade } from './math.js';
+
+describe('multiplicativeCascade', () => {
+  it('takes each multiplier out of what the previous steps left', () => {
+    const steps = multiplicativeCascade(100, [
+      { factor: 'a', multiplier: 0.9 },
+      { factor: 'b', multiplier: 0.5 },
+    ]);
+    expect(steps).toHaveLength(2);
+    expect(steps[0]).toEqual({ factor: 'a', multiplier: 0.9, change: expect.closeTo(-10, 10), remaining: expect.closeTo(90, 10) });
+    expect(steps[1]).toEqual({ factor: 'b', multiplier: 0.5, change: expect.closeTo(-45, 10), remaining: expect.closeTo(45, 10) });
+  });
+
+  it('lands on base times the product, with changes summing to the difference', () => {
+    const multipliers = [0.83, 1.07, 0.412, 0.999];
+    const steps = multiplicativeCascade(23, multipliers.map((multiplier, i) => ({ factor: i, multiplier })));
+    const product = multipliers.reduce((p, m) => p * m, 1);
+    expect(steps[steps.length - 1].remaining).toBeCloseTo(23 * product, 12);
+    expect(steps.reduce((sum, s) => sum + s.change, 0)).toBeCloseTo(23 * product - 23, 12);
+  });
+
+  it('reports a multiplier above 1 as a positive change', () => {
+    const [step] = multiplicativeCascade(50, [{ factor: 'x', multiplier: 1.2 }]);
+    expect(step.change).toBeCloseTo(10, 12);
+  });
+
+  it('returns no steps for no multipliers', () => {
+    expect(multiplicativeCascade(10, [])).toEqual([]);
+  });
+});
 
 describe('propagate', () => {
   it('returns the nominal value unperturbed', () => {

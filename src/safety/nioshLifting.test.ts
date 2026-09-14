@@ -316,6 +316,42 @@ describe('nioshLifting', () => {
     });
   });
 
+  describe('RWL cascade', () => {
+    const result = nioshLifting({
+      horizontalDistance: 40,
+      verticalDistance: 75,
+      verticalTravel: 50,
+      asymmetryAngle: 30,
+      frequency: 3,
+      duration: 'medium',
+      coupling: 'good',
+      loadWeight: 15,
+    });
+
+    it('applies the multipliers to the load constant in equation order', () => {
+      expect(result.cascade.map((s) => s.factor)).toEqual(['hm', 'vm', 'dm', 'am', 'fm', 'cm']);
+      expect(result.cascade[0].multiplier).toBeCloseTo(0.625, 10);
+      expect(result.cascade[0].remaining).toBeCloseTo(23 * 0.625, 10);
+      expect(result.cascade[0].change).toBeCloseTo(23 * 0.625 - 23, 10);
+    });
+
+    it('lands on RWL, with the changes accounting for all of LC minus RWL', () => {
+      const last = result.cascade[result.cascade.length - 1];
+      expect(last.remaining).toBeCloseTo(result.rwl, 2);
+      expect(23 + result.cascade.reduce((sum, s) => sum + s.change, 0)).toBeCloseTo(last.remaining, 10);
+    });
+
+    it('drops to zero at a frequency multiplier of 0 and stays there', () => {
+      const sustained = nioshLifting({
+        horizontalDistance: 25, verticalDistance: 75, verticalTravel: 25, asymmetryAngle: 0,
+        frequency: 16, duration: 'short', coupling: 'good', loadWeight: 10,
+      });
+      const fm = sustained.cascade.findIndex((s) => s.factor === 'fm');
+      expect(sustained.cascade[fm].remaining).toBe(0);
+      expect(sustained.cascade[fm + 1].remaining).toBe(0);
+    });
+  });
+
   describe('Golden Reference Tests', () => {
     it('NIOSH ideal conditions: RWL = LC = 23 kg', () => {
       // NIOSH Publication 94-110: Under ideal conditions all multipliers = 1.0
