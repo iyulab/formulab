@@ -143,6 +143,45 @@ describe('noiseExposure', () => {
     });
   });
 
+  describe('per-exposure contributions', () => {
+    it('reports each exposure share of the dose, and the shares add up to the dose', () => {
+      const result = noiseExposure({
+        exposures: [
+          { soundLevel: 100, duration: 2 },
+          { soundLevel: 90, duration: 4 },
+          { soundLevel: 85, duration: 2 },
+        ],
+      });
+
+      expect(result.contributions).toHaveLength(3);
+      // 100 dB → T = 2 h → 2/2 = 100 %; 90 dB → 8 h → 50 %; 85 dB → 16 h → 12.5 %
+      expect(result.contributions[0].allowableTime).toBeCloseTo(2, 10);
+      expect(result.contributions[0].dosePercent).toBeCloseTo(100, 10);
+      expect(result.contributions[1].dosePercent).toBeCloseTo(50, 10);
+      expect(result.contributions[2].dosePercent).toBeCloseTo(12.5, 10);
+      const sum = result.contributions.reduce((a, c) => a + c.dosePercent, 0);
+      expect(sum).toBeCloseTo(result.dose, 10);
+    });
+
+    it('gives an exposure below 80 dB no share and no allowable time, matching the dose', () => {
+      const result = noiseExposure({
+        exposures: [
+          { soundLevel: 75, duration: 8 },
+          { soundLevel: 90, duration: 4 },
+        ],
+      });
+
+      expect(result.contributions[0]).toEqual({ soundLevel: 75, duration: 8, allowableTime: null, dosePercent: 0 });
+      expect(result.contributions[1].dosePercent).toBeCloseTo(50, 10);
+      const sum = result.contributions.reduce((a, c) => a + c.dosePercent, 0);
+      expect(sum).toBeCloseTo(result.dose, 10);
+    });
+
+    it('returns no contributions for an empty exposure list', () => {
+      expect(noiseExposure({ exposures: [] }).contributions).toEqual([]);
+    });
+  });
+
   describe('input validation', () => {
     it('should throw RangeError for negative duration', () => {
       expect(() => noiseExposure({ exposures: [{ soundLevel: 95, duration: -1 }] })).toThrow(RangeError);

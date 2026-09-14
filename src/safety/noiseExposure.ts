@@ -47,18 +47,21 @@ export function noiseExposure(input: NoiseExposureInput): NoiseExposureResult {
     }
   }
 
-  // Calculate dose as sum of (Cn/Tn)
-  let doseSum = 0;
-  for (const exposure of exposures) {
-    const { soundLevel, duration } = exposure;
+  // Each exposure's share Cn/Tn; the dose is their sum. Exposures below 80 dB have
+  // no finite allowable time and contribute nothing.
+  const contributions = exposures.map(({ soundLevel, duration }) => {
     const allowableTime = getAllowableTime(soundLevel);
-    if (allowableTime !== Infinity) {
-      doseSum += duration / allowableTime;
-    }
-  }
+    const counted = allowableTime !== Infinity;
+    return {
+      soundLevel,
+      duration,
+      allowableTime: counted ? allowableTime : null,
+      dosePercent: counted ? (duration / allowableTime) * 100 : 0,
+    };
+  });
 
   // Dose as percentage
-  const dose = doseSum * 100;
+  const dose = contributions.reduce((sum, c) => sum + c.dosePercent, 0);
 
   // Calculate TWA (8-hour Time Weighted Average)
   // TWA = 16.61 x log10(D/100) + 90
@@ -83,6 +86,7 @@ export function noiseExposure(input: NoiseExposureInput): NoiseExposureResult {
 
   return {
     dose,
+    contributions,
     twa,
     status,
   };

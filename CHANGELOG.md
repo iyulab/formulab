@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`safety/noiseExposure()`** now returns `contributions` — one entry per input exposure, in
+  input order, with its allowable time and its share of the dose. The shares add up to `dose`
+  by construction. An exposure below 80 dB is listed with `allowableTime: null` and a share of
+  0, the same rule the dose already applied. Consumers that charted each exposure's share had
+  to repeat the OSHA formula to get it, and a repeat that missed the 80 dB cutoff drew bars
+  that no longer summed to the reported dose. New type: `NoiseExposureContribution`.
+
 ## [0.38.0] - 2026-09-09
 
 ### Fixed

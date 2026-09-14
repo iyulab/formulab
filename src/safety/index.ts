@@ -32,6 +32,7 @@ export type {
   // Noise Exposure types
   NoiseExposure,
   NoiseExposureInput,
+  NoiseExposureContribution,
   NoiseExposureResult,
   // WBGT types
   WorkloadIntensity,

@@ -57,8 +57,17 @@ export interface NoiseExposureInput {
   exposures: NoiseExposure[];
 }
 
+export interface NoiseExposureContribution {
+  soundLevel: number;           // dB(A), as given
+  duration: number;             // hours, as given
+  allowableTime: number | null; // hours; null below 80 dB (not counted toward the dose)
+  dosePercent: number;          // this exposure's share of the dose, %
+}
+
 export interface NoiseExposureResult {
   dose: number;
+  /** One entry per input exposure, in input order. `dosePercent` values sum to `dose`. */
+  contributions: NoiseExposureContribution[];
   twa: number;
   status: 'compliant' | 'actionRequired' | 'exceeds';
 }
