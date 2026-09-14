@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.42.0] - 2026-09-15
+
+### Added
+
+- **`electronics/smtTakt()` returns `setupTimeSec`** and **`energy/compressedAirCost()` returns
+  `maintenanceCost`** — the second part of each total, echoed from the input, so a consumer can
+  show `totalCycleTimeSec` as placement + setup and `totalCost` as electricity + maintenance
+  without taking the part back out of its form state.
+
+### Changed
+
+- **`smtTakt()` throws `RangeError` for a negative `setupTimeSec` or `availableTimeMin`, and for a
+  `boardsPerPanel` of 0 or less.** A negative setup time shortened the cycle below the placement
+  time and pushed line utilization past 100 %; a non-positive panel count produced zero or negative
+  boards per shift. The unreachable zero-cycle-time branches are gone.
+- **`compressedAirCost()` throws `RangeError` for a negative `electricityRate` or `maintenanceCost`.**
+
 ## [0.41.0] - 2026-09-15
 
 ### Added
