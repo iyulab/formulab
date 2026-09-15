@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.44.0] - 2026-09-15
+
+### Fixed
+
+- **`logistics/loadCapacity()` no longer rates a forklift above its data plate capacity for a load
+  center shorter than the rated one.** The moment ratio gave a 2,500 kg / 600 mm truck 3,750 kg at
+  400 mm; the nameplate capacity is the truck's maximum. The capacity is now held at the rated value
+  and `capacityCappedAtRated` says so. **Breaking** for callers relying on the higher figure.
+- **`loadCapacity()` discloses the zero floor on net capacity** with `netCapacityClamped`, when an
+  attachment outweighs the derated capacity.
+- **`loadCapacity()` throws `RangeError` for a negative `attachmentWeightLoss` or `actualLoad`.** A
+  negative attachment loss raised the net capacity.
+
+### Added
+
+- **`loadCapacity()` returns `ratedCapacity`, `loadCenterLoss` (kg) and `attachmentWeightLoss`** —
+  the parts that take the rated capacity down to the net capacity, so they can be charted without
+  re-deriving them from the percentage derating.
+
 ## [0.43.0] - 2026-09-15
 
 ### Added
