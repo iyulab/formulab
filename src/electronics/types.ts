@@ -194,6 +194,8 @@ export interface ViaInput {
 export interface ViaResult {
   currentCapacity: number;      // Maximum current capacity in A
   crossSectionMm2: number;      // Cross-sectional area of copper ring in mm²
+  platingThicknessMm: number;   // Plating thickness in mm (input μm / 1000) — the ring's wall
+  barrelOuterDiameterMm: number; // holeDiameter + 2 × plating — the ring is between the hole and this
   thermalResistance: number;    // Thermal resistance in °C/W
   resistanceMOhm: number;       // Via resistance in mΩ
   powerDissipation: number;     // Power dissipation at max current in mW

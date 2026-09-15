@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.46.0] - 2026-09-15
+
+### Added
+
+- **`electronics/viaCurrent()` returns `platingThicknessMm` and `barrelOuterDiameterMm`** — the
+  plated ring's wall and outer diameter (hole + 2 × plating), so the ring whose area is
+  `crossSectionMm2` can be drawn without re-deriving it.
+
+### Fixed
+
+- **`viaCurrent()` documentation named the wrong method.** It said "IPC-2152 approximation" and
+  called `k = 0.048` the internal-layer constant. The computation is the IPC-2221 conductor formula
+  with the **external**-layer constant applied to the barrel's copper ring — the common via
+  convention (IPC-2221 internal layers use `k = 0.024`). No numeric change; a test now pins the
+  formula to that provenance.
+
 ## [0.45.0] - 2026-09-15
 
 ### Added

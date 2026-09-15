@@ -8,15 +8,18 @@ import { roundTo } from '../utils.js';
 // Copper resistivity at 20°C in Ω·mm²/m
 const COPPER_RESISTIVITY = 0.01724;
 
-// IPC-2152 via current capacity constants
+// IPC-2221 conductor formula constants — external-layer k (IPC-2221 internal layers use k = 0.024).
 // I = k × ΔT^b × A^c
-// For internal vias: k=0.048, b=0.44, c=0.725 (similar to internal traces)
+// A via has no chart of its own in IPC-2221; the common convention applies the conductor formula to
+// the plated barrel's copper cross-section with the external constant, since the barrel reaches both
+// outer surfaces. IPC-2152 gives more detailed thermal guidance but is not what this computes.
 const IPC_K = 0.048;
 const IPC_B = 0.44;
 const IPC_C = 0.725;
 
 /**
- * Calculate PCB via current capacity using IPC-2152 approximation
+ * Calculate PCB via current capacity with the IPC-2221 conductor formula (external-layer constant)
+ * applied to the plated barrel's copper ring
  *
  * The cross-sectional area is the copper ring: π × [(r_outer)² - (r_inner)²]
  * Where r_outer = holeDiameter/2 + platingThickness and r_inner = holeDiameter/2
@@ -53,10 +56,10 @@ export function viaCurrent(input: ViaInput): ViaResult {
   // Cross-sectional area of the copper ring (mm²)
   const crossSectionMm2 = Math.PI * (outerRadius * outerRadius - innerRadius * innerRadius);
 
-  // For IPC-2152, convert area to mils² (1 mm = 39.37 mils)
+  // The IPC-2221 formula takes the area in mils² (1 mm = 39.37 mils)
   const crossSectionMils2 = crossSectionMm2 * 39.37 * 39.37;
 
-  // Current capacity using IPC-2152 formula (similar to internal layer)
+  // Current capacity, IPC-2221 conductor formula with the external-layer constant
   // I = k × ΔT^b × A^c
   const currentCapacity = IPC_K * Math.pow(tempRise, IPC_B) * Math.pow(crossSectionMils2, IPC_C);
 
@@ -78,6 +81,8 @@ export function viaCurrent(input: ViaInput): ViaResult {
   return {
     currentCapacity: roundTo(currentCapacity, 2),
     crossSectionMm2: roundTo(crossSectionMm2, 5),
+    platingThicknessMm: roundTo(platingMm, 6),
+    barrelOuterDiameterMm: roundTo(outerRadius * 2, 6),
     thermalResistance: roundTo(thermalResistance, 2),
     resistanceMOhm: roundTo(resistanceMOhm, 4),
     powerDissipation: roundTo(powerDissipation, 2),

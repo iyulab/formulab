@@ -269,3 +269,26 @@ describe('viaCurrent', () => {
     });
   });
 });
+
+describe('viaCurrent barrel ring dimensions in the result', () => {
+  it('returns the plating thickness in mm and the barrel outer diameter (hole + 2 × plating)', () => {
+    const r = viaCurrent({ holeDiameter: 0.3, platingThickness: 25, viaLength: 1.6, tempRise: 10 });
+    expect(r.platingThicknessMm).toBeCloseTo(0.025, 6);
+    expect(r.barrelOuterDiameterMm).toBeCloseTo(0.35, 6);
+  });
+
+  it('the ring between the hole and the outer diameter is the reported cross-section', () => {
+    const r = viaCurrent({ holeDiameter: 0.5, platingThickness: 35, viaLength: 1.6, tempRise: 20 });
+    const ring = (Math.PI / 4) * (r.barrelOuterDiameterMm ** 2 - 0.5 ** 2);
+    expect(ring).toBeCloseTo(r.crossSectionMm2, 4);
+  });
+});
+
+describe('viaCurrent formula provenance', () => {
+  it('is the IPC-2221 conductor formula with the external-layer constant on the barrel cross-section', () => {
+    const r = viaCurrent({ holeDiameter: 0.3, platingThickness: 25, viaLength: 1.6, tempRise: 10 });
+    const areaMils2 = r.crossSectionMm2 * 39.37 * 39.37;
+    const external = 0.048 * 10 ** 0.44 * areaMils2 ** 0.725;
+    expect(r.currentCapacity).toBeCloseTo(external, 1);
+  });
+});
