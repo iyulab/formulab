@@ -29,17 +29,25 @@ describe('loadCapacity', () => {
       expect(result.loadCenterDerating).toBeCloseTo(33.33, 1);
     });
 
-    it('should increase capacity for shorter load center', () => {
+    it('caps capacity at the rated capacity for a shorter load center, and says so', () => {
       const result = loadCapacity({
         ratedCapacity: 2500,
         ratedLoadCenter: 600,
         actualLoadCenter: 400,
       });
 
-      // effective = 2500 × (600/400) = 3750
-      expect(result.effectiveCapacity).toBe(3750);
-      // derating is negative (capacity increased)
-      expect(result.loadCenterDerating).toBeLessThan(0);
+      // The moment arithmetic gives 2500 × (600/400) = 3750, but the data plate capacity is a
+      // maximum: a shorter load center does not make the truck (mast, tyres, hydraulics) rated
+      // for more than its nameplate load.
+      expect(result.effectiveCapacity).toBe(2500);
+      expect(result.capacityCappedAtRated).toBe(true);
+      expect(result.loadCenterDerating).toBe(0);
+      expect(result.loadCenterLoss).toBe(0);
+    });
+
+    it('does not flag the cap at or beyond the rated load center', () => {
+      expect(loadCapacity({ ratedCapacity: 2500, ratedLoadCenter: 600, actualLoadCenter: 600 }).capacityCappedAtRated).toBe(false);
+      expect(loadCapacity({ ratedCapacity: 2500, ratedLoadCenter: 600, actualLoadCenter: 601 }).capacityCappedAtRated).toBe(false);
     });
   });
 
@@ -67,6 +75,13 @@ describe('loadCapacity', () => {
       // effective = 1000 × (500/1000) = 500
       // net = max(0, 500 - 600) = 0
       expect(result.netCapacity).toBe(0);
+      expect(result.netCapacityClamped).toBe(true);
+    });
+
+    it('does not flag the net capacity when the attachment leaves some capacity', () => {
+      const result = loadCapacity({ ratedCapacity: 1000, ratedLoadCenter: 500, actualLoadCenter: 1000, attachmentWeightLoss: 500 });
+      expect(result.netCapacity).toBe(0);
+      expect(result.netCapacityClamped).toBe(false);
     });
   });
 
@@ -177,6 +192,29 @@ describe('loadCapacity', () => {
       // net = 3333.33 - 300 = 3033.33
       expect(result.isOverloaded).toBe(false);
       expect(result.safetyMargin).toBeCloseTo(33.33, 1);
+    });
+  });
+
+  describe('capacity parts', () => {
+    it('returns rated capacity, load-center loss and attachment loss that add back to the net capacity', () => {
+      const r = loadCapacity({ ratedCapacity: 3000, ratedLoadCenter: 500, actualLoadCenter: 600, attachmentWeightLoss: 150 });
+      expect(r.ratedCapacity).toBe(3000);
+      expect(r.attachmentWeightLoss).toBe(150);
+      expect(r.loadCenterLoss).toBeCloseTo(500, 4);
+      expect(r.ratedCapacity - r.loadCenterLoss - r.attachmentWeightLoss).toBeCloseTo(r.netCapacity, 4);
+    });
+
+    it('reports an omitted attachment as zero loss', () => {
+      expect(loadCapacity({ ratedCapacity: 3000, ratedLoadCenter: 500, actualLoadCenter: 600 }).attachmentWeightLoss).toBe(0);
+    });
+  });
+
+  describe('input validation — loads', () => {
+    it.each([
+      ['attachmentWeightLoss is negative', { attachmentWeightLoss: -1 }],
+      ['actualLoad is negative', { actualLoad: -1 }],
+    ])('throws RangeError when %s', (_label, override) => {
+      expect(() => loadCapacity({ ratedCapacity: 3000, ratedLoadCenter: 500, actualLoadCenter: 600, ...override })).toThrow(RangeError);
     });
   });
 });

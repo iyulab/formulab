@@ -246,7 +246,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `containerFit()` | `throw` | cargo dimension ≤ 0. Box larger than container in every orientation → zero-fit result (sentinel) |
 | `eoq()` | `safe` | annualDemand/orderCost/holdingCost ≤ 0 → all-zero result (sentinel; does not throw) |
 | `inventoryTurnover()` | `null` | gmroii = null when grossMargin omitted; averageInventory or cogs ≤ 0 → zeroed result (sentinel) |
-| `loadCapacity()` | `null` | utilization/isOverloaded/safetyMargin = null when actualLoad omitted; non-positive capacity/load-center inputs → zeroed result (sentinel) |
+| `loadCapacity()` | `throw`/`null` | throws for negative attachmentWeightLoss or actualLoad; utilization/isOverloaded/safetyMargin = null when actualLoad omitted; non-positive capacity/load-center inputs → zeroed result (sentinel) |
 | `pallet3d()` | `throw` | box weight ≤ 0. Empty boxes → empty result with warning 'No boxes provided' (sentinel) |
 | `palletStack()` | `throw` | box dimension ≤ 0. Box exceeds pallet/maxHeight in all orientations → zero result (sentinel) |
 | `safetyStock()` | `throw` | serviceLevel ∉ (0, 1), avgLeadTime < 0 |

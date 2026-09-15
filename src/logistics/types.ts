@@ -375,9 +375,16 @@ export interface LoadCapacityInput {
 }
 
 export interface LoadCapacityResult {
-  effectiveCapacity: number;    // kg
+  ratedCapacity: number;        // kg, as given (0 in the zeroed sentinel)
+  effectiveCapacity: number;    // kg, never above ratedCapacity
   loadCenterDerating: number;   // %
+  loadCenterLoss: number;       // kg = ratedCapacity − effectiveCapacity
+  /** True when the load center is shorter than rated and the capacity was held at the nameplate value. */
+  capacityCappedAtRated: boolean;
+  attachmentWeightLoss: number; // kg, as given (0 when omitted)
   netCapacity: number;          // kg (after attachment loss)
+  /** True when the attachment loss exceeded the effective capacity and netCapacity was floored at 0. */
+  netCapacityClamped: boolean;
   utilization: number | null;   // % (if actualLoad)
   isOverloaded: boolean | null; // (if actualLoad)
   safetyMargin: number | null;  // kg (if actualLoad)
