@@ -294,3 +294,16 @@ describe('stencilAperture', () => {
     });
   });
 });
+
+describe('stencilAperture smallest dimension in the result', () => {
+  it('is the narrower side of a rectangular aperture — the dimension the aspect ratio is taken over', () => {
+    const r = stencilAperture({ shape: 'rectangle', apertureWidth: 0.8, apertureLength: 0.3, stencilThickness: 0.12, componentType: 'qfp' });
+    expect(r.smallestDimension).toBe(0.3);
+    expect(r.aspectRatio).toBeCloseTo(r.smallestDimension / 0.12, 2);
+  });
+
+  it('is the diameter of a circular aperture', () => {
+    const r = stencilAperture({ shape: 'circle', apertureWidth: 0.25, apertureLength: 0, stencilThickness: 0.1, componentType: 'bga' });
+    expect(r.smallestDimension).toBe(0.25);
+  });
+});

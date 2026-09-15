@@ -78,6 +78,7 @@ export function stencilAperture(input: StencilInput): StencilResult {
     wallArea: roundTo(wallArea, 4),
     areaRatio: roundTo(areaRatio, 3),
     aspectRatio: roundTo(aspectRatio, 2),
+    smallestDimension,
     areaRatioOk,
     aspectRatioOk,
     recommendedAreaRatio: recommendations.areaRatio,

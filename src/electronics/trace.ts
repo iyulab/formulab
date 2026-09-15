@@ -90,6 +90,8 @@ export function traceWidth(input: TraceInput): TraceResult {
     widthMils,
     widthMm,
     crossSection: roundTo(crossSection, 4),
+    copperThicknessMils: roundTo(copperThickness, 4),
+    copperThicknessMm: roundTo(copperThickness * 0.0254, 4),
     resistance,
     voltageDrop,
     powerLoss,

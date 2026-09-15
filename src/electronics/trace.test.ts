@@ -289,3 +289,22 @@ describe('traceWidth contract restoration (2026-07 audit)', () => {
     expect(() => traceWidth({ current: 1, tempRise: 10, copperWeight: 0, layer: 'internal' })).toThrow(RangeError);
   });
 });
+
+describe('traceWidth copper thickness in the result', () => {
+  it('returns the copper thickness the width was derived from (1 oz = 1.378 mil = 0.035 mm)', () => {
+    const r = traceWidth({ current: 3, tempRise: 10, copperWeight: 1, layer: 'external' });
+    expect(r.copperThicknessMils).toBe(1.378);
+    expect(r.copperThicknessMm).toBeCloseTo(0.035, 4);
+  });
+
+  it('scales with copper weight', () => {
+    const r = traceWidth({ current: 3, tempRise: 10, copperWeight: 2, layer: 'internal' });
+    expect(r.copperThicknessMils).toBe(2.756);
+    expect(r.copperThicknessMm).toBeCloseTo(0.07, 4);
+  });
+
+  it('width × thickness gives back the cross-section', () => {
+    const r = traceWidth({ current: 5, tempRise: 20, copperWeight: 0.5, layer: 'external' });
+    expect(r.widthMils * r.copperThicknessMils).toBeCloseTo(r.crossSection, 2);
+  });
+});

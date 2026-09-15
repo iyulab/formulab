@@ -88,6 +88,8 @@ export interface TraceResult {
   widthMils: number;      // mils (thousandths of inch)
   widthMm: number;        // mm
   crossSection: number;   // mil2 (cross-sectional area)
+  copperThicknessMils: number; // mils — copper thickness from copperWeight (1 oz = 1.378 mil); width = crossSection / thickness
+  copperThicknessMm: number;   // mm
   resistance: number;     // Ohm per inch at 25C
   voltageDrop: number;    // V per inch
   powerLoss: number;      // W per inch
@@ -156,7 +158,8 @@ export interface StencilResult {
   apertureArea: number;     // mm^2
   wallArea: number;         // mm^2 (perimeter * thickness)
   areaRatio: number;        // aperture area / wall area
-  aspectRatio: number;      // aperture width / stencil thickness
+  aspectRatio: number;      // smallestDimension / stencil thickness
+  smallestDimension: number; // mm — narrower aperture side (rectangle) or diameter (circle); the dimension aspectRatio is taken over
   areaRatioOk: boolean;     // >= recommended for component type
   aspectRatioOk: boolean;   // >= recommended for component type
   recommendedAreaRatio: number;
