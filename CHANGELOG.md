@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.47.0] - 2026-09-15
+
+### Fixed
+
+- **`metal/flangeSpec()` ASME B16.5 table corrected against public B16.5 tables.** Cross-checked
+  against several independent public tables that agree with each other (apiint.com, texasflange.com,
+  wermac.org, the zzsteels catalog, hardhatengineer.com):
+  - `raisedFaceDiameter` was wrong in 21 of 24 rows. For NPS 6–12 it held the pipe OD (for example
+    NPS 6: 168.3 → 215.9 mm).
+  - `thickness` was wrong in most rows. It is now the minimum flange thickness excluding the raised
+    face (for example NPS 4 Class 150: 19.1 → 22.4 mm).
+  - Bolt sizes were wrong in several rows.
+  - Weights were off by up to about 30% (for example NPS 12 Class 150: 27 → 37 kg).
+  - Class 300/600 OD and bolt circle values get small rounding corrections (≤ 0.5 mm).
+- **`boltSize` is now the B16.5 inch bolt with its ISO stud equivalent**, for example `'5/8" (M16)'`.
+  **Breaking** for callers matching the old metric-only strings.
+
+### Added
+
+- Tests for invariants between rows (raised face < bolt circle < OD; a higher class never has a
+  smaller OD, bolt circle or thickness; the raised face is not the pipe OD) and golden rows citing the
+  public tables.
+
 ## [0.46.0] - 2026-09-15
 
 ### Added
