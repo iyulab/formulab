@@ -76,6 +76,18 @@ const ASME_B16_5: Record<string, Partial<Record<PressureClass, FlangeDimension>>
  * @param input - Flange standard, pressure class, nominal size
  * @returns Flange dimensions (OD, thickness, bolt pattern, weight)
  */
+/**
+ * NPS designations this table covers, ascending.
+ *
+ * Exposed for the same reason as `getPipeSizes`: without it a caller building a picker, or a test
+ * asserting a property across every row, has to restate the table — and a table's copy is where the
+ * two drift apart. Sorted numerically because `Object.keys` returns index-like keys ('1', '2', '10')
+ * before the rest, not in declaration order.
+ */
+export function getFlangeSizes(): string[] {
+  return Object.keys(ASME_B16_5).sort((a, b) => Number(a) - Number(b));
+}
+
 export function flangeSpec(input: FlangeSpecInput): FlangeSpecResult {
   const { standard, pressureClass, nominalSize } = input;
 

@@ -62,6 +62,37 @@ const STEEL_DENSITY = 7850; // kg/m³
  * @param input - Pipe standard, nominal size, and schedule
  * @returns Pipe dimensions (OD, wall thickness, ID, weight, areas)
  */
+/**
+ * Parse an NPS designation to its numeric value in inches.
+ *
+ * Forms in this table: `'1/2'`, `'3/4'`, `'2'`, `'1-1/4'` (whole-and-fraction, hyphenated).
+ */
+function npsValue(nps: string): number {
+  const [whole, fraction] = nps.split('-');
+  const base = fraction === undefined && whole.includes('/') ? 0 : Number(whole);
+  const frac = fraction ?? (whole.includes('/') ? whole : undefined);
+  if (frac === undefined) return base;
+  const [num, den] = frac.split('/').map(Number);
+  return base + num / den;
+}
+
+/**
+ * NPS designations this table covers, **sorted ascending by actual size**.
+ *
+ * `thread` and `screw` already expose their size lists (`getMetricSizes`, `getUnifiedSizes`,
+ * `getDesignations`); this one did not, so a caller building a picker — or a test asserting a
+ * property across every row — had to restate the table, which is how a table and its copy drift
+ * apart.
+ *
+ * ⚠️ **The sort is not decoration.** `Object.keys` does not preserve declaration order here: keys
+ * that look like array indices (`'1'`, `'2'`, `'10'`) are returned first in numeric order, and only
+ * then the rest in insertion order — so the raw key order runs `1, 2, 3, 4, 6, 8, 10, 12, 14, 16,
+ * 1/2, 3/4, 1-1/4, …`. A picker built on that order lists 16" before 1/2".
+ */
+export function getPipeSizes(): string[] {
+  return Object.keys(PIPE_DATA).sort((a, b) => npsValue(a) - npsValue(b));
+}
+
 export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
   const { standard, nominalSize, schedule } = input;
 

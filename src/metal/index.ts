@@ -176,5 +176,5 @@ export { weldStrength } from './weldStrength.js';
 export { columnBuckling } from './columnBuckling.js';
 export { beamDeflection, beamDeflectionCurve } from './beamDeflection.js';
 export { materialGradeConverter } from './materialGradeConverter.js';
-export { pipeSpec } from './pipeSpec.js';
-export { flangeSpec } from './flangeSpec.js';
+export { pipeSpec, getPipeSizes } from './pipeSpec.js';
+export { flangeSpec, getFlangeSizes } from './flangeSpec.js';
