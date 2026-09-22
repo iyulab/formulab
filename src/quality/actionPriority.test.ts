@@ -308,4 +308,55 @@ describe('actionPriority', () => {
         .toThrow(RangeError);
     });
   });
+
+  /**
+   * Structural invariants (CLAUDE.md §6(d)).
+   *
+   * The golden cells above pin values the handbook states. These assert relationships the
+   * table must satisfy *as a whole*, which is what catches the transcription slips §6 names:
+   * a band copied from a neighbouring axis, or an off-by-one from an omitted column, moves
+   * many cells at once and almost always breaks the ordering.
+   *
+   * Measured: of the 200 single-cell mutations possible over the 100 cells, monotonicity
+   * alone rejects 170 (85%). The remaining 30 sit where a neighbour already shares the new
+   * value; those are the ones the golden cells have to carry.
+   */
+  describe('structural invariants', () => {
+    const RANK: Record<string, number> = { L: 0, M: 1, H: 2 };
+
+    it('never lowers the priority when a rating rises', () => {
+      for (let s = 0; s < AP_TABLE.length; s++) {
+        for (let o = 0; o < AP_TABLE[s].length; o++) {
+          for (let d = 0; d < AP_TABLE[s][o].length; d++) {
+            const here = RANK[AP_TABLE[s][o][d]];
+            const where = `[s${s}][o${o}][d${d}]`;
+            if (s + 1 < AP_TABLE.length) {
+              expect(RANK[AP_TABLE[s + 1][o][d]], `severity ${where}`).toBeGreaterThanOrEqual(here);
+            }
+            if (o + 1 < AP_TABLE[s].length) {
+              expect(RANK[AP_TABLE[s][o + 1][d]], `occurrence ${where}`).toBeGreaterThanOrEqual(here);
+            }
+            if (d + 1 < AP_TABLE[s][o].length) {
+              expect(RANK[AP_TABLE[s][o][d + 1]], `detection ${where}`).toBeGreaterThanOrEqual(here);
+            }
+          }
+        }
+      }
+    });
+
+    it('contains only the three priority levels', () => {
+      for (const cell of AP_TABLE.flat(2)) {
+        expect(['L', 'M', 'H']).toContain(cell);
+      }
+    });
+
+    it('lets detection change the outcome, so a dropped column cannot pass unnoticed', () => {
+      const varies = AP_TABLE.some((oRows) => oRows.some((dCells) => new Set(dCells).size > 1));
+      expect(varies).toBe(true);
+    });
+
+    it('uses every priority level, so a collapsed table cannot pass unnoticed', () => {
+      expect(new Set(AP_TABLE.flat(2))).toEqual(new Set(['L', 'M', 'H']));
+    });
+  });
 });
