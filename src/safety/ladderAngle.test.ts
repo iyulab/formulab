@@ -156,15 +156,22 @@ describe('ladderAngle', () => {
   });
 
   describe('ideal base distance', () => {
-    it('should calculate ideal base distance for 4:1 rule', () => {
-      const result = ladderAngle({
-        ladderLength: 0,
-        height: 8,
-        baseDistance: 2,
-      });
+    it('is a quarter of the working length (OSHA 1926.1053(b)(5)(i))', () => {
+      // 6 m ladder: 6 / 4 = 1.5 m, not a quarter of the 5.81 m height it reaches.
+      const result = ladderAngle({ ladderLength: 6, baseDistance: 1.5 });
+      expect(result.idealBaseDistance).toBe(1.5);
+      expect(result.angle).toBeCloseTo(75.52, 2);
+    });
 
-      // idealBaseDistance = height / 4 = 8 / 4 = 2
-      expect(result.idealBaseDistance).toBe(2);
+    it('uses the resolved length when height and base are given', () => {
+      // length = √(8² + 2²) = 8.2462 → 2.0616
+      const result = ladderAngle({ ladderLength: 0, height: 8, baseDistance: 2 });
+      expect(result.idealBaseDistance).toBeCloseTo(2.0616, 4);
+    });
+
+    it('agrees with the 75.5° default it assumes when only the length is given', () => {
+      const result = ladderAngle({ ladderLength: 6 });
+      expect(result.baseDistance).toBeCloseTo(result.idealBaseDistance, 2);
     });
   });
 

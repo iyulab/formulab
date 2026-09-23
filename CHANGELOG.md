@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`safety/ladderAngle()` `idealBaseDistance` is a quarter of the ladder's working length**, per OSHA
+  29 CFR 1926.1053(b)(5)(i), instead of a quarter of its height. The function's own 75.5° default
+  already followed the working-length rule (cos 75.5° ≈ 1/4); a quarter of the height is atan(4) ≈
+  75.96°. A 6 m ladder now gives 1.5 m, not 1.45 m.
+
 ## [0.47.0] - 2026-09-15
 
 ### Fixed

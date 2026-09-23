@@ -14,8 +14,9 @@ export const LADDER_COMPLIANT_ANGLE_RANGE = { min: 70, max: 80 } as const;
 /**
  * Calculate ladder setup angle and OSHA compliance.
  *
- * OSHA 4:1 Rule: For every 4 feet of height, the base should be 1 foot out.
- * This gives an ideal angle of atan(4/1) ≈ 75.96° (commonly cited as 75.5°).
+ * OSHA 4:1 rule, 29 CFR 1926.1053(b)(5)(i): the foot of the ladder sits one quarter of its working
+ * length (foot to top support) out from the support, so cos θ = 1/4 and θ ≈ 75.5°.
+ * (A quarter of the *height* instead gives atan(4) ≈ 75.96°.)
  * Compliant range: see {@link LADDER_COMPLIANT_ANGLE_RANGE} (70°–80°).
  *
  * Provide ladderLength and either height or baseDistance.
@@ -77,8 +78,10 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     angle = 90;
   }
 
-  // Ideal base distance for OSHA 4:1 at given height
-  const idealBaseDistance = height !== undefined ? height / 4 : 0;
+  // Ideal base distance: one quarter of the working length, OSHA 29 CFR 1926.1053(b)(5)(i). This is
+  // the same rule as the 75.5° default above (cos 75.5° ≈ 1/4); a quarter of the *height* would be
+  // atan(4) ≈ 75.96°, a different ladder.
+  const idealBaseDistance = ladderLength / 4;
 
   // Reach height = wall contact height + ~1m (3 feet) above contact point
   const reachHeight = (height ?? 0) + 1.0;

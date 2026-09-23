@@ -184,7 +184,7 @@ export interface LadderAngleResult {
   height: number;             // m
   baseDistance: number;        // m
   ladderLength: number;       // m
-  idealBaseDistance: number;   // m (for 75.5° at given height)
+  idealBaseDistance: number;   // m (ladderLength / 4 — OSHA 1926.1053(b)(5)(i), 75.5°)
   reachHeight: number;        // m (height + ~1m)
   isCompliant: boolean;       // 70°–80°
   warnings: string[];
