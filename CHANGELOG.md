@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.49.0] - 2026-09-24
+
+### Fixed
+
+- **`chemical/reliefValve()` mixed API 520's US-unit coefficient with SI inputs.** The gas branch
+  used C = 520 × … (lb/h, psia, in²) with kg/h and bar, which made every gas or steam area 7.6×
+  too large. The liquid branch did the same with the liquid constant and was about 141× too large.
+  For example, 5,000 kg/h of nitrogen at 10 barg now needs 536 mm² (orifice J), not 4,073 mm² (P).
+  Both branches now use the API 520 Part I SI equations and reproduce its Example 1 (gas,
+  3,699 mm²) and the first step of Example 5 (liquid, 3,066 mm² at Kw 0.97). The old golden test
+  compared only the ratio of the steam and gas areas, which no constant factor can change.
+- **`chemical/flowControl()` reported Kv as Cv.** The metric liquid equation Q × √(SG/ΔP) gives Kv,
+  but it was returned as `cv`, and `kv` was then 0.865 × Kv. Cv was therefore 13.5% too low: 100 gpm
+  across 25 psi now gives Cv 20, not 17.3. The gas branch used N8 = 94.8, the mass-flow constant,
+  with a volumetric flow and with M in the numerator. It now uses the volumetric N9 = 2460 for Kv,
+  with the flow in m³/h at 0 °C and 101.325 kPa. Gas Cv was about 22× too high.
+
+### Added
+
+- `ReliefValveInput.specificHeatRatio` (default 1.4 gas, 1.3 steam) and `compressibility`
+  (default 1.0), which the API 520 gas equation takes.
+
 ## [0.48.2] - 2026-09-24
 
 ### Fixed

@@ -130,7 +130,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `shelfLife()` | `throw` | q10 ≤ 0 |
 | `injectionCycle()` | `throw` | resin density ≤ 0, injectionRate ≤ 0 (when given). Non-positive thermal diffusivity or ejection ≤ mold temperature → coolingTime 0 (sentinel) |
 | `flowControl()` | `throw` | inletPressure ≤ 0, fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C. pressureDrop ≤ 0 → cv 0 (sentinel) |
-| `reliefValve()` | `throw` | Capacity ≤ 0 |
+| `reliefValve()` | `throw` | molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0. Liquid with back pressure at or above the relieving pressure → requiredArea 0 |
 | `pid()` | `throw` | Non-positive process params (processGain/deadTime/timeConstant ≤ 0, or ultimateGain/ultimatePeriod ≤ 0) |
 
 ### Electronics (12 functions)

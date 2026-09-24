@@ -114,4 +114,36 @@ describe('flowControl rejects inputs that would produce a non-finite result', ()
   it('throws RangeError for temperature at or below absolute zero for gas', () => {
     expect(() => flowControl({ flowRate: 10, inletPressure: 500, outletPressure: 300, fluidDensity: 1.2, fluidType: 'gas', temperature: -300 })).toThrow(RangeError);
   });
+
+  describe('absolute values (golden)', () => {
+    it('liquid: 100 gpm of water across 25 psi is Cv 20 (Cv = Q √(SG/ΔP) in US units)', () => {
+      const result = flowControl({
+        flowRate: 100 * 0.227124707, // 100 US gpm in m³/h
+        inletPressure: 500,
+        outletPressure: 500 - 25 * 6.894757, // 25 psi
+        fluidDensity: 999,
+        fluidType: 'liquid',
+      });
+      expect(result.cv).toBeCloseTo(20.0, 1);
+      expect(result.kv).toBeCloseTo(20.0 * 0.865, 1);
+    });
+
+    it('gas: matches the independent IEC mass-flow form W = N6 × Kv × Y × √(x × P1 × ρ1), N6 = 31.6', () => {
+      const Qn = 100; // Nm³/h of air
+      const M = 29;
+      const T = 293.15;
+      const p1Bar = 5;
+      const result = flowControl({
+        flowRate: Qn, inletPressure: 500, outletPressure: 400, fluidDensity: 1.2,
+        fluidType: 'gas', temperature: 20, molecularWeight: M,
+      });
+      const x = 0.2;
+      const Y = 1 - x / (3 * 0.7);
+      const W = Qn * (101325 * M) / (8314.46 * 273.15); // kg/h
+      const rho1 = (p1Bar * 1e5 * M) / (8314.46 * T); // kg/m³
+      const kv = W / (31.6 * Y * Math.sqrt(x * p1Bar * rho1));
+      expect(result.kv).toBeCloseTo(kv, 1);
+      expect(result.cv).toBeCloseTo(kv / 0.865, 1);
+    });
+  });
 });

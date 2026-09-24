@@ -20,15 +20,25 @@ const API_ORIFICES: { letter: string; area: number }[] = [
 ];
 
 /**
- * Relief Valve Sizing — API 520 Simplified
+ * Relief Valve Sizing — API 520 Part I, SI units
  *
  * @formula
- *   - Gas: A = W / (C × Kd × P1 × Kb × Kc) × √(T×Z / M)
- *   - Liquid: A = Q / (Kd × Kw × Kc) × √(SG / ΔP)
+ *   - Gas/vapour, critical flow: A = W / (C × Kd × P1 × Kb × Kc) × √(T × Z / M)
+ *     with C = 0.03948 × √(k × (2 / (k + 1))^((k + 1) / (k − 1)))
+ *     (A mm², W kg/h, P1 kPa absolute, T K, M kg/kmol)
+ *   - Liquid: A = 11.78 × Q / (Kd × Kw × Kc × Kv) × √(G / (P1 − P2))
+ *     (A mm², Q L/min, P1 − P2 kPa)
+ *   - Relieving pressure P1 = set pressure × (1 + overpressure) + atmospheric
  *   - Standard orifice selection per API 526
  *
- * @reference API 520 Part I (2020) — Sizing and Selection of Pressure-Relieving Devices
+ * Steam is sized with the gas equation at k = 1.3 unless `specificHeatRatio` is given; API 520's
+ * dedicated Napier steam equation is not implemented. Kb, Kw, Kc and Kv are taken as 1.0.
+ *
+ * @reference API 520 Part I — Sizing and Selection of Pressure-Relieving Devices (SI equations)
  * @reference API 526 (2017) — Flanged Steel Pressure-Relief Valves
+ * @validation API 520 Part I Example 1 (gas: 24,270 kg/h, 348 K, Z 0.90, M 51, k 1.11, P1 670 kPa a
+ *   → 3,699 mm²) and the first step of Example 5 (liquid: 6,814 L/min, G 0.9, Kw 0.97, ΔP 1,551.6 kPa
+ *   → 3,066 mm²), as reproduced by the `fluids` library
  *
  * When the required area exceeds the largest API 526 orifice ('T', 16,774 mm²), the result
  * still reports 'T' as the closest standard size but sets `orificeExceedsMax: true` — a single
@@ -37,12 +47,17 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  * `suggestedMinValves` gives the first-order parallel count (`ceil(requiredArea / T)`); an
  * actual multi-valve installation must be re-sized per API 520, since inlet and back-pressure
  * corrections change each valve's capacity.
+ *
+ * @throws {RangeError} molecularWeight, specificGravity, specificHeatRatio (must exceed 1) or
+ *   compressibility is not positive
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
     requiredCapacity, setPressure, backPressure, temperature, fluidType,
     molecularWeight = 29, specificGravity = 1.0,
     overpressure = 10, dischargeCoefficient,
+    specificHeatRatio = fluidType === 'steam' ? 1.3 : 1.4,
+    compressibility = 1.0,
   } = input;
 
   // The gas/steam sizing equation divides by sqrt(M) after taking its square root, so a
@@ -52,6 +67,12 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   }
   if (!(specificGravity > 0)) {
     throw new RangeError('specificGravity must be greater than 0');
+  }
+  if (!(specificHeatRatio > 1)) {
+    throw new RangeError('specificHeatRatio must be greater than 1');
+  }
+  if (!(compressibility > 0)) {
+    throw new RangeError('compressibility must be greater than 0');
   }
 
   // Atmospheric pressure
@@ -63,47 +84,26 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
 
   if (fluidType === 'gas' || fluidType === 'steam') {
     const Kd = dischargeCoefficient ?? 0.975;
-    const Kb = 1.0; // Back pressure correction (conventional, balanced assumed)
-    const Kc = 1.0; // Combination correction
+    const Kb = 1.0; // Back pressure correction (conventional valve below critical back pressure)
+    const Kc = 1.0; // Combination correction (no rupture disk)
     const T = temperature + 273.15;
-    const Z = 1.0; // Compressibility factor
-    const M = molecularWeight;
-
-    // C = coefficient depending on ratio of specific heats (k), API 520 Part I eq. for critical
-    // (choked) flow. C(k=1.4) = 356.06, matching the value commonly published for diatomic gases
-    // (air, nitrogen) in API 520 Part I Table 8 / secondary process-safety references — see the
-    // golden test in reliefValve.test.ts, which checks the k=1.4-vs-1.3 area ratio this constant
-    // implies against an independently computed C(1.4)/C(1.3).
-    const k = fluidType === 'steam' ? 1.3 : 1.4;
-    const C = 520 * Math.sqrt(k * Math.pow(2 / (k + 1), (k + 1) / (k - 1)));
-
-    // W in kg/h, P1 in kPa, T in K, M in g/mol
-    // A (mm²) = W × √(T×Z/M) / (C × Kd × P1 × Kb × Kc) × 1e6 (unit conversion)
-    const numerator = requiredCapacity * Math.sqrt(T * Z / M);
-    const denominator = C * Kd * (P1 / 100) * Kb * Kc; // P1 in bar for formula
-
-    requiredArea = (numerator / denominator) * 1e3; // convert to mm²
-
+    const k = specificHeatRatio;
+    // API 520 SI coefficient: C(1.4) = 0.02703, C(1.35) = 0.02669
+    const C = 0.03948 * Math.sqrt(k * Math.pow(2 / (k + 1), (k + 1) / (k - 1)));
+    requiredArea = (requiredCapacity / (C * Kd * P1 * Kb * Kc)) * Math.sqrt((T * compressibility) / molecularWeight);
   } else {
     // Liquid
     const Kd = dischargeCoefficient ?? 0.65;
-    const Kw = 1.0; // Back pressure correction
+    const Kw = 1.0; // Back pressure correction (conventional valve)
     const Kc = 1.0;
     const Kv = 1.0; // Viscosity correction
-
     const dp = P1 - (backPressure + patm); // kPa
-    const SG = specificGravity;
-
+    const G = specificGravity;
     if (dp <= 0) {
       requiredArea = 0;
     } else {
-      // Q = W / (ρ × 3600) → m³/s, convert to m³/h
-      // A (mm²) = Q_m³h / (Kd × Kw × Kc × Kv) × √(SG/dp_bar) × conversion
-      const rho = SG * 999; // kg/m³
-      const Qm3h = requiredCapacity / rho;
-      const dpBar = dp / 100;
-
-      requiredArea = (Qm3h / (Kd * Kw * Kc * Kv)) * Math.sqrt(SG / dpBar) * 1e4 / 3.6;
+      const QLpm = (requiredCapacity / (G * 999)) * 1000 / 60; // kg/h → L/min
+      requiredArea = ((11.78 * QLpm) / (Kd * Kw * Kc * Kv)) * Math.sqrt(G / dp);
     }
   }
 

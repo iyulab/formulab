@@ -5,9 +5,13 @@ import type { FlowControlInput, FlowControlResult } from './types.js';
  * Control Valve Cv Calculator
  *
  * @formula
- *   - Liquid: Cv = Q × √(SG / ΔP)  (Q in GPM, ΔP in psi)
- *   - Gas: Cv = Q / (N × P1) × √(SG × T / ΔP)
- *   - Kv = 0.865 × Cv
+ *   - Liquid: Kv = Q × √(SG / ΔP)  (Q m³/h, ΔP bar) — the same as Cv = Q × √(SG / ΔP) in gpm and psi
+ *   - Gas/steam: Kv = Q / (N9 × P1 × Y) × √(M × T × Z / x), N9 = 2460 (Q m³/h at 0 °C and
+ *     101.325 kPa, P1 bar absolute, T K); x = ΔP / P1 limited to Fk × xT; Y = 1 − x / (3 Fk xT)
+ *   - Cv = Kv / 0.865 (1 Cv = 0.865 Kv)
+ *
+ * N9 follows from the mass-flow form W = N6 × Kv × Y × √(x × P1 × ρ1) with N6 = 31.6 and the
+ * ideal-gas densities at inlet and at 0 °C, 101.325 kPa.
  *
  * @reference ISA-75.01.01-2012 — Flow equations for sizing control valves
  * @reference IEC 60534-2-1 — Industrial-process control valves
@@ -47,14 +51,9 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
   let isChoked = false;
 
   if (fluidType === 'liquid') {
-    // ISA liquid sizing: Cv = Q(m³/h) × √(SG / ΔP(bar))
-    // Convert kPa to bar: 1 bar = 100 kPa
+    // IEC 60534 liquid sizing in metric units gives Kv: Kv = Q(m³/h) × √(SG / ΔP(bar))
     const dpBar = pressureDrop / 100;
-    if (dpBar <= 0) {
-      cv = 0;
-    } else {
-      cv = flowRate * Math.sqrt(sg / dpBar);
-    }
+    cv = dpBar <= 0 ? 0 : (flowRate * Math.sqrt(sg / dpBar)) / 0.865;
   } else {
     // Gas/Steam sizing
     // Critical pressure ratio for choked flow
@@ -72,15 +71,14 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     const T = temperature + 273.15;
     const MW = molecularWeight ?? 29; // default air
 
-    // N8 = 94.8 for metric (m³/h, bar, K)
-    const N8 = 94.8;
+    // N9 for Kv with Q in m³/h at 0 °C, 101.325 kPa, pressure in bar (IEC 60534-2-1)
+    const N9 = 2460;
     const Y = 1 - xEffective / (3 * xCritical); // Expansion factor
+    const Z = 1.0;
 
-    if (p1Bar <= 0 || xEffective <= 0) {
-      cv = 0;
-    } else {
-      cv = flowRate / (N8 * p1Bar * Y) * Math.sqrt(MW * T / xEffective);
-    }
+    cv = p1Bar <= 0 || xEffective <= 0
+      ? 0
+      : (flowRate / (N9 * p1Bar * Y)) * Math.sqrt((MW * T * Z) / xEffective) / 0.865;
   }
 
   const kv = cv * 0.865;

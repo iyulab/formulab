@@ -209,7 +209,8 @@ export interface InjectionCycleResult {
  * Control Valve Cv Calculator Types
  */
 export interface FlowControlInput {
-  flowRate: number;           // m³/h
+  /** m³/h — actual volume for liquids; for gas and steam, volume at 0 °C and 101.325 kPa (Nm³/h). */
+  flowRate: number;
   inletPressure: number;      // kPa
   outletPressure: number;     // kPa
   fluidDensity: number;       // kg/m³
@@ -241,6 +242,10 @@ export interface ReliefValveInput {
   specificGravity?: number;   // for liquid, water=1.0
   overpressure?: number;      // %, default 10
   dischargeCoefficient?: number; // Kd
+  /** Ratio of specific heats k for gas/steam (default 1.4 gas, 1.3 steam). */
+  specificHeatRatio?: number;
+  /** Compressibility factor Z for gas/steam (default 1.0). */
+  compressibility?: number;
 }
 
 export interface ReliefValveResult {
