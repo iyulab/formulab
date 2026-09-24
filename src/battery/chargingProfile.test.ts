@@ -89,4 +89,14 @@ describe('chargingProfile input domain', () => {
   it('rejects capacityAh that would make an output non-finite', () => {
     expect(() => chargingProfile({ capacityAh: 0, chargingCurrentA: 50, cutoffCurrentA: 5 })).toThrow(RangeError);
   });
+
+  it('derives every minute value from the unrounded time, not from the rounded hours', () => {
+    // 5 Ah at 2.5 A to a 0.25 A cutoff: CV = 1 Ah / 1.375 A = 0.72727 h = 43.64 min
+    // (0.73 h × 60 would be 43.8), total = 1.6 + 0.72727 = 2.32727 h = 139.64 min
+    const r = chargingProfile({ capacityAh: 5, chargingCurrentA: 2.5, cutoffCurrentA: 0.25 });
+    expect(r.cvPhaseTimeMin).toBe(43.6);
+    expect(r.totalTimeMin).toBe(139.6);
+    expect(r.totalTimeH).toBe(2.33);
+    expect(r.averageCRate).toBeCloseTo(1 / 2.32727, 4);
+  });
 });

@@ -32,24 +32,28 @@ export function chargingProfile(input: ChargingProfileInput): ChargingProfileRes
     throw new RangeError('ccEndSocPercent must be greater than 0 and less than 100');
   }
 
-  // CC phase delivers ccEndSocPercent of capacity
-  const ccPhaseAh = roundTo(capacityAh * (ccEndSocPercent / 100), 2);
-  const cvPhaseAh = roundTo(capacityAh - ccPhaseAh, 2);
+  // Every output is rounded once, from the unrounded value. Deriving minutes from the rounded
+  // hours (or the C-rate from the rounded total) would carry the hour rounding into them.
+  const ccAh = capacityAh * (ccEndSocPercent / 100);
+  const cvAh = capacityAh - ccAh;
 
   // CC phase time = Ah / current
-  const ccPhaseTimeH = roundTo(ccPhaseAh / chargingCurrentA, 2);
-  const ccPhaseTimeMin = roundTo(ccPhaseTimeH * 60, 1);
-
+  const ccH = ccAh / chargingCurrentA;
   // CV phase time approximation: average current = (Icc + Icut) / 2
-  const avgCvCurrent = (chargingCurrentA + cutoffCurrentA) / 2;
-  const cvPhaseTimeH = roundTo(cvPhaseAh / avgCvCurrent, 2);
-  const cvPhaseTimeMin = roundTo(cvPhaseTimeH * 60, 1);
+  const cvH = cvAh / ((chargingCurrentA + cutoffCurrentA) / 2);
+  const totalH = ccH + cvH;
 
-  const totalTimeH = roundTo(ccPhaseTimeH + cvPhaseTimeH, 2);
-  const totalTimeMin = roundTo(totalTimeH * 60, 1);
+  const ccPhaseAh = roundTo(ccAh, 2);
+  const cvPhaseAh = roundTo(cvAh, 2);
+  const ccPhaseTimeH = roundTo(ccH, 2);
+  const ccPhaseTimeMin = roundTo(ccH * 60, 1);
+  const cvPhaseTimeH = roundTo(cvH, 2);
+  const cvPhaseTimeMin = roundTo(cvH * 60, 1);
+  const totalTimeH = roundTo(totalH, 2);
+  const totalTimeMin = roundTo(totalH * 60, 1);
 
-  // Average C-rate over entire charge
-  const averageCRate = roundTo(capacityAh / (totalTimeH * capacityAh), 4);
+  // Average C-rate over the entire charge: one capacity delivered over the total time
+  const averageCRate = roundTo(1 / totalH, 4);
 
   return {
     ccPhaseTimeH,

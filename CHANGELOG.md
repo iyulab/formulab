@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.48.2] - 2026-09-24
+
+### Fixed
+
+- **`battery/chargingProfile()` minutes and average C-rate came from the rounded hours.** For example,
+  5 Ah at 2.5 A to a 0.25 A cutoff gave `cvPhaseTimeMin` 43.8 (0.73 h × 60) instead of 43.6 and
+  `totalTimeMin` 139.8 instead of 139.6. Every output is now rounded once from the unrounded value.
+
 ## [0.48.1] - 2026-09-24
 
 ### Fixed
