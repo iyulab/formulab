@@ -4,22 +4,24 @@ export type { CascadeStep };
 
 // Fall Clearance Types
 export interface FallClearanceInput {
-  lanyardLength: number;       // m - length of lanyard/SRL
-  decelerationDistance: number; // m - deceleration device activation distance
-  harnessStretch: number;      // m - harness/body stretch under load
-  workerHeight: number;        // m - D-ring to feet distance (~1.5m typical)
-  safetyFactor: number;        // m - additional safety buffer (ANSI recommends 0.9m)
-  anchorHeight: number;        // m - anchor point height above feet level
-  rescueClearance?: number;    // m - clearance for rescue operations (default 0.9m per ANSI Z359.4)
-  obstacleHeight?: number;     // m - height of lowest obstacle/ground level (default 0)
+  lanyardLength: number;        // m — fixed lanyard length
+  decelerationDistance: number; // m — shock absorber deployment (OSHA max 1.07)
+  harnessStretch: number;       // m — harness stretch / D-ring shift
+  dRingHeight: number;          // m — D-ring height above the worker's feet (~1.5)
+  anchorAboveFeet: number;      // m — anchor height above the worker's feet; negative if below them
+  safetyFactor: number;         // m — additional margin
+  /** m — working surface height above the lower level. Without it the adequacy verdict is `null`. */
+  workingHeight?: number;
+  obstacleHeight?: number;      // m — lowest obstruction above the lower level (default 0)
 }
 
 export interface FallClearanceResult {
-  totalFallDistance: number;   // m - total vertical distance of fall
-  minimumHeight: number;       // m - minimum required anchor height
-  rescueClearance: number;     // m - rescue operation clearance used
-  freeSpaceRequired: number;   // m - total space needed below anchor
-  clearanceAboveObstacle: number; // m - space between worker and obstacle (positive = safe)
+  totalFallDistance: number;      // m — how far the feet travel until arrest
+  requiredClearance: number;      // m — clearance needed below the working surface
+  clearanceBelowAnchor: number;   // m — clearance needed below the anchor
+  freeFallDistance: number;       // m — OSHA limit 1.8
+  /** m — margin above the obstacle after the required clearance; `null` without `workingHeight`. */
+  clearanceAboveObstacle: number | null;
   isAdequate: boolean | null;
   warnings: string[];
 }

@@ -1,129 +1,84 @@
 import { roundTo } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
 
+/** OSHA 29 CFR 1926.502(d)(16)(iii) — a personal fall arrest system must limit free fall to 6 ft. */
+const MAX_FREE_FALL = 6 * 0.3048; // m — the rule is written in feet; 1.8 m is its rounded metric
+/** OSHA 29 CFR 1926.502(d)(16)(iv) — deceleration distance must not exceed 3.5 ft. */
+const MAX_DECELERATION = 3.5 * 0.3048; // m
+
 /**
- * Calculate fall clearance requirements for personal fall protection systems.
- * Implements ANSI Z359.1 and Z359.4 guidelines.
+ * Fall clearance for a personal fall arrest system on a fixed-length shock-absorbing lanyard.
  *
- * Total Fall Distance = Lanyard Length + Deceleration Distance + Harness Stretch + Worker Height
- * Free Space Required = Total Fall Distance + Safety Factor + Rescue Clearance - Anchor Height
- * Clearance Above Obstacle = Anchor Height - (Total Fall Distance + Safety Factor) - Obstacle Height
+ * Every height is measured from the worker's feet on the working surface, the way the anchor is
+ * located on site. After arrest the D-ring hangs lanyard + deceleration + harness stretch below the
+ * anchor and the feet a further D-ring height below that.
  *
- * ANSI Z359 Components:
- * - Lanyard/SRL length: typically 1.8m (6ft)
- * - Deceleration distance: max 1.07m (3.5ft) per OSHA
- * - Harness stretch: ~0.3m (1ft)
- * - D-ring to feet: ~1.5m (5ft)
- * - Rescue clearance: 0.9m (3ft) minimum per ANSI Z359.4
+ * @formula
+ *   - Clearance below anchor = L + DD + HS + H_D + SF — the "18.5 ft" figure for a 6 ft lanyard
+ *   - Total fall distance (feet travel) = L + DD + HS + H_D − A
+ *   - Required clearance below the working surface = total fall distance + SF
+ *   - Free fall = max(0, L + H_D − A) — the lanyard pays out before the absorber engages
+ *   - With a working height W above the lower level: clearance above obstacle =
+ *     W − obstacle height − required clearance, and the system is adequate when it is ≥ 0
  *
- * @param input - Fall clearance parameters
- * @returns Fall clearance results including adequacy assessment and warnings
- * @reference OSHA 29 CFR 1926.502(d)(16)(iv) — personal fall arrest systems must limit
- *   deceleration distance to 3.5 ft (1.07 m)
- * @throws {RangeError} workerHeight ≤ 0, or any distance (lanyardLength,
- *   decelerationDistance, harnessStretch, safetyFactor, rescueClearance,
- *   obstacleHeight) is negative.
- * @remarks anchorHeight ≤ 0 is NOT rejected: it is a valid (dangerous) geometry
- *   that the function reports as isAdequate=false with a warning.
+ *   (L lanyard, DD deceleration distance, HS harness stretch/D-ring shift, H_D D-ring height above
+ *   the feet, A anchor height above the feet, SF safety factor)
+ *
+ * @reference OSHA 29 CFR 1926.502(d)(16)(iii)–(iv) — free fall ≤ 1.8 m (6 ft), deceleration ≤ 1.07 m
+ *   (3.5 ft), and the employee must not contact any lower level
+ * @reference ANSI/ASSP Z359 fall-arrest clearance practice
+ * @validation Clearance below anchor for a 6 ft lanyard, 3.5 ft deceleration, 1 ft harness stretch,
+ *   5 ft D-ring height and 3 ft safety factor = 18.5 ft (the widely published manufacturer and
+ *   ARTBA worked figure)
+ *
+ * @throws {RangeError} dRingHeight ≤ 0, or lanyardLength, decelerationDistance, harnessStretch,
+ *   safetyFactor, workingHeight or obstacleHeight is negative
+ * @remarks anchorAboveFeet may be negative (an anchor below the feet); the free-fall warning reports it.
  */
 export function fallClearance(input: FallClearanceInput): FallClearanceResult {
   const {
-    lanyardLength,
-    decelerationDistance,
-    harnessStretch,
-    workerHeight,
-    safetyFactor,
-    anchorHeight,
-    rescueClearance = 0.9, // ANSI Z359.4 default minimum
-    obstacleHeight = 0,    // Ground level default
+    lanyardLength: L,
+    decelerationDistance: DD,
+    harnessStretch: HS,
+    dRingHeight: HD,
+    anchorAboveFeet: A,
+    safetyFactor: SF,
+    workingHeight,
+    obstacleHeight = 0,
   } = input;
 
-  if (workerHeight <= 0) {
-    throw new RangeError('workerHeight must be greater than 0');
+  if (HD <= 0) throw new RangeError('dRingHeight must be greater than 0');
+  if (L < 0 || DD < 0 || HS < 0 || SF < 0 || obstacleHeight < 0 || (workingHeight !== undefined && workingHeight < 0)) {
+    throw new RangeError('lanyardLength, decelerationDistance, harnessStretch, safetyFactor, workingHeight and obstacleHeight must not be negative');
   }
-  if (
-    lanyardLength < 0 ||
-    decelerationDistance < 0 ||
-    harnessStretch < 0 ||
-    safetyFactor < 0 ||
-    rescueClearance < 0 ||
-    obstacleHeight < 0
-  ) {
-    throw new RangeError('lanyardLength, decelerationDistance, harnessStretch, safetyFactor, rescueClearance, and obstacleHeight must not be negative');
-  }
+
+  const clearanceBelowAnchor = L + DD + HS + HD + SF;
+  const totalFallDistance = L + DD + HS + HD - A;
+  const requiredClearance = totalFallDistance + SF;
+  const freeFallDistance = Math.max(0, L + HD - A);
+
+  // Judged on the reported (rounded) margin so the verdict and the number shown next to it agree.
+  const clearanceAboveObstacle =
+    workingHeight === undefined ? null : roundTo(workingHeight - obstacleHeight - requiredClearance, 3);
+  const isAdequate = clearanceAboveObstacle === null ? null : clearanceAboveObstacle >= 0;
 
   const warnings: string[] = [];
-
-  // Validate inputs and generate warnings
-  if (lanyardLength > 1.8) {
-    warnings.push('Lanyard exceeds standard 1.8m (6ft) length');
+  if (freeFallDistance > MAX_FREE_FALL) {
+    warnings.push(`Free fall of ${freeFallDistance.toFixed(2)} m exceeds the OSHA limit of 1.8 m (6 ft) — raise the anchor or shorten the lanyard`);
   }
-  if (decelerationDistance > 1.07) {
-    warnings.push('Deceleration distance exceeds OSHA maximum of 1.07m (3.5ft)');
+  if (DD > MAX_DECELERATION) {
+    warnings.push('Deceleration distance exceeds the OSHA limit of 1.07 m (3.5 ft)');
   }
-  if (workerHeight < 1.2 || workerHeight > 2.0) {
-    warnings.push('Worker height outside typical range (1.2-2.0m)');
-  }
-  if (safetyFactor < 0.6) {
-    warnings.push('Safety factor below recommended minimum (0.6m/2ft)');
-  }
-  if (rescueClearance < 0.9) {
-    warnings.push('Rescue clearance below ANSI Z359.4 minimum (0.9m/3ft)');
-  }
-
-  // Calculate total fall distance (before arrest)
-  // This is the distance worker falls before deceleration device fully activates
-  const totalFallDistance =
-    lanyardLength +
-    decelerationDistance +
-    harnessStretch +
-    workerHeight;
-
-  // Calculate minimum height requirement
-  // This is the minimum anchor height needed to prevent ground contact
-  const minimumHeight = totalFallDistance + safetyFactor - anchorHeight;
-
-  // Calculate total free space required below anchor
-  // Includes rescue clearance for post-fall positioning
-  const freeSpaceRequired = totalFallDistance + safetyFactor + rescueClearance;
-
-  // Calculate clearance above obstacle
-  // Positive = safe clearance exists
-  // Negative = worker would contact obstacle
-  const workerLowestPoint = anchorHeight - (totalFallDistance + safetyFactor);
-  const clearanceAboveObstacle = workerLowestPoint - obstacleHeight;
-
-  // Determine if the system is adequate
-  let isAdequate: boolean | null = null;
-
-  if (anchorHeight <= 0) {
-    // Anchor at or below feet level - extremely dangerous
-    isAdequate = false;
-    warnings.push('Anchor at or below foot level - fall protection inadequate');
-  } else if (clearanceAboveObstacle < 0) {
-    // Worker would contact obstacle
-    isAdequate = false;
-    warnings.push(`Insufficient clearance: worker would be ${Math.abs(clearanceAboveObstacle).toFixed(2)}m below obstacle level`);
-  } else if (clearanceAboveObstacle < rescueClearance) {
-    // Clearance exists but rescue may be difficult
-    isAdequate = true;
-    warnings.push('Limited clearance for rescue operations');
-  } else {
-    // Adequate clearance for fall arrest and rescue
-    isAdequate = true;
-  }
-
-  // Additional warning for marginal situations
-  if (isAdequate && clearanceAboveObstacle < 1.5) {
-    warnings.push('Consider increasing anchor height for additional safety margin');
+  if (clearanceAboveObstacle !== null && clearanceAboveObstacle < 0) {
+    warnings.push(`Insufficient clearance: ${Math.abs(clearanceAboveObstacle).toFixed(2)} m short of the required clearance above the obstacle`);
   }
 
   return {
     totalFallDistance: roundTo(totalFallDistance, 3),
-    minimumHeight: roundTo(minimumHeight, 3),
-    rescueClearance,
-    freeSpaceRequired: roundTo(freeSpaceRequired, 3),
-    clearanceAboveObstacle: roundTo(clearanceAboveObstacle, 3),
+    requiredClearance: roundTo(requiredClearance, 3),
+    clearanceBelowAnchor: roundTo(clearanceBelowAnchor, 3),
+    freeFallDistance: roundTo(freeFallDistance, 3),
+    clearanceAboveObstacle,
     isAdequate,
     warnings,
   };

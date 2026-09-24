@@ -1,291 +1,147 @@
 import { describe, it, expect } from 'vitest';
 import { fallClearance } from './fallClearance.js';
+import type { FallClearanceInput } from './types.js';
+
+const FT = 0.3048;
+
+/**
+ * Golden case: the widely published fixed-lanyard clearance — 6 ft lanyard + 3.5 ft deceleration +
+ * 1 ft harness stretch + 5 ft D-ring height + 3 ft safety factor = 18.5 ft below the anchor
+ * (manufacturer clearance charts; ARTBA fall-protection fact sheet). Anchor at D-ring height.
+ */
+const EIGHTEEN_FIVE: FallClearanceInput = {
+  lanyardLength: 6 * FT,
+  decelerationDistance: 3.5 * FT,
+  harnessStretch: 1 * FT,
+  dRingHeight: 5 * FT,
+  anchorAboveFeet: 5 * FT,
+  safetyFactor: 3 * FT,
+};
 
 describe('fallClearance', () => {
-  describe('basic calculation', () => {
-    it('should calculate total fall distance correctly', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,      // 6ft lanyard
-        decelerationDistance: 1.07, // 3.5ft deceleration
-        harnessStretch: 0.3,     // harness stretch
-        workerHeight: 1.8,       // worker height (D-ring to feet)
-        safetyFactor: 0.9,       // safety buffer
-        anchorHeight: 0,         // anchor at foot level
-      });
+  describe('18.5 ft rule (golden)', () => {
+    const r = fallClearance(EIGHTEEN_FIVE);
 
-      // Total Fall Distance = lanyard + deceleration + harness + workerHeight
-      // (safetyFactor is separate - not part of physical fall distance)
-      // = 1.8 + 1.07 + 0.3 + 1.8 = 4.97m
-      expect(result.totalFallDistance).toBeCloseTo(4.97, 2);
+    it('clearance below the anchor is 18.5 ft', () => {
+      expect(r.clearanceBelowAnchor / FT).toBeCloseTo(18.5, 2);
     });
 
-    it('should calculate minimum height correctly', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 2,
-      });
-
-      // minimumHeight = totalFallDistance + safetyFactor - anchorHeight
-      // = 4.97 + 0.9 - 2 = 3.87m
-      expect(result.minimumHeight).toBeCloseTo(3.87, 2);
+    it('with the anchor at D-ring height the feet travel 10.5 ft and need 13.5 ft below the working surface', () => {
+      expect(r.totalFallDistance / FT).toBeCloseTo(10.5, 2);
+      expect(r.requiredClearance / FT).toBeCloseTo(13.5, 2);
     });
 
-    it('should calculate free space required', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 3,
-        rescueClearance: 0.9,
-      });
+    it('free fall equals the lanyard length (6 ft) — exactly the OSHA limit, no warning', () => {
+      expect(r.freeFallDistance / FT).toBeCloseTo(6, 2);
+      expect(r.warnings).toEqual([]);
+    });
 
-      // freeSpaceRequired = totalFallDistance + safetyFactor + rescueClearance
-      // = 4.97 + 0.9 + 0.9 = 6.77m
-      expect(result.freeSpaceRequired).toBeCloseTo(6.77, 2);
-      expect(result.rescueClearance).toBe(0.9);
+    it('the same case written out literally (fixture for check:nonfinite-outputs)', () => {
+      expect(
+        fallClearance({
+          lanyardLength: 1.8288,
+          decelerationDistance: 1.0668,
+          harnessStretch: 0.3048,
+          dRingHeight: 1.524,
+          anchorAboveFeet: 1.524,
+          safetyFactor: 0.9144,
+          workingHeight: 6,
+          obstacleHeight: 0,
+        }).clearanceBelowAnchor,
+      ).toBeCloseTo(5.639, 3);
     });
   });
 
-  describe('isAdequate determination', () => {
-    it('should return true when clearance above obstacle is positive', () => {
-      // High anchor gives adequate clearance
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 8, // High overhead anchor
-        obstacleHeight: 0,
-      });
+  describe('anchor height is measured from the feet, once', () => {
+    const example: FallClearanceInput = {
+      lanyardLength: 1.8,
+      decelerationDistance: 1.07,
+      harnessStretch: 0.3,
+      dRingHeight: 1.8,
+      anchorAboveFeet: 0.15,
+      safetyFactor: 0.6,
+    };
 
-      // workerLowestPoint = anchorHeight - (totalFallDistance + safetyFactor)
-      // = 8 - (4.97 + 0.9) = 2.13m
-      // clearanceAboveObstacle = 2.13 - 0 = 2.13m (positive = safe)
-      expect(result.clearanceAboveObstacle).toBeCloseTo(2.13, 1);
-      expect(result.isAdequate).toBe(true);
+    it('total fall distance subtracts the anchor height: 1.8 + 1.07 + 0.3 + 1.8 − 0.15 = 4.82 m', () => {
+      expect(fallClearance(example).totalFallDistance).toBeCloseTo(4.82, 3);
     });
 
-    it('should return false when anchor is at foot level', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 0,
-      });
-
-      expect(result.isAdequate).toBe(false);
-      expect(result.warnings.some(w => w.includes('Anchor at or below foot level'))).toBe(true);
+    it('required clearance adds the safety factor: 5.42 m', () => {
+      expect(fallClearance(example).requiredClearance).toBeCloseTo(5.42, 3);
     });
 
-    it('should return false when anchor is below foot level', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: -0.5,
-      });
-
-      expect(result.isAdequate).toBe(false);
-    });
-
-    it('should return false when worker contacts obstacle', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 3,
-        obstacleHeight: 0, // Ground level
-      });
-
-      // workerLowestPoint = 3 - 5.87 = -2.87m (below ground)
-      // clearanceAboveObstacle = -2.87 - 0 = -2.87m (negative = contact)
-      expect(result.clearanceAboveObstacle).toBeLessThan(0);
-      expect(result.isAdequate).toBe(false);
-      expect(result.warnings.some(w => w.includes('Insufficient clearance'))).toBe(true);
+    it('clearance below the anchor does not depend on where the anchor is', () => {
+      const low = fallClearance({ ...example, anchorAboveFeet: 0 });
+      const high = fallClearance({ ...example, anchorAboveFeet: 2 });
+      expect(low.clearanceBelowAnchor).toBe(high.clearanceBelowAnchor);
+      expect(low.requiredClearance - high.requiredClearance).toBeCloseTo(2, 6);
     });
   });
 
-  describe('real-world scenarios', () => {
-    it('should calculate typical rooftop scenario with adequate anchor', () => {
-      // Worker on rooftop with high overhead anchor point
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 8,
-        obstacleHeight: 0,
-      });
-
-      expect(result.totalFallDistance).toBeCloseTo(4.97, 2);
-      expect(result.isAdequate).toBe(true);
+  describe('adequacy needs the working height', () => {
+    it('is null without workingHeight — the verdict is not computable', () => {
+      const r = fallClearance(EIGHTEEN_FIVE);
+      expect(r.clearanceAboveObstacle).toBeNull();
+      expect(r.isAdequate).toBeNull();
     });
 
-    it('should calculate steel erection scenario', () => {
-      // Worker on steel beam with foot-level anchor - dangerous
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 0,
-      });
-
-      expect(result.totalFallDistance).toBeCloseTo(4.97, 2);
-      expect(result.minimumHeight).toBeCloseTo(5.87, 2);
-      expect(result.isAdequate).toBe(false);
+    it('is adequate when the working surface is higher than the required clearance', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, workingHeight: 5 });
+      expect(r.clearanceAboveObstacle).toBeCloseTo(5 - 13.5 * FT, 3);
+      expect(r.isAdequate).toBe(true);
     });
 
-    it('should calculate scenario with elevated obstacle', () => {
-      // Platform with equipment below
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 10,
-        obstacleHeight: 3, // Equipment at 3m height
-      });
+    it('is exactly adequate at zero margin', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, workingHeight: 13.5 * FT });
+      expect(r.clearanceAboveObstacle).toBeCloseTo(0, 6);
+      expect(r.isAdequate).toBe(true);
+    });
 
-      // workerLowestPoint = 10 - 5.87 = 4.13m
-      // clearanceAboveObstacle = 4.13 - 3 = 1.13m
-      expect(result.clearanceAboveObstacle).toBeCloseTo(1.13, 1);
-      expect(result.isAdequate).toBe(true);
+    it('an obstacle above the lower level eats into the margin', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, workingHeight: 5, obstacleHeight: 1.5 });
+      expect(r.clearanceAboveObstacle).toBeCloseTo(5 - 1.5 - 13.5 * FT, 3);
+      expect(r.isAdequate).toBe(false);
+      expect(r.warnings.some((w) => w.startsWith('Insufficient clearance'))).toBe(true);
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle zero lanyard length (SRL)', () => {
-      const result = fallClearance({
-        lanyardLength: 0,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 0,
-      });
-
-      // Total = 0 + 1.07 + 0.3 + 1.8 = 3.17m
-      expect(result.totalFallDistance).toBeCloseTo(3.17, 2);
+  describe('OSHA 1926.502(d)(16) limits', () => {
+    it('warns when the anchor is below the D-ring far enough for free fall to exceed 1.8 m', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, anchorAboveFeet: 0 });
+      expect(r.freeFallDistance).toBeCloseTo(6 * FT + 5 * FT, 3);
+      expect(r.warnings.some((w) => w.startsWith('Free fall'))).toBe(true);
     });
 
-    it('should handle zero safety factor', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0,
-        anchorHeight: 0,
-      });
-
-      // Total = 1.8 + 1.07 + 0.3 + 1.8 = 4.97m
-      expect(result.totalFallDistance).toBeCloseTo(4.97, 2);
-    });
-  });
-
-  describe('warnings generation', () => {
-    it('should warn about long lanyard', () => {
-      const result = fallClearance({
-        lanyardLength: 2.0, // Exceeds standard 1.8m
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 10,
-      });
-
-      expect(result.warnings.some(w => w.includes('Lanyard exceeds'))).toBe(true);
+    it('free fall is zero when the anchor is high enough to keep the lanyard slack-free', () => {
+      expect(fallClearance({ ...EIGHTEEN_FIVE, anchorAboveFeet: 5 }).freeFallDistance).toBe(0);
     });
 
-    it('should warn about excessive deceleration distance', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.2, // Exceeds OSHA max
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 10,
-      });
-
-      expect(result.warnings.some(w => w.includes('OSHA maximum'))).toBe(true);
+    it('accepts an anchor below the feet and reports it through the free-fall warning', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, anchorAboveFeet: -0.5 });
+      expect(r.totalFallDistance).toBeCloseTo(r.clearanceBelowAnchor - 3 * FT + 0.5, 2);
+      expect(r.warnings.some((w) => w.startsWith('Free fall'))).toBe(true);
     });
 
-    it('should warn about low rescue clearance', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 10,
-        rescueClearance: 0.5, // Below ANSI Z359.4 minimum
-      });
-
-      expect(result.warnings.some(w => w.includes('Rescue clearance below'))).toBe(true);
-    });
-
-    it('should warn about marginal clearance', () => {
-      const result = fallClearance({
-        lanyardLength: 1.8,
-        decelerationDistance: 1.07,
-        harnessStretch: 0.3,
-        workerHeight: 1.8,
-        safetyFactor: 0.9,
-        anchorHeight: 6, // Just barely adequate
-        obstacleHeight: 0,
-      });
-
-      // clearanceAboveObstacle = 6 - 5.87 = 0.13m (marginal)
-      expect(result.isAdequate).toBe(true);
-      expect(result.warnings.some(w => w.includes('increasing anchor height'))).toBe(true);
+    it('warns when deceleration exceeds 1.07 m', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, decelerationDistance: 1.2 });
+      expect(r.warnings).toContain('Deceleration distance exceeds the OSHA limit of 1.07 m (3.5 ft)');
     });
   });
 
   describe('input validation', () => {
-    const valid = {
-      lanyardLength: 1.8,
-      decelerationDistance: 1.07,
-      harnessStretch: 0.3,
-      workerHeight: 1.5,
-      safetyFactor: 0.6,
-      anchorHeight: 6,
-    };
-
-    it('should throw RangeError for non-positive workerHeight', () => {
-      expect(() => fallClearance({ ...valid, workerHeight: 0 })).toThrow(RangeError);
+    it('throws for a non-positive D-ring height', () => {
+      expect(() => fallClearance({ ...EIGHTEEN_FIVE, dRingHeight: 0 })).toThrow(RangeError);
     });
 
     it.each([
-      ['lanyardLength', { lanyardLength: -1 }],
-      ['decelerationDistance', { decelerationDistance: -1 }],
-      ['harnessStretch', { harnessStretch: -1 }],
-      ['safetyFactor', { safetyFactor: -1 }],
-      ['rescueClearance', { rescueClearance: -1 }],
-      ['obstacleHeight', { obstacleHeight: -1 }],
-    ])('should throw RangeError for negative %s', (_label, override) => {
-      expect(() => fallClearance({ ...valid, ...override })).toThrow(RangeError);
-    });
-
-    it('should NOT throw for non-positive anchorHeight (reports inadequate instead)', () => {
-      const result = fallClearance({ ...valid, anchorHeight: 0 });
-      expect(result.isAdequate).toBe(false);
+      ['lanyardLength', { lanyardLength: -0.1 }],
+      ['decelerationDistance', { decelerationDistance: -0.1 }],
+      ['harnessStretch', { harnessStretch: -0.1 }],
+      ['safetyFactor', { safetyFactor: -0.1 }],
+      ['workingHeight', { workingHeight: -1 }],
+      ['obstacleHeight', { obstacleHeight: -0.1 }],
+    ])('throws for a negative %s', (_label, override) => {
+      expect(() => fallClearance({ ...EIGHTEEN_FIVE, ...override })).toThrow(RangeError);
     });
   });
 });

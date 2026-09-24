@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ArcFlashResult` gains `normalizedIncidentEnergy`, `distanceExponent`, `standard`, and, at 1 kV or
   below, `reducedArcCurrent` (85 % of the arcing current, which the guide asks to evaluate as well).
   `arcCurrent` now has three decimal places.
+- **Breaking — `fallClearance()`**: every height is now measured from the worker's feet, and each
+  height means one thing. `FallClearanceInput` now takes `dRingHeight` (was `workerHeight`, whose
+  comment already said D-ring height), `anchorAboveFeet` (was `anchorHeight`), and an optional
+  `workingHeight`. `rescueClearance` is removed. `FallClearanceResult` now returns `requiredClearance`
+  (was `minimumHeight`), `clearanceBelowAnchor` (the "18.5 ft" figure) and `freeFallDistance`.
+  `clearanceAboveObstacle` and `isAdequate` are `null` when `workingHeight` is not given.
 
 ### Fixed
 
@@ -31,6 +37,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   Checked against a published IEEE 1584-2002 worked example (Phillips, 480 V panel, 30 kA): arcing
   current 16.761 kA and incident energy 0.969 cal/cm², both matching.
+
+- **`safety/fallClearance()` used `anchorHeight` with two meanings.** The minimum height treated it as
+  the anchor's height above the feet. The obstacle check treated it as the anchor's height above the
+  lower level. As a result:
+  - The total fall distance never subtracted the anchor height (4.97 m where the formula gives
+    4.82 m).
+  - The free-space figure added a 0.9 m "ANSI Z359.4 rescue clearance". No such minimum could be
+    confirmed, so it is removed.
+  - The obstacle verdict compared numbers measured from different references. For a worker 0.15 m
+    below the anchor it reported "5.42 m below obstacle".
+
+  The verdict now needs the working surface height and is `null` without it. There is a new warning
+  when free fall exceeds the OSHA 1926.502(d)(16)(iii) limit of 6 ft. The remaining unsourced warnings
+  (lanyard over 1.8 m, worker height range, safety factor under 0.6 m, rescue clearance) are removed. Checked against the widely
+  published 18.5 ft figure (6 ft lanyard, 3.5 ft deceleration, 1 ft stretch, 5 ft D-ring height, 3 ft
+  safety factor).
 
 - **`safety/ladderAngle()` `idealBaseDistance` is a quarter of the ladder's working length**, per OSHA
   29 CFR 1926.1053(b)(5)(i), instead of a quarter of its height. The function's own 75.5° default

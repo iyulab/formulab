@@ -223,7 +223,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `arcFlash()` | `throw` | voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0; voltage outside 208–15 000 V, boltedFaultCurrent outside 0.7–106 kA, gapBetweenConductors outside 13–152 mm (IEEE 1584-2002 model range); `mcc`/`panel` above 1 kV (no Table 4 distance exponent) |
 | `confinedSpace()` | `throw` | oxygenPercent outside 0–100, or any gas reading (lelPercent, h2sPpm, coPpm, customGas) negative; customGas pel/idlh ≤ 0. A reading of 0 is a valid measurement and does not throw. |
 | `ergonomicRisk()` | `throw` | load < 0 (joint angles may be negative and are not checked) |
-| `fallClearance()` | `throw` | workerHeight ≤ 0, or any distance negative. anchorHeight ≤ 0 is a valid (inadequate) geometry → isAdequate=false, does not throw. |
+| `fallClearance()` | `throw` | dRingHeight ≤ 0, or lanyardLength/decelerationDistance/harnessStretch/safetyFactor/workingHeight/obstacleHeight negative. A negative anchorAboveFeet (anchor below the feet) is valid geometry and is reported through the free-fall warning. Without workingHeight, `clearanceAboveObstacle` and `isAdequate` are `null` (not computable), not a throw. |
 | `havsCalculate()` | `throw` | a tool has negative vibrationMagnitude/exposureTime (empty/all-zero tool list is valid) |
 | `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight |
 | `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied) |
