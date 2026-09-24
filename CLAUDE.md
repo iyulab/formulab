@@ -56,7 +56,7 @@ Each function file follows the pattern in `src/quality/cpk.ts`:
 4. Verified functions carry **golden reference tests** asserting against published values from the cited standard — preserve and extend these; don't loosen a golden assertion to make a change pass.
 
    **A ratio, an inequality or the function's own output is not a golden.** In 2026-09 seven functions passed
-   their tests while wrong by a constant or a unit: `reliefValve()` gas areas were 7.6× too large for years
+   their tests while wrong by a constant or a unit: `reliefValve()` gas areas were 7.6× too large
    under a "golden" that compared only the steam/gas area ratio, which no constant factor can change;
    `flowControl()` returned Kv as Cv under `cv > 0` and `kv ≈ 0.865 × cv`; `injectionCycle()` used half the
    wall thickness under "thicker walls cool longer". Each was caught by putting a published worked example
