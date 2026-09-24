@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.49.1] - 2026-09-24
+
+### Fixed
+
+- **`chemical/injectionCycle()` cooling time was a quarter of the plate solution.** The equation
+  s² / (π² α) × ln(…) takes the full wall thickness s, but half the thickness was used. ABS at 2 mm now
+  cools in 4.18 s, not 1.04 s. The packing time (40% of cooling) and the total cycle change with it.
+
 ## [0.49.0] - 2026-09-24
 
 ### Fixed

@@ -79,11 +79,12 @@ const RESIN_PROPERTIES: Record<Exclude<ResinType, 'custom'>, ResinProperties> = 
 /**
  * Calculate injection molding cycle time.
  *
- * Cooling time formula (simplified from Fourier equation):
- * tc = (h^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw))
+ * Cooling time formula (one-dimensional plate, mean temperature reaching the ejection temperature):
+ * tc = (s^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw))
  *
  * where:
- * - h = half wall thickness (mm)
+ * - s = wall thickness (mm), the full thickness between the two mold walls
+ *   (the first term of the plate series decays as exp(-PI^2 * alpha * t / s^2))
  * - alpha = thermal diffusivity (mm^2/s)
  * - Tm = melt temperature
  * - Tw = mold wall temperature
@@ -117,11 +118,9 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
     props = RESIN_PROPERTIES[resin];
   }
 
-  // Half wall thickness
-  const h = wallThickness / 2;
-
   // Calculate cooling time
-  // tc = (h^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw))
+  // tc = (s^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw)), s = full wall thickness
+  const s = wallThickness;
   const piSquared = Math.PI * Math.PI;
   const tempRatioNumerator = props.meltTemp - props.moldTemp;
   const tempRatioDenominator = props.ejectionTemp - props.moldTemp;
@@ -134,7 +133,7 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
     if (tempRatio <= 0) {
       coolingTime = 0;
     } else {
-      coolingTime = (h * h / (piSquared * props.thermalDiffusivity)) * Math.log(tempRatio);
+      coolingTime = (s * s / (piSquared * props.thermalDiffusivity)) * Math.log(tempRatio);
     }
   }
 

@@ -339,4 +339,26 @@ describe('injectionCycle rejects inputs that would produce a non-finite result',
   it('throws RangeError for zero custom density', () => {
     expect(() => injectionCycle({ resin: 'custom', wallThickness: 3, shotWeight: 50, density: 0 })).toThrow(RangeError);
   });
+
+  describe('cooling time uses the full wall thickness (plate solution)', () => {
+    it('ABS 2 mm (table: α 0.12, 230 / 60 / 100 °C): 2² / (π² × 0.12) × ln((8/π²) × 170 / 40) = 4.18 s', () => {
+      const r = injectionCycle({ resin: 'abs', wallThickness: 2, shotWeight: 50 });
+      expect(r.coolingTime).toBeCloseTo(4.18, 2);
+    });
+
+    it('at that time the plate mean temperature has fallen to the ejection temperature', () => {
+      // mean excess temperature of a plate of thickness s: (8/π²) exp(−π² α t / s²) × (Tm − Tw)
+      const s = 3;
+      const a = 0.12;
+      const r = injectionCycle({ resin: 'custom', wallThickness: s, shotWeight: 50, thermalDiffusivity: a, meltTemp: 230, moldTemp: 60, ejectionTemp: 90 });
+      const mean = 60 + (8 / Math.PI ** 2) * Math.exp((-(Math.PI ** 2) * a * r.coolingTime) / s ** 2) * 170;
+      expect(mean).toBeCloseTo(90, 1);
+    });
+
+    it('doubling the wall thickness quadruples the cooling time', () => {
+      const thin = injectionCycle({ resin: 'abs', wallThickness: 2, shotWeight: 50 });
+      const thick = injectionCycle({ resin: 'abs', wallThickness: 4, shotWeight: 50 });
+      expect(thick.coolingTime / thin.coolingTime).toBeCloseTo(4, 1);
+    });
+  });
 });
