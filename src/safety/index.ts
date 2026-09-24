@@ -60,6 +60,7 @@ export type {
   RebaInput,
   RebaResult,
   // Arc Flash types
+  ArcFlashEquipment,
   ArcFlashInput,
   ArcFlashResult,
   // Confined Space types

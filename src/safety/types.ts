@@ -283,22 +283,32 @@ export interface RebaResult {
 /**
  * Arc Flash Types — IEEE 1584 / NFPA 70E
  */
+/** IEEE 1584-2002 Table 4 equipment class. `open` and `cable` have no enclosure (open configuration). */
+export type ArcFlashEquipment = 'open' | 'switchgear' | 'mcc' | 'panel' | 'cable';
+
 export interface ArcFlashInput {
-  voltage: number;            // V (208-15000)
-  boltedFaultCurrent: number; // kA
-  workingDistance: number;     // mm
-  faultClearingTime: number;  // seconds
-  gapBetweenConductors: number; // mm
-  enclosureType: 'open' | 'box' | 'mcc' | 'panel' | 'cable';
+  voltage: number;              // V, 208–15 000
+  boltedFaultCurrent: number;   // kA, 0.7–106
+  workingDistance: number;      // mm
+  faultClearingTime: number;    // s
+  gapBetweenConductors: number; // mm, 13–152
+  equipment: ArcFlashEquipment;
+  /** `ungrounded` covers high-resistance grounded systems (K2 = 0); `grounded` is solidly grounded (K2 = −0.113). */
+  grounding: 'grounded' | 'ungrounded';
 }
 
 export interface ArcFlashResult {
-  arcCurrent: number;         // kA
-  incidentEnergy: number;     // cal/cm²
-  arcFlashBoundary: number;   // mm
+  arcCurrent: number;                // kA
+  /** 85 % of the arcing current, V ≤ 1 kV only — IEEE 1584-2002 asks for a second evaluation at it. */
+  reducedArcCurrent?: number;        // kA
+  normalizedIncidentEnergy: number;  // cal/cm² at 610 mm, 0.2 s
+  incidentEnergy: number;            // cal/cm²
+  arcFlashBoundary: number;          // mm, where E = 1.2 cal/cm²
+  distanceExponent: number;          // x, IEEE 1584-2002 Table 4
   ppeCategory: 0 | 1 | 2 | 3 | 4;
   hazardLevel: 'safe' | 'danger' | 'extreme';
   requiredPPE: string;
+  standard: 'IEEE 1584-2002';
 }
 
 /**

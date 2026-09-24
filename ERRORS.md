@@ -220,7 +220,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `arcFlash()` | `throw` | voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0 |
+| `arcFlash()` | `throw` | voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0; voltage outside 208–15 000 V, boltedFaultCurrent outside 0.7–106 kA, gapBetweenConductors outside 13–152 mm (IEEE 1584-2002 model range); `mcc`/`panel` above 1 kV (no Table 4 distance exponent) |
 | `confinedSpace()` | `throw` | oxygenPercent outside 0–100, or any gas reading (lelPercent, h2sPpm, coPpm, customGas) negative; customGas pel/idlh ≤ 0. A reading of 0 is a valid measurement and does not throw. |
 | `ergonomicRisk()` | `throw` | load < 0 (joint angles may be negative and are not checked) |
 | `fallClearance()` | `throw` | workerHeight ≤ 0, or any distance negative. anchorHeight ≤ 0 is a valid (inadequate) geometry → isAdequate=false, does not throw. |

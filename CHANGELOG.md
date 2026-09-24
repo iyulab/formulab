@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking — `ArcFlashInput`**: `enclosureType` is replaced by `equipment: 'open' | 'switchgear' |
+  'mcc' | 'panel' | 'cable'` (IEEE 1584-2002 Table 4 classes; `box` becomes `switchgear`), and
+  `grounding: 'grounded' | 'ungrounded'` is now required (use `ungrounded` for high-resistance
+  grounded systems).
+- `arcFlash()` throws a `RangeError` for inputs outside the model range (208 V–15 kV, 0.7–106 kA,
+  13–152 mm gap) and for MCC or panel above 1 kV, where Table 4 gives no distance exponent.
+- `ArcFlashResult` gains `normalizedIncidentEnergy`, `distanceExponent`, `standard`, and, at 1 kV or
+  below, `reducedArcCurrent` (85 % of the arcing current, which the guide asks to evaluate as well).
+  `arcCurrent` now has three decimal places.
+
 ### Fixed
+
+- **`safety/arcFlash()` now implements IEEE 1584-2002 as published.** The function said it followed
+  IEEE 1584-2018 but used the 2002 equations, and it got several of those wrong:
+  - The low-voltage arcing current left out K (−0.153 open, −0.097 box), so it was about 25 % too high.
+  - Cf (1.5 at 1 kV or below, 1.0 above) was chosen by enclosure type instead of by voltage.
+  - The distance exponent depended only on voltage (1.641 or 0.973). Table 4 gives it per equipment
+    class: open air and cable 2.000, switchgear 1.473 or 0.973, MCC and panel 1.641.
+  - K2 was always 0, which is the ungrounded value, although a comment called it grounded.
+
+  Checked against a published IEEE 1584-2002 worked example (Phillips, 480 V panel, 30 kA): arcing
+  current 16.761 kA and incident energy 0.969 cal/cm², both matching.
 
 - **`safety/ladderAngle()` `idealBaseDistance` is a quarter of the ladder's working length**, per OSHA
   29 CFR 1926.1053(b)(5)(i), instead of a quarter of its height. The function's own 75.5° default
