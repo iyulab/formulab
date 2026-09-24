@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.48.1] - 2026-09-24
+
+### Fixed
+
+- **`safety/fallClearance()` warned about compliant values.** OSHA 1926.502(d)(16) states each limit
+  in both feet and metres: "6 feet (1.8 m)" for free fall and "3.5 feet (1.07 m)" for deceleration.
+  The two do not convert exactly. 0.48.0 compared against the exact feet value, so a deceleration
+  distance of exactly 1.07 m — the standard's own metric figure and the usual absorber rating — was
+  reported as over the limit. A value is now within the limit if it meets either stated figure.
+
 ## [0.48.0] - 2026-09-24
 
 ### Changed

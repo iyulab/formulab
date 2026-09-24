@@ -1,10 +1,16 @@
 import { roundTo } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
 
-/** OSHA 29 CFR 1926.502(d)(16)(iii) — a personal fall arrest system must limit free fall to 6 ft. */
-const MAX_FREE_FALL = 6 * 0.3048; // m — the rule is written in feet; 1.8 m is its rounded metric
-/** OSHA 29 CFR 1926.502(d)(16)(iv) — deceleration distance must not exceed 3.5 ft. */
-const MAX_DECELERATION = 3.5 * 0.3048; // m
+/*
+ * OSHA 29 CFR 1926.502(d)(16) states each limit in both units — "6 feet (1.8 m)", "3.5 feet
+ * (1.07 m)" — and the two do not convert exactly (6 ft = 1.8288 m, 3.5 ft = 1.0668 m). A value
+ * that meets either statement complies, so the limit is the larger of the two: a 6 ft lanyard's
+ * free fall and a 1.07 m absorber rating are both within the rule.
+ */
+/** OSHA 29 CFR 1926.502(d)(16)(iii) — free fall. */
+const MAX_FREE_FALL = Math.max(6 * 0.3048, 1.8); // m
+/** OSHA 29 CFR 1926.502(d)(16)(iv) — deceleration distance. */
+const MAX_DECELERATION = Math.max(3.5 * 0.3048, 1.07); // m
 
 /**
  * Fall clearance for a personal fall arrest system on a fixed-length shock-absorbing lanyard.

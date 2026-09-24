@@ -122,6 +122,17 @@ describe('fallClearance', () => {
       expect(r.warnings.some((w) => w.startsWith('Free fall'))).toBe(true);
     });
 
+    it('a limit met in either unit OSHA states is met: 1.07 m deceleration and 6 ft free fall do not warn', () => {
+      const r = fallClearance({ ...EIGHTEEN_FIVE, decelerationDistance: 1.07 });
+      expect(r.freeFallDistance / FT).toBeCloseTo(6, 2);
+      expect(r.warnings).toEqual([]);
+    });
+
+    it('just past the larger statement it warns: 1.071 m deceleration, 1.829 m free fall', () => {
+      expect(fallClearance({ ...EIGHTEEN_FIVE, decelerationDistance: 1.071 }).warnings.some((w) => w.startsWith('Deceleration'))).toBe(true);
+      expect(fallClearance({ ...EIGHTEEN_FIVE, lanyardLength: 1.83 }).warnings.some((w) => w.startsWith('Free fall'))).toBe(true);
+    });
+
     it('warns when deceleration exceeds 1.07 m', () => {
       const r = fallClearance({ ...EIGHTEEN_FIVE, decelerationDistance: 1.2 });
       expect(r.warnings).toContain('Deceleration distance exceeds the OSHA limit of 1.07 m (3.5 ft)');
