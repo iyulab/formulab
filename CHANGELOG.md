@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.50.0] - 2026-09-28
+
+### Changed
+
+- **`electronics/smtTakt()` now treats one cycle as one panel.** The placement time covered one board,
+  but boards per shift multiplied the cycles by `boardsPerPanel`, so the two throughput figures
+  disagreed whenever a panel held more than one board (87.8 boards/h against 1,404 boards per 8-hour
+  shift). A cycle now places every board on the panel, then adds the setup time, and boards per hour
+  counts all of them: 20,000 CPH, 200 components per board, 2 boards per panel and 5 s setup give a
+  72 s placement, a 77 s cycle and 93.5 boards/h (was 36 s, 41 s, 87.8). Results with
+  `boardsPerPanel: 1` are unchanged. The test that covered panels asserted the old arithmetic.
+
 ## [0.49.2] - 2026-09-28
 
 ### Fixed

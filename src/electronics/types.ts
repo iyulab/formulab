@@ -45,7 +45,9 @@ export interface SmtTaktInput {
   availableTimeMin: number;    // default 480 (8 hours)
 }
 
+/** One cycle is one panel (all its boards placed, then setup); throughput is in boards. */
 export interface SmtTaktResult {
+  /** Placement time for one panel — every board on it. */
   placementTimeSec: number;
   /** The setup time added to each cycle, as given — `totalCycleTimeSec = placementTimeSec + setupTimeSec` */
   setupTimeSec: number;

@@ -103,9 +103,33 @@ describe('smtTakt', () => {
         availableTimeMin: 480,
       });
 
-      // Panels = floor(28800 / 15) = 1920
-      // Boards = 1920 × 4 = 7680
-      expect(result.totalBoardsPerShift).toBe(7680);
+      // A panel carries 4 × 100 = 400 components: 400 / 36000 × 3600 = 40 s, + 5 s setup = 45 s.
+      // Panels = 28800 / 45 = 640 → boards = 640 × 4 = 2560 (7680 until 0.50.0, which placed only
+      // one board's components per panel cycle).
+      expect(result.placementTimeSec).toBe(40);
+      expect(result.totalCycleTimeSec).toBe(45);
+      expect(result.boardsPerHour).toBe(320);
+      expect(result.totalBoardsPerShift).toBe(2560);
+    });
+  });
+
+  describe('panel cycle (golden, hand-worked)', () => {
+    // 20,000 CPH, 200 components per board, 2 boards per panel, 5 s setup:
+    // 400 / (20000 / 3600) = 72 s placement, 77 s cycle, 3600 / 77 × 2 = 93.51 boards/h.
+    const input = { placementRate: 20000, componentsPerBoard: 200, boardsPerPanel: 2, setupTimeSec: 5, availableTimeMin: 480 };
+
+    it('places every board of the panel in one cycle', () => {
+      const r = smtTakt(input);
+      expect(r.placementTimeSec).toBe(72);
+      expect(r.totalCycleTimeSec).toBe(77);
+      expect(r.boardsPerHour).toBeCloseTo(93.51, 2);
+    });
+
+    it('boards per hour and boards per shift describe the same line', () => {
+      const r = smtTakt(input);
+      // 8 h × boards/h = boards per shift (floored)
+      expect(r.totalBoardsPerShift).toBe(Math.floor((input.availableTimeMin / 60) * (3600 / r.totalCycleTimeSec) * input.boardsPerPanel));
+      expect(Math.abs(r.totalBoardsPerShift - (input.availableTimeMin / 60) * r.boardsPerHour)).toBeLessThan(1);
     });
   });
 
