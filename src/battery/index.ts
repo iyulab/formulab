@@ -13,6 +13,7 @@ export type {
   BatteryPackConfigResult,
   CycleLifeInput,
   CycleLifeResult,
+  DodCurve,
   InternalResistanceInput,
   InternalResistanceResult,
   SelfDischargeInput,

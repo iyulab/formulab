@@ -192,7 +192,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `cRate()` | `throw` | capacityAh ≤ 0, currentA ≤ 0, cRate ≤ 0 |
 | `stateOfHealth()` | `throw` | ratedCapacity ≤ 0 |
 | `batteryPackConfig()` | `throw` | cellVoltage ≤ 0 |
-| `cycleLife()` | `throw` | Unknown chemistry |
+| `cycleLife()` | `throw` | Unknown chemistry; depthOfDischarge ≤ 0, > 100 or non-finite |
 | `internalResistance()` | `throw` | loadCurrent = 0 |
 | `selfDischarge()` | `throw` | days ≤ 0 |
 | `thermalRunaway()` | `throw` | surfaceArea ≤ 0 |

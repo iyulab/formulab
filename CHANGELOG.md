@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.51.0] - 2026-09-29
+
+### Changed
+
+- **`battery/cycleLife()` takes its depth-of-discharge factor from Battery University BU-808, Table 2.**
+  The factor was a three-point piecewise-linear guess, flat at 1.5 from 0 to 50% DOD and 0.7 at 100%.
+  So 10% and 50% DOD gave the same life, and 50% against 100% differed by 2.1×, where the source it
+  cited differs by about 2.6× for NMC and far more at shallow depths. The factor is now each table row
+  over its 80% row (the base cycles stay the datasheet figure at 80% DOD), interpolated log-linearly
+  between rows and held at the 10% row below it (disclosed by the new `dodBelowTable` flag). LFP follows the table's LiPO4 column; other chemistries
+  follow the NMC column as an approximation, and the new `dodCurve` field says which. NMC at 60% DOD and
+  40°C now gives 1,800 cycles (was 1,600); at 100% DOD a factor of 0.75 (was 0.7); at 20%, 5.0 (was 1.5).
+- `cycleLife()` now throws `RangeError` for a depth of discharge outside (0, 100] and for an unknown
+  chemistry, which returned `NaN` although `ERRORS.md` already documented the throw.
+
 ## [0.50.0] - 2026-09-28
 
 ### Changed

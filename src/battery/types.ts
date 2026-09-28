@@ -82,12 +82,19 @@ export interface CycleLifeInput {
   temperatureC: number;        // C
 }
 
+/** The Battery University BU-808 Table 2 column a chemistry's DOD factor follows. */
+export type DodCurve = 'NMC' | 'LFP';
+
 export interface CycleLifeResult {
   estimatedCycles: number;
   baseCycles: number;
   dodFactor: number;
   temperatureFactor: number;
   chemistry: BatteryChemistry;
+  /** Which BU-808 column set the DOD factor — 'NMC' is an approximation for chemistries the table has no column for. */
+  dodCurve: DodCurve;
+  /** True when depthOfDischarge is below the table's shallowest row (10%) and that row's factor was used. */
+  dodBelowTable: boolean;
 }
 
 /**
