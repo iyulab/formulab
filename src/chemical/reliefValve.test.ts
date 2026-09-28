@@ -225,6 +225,30 @@ describe('reliefValve', () => {
     });
   });
 
+  describe('steam default molecular weight (golden, API 520 Part I Napier steam equation)', () => {
+    // Independent reference: API 520 Part I's steam equation, SI form A = 190.5 W / (P1 Kd Kb Kc KN KSH)
+    // [mm², kg/h, kPa a] (as reproduced by the `fluids` library, API520_A_steam). Saturated steam,
+    // 5,000 kg/h, set 1,000 kPa(g), 10 % overpressure → P1 = 1,201.325 kPa a, Tsat ≈ 188 °C,
+    // KN = KSH = 1 (P1 < 10,339 kPa, saturated): A = 190.5 × 5000 / (1201.325 × 0.975) = 813.2 mm².
+    // The gas equation with water's M lands within 1 %; with air's M (29, the default until 0.49.2)
+    // it was 646 mm², 20.5 % small.
+    const saturated = {
+      requiredCapacity: 5000, setPressure: 1000, backPressure: 0, temperature: 188, fluidType: 'steam',
+    } as const;
+
+    it('saturated steam agrees with the Napier equation within 2 %', () => {
+      const napier = (190.5 * 5000) / (1201.325 * 0.975);
+      expect(napier).toBeCloseTo(813.2, 1);
+      const { requiredArea } = reliefValve(saturated);
+      expect(Math.abs(requiredArea / napier - 1)).toBeLessThan(0.02);
+    });
+
+    it('defaults to water (18.015), not air', () => {
+      expect(reliefValve(saturated).requiredArea)
+        .toBeCloseTo(reliefValve({ ...saturated, molecularWeight: 18.015 }).requiredArea, 6);
+    });
+  });
+
   describe('gas critical-flow coefficient C (golden, API 520 Part I)', () => {
     // A ratio test only: it is blind to any constant factor, which is how a US-units C (520…)
     // applied to SI inputs overstated every gas area 7.6× until 0.49.0. The absolute goldens are

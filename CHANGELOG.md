@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.49.2] - 2026-09-28
+
+### Fixed
+
+- **`chemical/reliefValve()` sized steam with air's molecular weight.** Steam goes through the gas
+  equation, but `molecularWeight` defaulted to 29 for every fluid, so each steam area was about 21%
+  too small (√(18.015/29) = 0.788). Steam now defaults to water, 18.015. Saturated steam at
+  5,000 kg/h and 10 barg needs about 820 mm², within 1% of API 520's own steam equation (813 mm²),
+  not 654 mm². The steam test compared steam with gas at the same molecular weight, so it could not
+  see the default.
+
 ## [0.49.1] - 2026-09-24
 
 ### Fixed

@@ -31,8 +31,9 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  *   - Relieving pressure P1 = set pressure × (1 + overpressure) + atmospheric
  *   - Standard orifice selection per API 526
  *
- * Steam is sized with the gas equation at k = 1.3 unless `specificHeatRatio` is given; API 520's
- * dedicated Napier steam equation is not implemented. Kb, Kw, Kc and Kv are taken as 1.0.
+ * Steam is sized with the gas equation at k = 1.3 and M = 18.015 (water) unless `specificHeatRatio` /
+ * `molecularWeight` are given; API 520's dedicated Napier steam equation is not implemented. For
+ * saturated steam below ~10 MPa the two agree within about 1% (see the golden test). Kb, Kw, Kc and Kv are taken as 1.0.
  *
  * @reference API 520 Part I — Sizing and Selection of Pressure-Relieving Devices (SI equations)
  * @reference API 526 (2017) — Flanged Steel Pressure-Relief Valves
@@ -54,7 +55,9 @@ const API_ORIFICES: { letter: string; area: number }[] = [
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
     requiredCapacity, setPressure, backPressure, temperature, fluidType,
-    molecularWeight = 29, specificGravity = 1.0,
+    // Steam goes through the gas equation, so its default must be water's, not air's: 29 made every
+    // steam area about 21% too small until 0.49.2.
+    molecularWeight = fluidType === 'steam' ? 18.015 : 29, specificGravity = 1.0,
     overpressure = 10, dischargeCoefficient,
     specificHeatRatio = fluidType === 'steam' ? 1.3 : 1.4,
     compressibility = 1.0,

@@ -238,6 +238,7 @@ export interface ReliefValveInput {
   backPressure: number;       // kPa (gauge)
   temperature: number;        // °C
   fluidType: 'liquid' | 'gas' | 'steam';
+  /** kg/kmol for gas/steam (default 29 gas, 18.015 steam). */
   molecularWeight?: number;
   specificGravity?: number;   // for liquid, water=1.0
   overpressure?: number;      // %, default 10
