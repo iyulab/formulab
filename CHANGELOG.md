@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.53.0] - 2026-10-14
+
+### Changed
+
+- **`machining/threadOverWires()` throws on thread parameters that describe no thread**, as `ERRORS.md`
+  already documented. It validated nothing: a 1 mm thread with a 2 mm pitch returned a pitch diameter of
+  −0.299 mm, a negative diameter or wire returned negative measurements, a pitch of 0 a best wire of 0,
+  and a thread angle outside 60/55/29/30 took the 30° pitch diameter with that angle's wire geometry.
+  It now throws `RangeError` for a diameter, pitch or given wire size that is not a positive finite
+  number, for an unsupported thread angle, and for a pitch so coarse that the pitch diameter would not be
+  positive (60°: P ≥ d / 0.6495; Acme and trapezoidal: P ≥ 2d). Valid threads give the same results.
+
 ## [0.52.0] - 2026-10-14
 
 ### Changed

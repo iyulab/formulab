@@ -211,7 +211,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `cuspHeight()` | `throw` | toolDiameter ≤ 0 |
 | `effectiveDiameter()` | `throw` | Invalid depth |
 | `boringBarDeflection()` | `throw` | barDiameter ≤ 0, overhang ≤ 0, cuttingForce < 0 |
-| `threadOverWires()` | `throw` | Invalid thread parameters |
+| `threadOverWires()` | `throw` | majorDiameter, pitch or a given wireSize ≤ 0 or non-finite; threadAngle not 60/55/29/30; pitch so coarse the pitch diameter is not positive (60°: P ≥ d / 0.6495; 29°/30°: P ≥ 2d) |
 | `gaugeBlockStack()` | `throw` | Target out of range |
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
 | `cycleTimeEstimator()` | `throw` | rapid move with rapidRate ≤ 0. Empty operations → zero times (sentinel) |

@@ -68,4 +68,32 @@ describe('threadOverWires', () => {
     expect(result.bestWireSize).toBeGreaterThan(0);
     expect(result.pitchDiameter).toBeCloseTo(25.4 - 0.5 * 5.08, 2);
   });
+
+  describe('invalid thread parameters (ERRORS.md: throw)', () => {
+    it('refuses a non-positive or non-finite diameter, pitch or wire', () => {
+      expect(() => threadOverWires({ majorDiameter: -5, pitch: 1 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: 0, pitch: 1 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: 0 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: -1 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: Number.NaN, pitch: 1 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: 1, wireSize: -1 })).toThrow(RangeError);
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: 1, wireSize: 0 })).toThrow(RangeError);
+    });
+
+    it('refuses a thread angle it has no pitch-diameter formula for, instead of mixing two forms', () => {
+      // 45° used to take the 30° pitch diameter and the 45° wire geometry.
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: 1, threadAngle: 45 as never })).toThrow(/threadAngle/);
+    });
+
+    it('refuses a pitch so coarse that the pitch diameter would not be positive', () => {
+      // 60°: d₂ = 1 − 0.6495 × 2 = −0.299 — no such thread.
+      expect(() => threadOverWires({ majorDiameter: 1, pitch: 2 })).toThrow(/too coarse/);
+      // Boundary: P = d / 0.6495 gives d₂ = 0; just below it is still a (very coarse) thread.
+      expect(() => threadOverWires({ majorDiameter: 6.495, pitch: 10 })).toThrow(/too coarse/);
+      expect(threadOverWires({ majorDiameter: 6.495, pitch: 9.99 }).pitchDiameter).toBeGreaterThan(0);
+      // Acme / trapezoidal: k = 0.5, so the limit is P = 2d.
+      expect(() => threadOverWires({ majorDiameter: 10, pitch: 20, threadAngle: 29 })).toThrow(/too coarse/);
+      expect(threadOverWires({ majorDiameter: 10, pitch: 19.9, threadAngle: 30 }).pitchDiameter).toBeCloseTo(0.05, 4);
+    });
+  });
 });
