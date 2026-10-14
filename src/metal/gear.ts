@@ -16,6 +16,9 @@ const PRESSURE_ANGLE_RAD = (PRESSURE_ANGLE_DEG * Math.PI) / 180;
  * Base circle diameter: db = d x cos(pressure angle)
  *
  * @reference ISO 21771 — Gears — Cylindrical involute gears and gear pairs — Concepts and geometry
+ * @throws {RangeError} fromModule: module or teethGear1 missing or not greater than 0, or a given
+ *   teethGear2 not greater than 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or not
+ *   greater than 0
  */
 export function gear(input: GearInput): GearResult {
   const { mode } = input;
@@ -24,19 +27,27 @@ export function gear(input: GearInput): GearResult {
   let z1: number;
   let z2: number | undefined;
 
+  // A missing or non-positive module, pitch diameter or tooth count has no gear to describe; the
+  // former all-zero result read as a 0 mm gear.
   if (mode === 'fromModule') {
-    // Validate inputs for fromModule mode
-    if (!input.module || input.module <= 0 || !input.teethGear1 || input.teethGear1 <= 0) {
-      return createEmptyResult();
+    if (!(input.module !== undefined && input.module > 0)) {
+      throw new RangeError('module must be greater than 0');
+    }
+    if (!(input.teethGear1 !== undefined && input.teethGear1 > 0)) {
+      throw new RangeError('teethGear1 must be greater than 0');
+    }
+    if (input.teethGear2 !== undefined && !(input.teethGear2 > 0)) {
+      throw new RangeError('teethGear2 must be greater than 0 when given');
     }
     module = input.module;
     z1 = input.teethGear1;
-    z2 = input.teethGear2 && input.teethGear2 > 0 ? input.teethGear2 : undefined;
+    z2 = input.teethGear2;
   } else {
-    // fromPitchDiameter mode
-    if (!input.pitchDiameter || input.pitchDiameter <= 0 ||
-        !input.numberOfTeeth || input.numberOfTeeth <= 0) {
-      return createEmptyResult();
+    if (!(input.pitchDiameter !== undefined && input.pitchDiameter > 0)) {
+      throw new RangeError('pitchDiameter must be greater than 0');
+    }
+    if (!(input.numberOfTeeth !== undefined && input.numberOfTeeth > 0)) {
+      throw new RangeError('numberOfTeeth must be greater than 0');
     }
     module = input.pitchDiameter / input.numberOfTeeth;
     z1 = input.numberOfTeeth;
@@ -76,15 +87,4 @@ export function gear(input: GearInput): GearResult {
   }
 
   return result;
-}
-
-function createEmptyResult(): GearResult {
-  return {
-    module: 0,
-    pitchDiameter1: 0,
-    addendum: 0,
-    dedendum: 0,
-    circularPitch: 0,
-    baseCircleDiameter1: 0,
-  };
 }

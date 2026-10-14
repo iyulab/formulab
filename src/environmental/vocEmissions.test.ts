@@ -51,9 +51,9 @@ describe('vocEmissions', () => {
 });
 
 describe('vocEmissions contract restoration (2026-07 audit)', () => {
-  it('reports reductionPercent 0 for zero VOC total instead of NaN (valid-but-degenerate)', () => {
+  it('reports the abatement efficiency as the reduction when no VOC is used', () => {
     const result = vocEmissions({ totalVocKg: 0, captureEfficiency: 0.9, destructionEfficiency: 0.95 });
-    expect(result.reductionPercent).toBe(0);
+    expect(result.reductionPercent).toBe(85.5);
     expect(result.emittedVocKg).toBe(0);
   });
 

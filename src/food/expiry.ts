@@ -23,7 +23,8 @@ function addDays(date: string, days: number): string {
  *
  * @param input - Expiry input parameters
  * @returns Expiry result with dates and remaining time
- * @throws {RangeError} calculateExpiry mode with a negative shelfLifeDays
+ * @throws {RangeError} calculateExpiry mode with a negative shelfLifeDays; calculateRemaining mode
+ *   with an expiryDate before the productionDate
  */
 export function expiry(input: ExpiryInput): ExpiryResult {
   const { mode, productionDate, shelfLifeDays, expiryDate, today } = input;
@@ -51,6 +52,10 @@ export function expiry(input: ExpiryInput): ExpiryResult {
   } else {
     // Given production date + expiry date → calculate remaining
     const totalShelfLife = daysBetween(productionDate, expiryDate);
+    // An expiry before production is a contradiction, not a product that is 100 % used up.
+    if (totalShelfLife < 0) {
+      throw new RangeError('expiryDate must not be before productionDate');
+    }
     const remaining = daysBetween(today, expiryDate);
     const isExpired = remaining < 0;
     const percentUsed = totalShelfLife > 0

@@ -98,6 +98,16 @@ describe('expiry', () => {
       expect(result.isExpired).toBe(true);
     });
 
+    it('rejects an expiry date before the production date', () => {
+      expect(() => expiry({
+        mode: 'calculateRemaining',
+        productionDate: '2025-01-10',
+        shelfLifeDays: 0,
+        expiryDate: '2025-01-01',
+        today: '2025-01-05',
+      })).toThrow(/expiryDate must not be before productionDate/);
+    });
+
     it('should calculate percent used in remaining mode', () => {
       const result = expiry({
         mode: 'calculateRemaining',

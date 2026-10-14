@@ -138,7 +138,7 @@ export type AggregateType = 'gravel' | 'sand' | 'crushed_stone' | 'topsoil' | 'm
 
 export interface AggregateDensity {
   type: AggregateType;
-  density: number; // kg/m³
+  density: number | null; // kg/m³; null for 'custom' (the caller supplies it)
   label: string;
 }
 

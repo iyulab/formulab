@@ -240,8 +240,12 @@ describe('aggregate', () => {
       expect(getAggregateDensity('sand')).toBe(1600);
     });
 
-    it('should return 0 for custom type', () => {
-      expect(getAggregateDensity('custom')).toBe(0);
+    it('has no table density for the custom type — null, not 0 kg/m³', () => {
+      expect(getAggregateDensity('custom')).toBeNull();
+    });
+
+    it('rejects a type that is not in the table', () => {
+      expect(() => getAggregateDensity('basalt' as never)).toThrow(/unknown aggregate type/);
     });
   });
 

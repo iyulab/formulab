@@ -40,6 +40,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one, the auto σ fell back to 1 in whatever unit the readings use, which set the decision interval at random. It
   now throws there unless `stdDev` or both `allowance` and `decisionInterval` are given; σ is not needed at all
   when both are. An empty series and a given `stdDev` ≤ 0 throw too.
+- **Invalid input that returned an all-zero result now throws.** `logistics/eoq()` (annual demand, order cost or
+  holding cost ≤ 0), `logistics/kanban()` (a negative safety factor), `metal/gear()` (a missing or non-positive
+  module, pitch diameter or tooth count — the result described a 0 mm gear), `food/nutrition()` (ingredients adding
+  up to 0 g — a «0 kcal» label), `food/stabilityStudy()` (fewer than 2 temperatures whose degradation rises — the
+  default «Ea 0, Q10 1, shelf life 0» read as «expires at once»; also a shelf-life criterion ≤ 0 and a temperature at
+  or below absolute zero) and `food/expiry()` (an expiry date before the production date, reported as 100 % used).
+- **More outputs that have no value are `null`.** `environmental/productCarbonFootprint()` stage `percent` and
+  `environmental/waterFootprint()` `bluePercent`/`greenPercent`/`greyPercent` when the total is ≤ 0;
+  `food/stabilityStudy()` `r2` when every temperature degrades at the same rate; `logistics/serviceLevel()`
+  `zScore` with a safety stock against demand that does not vary (it is unbounded — it was 0).
+  `construction/getAggregateDensity('custom')` and the `'custom'` row of `AGGREGATE_DENSITIES` are `null` (no table
+  density — it was 0); an unknown type throws. **Breaking (types).**
+- `environmental/vocEmissions()` with no VOC used reports the abatement efficiency (capture × destruction) as
+  `reductionPercent` instead of 0.
+- `ERRORS.md` drops the «zero-valued sentinel» class: invalid and empty input throws, an undefined output is `null`,
+  and a 0 that remains is a computed answer. `respiratorCalculate()` and `nioshLifting()` keep their documented
+  `Infinity`, where the quantity is genuinely unbounded.
 - **An empty input list throws instead of returning an all-zero result.** `quality/cycleTime()` (no
   measurements), `machining/cycleTimeEstimator()` (no operations), `logistics/pallet3d()` (no boxes) and
   `logistics/abcAnalysis()` (no items, or items whose annual values are all 0 — there is no share to classify by;

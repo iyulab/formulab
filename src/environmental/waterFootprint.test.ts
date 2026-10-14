@@ -56,12 +56,12 @@ describe('waterFootprint', () => {
 });
 
 describe('waterFootprint contract restoration (2026-07 audit)', () => {
-  it('reports 0% shares for an all-zero footprint instead of NaN (valid-but-degenerate)', () => {
+  it('has no breakdown for an all-zero footprint — null, not 0 %', () => {
     const result = waterFootprint({ blueWaterM3: 0, greenWaterM3: 0, greyWaterM3: 0 });
     expect(result.totalWaterM3).toBe(0);
-    expect(result.bluePercent).toBe(0);
-    expect(result.greenPercent).toBe(0);
-    expect(result.greyPercent).toBe(0);
+    expect(result.bluePercent).toBeNull();
+    expect(result.greenPercent).toBeNull();
+    expect(result.greyPercent).toBeNull();
   });
 
   it('throws RangeError for a negative water volume', () => {

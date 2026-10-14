@@ -78,35 +78,14 @@ describe('gear', () => {
   });
 
   describe('edge cases', () => {
-    it('should return empty result for invalid module', () => {
-      const result = gear({
-        mode: 'fromModule',
-        module: 0,
-        teethGear1: 20,
-      });
-
-      expect(result.module).toBe(0);
-      expect(result.pitchDiameter1).toBe(0);
-    });
-
-    it('should return empty result for invalid teeth count', () => {
-      const result = gear({
-        mode: 'fromModule',
-        module: 2,
-        teethGear1: 0,
-      });
-
-      expect(result.module).toBe(0);
-    });
-
-    it('should return empty result for invalid pitch diameter', () => {
-      const result = gear({
-        mode: 'fromPitchDiameter',
-        pitchDiameter: 0,
-        numberOfTeeth: 20,
-      });
-
-      expect(result.module).toBe(0);
+    it.each([
+      [{ mode: 'fromModule', module: 0, teethGear1: 20 }, /module must be greater than 0/],
+      [{ mode: 'fromModule', module: 2, teethGear1: 0 }, /teethGear1 must be greater than 0/],
+      [{ mode: 'fromModule', module: 2, teethGear1: 20, teethGear2: 0 }, /teethGear2/],
+      [{ mode: 'fromPitchDiameter', pitchDiameter: 0, numberOfTeeth: 20 }, /pitchDiameter must be greater than 0/],
+      [{ mode: 'fromPitchDiameter', pitchDiameter: 40 }, /numberOfTeeth must be greater than 0/],
+    ] as const)('rejects %o instead of describing a 0 mm gear', (input, message) => {
+      expect(() => gear(input)).toThrow(message);
     });
 
     it('should not include second gear data when not specified', () => {

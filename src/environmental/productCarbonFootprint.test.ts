@@ -79,13 +79,13 @@ describe('productCarbonFootprint contract restoration (2026-07 audit)', () => {
     })).toThrow(RangeError);
   });
 
-  it('reports 0% shares for an all-zero stage list instead of NaN (valid-but-degenerate)', () => {
+  it('has no stage shares for an all-zero stage list — null, not 0 %', () => {
     const result = productCarbonFootprint({
       stages: [{ name: 'a', co2Kg: 0 }, { name: 'b', co2Kg: 0 }],
       productionQuantity: 10,
     });
     expect(result.totalCo2Kg).toBe(0);
-    for (const s of result.stageBreakdown) expect(s.percent).toBe(0);
+    for (const s of result.stageBreakdown) expect(s.percent).toBeNull();
   });
 
   it('keeps negative stages (recycling credits) valid and finite', () => {

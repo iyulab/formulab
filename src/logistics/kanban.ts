@@ -16,24 +16,17 @@ import type { KanbanInput, KanbanResult } from './types.js';
  *
  * @param input - Kanban calculation parameters
  * @returns Number of kanban cards and related metrics
+ * @throws {RangeError} dailyDemand, leadTime or containerQuantity is not greater than 0, or
+ *   safetyFactor is negative
  */
 export function kanban(input: KanbanInput): KanbanResult {
   const { dailyDemand, leadTime, safetyFactor, containerQuantity } = input;
 
-  if (dailyDemand <= 0) throw new RangeError('dailyDemand must be greater than 0');
-  if (leadTime <= 0) throw new RangeError('leadTime must be greater than 0');
-  if (containerQuantity <= 0) throw new RangeError('containerQuantity must be greater than 0');
-
-  // Negative safety factor is invalid but returns a zero result (not a throw)
-  if (safetyFactor < 0) {
-    return {
-      numberOfKanbans: 0,
-      numberOfKanbansRounded: 0,
-      demandDuringLeadTime: 0,
-      safetyStock: 0,
-      totalRequirement: 0,
-    };
-  }
+  if (!(dailyDemand > 0)) throw new RangeError('dailyDemand must be greater than 0');
+  if (!(leadTime > 0)) throw new RangeError('leadTime must be greater than 0');
+  if (!(containerQuantity > 0)) throw new RangeError('containerQuantity must be greater than 0');
+  // A negative safety factor removes stock below the lead-time demand; it was answered with zero cards.
+  if (!(safetyFactor >= 0)) throw new RangeError('safetyFactor must not be negative');
 
   // Calculate demand during lead time
   const demandDuringLeadTime = roundTo(dailyDemand * leadTime, 2);

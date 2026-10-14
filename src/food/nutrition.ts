@@ -25,8 +25,8 @@ const INGREDIENT_FIELDS = [
  *
  * @param input - Nutrition input with serving size and ingredients
  * @returns Nutrition result with per-serving facts and daily values
- * @throws {RangeError} servingSize is not greater than 0, or an ingredient's amountG or any of its
- *   nutrient values is negative
+ * @throws {RangeError} servingSize is not greater than 0, an ingredient's amountG or any of its
+ *   nutrient values is negative, or the ingredients add up to 0 g (none, or all 0)
  */
 export function nutrition(input: NutritionInput): NutritionResult {
   const { servingSize, ingredients } = input;
@@ -68,8 +68,12 @@ export function nutrition(input: NutritionInput): NutritionResult {
     totals.protein += ing.protein * factor;
   }
 
-  // Per serving = recipe total × (servingSize / totalWeight)
-  const servingFactor = totalRecipeWeightG > 0 ? servingSize / totalRecipeWeightG : 0;
+  // Per serving = recipe total × (servingSize / totalWeight). A recipe with no weight has no
+  // serving to take — an all-zero label would read as «0 kcal».
+  if (!(totalRecipeWeightG > 0)) {
+    throw new RangeError('ingredients must have a total amount greater than 0');
+  }
+  const servingFactor = servingSize / totalRecipeWeightG;
 
   const perServing: NutritionFacts = {
     calories: roundTo(totals.calories * servingFactor, 0),

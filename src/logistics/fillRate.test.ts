@@ -148,6 +148,14 @@ describe('serviceLevel', () => {
       });
 
       expect(result.serviceLevel).toBe(100);
+      // SS / σ grows without bound — no z-score, not z = 0
+      expect(result.zScore).toBeNull();
+    });
+
+    it('takes the coin-flip limit with neither variability nor buffer', () => {
+      const result = serviceLevel({ demandStdDev: 0, safetyStock: 0 });
+      expect(result.zScore).toBe(0);
+      expect(result.serviceLevel).toBe(50);
     });
 
     it('should throw RangeError for negative safety stock', () => {

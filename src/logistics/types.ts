@@ -164,7 +164,7 @@ export interface ServiceLevelInput {
 }
 
 export interface ServiceLevelResult {
-  zScore: number;                // Z-score for the safety stock
+  zScore: number | null;         // Z-score for the safety stock; null with a buffer against deterministic demand (unbounded)
   serviceLevel: number;          // Service level percentage (0-100)
   stockoutProbability: number;   // Probability of stockout (percentage)
 }

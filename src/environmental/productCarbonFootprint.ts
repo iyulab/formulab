@@ -9,8 +9,7 @@ import type { ProductCarbonFootprintInput, ProductCarbonFootprintResult } from '
  * @param input - Lifecycle stages with CO2 and production quantity
  * @returns Total and per-unit carbon footprint with stage breakdown. Negative stage
  *   values are valid (end-of-life recycling credits). When the total is ≤ 0 the stage
- *   percentages are reported as 0 (valid-but-degenerate; a share of a non-positive
- *   total is not meaningful).
+ *   percentages are `null` (a share of a non-positive total is not meaningful).
  * @throws {RangeError} empty stages, or productionQuantity is not greater than 0 (NaN included).
  *   Negative stage values are not refused — they are this model's recycling credits.
  */
@@ -33,9 +32,9 @@ export function productCarbonFootprint(input: ProductCarbonFootprintInput): Prod
   const stageBreakdown = stages.map(s => ({
     name: s.name,
     co2Kg: roundTo(s.co2Kg, 2),
-    // totalCo2Kg ≤ 0 (zero stages, or credits outweighing emissions) — report 0%, not NaN
-    // or a misleading share of a negative total
-    percent: totalCo2Kg > 0 ? roundTo((s.co2Kg / totalCo2Kg) * 100, 1) : 0,
+    // totalCo2Kg ≤ 0 (all stages zero, or credits outweighing emissions) has no share to
+    // report — null, not a 0 % that reads as «this stage emits nothing»
+    percent: totalCo2Kg > 0 ? roundTo((s.co2Kg / totalCo2Kg) * 100, 1) : null,
   }));
 
   let dominantStage = stages[0].name;

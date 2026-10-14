@@ -141,15 +141,13 @@ describe('kanban', () => {
       })).toThrow();
     });
 
-    it('should return zeros for negative safety factor', () => {
-      const result = kanban({
+    it('rejects a negative safety factor', () => {
+      expect(() => kanban({
         dailyDemand: 100,
         leadTime: 2,
         safetyFactor: -0.1,
         containerQuantity: 50,
-      });
-
-      expect(result.numberOfKanbans).toBe(0);
+      })).toThrow(/safetyFactor must not be negative/);
     });
   });
 

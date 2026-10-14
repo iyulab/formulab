@@ -15,20 +15,21 @@ import type { EoqInput, EoqResult } from './types.js';
  *
  * @param input - Annual demand, order cost, and holding cost
  * @returns EOQ and related metrics
+ * @throws {RangeError} annualDemand, orderCost or holdingCost is not greater than 0
  */
 export function eoq(input: EoqInput): EoqResult {
   const { annualDemand, orderCost, holdingCost } = input;
 
-  // Input validation
-  if (annualDemand <= 0 || orderCost <= 0 || holdingCost <= 0) {
-    return {
-      eoq: 0,
-      ordersPerYear: 0,
-      orderCycleDays: 0,
-      annualOrderingCost: 0,
-      annualHoldingCost: 0,
-      totalAnnualCost: 0,
-    };
+  // EOQ = √(2DS/H) needs all three positive: a zero demand or order cost gives no orders to
+  // cycle, a zero holding cost an unbounded lot. An all-zero result would read as «order 0».
+  if (!(annualDemand > 0)) {
+    throw new RangeError('annualDemand must be greater than 0');
+  }
+  if (!(orderCost > 0)) {
+    throw new RangeError('orderCost must be greater than 0');
+  }
+  if (!(holdingCost > 0)) {
+    throw new RangeError('holdingCost must be greater than 0');
   }
 
   // Calculate EOQ using the classic formula

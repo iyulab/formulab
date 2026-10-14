@@ -10,18 +10,23 @@ export const AGGREGATE_DENSITIES: AggregateDensity[] = [
   { type: 'crushed_stone', density: 1600, label: 'Crushed Stone' },
   { type: 'topsoil', density: 1100, label: 'Topsoil' },
   { type: 'mulch', density: 400, label: 'Mulch' },
-  { type: 'custom', density: 0, label: 'Custom' },
+  { type: 'custom', density: null, label: 'Custom' },
 ];
 
 /**
  * Get density for a specific aggregate type
  *
  * @param type - Aggregate type
- * @returns Density in kg/m³
+ * @returns Density in kg/m³, or `null` for `'custom'` — it has no table density
+ * @throws {RangeError} the type is not in the table
  */
-export function getAggregateDensity(type: AggregateType): number {
+export function getAggregateDensity(type: AggregateType): number | null {
   const aggregate = AGGREGATE_DENSITIES.find(a => a.type === type);
-  return aggregate?.density ?? 0;
+  // A density of 0 for an unknown type would turn every volume into 0 kg.
+  if (!aggregate) {
+    throw new RangeError(`unknown aggregate type: ${String(type)}`);
+  }
+  return aggregate.density;
 }
 
 /**
@@ -74,7 +79,7 @@ export function aggregate(input: AggregateInput): AggregateResult {
     density = customDensity;
   } else {
     const aggregateInfo = AGGREGATE_DENSITIES.find(a => a.type === aggregateType);
-    if (!aggregateInfo) {
+    if (!aggregateInfo || aggregateInfo.density === null) {
       throw new RangeError(`Unknown aggregate type: ${aggregateType}`);
     }
     density = aggregateInfo.density;

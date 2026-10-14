@@ -30,8 +30,8 @@ sentinels below — `respiratorCalculate()` and `nioshLifting()`.
 
 Most functions follow the policy above. Two classes of deviation exist:
 
-1. **Zero-valued sentinels instead of throws (legacy, intentional-leaning).** Much of logistics/energy/food returns a zeroed result for non-positive inputs rather than throwing (marked "sentinel" in the Conditions column below). All sentinel outputs are finite, so the "no silent NaN/Infinity" guarantee holds; migrating them to throws would be a breaking change and is treated as a product decision, not a defect.
-2. **Contract restoration (2026-07).** Ten construction/electronics/environmental functions had documented `throw` rows that the source did not implement — degenerate inputs could emit `NaN`/`Infinity` or an uncontrolled `TypeError` (`rebarWeight`, `concreteMix`, `brick`, `stair`, `resistorDecode`, `traceWidth`, `energyIntensity`, `productCarbonFootprint`, `vocEmissions`, `waterFootprint`). Their validation now matches the rows below; valid-but-degenerate cases (all-zero footprints/stages, zero VOC total) return finite 0-sentinels per the established sentinel pattern.
+1. **No zero-valued sentinels (0.56.0).** Until 0.55.0 much of logistics/energy/food/quality returned a zeroed result where the input was invalid, empty, or left an output undefined — a payback of «0 months», a Cpk of 0 for a process that does not vary, an all-«C» ABC table. Those were finite, so the NaN/Infinity guarantee held, but each 0 read as an answer. As of 0.56.0 invalid and empty input throws, and an output with no value for valid input is `null`. A 0 that remains is a computed answer (a box that fits 0 times, a turnover of 0 when nothing sells).
+2. **Contract restoration (2026-07).** Ten construction/electronics/environmental functions had documented `throw` rows that the source did not implement — degenerate inputs could emit `NaN`/`Infinity` or an uncontrolled `TypeError` (`rebarWeight`, `concreteMix`, `brick`, `stair`, `resistorDecode`, `traceWidth`, `energyIntensity`, `productCarbonFootprint`, `vocEmissions`, `waterFootprint`). Their validation now matches the rows below; the valid-but-degenerate cases (all-zero footprints/stages) report their shares as `null` since 0.56.0.
 
 **Exception — `respiratorCalculate()`.** When `concentration` is 0 (no hazard present),
 `safetyMargin` is `Infinity`. This is an intentional sentinel meaning "any respirator is infinitely
@@ -92,7 +92,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |
 | `cutting()` | `throw` | cuttingSpeed or toolDiameter ≤ 0; a feed/depth/width/teeth field the operation reads given and ≤ 0 |
 | `cuttingStock()` | `throw` | stockLength ≤ 0, kerf < 0, empty pieces, piece length ≤ 0, total quantity 0, piece length > stockLength |
-| `gear()` | `safe` | Missing/invalid required fields per mode → empty sentinel result; does not throw |
+| `gear()` | `throw` | fromModule: module or teethGear1 missing or ≤ 0, a given teethGear2 ≤ 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or ≤ 0 |
 | `hardness()` | `safe` | Out-of-range value clamps to the boundary table row, disclosed via `outOfTableRange: true` |
 | `material()` | `throw` | Unknown grade |
 | `pressFit()` | `throw` | shaftDiameter/holeDiameter/hubOuterDiameter/contactLength/youngsModulus/frictionCoefficient ≤ 0; hubOuterDiameter ≤ max(shaftDiameter, holeDiameter) (no hub wall). Clearance fit (shaft ≤ hole) → interference ≤ 0 with zero pressure/forces |
@@ -162,7 +162,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `formwork()` | `throw` | Non-positive used dimension (per element type) or non-positive quantity |
 | `rebarWeight()` | `throw` | Unknown size, length ≤ 0, quantity ≤ 0 |
 | `getRebarUnitWeight()` | `null` | Unknown size returns `undefined` (plain lookup) |
-| `getAggregateDensity()` | `safe` | Unknown type returns 0 sentinel |
+| `getAggregateDensity()` | `throw`/`null` | type not in the table; `'custom'` → null (no table density — the caller supplies it) |
 | `aggregateCoverage()` | `throw` | volumeM3 ≤ 0, depthCm ≤ 0 |
 | `slope()` | `throw` | value not finite; ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form); degrees not in (−90, 90) |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
@@ -244,20 +244,20 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `abcAnalysis()` | `throw` | empty items; an item's annualUsage or unitCost < 0; every item's annual value 0 (no share to classify by) |
 | `cbm()` | `throw` | length, width, height or quantity ≤ 0 |
-| `containerFit()` | `throw` | cargo dimension ≤ 0. Box larger than container in every orientation → zero-fit result (sentinel) |
-| `eoq()` | `safe` | annualDemand/orderCost/holdingCost ≤ 0 → all-zero result (sentinel; does not throw) |
+| `containerFit()` | `throw` | cargo dimension ≤ 0. A box larger than the container in every orientation fits 0 times — a real answer, not a sentinel |
+| `eoq()` | `throw` | annualDemand, orderCost or holdingCost ≤ 0 (NaN included) |
 | `inventoryTurnover()` | `throw` | periodDays ≤ 0; cogs or averageInventory < 0. averageInventory 0 → turnoverRatio and gmroii null (0 days of supply); cogs 0 → daysOfSupply/weeksOfSupply null (the stock never runs out); gmroii null when grossMargin omitted |
 | `loadCapacity()` | `throw`/`null` | ratedCapacity, ratedLoadCenter or actualLoadCenter ≤ 0; attachmentWeightLoss or actualLoad < 0; utilization/isOverloaded/safetyMargin = null when actualLoad omitted |
 | `pallet3d()` | `throw` | box weight/length/width/height ≤ 0; given customLength/customWidth ≤ 0; maxStackHeight or maxPayload < 0 (0 = default); empty boxes |
-| `palletStack()` | `throw` | box dimension ≤ 0. Box exceeds pallet/maxHeight in all orientations → zero result (sentinel) |
+| `palletStack()` | `throw` | box dimension ≤ 0. A box exceeding the pallet or maxHeight in every orientation stacks 0 boxes — a real answer, not a sentinel |
 | `safetyStock()` | `throw` | serviceLevel ∉ (0, 1); avgLeadTime, avgDemand, demandStdDev or leadTimeStdDev < 0 |
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
 | `tsp()` | `throw` | Empty nodes (a single node returns a single-node result, does not throw) |
 | `dimWeight()` | `throw` | length/width/height ≤ 0, actualWeight < 0 |
 | `fillRate()` | `throw` | totalOrders ≤ 0 |
-| `serviceLevel()` | `throw` | safetyStock or demandStdDev < 0 (demandStdDev = 0 → zScore 0; serviceLevel 100 if safetyStock > 0, else 50) |
+| `serviceLevel()` | `throw` | safetyStock or demandStdDev < 0 (demandStdDev = 0 → the σ → 0 limits: serviceLevel 100 with a safety stock, 50 without; zScore null with a safety stock — it is unbounded — and 0 without) |
 | `freightClass()` | `throw` | weight/length/width/height ≤ 0 |
-| `kanban()` | `throw` | dailyDemand/leadTime/containerQuantity ≤ 0 (safetyFactor < 0 → all-zero sentinel, does not throw) |
+| `kanban()` | `throw` | dailyDemand, leadTime or containerQuantity ≤ 0; safetyFactor < 0 (NaN included) |
 | `pickTime()` | `throw` | speed or itemsPerOrder ≤ 0; distance, searchTimePerItem, pickTimePerItem or documentationTime < 0 |
 
 ### Energy (15 functions)
@@ -285,11 +285,11 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `calorie()` | `throw` | weightKg/heightCm/age ≤ 0 (NaN included) |
-| `expiry()` | `throw` | shelfLifeDays < 0 (calculateExpiry). shelfLifeDays or totalShelfLife = 0 → percentUsed 100 (sentinel; percentUsed clamped 0–100) |
+| `expiry()` | `throw` | shelfLifeDays < 0 (calculateExpiry); expiryDate before productionDate (calculateRemaining). A 0-day shelf life is used up on production day → percentUsed 100; percentUsed is clamped to 0–100 (isExpired and remainingDays carry the overrun) |
 | `getCategories()` | `safe` | — (returns static category list) |
 | `haccp()` | `null` | Unknown category → null |
-| `nutrition()` | `throw` | servingSize ≤ 0; ingredient amountG or nutrient value < 0. Empty ingredients (total weight 0) → all per-serving values 0 (sentinel) |
-| `stabilityStudy()` | `safe` | Fewer than 2 usable temperature groups → default result (Ea 0, q10 1, shelf life 0) (sentinel) |
+| `nutrition()` | `throw` | servingSize ≤ 0; ingredient amountG or nutrient value < 0; ingredients adding up to 0 g (none, or all 0) |
+| `stabilityStudy()` | `throw` | shelfLifeCriterion ≤ 0; storageTemp or a data point temperature ≤ −273.15 °C; fewer than 2 temperatures with a rising degradation; an extrapolation that is not representable. Equal rates at every temperature → Ea 0 and r2 null |
 | `waterActivity()` | `throw` | aw outside [0, 1] |
 
 ### IE (5 functions)
@@ -313,9 +313,9 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `esgSummary()` | `throw` | baselineCo2Tonnes ≤ 0; currentCo2Tonnes or targetCo2Tonnes < 0; baselineYear, currentYear or targetYear ≤ 0; currentYear before baselineYear. currentYear = baselineYear → annualRatePercent/projectedCo2Tonnes null; target year reached → requiredAnnualRate null (projection null once past it); onTrack null when the target is unmet and there is no trend |
 | `emissionsIntensity()` | `throw` | totalCo2Kg < 0, or a given productionUnits/revenueUsd/employees < 0 (a zero denominator leaves its field `undefined`) |
 | `energyIntensity()` | `throw` | totalEnergyMJ < 0, productionUnits ≤ 0 (mjPerRevenue `undefined` unless revenueUsd > 0) |
-| `productCarbonFootprint()` | `throw` | Empty stages, productionQuantity ≤ 0 or NaN. Negative stages (recycling credits) valid; total ≤ 0 → stage percents 0 (sentinel) |
-| `vocEmissions()` | `throw` | totalVocKg < 0, efficiency outside [0, 1]. totalVocKg = 0 → reductionPercent 0 (sentinel) |
-| `waterFootprint()` | `throw` | Any water volume < 0. All-zero footprint → percents 0 (sentinel); perUnitM3 `undefined` unless productionUnits > 0 |
+| `productCarbonFootprint()` | `throw` | Empty stages, productionQuantity ≤ 0 or NaN. Negative stages (recycling credits) valid; total ≤ 0 → stage percents null |
+| `vocEmissions()` | `throw` | totalVocKg < 0, efficiency outside [0, 1]. totalVocKg = 0 → reductionPercent is the abatement efficiency (capture × destruction) |
+| `waterFootprint()` | `throw` | Any water volume < 0. All-zero footprint → percents null; perUnitM3 `undefined` unless productionUnits > 0 |
 
 ### Utility (18 functions)
 

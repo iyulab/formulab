@@ -124,56 +124,14 @@ describe('eoq', () => {
   });
 
   describe('input validation', () => {
-    it('should return zeros for zero annual demand', () => {
-      const result = eoq({
-        annualDemand: 0,
-        orderCost: 50,
-        holdingCost: 5,
-      });
-
-      expect(result.eoq).toBe(0);
-      expect(result.ordersPerYear).toBe(0);
-      expect(result.totalAnnualCost).toBe(0);
-    });
-
-    it('should return zeros for negative annual demand', () => {
-      const result = eoq({
-        annualDemand: -1000,
-        orderCost: 50,
-        holdingCost: 5,
-      });
-
-      expect(result.eoq).toBe(0);
-    });
-
-    it('should return zeros for zero order cost', () => {
-      const result = eoq({
-        annualDemand: 10000,
-        orderCost: 0,
-        holdingCost: 5,
-      });
-
-      expect(result.eoq).toBe(0);
-    });
-
-    it('should return zeros for zero holding cost', () => {
-      const result = eoq({
-        annualDemand: 10000,
-        orderCost: 50,
-        holdingCost: 0,
-      });
-
-      expect(result.eoq).toBe(0);
-    });
-
-    it('should return zeros for negative holding cost', () => {
-      const result = eoq({
-        annualDemand: 10000,
-        orderCost: 50,
-        holdingCost: -5,
-      });
-
-      expect(result.eoq).toBe(0);
+    it.each([
+      ['annualDemand', { annualDemand: 0, orderCost: 50, holdingCost: 5 }],
+      ['annualDemand', { annualDemand: -1000, orderCost: 50, holdingCost: 5 }],
+      ['orderCost', { annualDemand: 10000, orderCost: 0, holdingCost: 5 }],
+      ['holdingCost', { annualDemand: 10000, orderCost: 50, holdingCost: 0 }],
+      ['holdingCost', { annualDemand: 10000, orderCost: 50, holdingCost: -5 }],
+    ])('rejects a %s that is not positive — an all-zero result reads as «order 0»', (field, input) => {
+      expect(() => eoq(input)).toThrow(new RegExp(`${field} must be greater than 0`));
     });
   });
 

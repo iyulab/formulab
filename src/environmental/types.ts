@@ -102,7 +102,7 @@ export interface ProductCarbonFootprintResult {
   stageBreakdown: {
     name: string;
     co2Kg: number;
-    percent: number;
+    percent: number | null;   // null when the total is ≤ 0
   }[];
   dominantStage: string;
 }
@@ -153,9 +153,9 @@ export interface WaterFootprintInput {
 
 export interface WaterFootprintResult {
   totalWaterM3: number;       // m³
-  bluePercent: number;        // %
-  greenPercent: number;       // %
-  greyPercent: number;        // %
+  bluePercent: number | null;  // %; null for an all-zero footprint
+  greenPercent: number | null; // %
+  greyPercent: number | null;  // %
   perUnitM3?: number;         // m³/unit
 }
 

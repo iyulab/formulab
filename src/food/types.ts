@@ -157,6 +157,6 @@ export interface StabilityStudyResult {
   q10: number;
   predictedShelfLife: number; // months
   rateConstants: { temperature: number; rateConstant: number }[];
-  r2: number;
+  r2: number | null;          // null when every temperature has the same rate (nothing to explain)
   accelerationFactor: number;
 }

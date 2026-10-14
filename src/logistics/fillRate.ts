@@ -59,10 +59,12 @@ export function serviceLevel(input: ServiceLevelInput): ServiceLevelResult {
     throw new RangeError('demandStdDev must not be negative');
   }
 
-  // Deterministic demand: any buffer covers it, none leaves the mean-demand coin flip
+  // Deterministic demand: any buffer covers it, none leaves the mean-demand coin flip — the
+  // σ → 0 limits of Φ(SS/σ). The z-score itself has no finite value with a buffer (it grows
+  // without bound), and is 0 without one.
   if (demandStdDev === 0) {
     return {
-      zScore: 0,
+      zScore: safetyStock > 0 ? null : 0,
       serviceLevel: safetyStock > 0 ? 100 : 50,
       stockoutProbability: safetyStock > 0 ? 0 : 50,
     };

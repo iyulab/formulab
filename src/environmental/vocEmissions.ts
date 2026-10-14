@@ -7,8 +7,8 @@ import type { VocEmissionsInput, VocEmissionsResult } from './types.js';
  * @formula emitted = total × (1 - captureEff × destructionEff)
  * @reference EPA AP-42, CARB guidelines
  * @param input - Total VOC, capture efficiency, destruction efficiency
- * @returns Emitted, captured, and destroyed VOC amounts. totalVocKg = 0 (no VOC used)
- *   is valid-but-degenerate: reductionPercent is reported as 0.
+ * @returns Emitted, captured, and destroyed VOC amounts. With totalVocKg = 0 (no VOC
+ *   used) reductionPercent is the abatement efficiency itself, capture × destruction.
  * @throws {RangeError} totalVocKg < 0, or an efficiency outside [0, 1]
  */
 export function vocEmissions(input: VocEmissionsInput): VocEmissionsResult {
@@ -27,10 +27,11 @@ export function vocEmissions(input: VocEmissionsInput): VocEmissionsResult {
   const capturedVocKg = roundTo(totalVocKg * captureEfficiency, 2);
   const destroyedVocKg = roundTo(capturedVocKg * destructionEfficiency, 2);
   const emittedVocKg = roundTo(totalVocKg - destroyedVocKg, 2);
-  // totalVocKg = 0 is valid-but-degenerate — report 0%, not NaN
+  // With no VOC used there are no kilograms to compare, but the abatement train still has its
+  // efficiency: captured share × destroyed share. A 0 % would read as «the system removes nothing».
   const reductionPercent = totalVocKg > 0
     ? roundTo((destroyedVocKg / totalVocKg) * 100, 2)
-    : 0;
+    : roundTo(captureEfficiency * destructionEfficiency * 100, 2);
 
   return {
     emittedVocKg,

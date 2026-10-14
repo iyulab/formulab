@@ -143,18 +143,49 @@ describe('stabilityStudy', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle single temperature (insufficient for regression)', () => {
-      const result = stabilityStudy({
+    it('rejects a single temperature — no Arrhenius line, not «Ea 0, shelf life 0»', () => {
+      expect(() => stabilityStudy({
         dataPoints: [
           { temperature: 40, time: 1, degradation: 2 },
           { temperature: 40, time: 3, degradation: 6 },
         ],
         shelfLifeCriterion: 10,
         storageTemp: 25,
-      });
+      })).toThrow(/2 or more temperatures/);
+    });
 
-      expect(result.activationEnergy).toBe(0);
-      expect(result.q10).toBe(1);
+    it('counts only temperatures whose degradation rises', () => {
+      expect(() => stabilityStudy({
+        dataPoints: [
+          { temperature: 40, time: 1, degradation: 2 },
+          { temperature: 50, time: 1, degradation: 0 },
+        ],
+        shelfLifeCriterion: 10,
+        storageTemp: 25,
+      })).toThrow(/\(got 1\)/);
+    });
+
+    it('has no R² when every temperature degrades at the same rate', () => {
+      const r = stabilityStudy({
+        dataPoints: [
+          { temperature: 30, time: 1, degradation: 2 },
+          { temperature: 40, time: 1, degradation: 2 },
+        ],
+        shelfLifeCriterion: 10,
+        storageTemp: 25,
+      });
+      expect(r.activationEnergy).toBe(0);
+      expect(r.r2).toBeNull();
+      expect(r.predictedShelfLife).toBe(5);
+    });
+
+    it('rejects a criterion that is not positive and a temperature at or below absolute zero', () => {
+      const dataPoints = [
+        { temperature: 30, time: 1, degradation: 1 },
+        { temperature: 40, time: 1, degradation: 2 },
+      ];
+      expect(() => stabilityStudy({ dataPoints, shelfLifeCriterion: 0, storageTemp: 25 })).toThrow(/shelfLifeCriterion/);
+      expect(() => stabilityStudy({ dataPoints, shelfLifeCriterion: 10, storageTemp: -300 })).toThrow(/absolute zero/);
     });
   });
 });

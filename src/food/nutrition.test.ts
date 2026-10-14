@@ -140,18 +140,15 @@ describe('nutrition', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty ingredients list', () => {
-      const result = nutrition({
+    it('rejects an empty ingredient list — there is no recipe to label', () => {
+      expect(() => nutrition({
         servingSize: 100,
         ingredients: [],
-      });
-
-      expect(result.totalRecipeWeightG).toBe(0);
-      expect(result.perServing.calories).toBe(0);
+      })).toThrow(/total amount greater than 0/);
     });
 
-    it('should handle zero total recipe weight', () => {
-      const result = nutrition({
+    it('rejects a recipe whose amounts add up to 0 g — not a «0 kcal» label', () => {
+      expect(() => nutrition({
         servingSize: 100,
         ingredients: [
           {
@@ -168,10 +165,7 @@ describe('nutrition', () => {
             protein: 15,
           },
         ],
-      });
-
-      expect(result.totalRecipeWeightG).toBe(0);
-      expect(result.perServing.calories).toBe(0);
+      })).toThrow(/total amount greater than 0/);
     });
 
     it('should handle serving size larger than recipe', () => {
