@@ -209,3 +209,13 @@ describe('pid', () => {
     });
   });
 });
+
+describe('pid missing parameters', () => {
+  it('refuses a missing parameter instead of substituting 1', () => {
+    expect(() => pid({ method: 'ziegler-nichols-step', controllerType: 'PID', deadTime: 2, timeConstant: 10 } as never)).toThrow(/processGain is required/);
+    expect(() => pid({ method: 'ziegler-nichols-ultimate', controllerType: 'PID', ultimateGain: 4 } as never)).toThrow(/ultimatePeriod is required/);
+  });
+  it('refuses a NaN parameter', () => {
+    expect(() => pid({ method: 'ziegler-nichols-step', controllerType: 'PID', processGain: NaN, deadTime: 2, timeConstant: 10 })).toThrow(RangeError);
+  });
+});

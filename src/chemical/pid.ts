@@ -1,6 +1,14 @@
 import { roundTo } from '../utils.js';
 import type { PidInput, PidResult } from './types.js';
 
+/** A tuning parameter the method needs. A missing one was replaced by 1 — tuning for a process nobody entered. */
+function required(value: number | undefined, name: string): number {
+  if (value === undefined || value === null) {
+    throw new RangeError(`${name} is required for this tuning method`);
+  }
+  return value;
+}
+
 /**
  * PID Tuning Calculator — Ziegler-Nichols / Cohen-Coon
  *
@@ -16,6 +24,9 @@ import type { PidInput, PidResult } from './types.js';
  * Cohen-Coon, where r = L/T is the dead-time ratio) is the published table value for the cited
  * method, not a derived or approximated figure — see the golden tests in pid.test.ts for a
  * worked numeric case per method and controller type.
+ *
+ * @throws {RangeError} a parameter the method needs is missing (processGain/deadTime/timeConstant for
+ *   the step-response methods, ultimateGain/ultimatePeriod for Z-N ultimate) or not greater than 0
  */
 export function pid(input: PidInput): PidResult {
   const { method, controllerType } = input;
@@ -26,11 +37,11 @@ export function pid(input: PidInput): PidResult {
   let methodName = method;
 
   if (method === 'ziegler-nichols-step') {
-    const K = input.processGain ?? 1;
-    const L = input.deadTime ?? 1;
-    const T = input.timeConstant ?? 1;
+    const K = required(input.processGain, 'processGain');
+    const L = required(input.deadTime, 'deadTime');
+    const T = required(input.timeConstant, 'timeConstant');
 
-    if (K <= 0 || L <= 0 || T <= 0) {
+    if (!(K > 0) || !(L > 0) || !(T > 0)) {
       throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
     }
 
@@ -50,10 +61,10 @@ export function pid(input: PidInput): PidResult {
     }
 
   } else if (method === 'ziegler-nichols-ultimate') {
-    const Ku = input.ultimateGain ?? 1;
-    const Pu = input.ultimatePeriod ?? 1;
+    const Ku = required(input.ultimateGain, 'ultimateGain');
+    const Pu = required(input.ultimatePeriod, 'ultimatePeriod');
 
-    if (Ku <= 0 || Pu <= 0) {
+    if (!(Ku > 0) || !(Pu > 0)) {
       throw new RangeError('ultimateGain and ultimatePeriod must both be greater than 0');
     }
 
@@ -73,11 +84,11 @@ export function pid(input: PidInput): PidResult {
     }
 
   } else if (method === 'cohen-coon') {
-    const K = input.processGain ?? 1;
-    const L = input.deadTime ?? 1;
-    const T = input.timeConstant ?? 1;
+    const K = required(input.processGain, 'processGain');
+    const L = required(input.deadTime, 'deadTime');
+    const T = required(input.timeConstant, 'timeConstant');
 
-    if (K <= 0 || L <= 0 || T <= 0) {
+    if (!(K > 0) || !(L > 0) || !(T > 0)) {
       throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
     }
 

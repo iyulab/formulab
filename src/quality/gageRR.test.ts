@@ -313,3 +313,20 @@ describe('gageRR', () => {
     });
   });
 });
+
+describe('gageRR study shape', () => {
+  const study = (parts: number, ops: number, trials: number) =>
+    Array.from({ length: parts }, (_, p) => Array.from({ length: ops }, (_, o) => Array.from({ length: trials }, (_, t) => 10 + p * 0.1 + o * 0.01 + t * 0.001)));
+  it('refuses an Average-Range study outside the AIAG constant tables instead of using the 3/3/10 constants', () => {
+    expect(() => gageRR({ measurements: study(10, 4, 3) })).toThrow(/AIAG constants/);
+    expect(() => gageRR({ measurements: study(10, 3, 4) })).toThrow(/AIAG constants/);
+    expect(() => gageRR({ measurements: study(12, 3, 3) })).toThrow(/AIAG constants/);
+  });
+  it('refuses ragged and non-finite measurements', () => {
+    const ragged = study(5, 3, 3); ragged[2] = ragged[2].slice(0, 2);
+    expect(() => gageRR({ measurements: ragged })).toThrow(/part 3 has 2 operators/);
+    const nan = study(5, 3, 3); nan[1][1][1] = NaN;
+    expect(() => gageRR({ measurements: nan })).toThrow(/not a finite number/);
+    expect(() => gageRR({ measurements: [] })).toThrow(/must not be empty/);
+  });
+});

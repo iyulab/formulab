@@ -88,9 +88,16 @@ function gageRRAverageRange(input: GageRRInput): GageRRResult {
   const numOperators = measurements[0].length;
   const numTrials = measurements[0][0].length;
 
-  const k1 = K1[numTrials] ?? K1[3];
-  const k2 = K2[numOperators] ?? K2[3];
-  const k3 = K3[numParts] ?? K3[10];
+  // The AIAG constants are tabulated for 2–3 trials, 2–3 operators and 2–10 parts. Any other study
+  // used the 3/3/10 constants silently — wrong numbers with no error. ANOVA has no such table.
+  const k1 = K1[numTrials];
+  const k2 = K2[numOperators];
+  const k3 = K3[numParts];
+  if (k1 === undefined || k2 === undefined || k3 === undefined) {
+    throw new RangeError(
+      `the Average-Range method has AIAG constants for 2–3 trials, 2–3 operators and 2–10 parts (got ${numTrials} trials, ${numOperators} operators, ${numParts} parts) — use method 'anova'`,
+    );
+  }
 
   // Compute range per part per operator, then overall R̄
   let rangeSum = 0;
@@ -323,7 +330,42 @@ function gageRRAnova(input: GageRRInput): GageRRResult {
  *
  * Dispatches to the Average-Range method (default) or the ANOVA method per `input.method`.
  * See {@link gageRRAverageRange} and {@link gageRRAnova} for the method-specific formulas.
+ *
+ * @throws {RangeError} empty or ragged measurements, a reading that is not finite; Average-Range: a
+ *   study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts); ANOVA: fewer than
+ *   2 parts, operators or trials
  */
 export function gageRR(input: GageRRInput): GageRRResult {
+  validateStudyShape(input.measurements);
   return input.method === 'anova' ? gageRRAnova(input) : gageRRAverageRange(input);
+}
+
+/**
+ * Every part must have the same operators and every operator the same trials, all finite — a
+ * ragged study reads past the end of shorter arrays.
+ */
+function validateStudyShape(measurements: GageRRInput['measurements']): void {
+  if (!Array.isArray(measurements) || measurements.length === 0) {
+    throw new RangeError('measurements must not be empty');
+  }
+  const operators = measurements[0]?.length ?? 0;
+  const trials = measurements[0]?.[0]?.length ?? 0;
+  if (operators === 0 || trials === 0) {
+    throw new RangeError('each part needs at least one operator with at least one trial');
+  }
+  measurements.forEach((part, p) => {
+    if (part.length !== operators) {
+      throw new RangeError(`part ${p + 1} has ${part.length} operators, part 1 has ${operators}`);
+    }
+    part.forEach((readings, o) => {
+      if (readings.length !== trials) {
+        throw new RangeError(`part ${p + 1}, operator ${o + 1} has ${readings.length} trials, the study has ${trials}`);
+      }
+      readings.forEach((v, t) => {
+        if (!Number.isFinite(v)) {
+          throw new RangeError(`part ${p + 1}, operator ${o + 1}, trial ${t + 1} is not a finite number`);
+        }
+      });
+    });
+  });
 }

@@ -286,3 +286,15 @@ describe('pert', () => {
     });
   });
 });
+
+describe('pert precedence input', () => {
+  it('rejects a predecessor that names no task instead of dropping the dependency', () => {
+    expect(() => pert({ tasks: [{ id: 'A', optimistic: 1, mostLikely: 2, pessimistic: 3, predecessors: ['Z'] }] })).toThrow(/predecessor Z, which is not a task/);
+  });
+  it('rejects a repeated id with that reason', () => {
+    expect(() => pert({ tasks: [
+      { id: 'A', optimistic: 1, mostLikely: 2, pessimistic: 3, predecessors: [] },
+      { id: 'A', optimistic: 1, mostLikely: 2, pessimistic: 3, predecessors: [] },
+    ] })).toThrow(/used more than once/);
+  });
+});

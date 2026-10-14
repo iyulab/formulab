@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`quality/lineBalancing()` no longer loops forever on a predecessor that names no task** — the station filler
+  waited for a task that never completes until memory ran out. It and `construction/pert()` (which dropped such a
+  dependency silently) now throw for an unknown predecessor, and for a repeated task id with that reason instead
+  of «circular dependency». Shared internal check `src/precedence.ts`.
+- **`quality/gageRR()` refuses a study outside the AIAG constant tables** for the Average-Range method (2–3
+  trials, 2–3 operators, 2–10 parts) instead of computing with the 3/3/10 constants; empty or ragged measurement
+  arrays and non-finite readings throw for both methods.
+- **`chemical/pid()` refuses a missing tuning parameter** instead of substituting 1, and a NaN one.
+
 ## [0.57.0] - 2026-10-15
 
 ### Fixed

@@ -67,13 +67,13 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `nelsonRules()` | `throw` | empty values, sigma ≤ 0, non-finite centerLine |
 | `downtime()` | `throw` | any input < 0 |
 | `dpmo()` | `throw` | defects < 0, units ≤ 0, opportunities ≤ 0, defects > units × opportunities |
-| `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time ≤ 0 or > cycleTime (infeasible), circular dependency |
+| `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time ≤ 0 or > cycleTime (infeasible), a repeated task id, a predecessor that names no task (it looped until memory ran out before 0.58.0), circular dependency |
 | `mtbf()` | `throw` | totalOperatingTime ≤ 0, numberOfFailures ≤ 0 |
 | `ppk()` | `throw` | as `cpk()` (same arithmetic, long-term σ) |
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
-| `gageRR()` | `throw` | Insufficient data; `method: 'anova'` also throws for fewer than 2 parts, 2 operators, or 2 trials |
+| `gageRR()` | `throw` | Empty or ragged measurements, a reading not finite; Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; usl ≤ lsl. Identical measurements (σ = 0) → cm/cmk/isCapable null |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items, an item value < 0 |
@@ -132,7 +132,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `injectionCycle()` | `throw` | wallThickness ≤ 0; shotWeight/moldOpenCloseTime/ejectionTime < 0; resin density ≤ 0, injectionRate ≤ 0 (when given); thermalDiffusivity ≤ 0; ejectionTemp ≤ moldTemp; (8/π²)·(Tm − Tw)/(Te − Tw) ≤ 1 — the melt too close to the ejection temperature for the cooling-time model |
 | `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
 | `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
-| `pid()` | `throw` | Non-positive process params (processGain/deadTime/timeConstant ≤ 0, or ultimateGain/ultimatePeriod ≤ 0) |
+| `pid()` | `throw` | A parameter the method needs missing (it was replaced by 1 before 0.58.0) or not > 0 (NaN included): processGain/deadTime/timeConstant, or ultimateGain/ultimatePeriod |
 
 ### Electronics (12 functions)
 
@@ -167,7 +167,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `slope()` | `throw` | value not finite; ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form); degrees not in (−90, 90) |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
 | `brick()` | `throw` | wallArea ≤ 0, unknown brick size, custom dimensions ≤ 0, mortarThickness < 0, wasteFactor < 0 |
-| `pert()` | `throw` | Empty tasks, an estimate < 0, estimates not ordered optimistic ≤ mostLikely ≤ pessimistic, deadline < 0, circular dependencies |
+| `pert()` | `throw` | Empty tasks, a repeated task id, a predecessor that names no task (it was dropped silently before 0.58.0), an estimate < 0, estimates not ordered optimistic ≤ mostLikely ≤ pessimistic, deadline < 0, circular dependencies |
 | `roof()` | `throw` | run ≤ 0, rise < 0, footprintLength/footprintWidth ≤ 0 |
 | `stair()` | `throw` | totalRise ≤ 0, totalRun ≤ 0, riserHeight < 0 (riserHeight 0 = auto-calculate) |
 

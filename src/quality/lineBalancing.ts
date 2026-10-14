@@ -1,3 +1,4 @@
+import { validatePrecedence } from '../precedence.js';
 import { roundTo } from '../utils.js';
 import type { LineBalancingInput, LineBalancingResult, WorkStation, PositionalWeight, BalancingTask } from './types.js';
 
@@ -110,7 +111,8 @@ function calculatePositionalWeights(tasks: BalancingTask[]): Map<string, number>
  * @param input - Line balancing input parameters
  * @returns Line balancing result
  * @throws RangeError if tasks is empty, cycleTime is not positive, a task's time is not
- *   positive or exceeds cycleTime (infeasible), or the precedence graph is cyclic
+ *   positive or exceeds cycleTime (infeasible), two tasks share an id, a predecessor names no task, or
+ *   the precedence graph is cyclic
  */
 export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   const { tasks, cycleTime } = input;
@@ -131,6 +133,8 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   if (tasks.some(t => t.time > cycleTime)) {
     throw new RangeError('cycleTime must be at least the maximum task time');
   }
+
+  validatePrecedence(tasks);
 
   // Detect cycle
   if (detectCycle(tasks)) {

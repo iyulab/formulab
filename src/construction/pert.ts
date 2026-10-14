@@ -1,3 +1,4 @@
+import { validatePrecedence } from '../precedence.js';
 import type { PertInput, PertResult, PertTaskResult, PertTask } from './types.js';
 import { roundTo } from '../utils.js';
 import { normalCDF } from '../math.js';
@@ -81,7 +82,8 @@ function topologicalSort(tasks: PertTask[]): PertTask[] | null {
  *
  * @param input - PERT input with tasks and optional deadline
  * @returns PERT analysis result
- * @throws RangeError if tasks is empty, a task's optimistic/mostLikely/pessimistic estimate is negative
+ * @throws RangeError if tasks is empty, two tasks share an id, a predecessor names no task, a task's
+ *   optimistic/mostLikely/pessimistic estimate is negative
  *   or out of order (optimistic ≤ mostLikely ≤ pessimistic is required), deadline is negative, or the
  *   tasks contain a circular dependency
  */
@@ -103,6 +105,8 @@ export function pert(input: PertInput): PertResult {
   if (deadline !== undefined && !(deadline >= 0)) {
     throw new RangeError('deadline must not be negative');
   }
+
+  validatePrecedence(tasks);
 
   // Cycle detection
   if (detectCycle(tasks)) {

@@ -264,3 +264,12 @@ describe('lineBalancing', () => {
     });
   });
 });
+
+describe('lineBalancing precedence input', () => {
+  it('rejects a predecessor that names no task — it used to loop until memory ran out', () => {
+    expect(() => lineBalancing({ cycleTime: 10, tasks: [{ id: 'A', time: 3, predecessors: ['Z'] }] })).toThrow(/predecessor Z, which is not a task/);
+  });
+  it('rejects a repeated id with that reason, not as a circular dependency', () => {
+    expect(() => lineBalancing({ cycleTime: 10, tasks: [{ id: 'A', time: 3, predecessors: [] }, { id: 'A', time: 2, predecessors: [] }] })).toThrow(/used more than once/);
+  });
+});
