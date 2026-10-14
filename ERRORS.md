@@ -85,7 +85,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `bendAllowance()` | `throw` | thickness ≤ 0; insideRadius < 0; bendAngle not in (0, 180) — the setback diverges at a closed hem; kFactor outside [0, 1]. A radius below the minimum and an angle above 170° still return with `warnings` |
 | `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
 | `flatPattern()` | `throw` | the `bendAllowance()` bend domain; flangeA or flangeB ≤ 0; flangeC ≤ 0 for a U-shape |
-| `kFactorReverse()` | `safe` | — (no input validation) |
+| `kFactorReverse()` | `throw` | thickness ≤ 0; bendAngle not in (0, 180); insideRadius < 0; measurements that imply a K-factor outside [0, 1] (the flat length does not belong to this bend) |
 | `pressTonnage()` | `throw` | thickness ≤ 0, dieOpening ≤ 0, drawing with punchDiameter ≤ 0, combined without operations |
 | `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
 | `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |

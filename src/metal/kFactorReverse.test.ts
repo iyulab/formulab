@@ -176,16 +176,18 @@ describe('kFactorReverse', () => {
     });
 
     it('should handle large radius bend', () => {
+      // 73.12 mm is the flat length bendAllowance() gives for K = 0.45 (BD = 6.88). The old fixture,
+      // 78 mm, implied K = 2.0 — a neutral axis outside the sheet — and passed a `> 0` assertion.
       const result = kFactorReverse({
         thickness: 2,
         bendAngle: 90,
         insideRadius: 10,
-        measuredFlatLength: 78,
+        measuredFlatLength: 73.12,
         legA: 50,
         legB: 30,
       });
 
-      expect(result.kFactor).toBeGreaterThan(0);
+      expect(result.kFactor).toBeCloseTo(0.45, 2);
     });
   });
 
@@ -259,8 +261,9 @@ describe('kFactorReverse', () => {
 
     it('always brackets the nominal value (min <= value <= max)', () => {
       const cases = [
-        { thickness: 1.5, insideRadius: 2, bendAngle: 45, legA: 40, legB: 30, measuredFlatLength: 68 },
-        { thickness: 5, insideRadius: 8, bendAngle: 150, legA: 100, legB: 60, measuredFlatLength: 155 },
+        // Flat lengths from bendAllowance() at K = 0.40 and 0.45; the old 68 and 155 mm implied K = −0.57 and 5.4.
+        { thickness: 1.5, insideRadius: 2, bendAngle: 45, legA: 40, legB: 30, measuredFlatLength: 69.14 },
+        { thickness: 5, insideRadius: 8, bendAngle: 150, legA: 100, legB: 60, measuredFlatLength: 89.8 },
       ];
       for (const c of cases) {
         const r = kFactorReverseRange(c);
@@ -304,4 +307,21 @@ describe('kFactorReverse input domain', () => {
     expect(() => kFactorReverse({ thickness: 2, bendAngle: 0, insideRadius: 2, measuredFlatLength: 95, legA: 50, legB: 50 })).toThrow(RangeError);
   });
 
+});
+
+describe('kFactorReverse — measurements that do not belong to the bend', () => {
+  it('throws when the measurements imply a K-factor outside [0, 1] (a 90° part entered as a 60° or 120° bend)', () => {
+    // The same part (K = 0.45 at 90°, 73.12 mm) entered with the wrong angle implies K = −1.67 and 3.28.
+    const part = { thickness: 2, insideRadius: 10, measuredFlatLength: 73.12, legA: 50, legB: 30 };
+    expect(() => kFactorReverse({ ...part, bendAngle: 60 })).toThrow(RangeError);
+    expect(() => kFactorReverse({ ...part, bendAngle: 120 })).toThrow(RangeError);
+    expect(kFactorReverse({ ...part, bendAngle: 95 }).kFactor).toBeCloseTo(0.823, 2);
+    expect(() => kFactorReverse({ thickness: 2, bendAngle: 90, insideRadius: 10, measuredFlatLength: 78, legA: 50, legB: 30 }))
+      .toThrow(RangeError);
+  });
+
+  it('throws for a negative inside radius', () => {
+    expect(() => kFactorReverse({ thickness: 2, bendAngle: 90, insideRadius: -1, measuredFlatLength: 76, legA: 50, legB: 30 }))
+      .toThrow(RangeError);
+  });
 });

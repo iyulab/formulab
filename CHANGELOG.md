@@ -25,6 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     below the minimum and an angle above 170°.
   - `safety/ladderAngle()` — a ladder shorter than the given base distance or height returned 0° and a height of
     0 m with a warning. Throws; a ladder exactly as long as the leg still returns the 90°/0° result with a warning.
+  - `metal/kFactorReverse()` (and `kFactorReverseRange()`) — measurements that do not belong to the bend returned a
+    K-factor outside [0, 1] (a 90° part entered as a 60° bend gave −1.67). Throws for such a K and for a negative
+    inside radius. Three of its own tests used flat lengths that implied K = 2.0, −0.57 and 5.4 and passed on
+    `> 0` / bracketing assertions; they now use flat lengths from `bendAllowance()`.
+
+### Added
+
+- `scripts/audit-sign-flips.mjs` (`pnpm audit:sign-flips`, discovery, not a gate) — for every harvested test call,
+  each numeric input is replaced by negative and past-90°/180° probes, and an output that was ≥ 0 and turns negative
+  for an input the function accepted is reported for triage. It shares the fixture harvester with
+  `check:nonfinite-outputs` (`scripts/lib/fixtures.mjs`).
 
 ## [0.54.0] - 2026-10-14
 

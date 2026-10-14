@@ -16,6 +16,9 @@ import type { KFactorReverseInput, KFactorReverseResult, KFactorReverseRangeResu
  *
  * @param input - K-factor reverse input parameters
  * @returns KFactorReverseResult with calculated K-factor
+ * @throws RangeError if thickness ≤ 0, bendAngle is not strictly between 0 and 180, insideRadius < 0, or the
+ *   measurements imply a K-factor outside [0, 1] — the neutral axis lies inside the material, so such a K
+ *   means the measured flat length does not belong to this bend (a 95° bend measured as a 90° one gave −0.62)
  */
 export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult {
   const {
@@ -34,6 +37,9 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
   }
   if (!(bendAngle > 0) || bendAngle >= 180) {
     throw new RangeError('bendAngle must be greater than 0 and less than 180');
+  }
+  if (!(insideRadius >= 0)) {
+    throw new RangeError('insideRadius must not be negative');
   }
 
   // Convert bend angle to radians
@@ -56,6 +62,11 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
   // BA = angleRad x (insideRadius + K x thickness)
   // => K = (BA / angleRad - insideRadius) / thickness
   const kFactor = (ba / bendAngleRad - insideRadius) / thickness;
+  if (!(kFactor >= 0 && kFactor <= 1)) {
+    throw new RangeError(
+      `the measured flat length does not fit this bend: it implies a K-factor of ${kFactor.toFixed(3)}, outside [0, 1]`,
+    );
+  }
 
   return {
     kFactor,
