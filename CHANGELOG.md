@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-10-15
+
 ### Fixed
 
 - **`chemical/reliefValve()` no longer sizes a liquid relief with no pressure differential as the smallest
