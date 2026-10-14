@@ -89,8 +89,8 @@ export function vfdSavings(input: VfdSavingsInput): VfdSavingsResult {
   // Annual savings
   const annualSavings = originalAnnualCost - newAnnualCost;
 
-  // Simple payback period (return 0 if no savings)
-  const paybackYears = annualSavings > 0 ? vfdCost / annualSavings : 0;
+  // Simple payback period — none when the drive saves nothing
+  const paybackYears = annualSavings > 0 ? vfdCost / annualSavings : null;
 
   // CO2 reduction
   const annualKwhSavings = originalAnnualKwh - newAnnualKwh;

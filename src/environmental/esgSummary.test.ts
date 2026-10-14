@@ -111,4 +111,37 @@ describe('esgSummary input domain', () => {
     expect(() => esgSummary({ baselineYear: 2020, baselineCo2Tonnes: 0, currentYear: 2024, currentCo2Tonnes: 800, targetYear: 2030, targetCo2Tonnes: 500 } as never)).toThrow(RangeError);
   });
 
+  it('rejects a reading taken before its own baseline', () => {
+    expect(() => esgSummary({ baselineYear: 2025, baselineCo2Tonnes: 1000, currentYear: 2024, currentCo2Tonnes: 800, targetYear: 2030, targetCo2Tonnes: 500 })).toThrow(/before baselineYear/);
+  });
+});
+
+// A rate needs a span of years; a missing span is «no value», never a 0 % rate.
+describe('esgSummary without a span of years', () => {
+  it('has no trend in the baseline year itself', () => {
+    const result = esgSummary({ baselineYear: 2025, baselineCo2Tonnes: 1000, currentYear: 2025, currentCo2Tonnes: 1000, targetYear: 2030, targetCo2Tonnes: 500 });
+    expect(result.annualRatePercent).toBeNull();
+    expect(result.projectedCo2Tonnes).toBeNull();
+    expect(result.requiredAnnualRate).toBe(10);
+    expect(result.onTrack).toBeNull();
+  });
+
+  it('needs no further rate once the target year is reached', () => {
+    const result = esgSummary({ baselineYear: 2020, baselineCo2Tonnes: 1000, currentYear: 2030, currentCo2Tonnes: 700, targetYear: 2030, targetCo2Tonnes: 500 });
+    expect(result.requiredAnnualRate).toBeNull();
+    expect(result.projectedCo2Tonnes).toBe(700);
+    expect(result.annualRatePercent).toBe(3);
+    expect(result.onTrack).toBe(false);
+  });
+
+  it('has nothing to project past the target year, and judges by the reading', () => {
+    const missed = esgSummary({ baselineYear: 2018, baselineCo2Tonnes: 1000, currentYear: 2026, currentCo2Tonnes: 700, targetYear: 2025, targetCo2Tonnes: 500 });
+    expect(missed.yearsRemaining).toBe(-1);
+    expect(missed.requiredAnnualRate).toBeNull();
+    expect(missed.projectedCo2Tonnes).toBeNull();
+    expect(missed.onTrack).toBe(false);
+    const met = esgSummary({ baselineYear: 2018, baselineCo2Tonnes: 1000, currentYear: 2026, currentCo2Tonnes: 400, targetYear: 2025, targetCo2Tonnes: 500 });
+    expect(met.onTrack).toBe(true);
+  });
+
 });

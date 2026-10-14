@@ -7,7 +7,7 @@ import type { CycleTimeInput, CycleTimeResult } from './types.js';
  *
  * @param input - Cycle time input with measurements array and optional target
  * @returns Statistical analysis results
- * @throws {RangeError} a measurement is not greater than 0 (a cycle cannot take zero or negative time)
+ * @throws {RangeError} measurements is empty, or a measurement is not greater than 0 (a cycle cannot take zero or negative time)
  */
 export function cycleTime(input: CycleTimeInput): CycleTimeResult {
   const { measurements } = input;
@@ -18,17 +18,9 @@ export function cycleTime(input: CycleTimeInput): CycleTimeResult {
     }
   });
 
-  // Handle empty array
+  // No measurements → no statistics; a zero average would read as a measured cycle.
   if (measurements.length === 0) {
-    return {
-      count: 0,
-      average: 0,
-      min: 0,
-      max: 0,
-      range: 0,
-      stdDev: 0,
-      cv: 0,
-    };
+    throw new RangeError('measurements must not be empty');
   }
 
   const n = measurements.length;

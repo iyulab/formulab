@@ -188,7 +188,9 @@ describe('pfCorrection', () => {
         capacitorCostPerKvar: 50,
       });
 
-      expect(result.paybackMonths).toBe(0);
+      // No savings to pay the capacitors back — no payback period, not «0 months»
+      expect(result.monthlySavings).toBeLessThanOrEqual(0);
+      expect(result.paybackMonths).toBeNull();
     });
   });
 

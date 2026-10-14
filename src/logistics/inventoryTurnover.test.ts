@@ -83,23 +83,39 @@ describe('inventoryTurnover', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero average inventory', () => {
+    it('has no turnover with nothing in stock, and 0 days of supply', () => {
       const result = inventoryTurnover({
         cogs: 5000000,
         averageInventory: 0,
+        grossMargin: 100,
       });
 
-      expect(result.turnoverRatio).toBe(0);
+      expect(result.turnoverRatio).toBeNull();
       expect(result.daysOfSupply).toBe(0);
+      expect(result.weeksOfSupply).toBe(0);
+      expect(result.gmroii).toBeNull();
     });
 
-    it('should return zeros for zero COGS', () => {
+    it('never runs out when nothing is sold — no days of supply, not 0', () => {
       const result = inventoryTurnover({
         cogs: 0,
         averageInventory: 1000000,
       });
 
       expect(result.turnoverRatio).toBe(0);
+      expect(result.daysOfSupply).toBeNull();
+      expect(result.weeksOfSupply).toBeNull();
+    });
+
+    it('has neither with nothing sold and nothing in stock', () => {
+      const result = inventoryTurnover({ cogs: 0, averageInventory: 0 });
+      expect(result.turnoverRatio).toBeNull();
+      expect(result.daysOfSupply).toBeNull();
+    });
+
+    it('rejects a negative COGS or inventory', () => {
+      expect(() => inventoryTurnover({ cogs: -1, averageInventory: 100 })).toThrow(/cogs/);
+      expect(() => inventoryTurnover({ cogs: 100, averageInventory: -1 })).toThrow(/averageInventory/);
     });
 
     it('should handle very high turnover (fast-moving goods)', () => {

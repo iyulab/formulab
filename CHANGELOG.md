@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Outputs that have no value are `null`, not 0.** A 0 in these fields read as an answer — a payback of
+  «0 months», «0 % per year», «0 days of supply» — where the real answer is that there is none. The library
+  already used `null` for this (`ledRoi()`, `insulationRoi()`, `motorEfficiency()` payback); these now match.
+  **Breaking (types):** each field below becomes `number | null` (or `boolean | null`).
+  - `energy/pfCorrection()` `paybackMonths` and `energy/vfdSavings()` `paybackYears` — `null` when the change
+    saves nothing.
+  - `energy/heatPump()` `copCarnot` and `efficiency` — `null` when the sink is not warmer than the source, where
+    T_sink / (T_sink − T_source) is undefined.
+  - `environmental/esgSummary()` — `annualRatePercent` and `projectedCo2Tonnes` are `null` in the baseline year
+    (no trend yet); `requiredAnnualRate` is `null` once the target year is reached, and the projection is the
+    current reading at the target year and `null` past it; `onTrack` is `null` when the target is not yet met and
+    there is no trend to judge it by (it was `true` whenever both rates were the 0 placeholder). A current year
+    before the baseline year now throws.
+  - `logistics/inventoryTurnover()` — with no average inventory `turnoverRatio` and `gmroii` are `null` and there
+    are 0 days of supply; with no COGS the turnover is 0 and `daysOfSupply`/`weeksOfSupply` are `null` (the stock
+    never runs out). Both used to return an all-zero result. A negative COGS or inventory now throws.
+  - `machining/cycleTimeEstimator()` `utilization` — `null` when the operations add up to no time.
+- **An empty input list throws instead of returning an all-zero result.** `quality/cycleTime()` (no
+  measurements), `machining/cycleTimeEstimator()` (no operations), `logistics/pallet3d()` (no boxes) and
+  `logistics/abcAnalysis()` (no items, or items whose annual values are all 0 — there is no share to classify by;
+  every item came back as class «C»).
+
 ## [0.55.0] - 2026-10-14
 
 ### Changed

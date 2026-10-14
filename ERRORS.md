@@ -59,7 +59,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `cpk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `acceptanceControlChart()` | `throw` | no spec limit; sigma ≤ 0; proportions outside (0, 1) or rejectable ≤ acceptable; alpha/beta outside (0, 1) |
-| `cycleTime()` | `throw` | a measurement ≤ 0 (NaN included). Empty measurements → zero result (sentinel) |
+| `cycleTime()` | `throw` | empty measurements; a measurement ≤ 0 (NaN included) |
 | `taktTime()` | `throw` | availableTime or demand ≤ 0 or non-finite |
 | `aql()` | `throw` | lotSize ≤ 0; negative aqlLevel → '-' zero-plan result (does not throw) |
 | `actionPriority()` | `throw` | severity/occurrence/detection outside 1–10 or non-finite |
@@ -215,7 +215,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `threadOverWires()` | `throw` | majorDiameter, pitch or a given wireSize ≤ 0 or non-finite; threadAngle not 60/55/29/30; pitch so coarse the pitch diameter is not positive (60°: P ≥ d / 0.6495; 29°/30°: P ≥ 2d) |
 | `gaugeBlockStack()` | `throw` | targetDimension ≤ 0 or non-finite, or above the sum of every block in the set. A target inside that range the set cannot build exactly returns the closest stack with `error` > 0 |
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
-| `cycleTimeEstimator()` | `throw` | operation distance or time < 0, setupTime < 0, partCount < 0, cutting move with a distance or feedRate whose feedRate is missing or ≤ 0, rapid move with rapidRate ≤ 0. Empty operations → zero times (sentinel) |
+| `cycleTimeEstimator()` | `throw` | operation distance or time < 0, setupTime < 0, partCount < 0, cutting move with a distance or feedRate whose feedRate is missing or ≤ 0, rapid move with rapidRate ≤ 0. Empty operations throw. Operations adding up to no time → `utilization` null |
 
 ### Safety (14 functions)
 
@@ -242,13 +242,13 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `abcAnalysis()` | `throw` | an item's annualUsage or unitCost < 0 (totalValue or totalItems = 0 → all items class 'C' with zeroed values, sentinel) |
+| `abcAnalysis()` | `throw` | empty items; an item's annualUsage or unitCost < 0; every item's annual value 0 (no share to classify by) |
 | `cbm()` | `throw` | length, width, height or quantity ≤ 0 |
 | `containerFit()` | `throw` | cargo dimension ≤ 0. Box larger than container in every orientation → zero-fit result (sentinel) |
 | `eoq()` | `safe` | annualDemand/orderCost/holdingCost ≤ 0 → all-zero result (sentinel; does not throw) |
-| `inventoryTurnover()` | `throw` | periodDays ≤ 0 (gmroii = null when grossMargin omitted; averageInventory or cogs ≤ 0 → zeroed result, sentinel) |
+| `inventoryTurnover()` | `throw` | periodDays ≤ 0; cogs or averageInventory < 0. averageInventory 0 → turnoverRatio and gmroii null (0 days of supply); cogs 0 → daysOfSupply/weeksOfSupply null (the stock never runs out); gmroii null when grossMargin omitted |
 | `loadCapacity()` | `throw`/`null` | ratedCapacity, ratedLoadCenter or actualLoadCenter ≤ 0; attachmentWeightLoss or actualLoad < 0; utilization/isOverloaded/safetyMargin = null when actualLoad omitted |
-| `pallet3d()` | `throw` | box weight/length/width/height ≤ 0; given customLength/customWidth ≤ 0; maxStackHeight or maxPayload < 0 (0 = default). Empty boxes → empty result with warning 'No boxes provided' (sentinel) |
+| `pallet3d()` | `throw` | box weight/length/width/height ≤ 0; given customLength/customWidth ≤ 0; maxStackHeight or maxPayload < 0 (0 = default); empty boxes |
 | `palletStack()` | `throw` | box dimension ≤ 0. Box exceeds pallet/maxHeight in all orientations → zero result (sentinel) |
 | `safetyStock()` | `throw` | serviceLevel ∉ (0, 1); avgLeadTime, avgDemand, demandStdDev or leadTimeStdDev < 0 |
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
@@ -268,11 +268,11 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `boilerEfficiency()` | `throw` | fuelRate or fuelHeatValue ≤ 0; steamOutput, steamEnthalpy, feedwaterEnthalpy, operatingHours or fuelCost < 0; steamEnthalpy < feedwaterEnthalpy; a heat output above the fuel heat input (efficiency above 100 %) (annual fields null without operatingHours/fuelCost) |
 | `carbonFootprint()` | `throw` | electricityUsage or emissionFactor < 0 |
 | `cusum()` | `safe` | Empty values → empty arrays, shiftDetected 'none' (sentinel) |
-| `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; deltaT ≤ 0 → copCarnot/efficiency 0 sentinel) |
+| `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; sink not warmer than source → copCarnot/efficiency null) |
 | `ledRoi()` | `throw` | fixtureCount or operatingHours ≤ 0; oldWatts, newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
-| `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths 0 sentinel) |
+| `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths null) |
 | `transformerLoss()` | `throw` | ratedCapacity ≤ 0; loadFraction or powerFactor ∉ [0, 1]; coreLoss, copperLoss, operatingHours or energyCost < 0 (annual fields null without operatingHours/energyCost) |
-| `vfdSavings()` | `throw` | motorKw or fullSpeedRpm ≤ 0; loadFactor or vfdEfficiency ∉ (0, 1]; newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost < 0 (annualSavings ≤ 0 → paybackYears 0 sentinel) |
+| `vfdSavings()` | `throw` | motorKw or fullSpeedRpm ≤ 0; loadFactor or vfdEfficiency ∉ (0, 1]; newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost < 0 (annualSavings ≤ 0 → paybackYears null) |
 | `windOutput()` | `throw` | hubHeight, referenceHeight or ratedSpeed ≤ 0; ratedPower, averageWindSpeed, cutInSpeed, cutOutSpeed, rotorDiameter or terrainRoughness < 0 (sweptArea/betzLimit null without rotorDiameter; zero wind → capacityFactor 0) |
 | `compressedAirCost()` | `throw` | compressorPower/runningHours/airOutput ≤ 0; electricityRate or maintenanceCost < 0 |
 | `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness/surfaceCoefficient ≤ 0; boilerEfficiency ∉ (0, 1]; operatingHours, energyCost or installationCost < 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
@@ -310,7 +310,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `scope2Emissions()` | `throw` | electricityKwh < 0; a given customFactor/supplierFactor/residualMixFactor < 0; region 'custom' without customFactor; market-based requested with contractedKwh negative; contractedKwh>0 and no supplierFactor; contractedKwh > electricityKwh; uncontracted remainder > 0 with no residualMixFactor |
 | `scope3Emissions()` | `throw` | spendUsd < 0 |
 | `gwpCalculator()` | `throw` | quantityKg < 0 |
-| `esgSummary()` | `throw` | baselineCo2Tonnes ≤ 0; currentCo2Tonnes or targetCo2Tonnes < 0; baselineYear, currentYear or targetYear ≤ 0 (yearsElapsed/yearsRemaining ≤ 0 → rate fields 0 sentinel) |
+| `esgSummary()` | `throw` | baselineCo2Tonnes ≤ 0; currentCo2Tonnes or targetCo2Tonnes < 0; baselineYear, currentYear or targetYear ≤ 0; currentYear before baselineYear. currentYear = baselineYear → annualRatePercent/projectedCo2Tonnes null; target year reached → requiredAnnualRate null (projection null once past it); onTrack null when the target is unmet and there is no trend |
 | `emissionsIntensity()` | `throw` | totalCo2Kg < 0, or a given productionUnits/revenueUsd/employees < 0 (a zero denominator leaves its field `undefined`) |
 | `energyIntensity()` | `throw` | totalEnergyMJ < 0, productionUnits ≤ 0 (mjPerRevenue `undefined` unless revenueUsd > 0) |
 | `productCarbonFootprint()` | `throw` | Empty stages, productionQuantity ≤ 0 or NaN. Negative stages (recycling credits) valid; total ≤ 0 → stage percents 0 (sentinel) |

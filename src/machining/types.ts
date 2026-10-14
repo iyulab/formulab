@@ -226,5 +226,5 @@ export interface CycleTimeEstimatorResult {
   dwellTime: number;          // seconds
   cycleTime: number;          // seconds — per part
   totalTime: number;          // seconds — setup + cycleTime × partCount
-  utilization: number;        // % — cuttingTime / cycleTime × 100
+  utilization: number | null; // % — cuttingTime / cycleTime × 100; null when the cycle takes no time
 }

@@ -13,7 +13,8 @@ import type { AbcInput, AbcResult, AbcClassification } from './types.js';
  *
  * @reference Silver, E.A. "Inventory Management and Production Planning and Scheduling", 3rd Ed.
  *
- * @throws {RangeError} an item's annualUsage or unitCost is negative
+ * @throws {RangeError} items is empty, an item's annualUsage or unitCost is negative, or every
+ *   item's annual value is 0 (there is no share to classify by)
  */
 export function abcAnalysis(input: AbcInput): AbcResult {
   const { items, thresholdA = 80, thresholdB = 95 } = input;
@@ -37,27 +38,13 @@ export function abcAnalysis(input: AbcInput): AbcResult {
   const totalValue = withValues.reduce((s, item) => s + item.annualValue, 0);
   const totalItems = items.length;
 
-  if (totalValue === 0 || totalItems === 0) {
-    const classified: AbcClassification[] = withValues.map((item, i) => ({
-      sku: item.sku,
-      annualUsage: item.annualUsage,
-      unitCost: item.unitCost,
-      annualValue: 0,
-      percentage: 0,
-      cumulative: 0,
-      rank: i + 1,
-      category: 'C' as const,
-    }));
-    return {
-      items: classified,
-      summary: {
-        a: { count: 0, skuPercentage: 0, valuePercentage: 0 },
-        b: { count: 0, skuPercentage: 0, valuePercentage: 0 },
-        c: { count: totalItems, skuPercentage: totalItems > 0 ? 100 : 0, valuePercentage: 0 },
-      },
-      totalItems,
-      totalValue: 0,
-    };
+  // Each class is a share of the total annual value — with no items, or no value among them,
+  // there is no share to rank by. Every item landing in 'C' would read as a classification.
+  if (totalItems === 0) {
+    throw new RangeError('items must not be empty');
+  }
+  if (!(totalValue > 0)) {
+    throw new RangeError('the items have no annual value to classify (every usage × unitCost is 0)');
   }
 
   // Sort by annual value descending

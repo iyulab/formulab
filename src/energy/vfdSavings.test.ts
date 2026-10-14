@@ -157,7 +157,7 @@ describe('vfdSavings', () => {
       expect(result.paybackYears).toBeCloseTo(0.35, 1);
     });
 
-    it('should return zero when no savings', () => {
+    it('has no payback period when the drive saves nothing', () => {
       const result = vfdSavings({
         motorKw: 50,
         fullSpeedRpm: 1500,
@@ -169,7 +169,8 @@ describe('vfdSavings', () => {
         vfdEfficiency: 0.97,
       });
 
-      expect(result.paybackYears).toBe(0);
+      expect(result.annualSavings).toBeLessThanOrEqual(0);
+      expect(result.paybackYears).toBeNull();
     });
   });
 

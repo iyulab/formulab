@@ -357,24 +357,16 @@ function calculateFloorCoverage(placedBoxes: PlacedBox3D[]): number {
  *
  * @param input - Pallet specifications and box types
  * @returns Placement results with metrics
- * @throws RangeError if any box weight, length, width or height is not greater than 0, a given
+ * @throws RangeError if boxes is empty, any box weight, length, width or height is not greater than 0, a given
  *   customLength or customWidth is not greater than 0, or maxStackHeight or maxPayload is negative
  *   (0 selects the default)
  */
 export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   const warnings: string[] = [];
 
-  // Validate input
+  // No boxes → no load plan. An empty plan with a 0 × 0 × 0 pallet would read as a result.
   if (!input.boxes || input.boxes.length === 0) {
-    return {
-      placed: [],
-      unplaced: [],
-      utilization: { volumePercent: 0, weightPercent: 0, floorPercent: 0 },
-      centerOfGravity: { x: 0, y: 0, z: 0, isBalanced: true },
-      metrics: { totalWeight: 0, totalBoxes: 0, totalLayers: 0, maxHeight: 0, wastedVolume: 0 },
-      palletDimensions: { length: 0, width: 0, height: 0 },
-      warnings: ['No boxes provided'],
-    };
+    throw new RangeError('boxes must not be empty');
   }
 
   // The centre of gravity is weighted by box weight; weightless boxes would divide 0 by 0.

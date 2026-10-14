@@ -54,9 +54,9 @@ export function heatPump(input: HeatPumpInput): HeatPumpResult {
   const tSinkK = sinkTemp + 273.15;
   const tSourceK = sourceTemp + 273.15;
   const deltaT = tSinkK - tSourceK;
-  const copCarnot = deltaT > 0 ? tSinkK / deltaT : 0;
+  const copCarnot = deltaT > 0 ? tSinkK / deltaT : null;
 
-  const efficiency = copCarnot > 0 ? roundTo((cop / copCarnot) * 100, 2) : 0;
+  const efficiency = copCarnot !== null ? roundTo((cop / copCarnot) * 100, 2) : null;
 
   // Annual calculations
   let annualElectricity: number | null = null;
@@ -80,7 +80,7 @@ export function heatPump(input: HeatPumpInput): HeatPumpResult {
 
   return {
     cop: roundTo(cop, 3),
-    copCarnot: roundTo(copCarnot, 3),
+    copCarnot: copCarnot === null ? null : roundTo(copCarnot, 3),
     efficiency,
     annualElectricity,
     annualElecCost,

@@ -16,14 +16,18 @@ const DEFAULT_RAPID_RATE = 10000; // mm/min
  *   utilization = cuttingTime / cycleTime × 100
  *
  * @param input - Cycle time parameters
- * @returns CycleTimeEstimatorResult with time breakdown and utilization
- * @throws RangeError if an operation distance or time is negative, setupTime or partCount is
+ * @returns CycleTimeEstimatorResult — `utilization` is `null` when the operations add up to no time
+ * @throws RangeError if operations is empty, an operation distance or time is negative, setupTime or partCount is
  *   negative, a cutting move with a distance or feed rate has a feed rate that is missing or not
  *   greater than 0, or a rapid move has a rapid rate that is not greater than 0
  */
 export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEstimatorResult {
   const { operations, setupTime = 0, partCount = 1 } = input;
 
+  // A cycle with no moves has no time to estimate — a 0 s cycle would read as an answer.
+  if (operations.length === 0) {
+    throw new RangeError('operations must not be empty');
+  }
   if (!(setupTime >= 0)) {
     throw new RangeError('setupTime must not be negative');
   }
@@ -81,7 +85,8 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
 
   const cycleTime = cuttingTime + rapidTime + toolChangeTime + dwellTime;
   const totalTime = setupTime + cycleTime * partCount;
-  const utilization = cycleTime > 0 ? (cuttingTime / cycleTime) * 100 : 0;
+  // Cutting share of a cycle that takes no time has no value.
+  const utilization = cycleTime > 0 ? (cuttingTime / cycleTime) * 100 : null;
 
   return {
     cuttingTime: roundTo(cuttingTime, 2),
@@ -90,6 +95,6 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
     dwellTime: roundTo(dwellTime, 2),
     cycleTime: roundTo(cycleTime, 2),
     totalTime: roundTo(totalTime, 2),
-    utilization: roundTo(utilization, 2),
+    utilization: utilization === null ? null : roundTo(utilization, 2),
   };
 }

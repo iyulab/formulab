@@ -357,10 +357,10 @@ export interface InventoryTurnoverInput {
 }
 
 export interface InventoryTurnoverResult {
-  turnoverRatio: number;
-  daysOfSupply: number;       // days
-  weeksOfSupply: number;      // weeks
-  gmroii: number | null;      // % (Gross Margin Return on Inventory Investment)
+  turnoverRatio: number | null; // null with no average inventory
+  daysOfSupply: number | null;  // days; null with no COGS (the stock never runs out)
+  weeksOfSupply: number | null; // weeks; null with daysOfSupply
+  gmroii: number | null;        // % (Gross Margin Return on Inventory Investment); null when omitted or with no inventory
 }
 
 /**

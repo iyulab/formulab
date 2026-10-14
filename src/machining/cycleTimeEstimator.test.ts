@@ -93,6 +93,18 @@ describe('cycleTimeEstimator', () => {
   });
 });
 
+describe('cycleTimeEstimator without a cycle', () => {
+  it('rejects an empty operation list', () => {
+    expect(() => cycleTimeEstimator({ operations: [] })).toThrow(/operations must not be empty/);
+  });
+
+  it('has no cutting share when the operations add up to no time', () => {
+    const r = cycleTimeEstimator({ operations: [{ type: 'dwell', time: 0 }] });
+    expect(r.cycleTime).toBe(0);
+    expect(r.utilization).toBeNull();
+  });
+});
+
 describe('cycleTimeEstimator rejects inputs that would produce a non-finite result', () => {
   it('throws RangeError for a zero rapidRate', () => {
     expect(() => cycleTimeEstimator({ operations: [{ type: 'rapid', distance: 100, rapidRate: 0 }] })).toThrow(RangeError);

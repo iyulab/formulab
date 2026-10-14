@@ -69,11 +69,15 @@ describe('abcAnalysis', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty items', () => {
-      const result = abcAnalysis({ items: [] });
-      expect(result.items).toHaveLength(0);
-      expect(result.totalItems).toBe(0);
-      expect(result.totalValue).toBe(0);
+    it('rejects an empty item list — there is nothing to classify', () => {
+      expect(() => abcAnalysis({ items: [] })).toThrow(/items must not be empty/);
+    });
+
+    it('rejects items with no annual value — every share would be 0 % and every item a «C»', () => {
+      expect(() => abcAnalysis({ items: [
+        { sku: 'A', annualUsage: 0, unitCost: 10 },
+        { sku: 'B', annualUsage: 50, unitCost: 0 },
+      ] })).toThrow(/no annual value/);
     });
 
     it('should handle single item', () => {

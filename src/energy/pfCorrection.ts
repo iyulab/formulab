@@ -89,8 +89,8 @@ export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
   // Annual savings
   const annualSavings = monthlySavings * 12;
 
-  // Payback period in months (return 0 if no savings)
-  const paybackMonths = monthlySavings > 0 ? capacitorCost / monthlySavings : 0;
+  // Payback period in months — none when the correction saves nothing
+  const paybackMonths = monthlySavings > 0 ? capacitorCost / monthlySavings : null;
 
   return {
     currentKva,

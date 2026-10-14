@@ -191,9 +191,9 @@ export interface EsgSummaryInput {
 export interface EsgSummaryResult {
   reductionPercent: number;     // % reduction from baseline
   reductionTonnes: number;      // tonnes reduced
-  annualRatePercent: number;    // % per year
-  requiredAnnualRate: number;   // % per year needed to reach target
-  onTrack: boolean;
-  yearsRemaining: number;
-  projectedCo2Tonnes: number;  // at current rate, projection for target year
+  annualRatePercent: number | null;  // % per year; null when no year has elapsed since the baseline
+  requiredAnnualRate: number | null; // % per year needed to reach target; null once the target year is reached
+  onTrack: boolean | null;           // null when the target is not yet met and there is no trend to judge
+  yearsRemaining: number;            // negative when the target year has passed
+  projectedCo2Tonnes: number | null; // at current rate, projection for target year; null without a trend or past the target year
 }

@@ -94,8 +94,19 @@ describe('heatPump', () => {
         sourceTemp: 20, sinkTemp: 20,
         heatingCapacity: 10, compressorPower: 2.5,
       });
-      // Carnot COP → infinite theoretically, but deltaT=0
-      expect(result.copCarnot).toBe(0);
+      // T_sink / (T_sink − T_source) is undefined at ΔT = 0 — no Carnot COP, no % of Carnot
+      expect(result.copCarnot).toBeNull();
+      expect(result.efficiency).toBeNull();
+      expect(result.cop).toBe(4);
+    });
+
+    it('has no Carnot reference when the source is warmer than the sink', () => {
+      const result = heatPump({
+        sourceTemp: 40, sinkTemp: 35,
+        heatingCapacity: 10, compressorPower: 2.5,
+      });
+      expect(result.copCarnot).toBeNull();
+      expect(result.efficiency).toBeNull();
     });
   });
 });

@@ -76,18 +76,10 @@ describe('cycleTime', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty array', () => {
-      const result = cycleTime({
+    it('rejects an empty measurement list — a 0 s average is not a measurement', () => {
+      expect(() => cycleTime({
         measurements: [],
-      });
-
-      expect(result.count).toBe(0);
-      expect(result.average).toBe(0);
-      expect(result.min).toBe(0);
-      expect(result.max).toBe(0);
-      expect(result.range).toBe(0);
-      expect(result.stdDev).toBe(0);
-      expect(result.cv).toBe(0);
+      })).toThrow(/measurements must not be empty/);
     });
 
     it('should handle single measurement', () => {

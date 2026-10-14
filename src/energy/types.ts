@@ -100,7 +100,7 @@ export interface PfCorrectionResult {
   newMonthlyPenalty: number;      // New monthly PF penalty (should be 0)
   monthlySavings: number;    // Monthly savings from avoided penalties ($)
   annualSavings: number;     // Annual savings ($)
-  paybackMonths: number;     // Payback period in months
+  paybackMonths: number | null; // Payback period in months; null when there are no savings to pay it back
 }
 
 /**
@@ -153,7 +153,7 @@ export interface VfdSavingsResult {
   originalAnnualCost: number;  // Annual cost without VFD ($)
   newAnnualCost: number;       // Annual cost with VFD ($)
   annualSavings: number;       // Annual savings ($)
-  paybackYears: number;        // Simple payback period (years)
+  paybackYears: number | null; // Simple payback period (years); null when there are no savings to pay it back
   co2ReductionKg: number;      // Annual CO2 reduction (kg) - using avg 0.5 kg/kWh
 }
 
@@ -270,8 +270,8 @@ export interface HeatPumpInput {
 
 export interface HeatPumpResult {
   cop: number;
-  copCarnot: number;
-  efficiency: number;         // % of Carnot
+  copCarnot: number | null;  // null when the source is not colder than the sink (Carnot COP undefined)
+  efficiency: number | null; // % of Carnot; null with copCarnot
   annualElectricity: number | null;
   annualElecCost: number | null;
   annualFuelCost: number | null;

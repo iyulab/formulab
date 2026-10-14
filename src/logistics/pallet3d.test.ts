@@ -166,14 +166,11 @@ describe('pallet3d', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty boxes array', () => {
-      const result = pallet3d({
+    it('rejects an empty box list — there is no load to plan', () => {
+      expect(() => pallet3d({
         palletStandard: 'eur',
         boxes: [],
-      });
-
-      expect(result.placed.length).toBe(0);
-      expect(result.warnings.length).toBeGreaterThan(0);
+      })).toThrow(/boxes must not be empty/);
     });
 
     it('should warn for more than 5 box types', () => {
