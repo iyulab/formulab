@@ -10,6 +10,7 @@ import type { InventoryTurnoverInput, InventoryTurnoverResult } from './types.js
  *
  * @param input - COGS, average inventory, and optional gross margin
  * @returns Turnover ratio, days/weeks of supply, and GMROII
+ * @throws {RangeError} periodDays is not greater than 0
  */
 export function inventoryTurnover(input: InventoryTurnoverInput): InventoryTurnoverResult {
   const {
@@ -18,6 +19,11 @@ export function inventoryTurnover(input: InventoryTurnoverInput): InventoryTurno
     periodDays = 365,
     grossMargin,
   } = input;
+
+  // Days of supply is the period divided by the turnover; a negative period flips its sign.
+  if (!(periodDays > 0)) {
+    throw new RangeError('periodDays must be greater than 0');
+  }
 
   if (averageInventory <= 0 || cogs <= 0) {
     return {

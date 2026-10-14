@@ -143,18 +143,14 @@ describe('cutting', () => {
       })).toThrow(RangeError);
     });
 
-    it('should handle zero feed per rev', () => {
-      const result = cutting({
+    it('should reject an explicit zero feed per rev', () => {
+      expect(() => cutting({
         operation: 'turning',
         cuttingSpeed: 100,
         toolDiameter: 10,
         feedPerRev: 0,
         depthOfCut: 2,
-      });
-
-      expect(result.rpm).toBeGreaterThan(0);
-      expect(result.feedRate).toBe(0);
-      expect(result.mrr).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle missing optional parameters', () => {

@@ -82,12 +82,11 @@ describe('heatPump', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero compressor power', () => {
-      const result = heatPump({
+    it('should throw RangeError for zero compressor power', () => {
+      expect(() => heatPump({
         sourceTemp: 5, sinkTemp: 35,
         heatingCapacity: 10, compressorPower: 0,
-      });
-      expect(result.cop).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle equal source and sink temps', () => {

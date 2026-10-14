@@ -158,8 +158,8 @@ describe('pressFit', () => {
       })).toThrow();
     });
 
-    it('should return zeros when hub OD <= shaft diameter', () => {
-      const result = pressFit({
+    it('should throw when hub OD <= shaft diameter (no hub wall)', () => {
+      expect(() => pressFit({
         shaftDiameter: 50,
         holeDiameter: 49.95,
         hubOuterDiameter: 50, // Equal to shaft
@@ -167,9 +167,7 @@ describe('pressFit', () => {
         youngsModulus: 200,
         poissonRatio: 0.3,
         frictionCoefficient: 0.15,
-      });
-
-      expect(result.interfacePressure).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle clearance fit (no interference)', () => {

@@ -8,6 +8,7 @@ import type { StateOfHealthInput, StateOfHealthResult, SohStatus } from './types
  * @reference IEEE 1188, IEC 62620
  * @param input - Measured and rated capacity
  * @returns SOH percentage and degradation status
+ * @throws {RangeError} ratedCapacityAh is not greater than 0, or measuredCapacityAh is negative
  */
 export function stateOfHealth(input: StateOfHealthInput): StateOfHealthResult {
   const { measuredCapacityAh, ratedCapacityAh } = input;

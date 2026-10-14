@@ -11,10 +11,16 @@ import type { ConcentrationInput, ConcentrationResult } from './types.js';
  *
  * @param input - Concentration input with source unit, value, molecular weight, and density
  * @returns All three concentration units
+ * @throws {RangeError} fromUnit is not molPerL, wtPercent or ppm, value is negative, or
+ *   molecularWeight or solutionDensity is not greater than 0
  */
 export function concentration(input: ConcentrationInput): ConcentrationResult {
   const { fromUnit, value, molecularWeight, solutionDensity } = input;
 
+  // A concentration is an amount of solute; a negative one converts to negative values in every unit.
+  if (!(value >= 0)) {
+    throw new RangeError('value must not be negative');
+  }
   // Every conversion below divides by one or both of these, so a non-positive value
   // returns an infinite concentration rather than describing a solution.
   if (!(molecularWeight > 0)) {
@@ -53,8 +59,11 @@ export function concentration(input: ConcentrationInput): ConcentrationResult {
       molPerL = (ppm * solutionDensity) / (molecularWeight * 1000);
       break;
 
-    default:
-      return { molPerL: 0, wtPercent: 0, ppm: 0 };
+    default: {
+      // Unreachable for typed callers; untyped form/API data gets an error, not a zero-filled result.
+      const unknownUnit: never = fromUnit;
+      throw new RangeError(`fromUnit must be molPerL, wtPercent or ppm, got ${String(unknownUnit)}`);
+    }
   }
 
   return { molPerL, wtPercent, ppm };

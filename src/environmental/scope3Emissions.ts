@@ -23,9 +23,15 @@ const SPEND_BASED_FACTORS: Record<Scope3Category, number> = {
  * @reference GHG Protocol Scope 3 Standard, EPA EEIO model
  * @param input - Scope 3 category and spend amount
  * @returns CO2eq emissions in kg and tonnes
+ * @throws {RangeError} spendUsd is negative
  */
 export function scope3Emissions(input: Scope3EmissionsInput): Scope3EmissionsResult {
   const { category, spendUsd } = input;
+
+  // A negative spend (a refund) would report a negative emission; offsets are outside this model.
+  if (!(spendUsd >= 0)) {
+    throw new RangeError('spendUsd must not be negative');
+  }
   const eeioFactor = SPEND_BASED_FACTORS[category];
 
   const co2Kg = roundTo(spendUsd * eeioFactor, 2);

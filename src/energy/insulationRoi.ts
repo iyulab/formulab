@@ -12,7 +12,8 @@ import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
  * @param input - Insulation parameters
  * @returns Insulation ROI result with heat savings and payback
  * @throws RangeError if surfaceArea, tempDifference, insulationK, insulationThickness,
- *   surfaceCoefficient or boilerEfficiency is not greater than 0
+ *   surfaceCoefficient or boilerEfficiency is not greater than 0, boilerEfficiency is above 1,
+ *   or operatingHours, energyCost or installationCost is negative
  */
 export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
   const {
@@ -27,23 +28,32 @@ export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
     installationCost,
   } = input;
 
-  if (surfaceArea <= 0) {
+  if (!(surfaceArea > 0)) {
     throw new RangeError('surfaceArea must be greater than 0');
   }
-  if (tempDifference <= 0) {
+  if (!(tempDifference > 0)) {
     throw new RangeError('tempDifference must be greater than 0');
   }
-  if (insulationK <= 0) {
+  if (!(insulationK > 0)) {
     throw new RangeError('insulationK must be greater than 0');
   }
-  if (insulationThickness <= 0) {
+  if (!(insulationThickness > 0)) {
     throw new RangeError('insulationThickness must be greater than 0');
   }
   if (!(surfaceCoefficient > 0)) {
     throw new RangeError('surfaceCoefficient must be greater than 0');
   }
-  if (!(boilerEfficiency > 0)) {
-    throw new RangeError('boilerEfficiency must be greater than 0');
+  if (!(boilerEfficiency > 0) || boilerEfficiency > 1) {
+    throw new RangeError('boilerEfficiency must be greater than 0 and at most 1');
+  }
+  if (!(operatingHours >= 0)) {
+    throw new RangeError('operatingHours must not be negative');
+  }
+  if (!(energyCost >= 0)) {
+    throw new RangeError('energyCost must not be negative');
+  }
+  if (installationCost !== undefined && !(installationCost >= 0)) {
+    throw new RangeError('installationCost must not be negative');
   }
 
   // Bare surface heat loss: Q = h × A × ΔT (W)

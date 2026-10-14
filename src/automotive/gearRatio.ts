@@ -12,12 +12,13 @@ import type { GearRatioInput, GearRatioResult } from './types.js';
  *
  * @param input - Gear parameters
  * @returns Gear result with ratio, speed, and torque
- * @throws RangeError if drivingTeeth is not greater than 0
+ * @throws RangeError if drivingTeeth or drivenTeeth is not greater than 0, or efficiency is not
+ *   in (0, 1]. Signed inputSpeed/inputTorque are accepted as rotation direction.
  */
 export function gearRatio(input: GearRatioInput): GearRatioResult {
   const { drivingTeeth, drivenTeeth, inputSpeed, inputTorque, efficiency } = input;
 
-  if (drivingTeeth <= 0) {
+  if (!(drivingTeeth > 0)) {
     throw new RangeError('drivingTeeth must be greater than 0');
   }
 
@@ -25,6 +26,10 @@ export function gearRatio(input: GearRatioInput): GearRatioResult {
   // fast rather than describing a gear pair.
   if (!(drivenTeeth > 0)) {
     throw new RangeError('drivenTeeth must be greater than 0');
+  }
+  // A negative efficiency reverses the output torque, and one above 1 creates power.
+  if (!(efficiency > 0 && efficiency <= 1)) {
+    throw new RangeError('efficiency must be greater than 0 and at most 1');
   }
 
   const ratio = drivenTeeth / drivingTeeth;

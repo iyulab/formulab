@@ -14,9 +14,15 @@ import type { WaterActivityInput, WaterActivityResult } from './types.js';
  * @reference FDA Food Code
  * @reference ICMSF "Microorganisms in Foods 6"
  * @reference Scott, W.J. (1957). Water relations of food spoilage microorganisms.
+ * @throws {RangeError} aw is outside [0, 1]
  */
 export function waterActivity(input: WaterActivityInput): WaterActivityResult {
   const { aw, temperature = 25 } = input;
+
+  // Water activity is a ratio of vapour pressures, from 0 (bone dry) to 1 (pure water).
+  if (!(aw >= 0 && aw <= 1)) {
+    throw new RangeError('aw must be between 0 and 1');
+  }
   const warnings: string[] = [];
 
   // Growth risk thresholds

@@ -12,11 +12,18 @@ import type { ParetoInput, ParetoResult, ParetoClassification } from './types.js
  *   - Category C: cumulative > thresholdB
  *
  * @reference Juran, J.M. "Juran's Quality Handbook", 5th Ed.
+ *
+ * @throws {RangeError} items is empty, or an item value is negative
  */
 export function paretoAnalysis(input: ParetoInput): ParetoResult {
   const { items, thresholdA = 80, thresholdB = 95 } = input;
   if (!Array.isArray(items) || items.length === 0) {
     throw new RangeError('items must contain at least one item');
+  }
+  for (const item of items) {
+    if (!(item.value >= 0)) {
+      throw new RangeError(`value of ${item.name} must not be negative`);
+    }
   }
 
   const totalValue = items.reduce((s, item) => s + item.value, 0);

@@ -17,6 +17,10 @@ import type { WindOutputInput, WindOutputResult } from './types.js';
  * Rayleigh-distribution power curve integral — no single published worked example exists to
  * golden-test it against, so its tests are relational (bounds, monotonicity) rather than golden;
  * documented here per this project's no-invented-golden-values rule rather than left unstated.
+ *
+ * @throws {RangeError} hubHeight, referenceHeight or ratedSpeed is not greater than 0, or
+ *   ratedPower, averageWindSpeed, cutInSpeed, cutOutSpeed, rotorDiameter or terrainRoughness is
+ *   negative
  */
 export function windOutput(input: WindOutputInput): WindOutputResult {
   const {
@@ -36,6 +40,30 @@ export function windOutput(input: WindOutputInput): WindOutputResult {
   }
   if (!(referenceHeight > 0)) {
     throw new RangeError('referenceHeight must be greater than 0');
+  }
+  // The cubic power-curve region divides the wind speed by the rated speed.
+  if (!(ratedSpeed > 0)) {
+    throw new RangeError('ratedSpeed must be greater than 0');
+  }
+  // A negative rating, wind speed or cut-in/cut-out speed flips the sign of an output or of the
+  // integration range; a negative roughness exponent inverts the wind shear.
+  if (!(ratedPower >= 0)) {
+    throw new RangeError('ratedPower must not be negative');
+  }
+  if (!(averageWindSpeed >= 0)) {
+    throw new RangeError('averageWindSpeed must not be negative');
+  }
+  if (!(cutInSpeed >= 0)) {
+    throw new RangeError('cutInSpeed must not be negative');
+  }
+  if (!(cutOutSpeed >= 0)) {
+    throw new RangeError('cutOutSpeed must not be negative');
+  }
+  if (rotorDiameter != null && !(rotorDiameter >= 0)) {
+    throw new RangeError('rotorDiameter must not be negative');
+  }
+  if (!(terrainRoughness >= 0)) {
+    throw new RangeError('terrainRoughness must not be negative');
   }
 
   // Wind speed at hub height (Hellmann power law)

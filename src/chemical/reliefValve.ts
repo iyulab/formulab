@@ -49,8 +49,8 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  * actual multi-valve installation must be re-sized per API 520, since inlet and back-pressure
  * corrections change each valve's capacity.
  *
- * @throws {RangeError} molecularWeight, specificGravity, specificHeatRatio (must exceed 1) or
- *   compressibility is not positive
+ * @throws {RangeError} requiredCapacity, molecularWeight, specificGravity, specificHeatRatio (must
+ *   exceed 1) or compressibility is not positive
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
@@ -63,6 +63,10 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     compressibility = 1.0,
   } = input;
 
+  // A negative relieving rate sizes a negative orifice area.
+  if (!(requiredCapacity > 0)) {
+    throw new RangeError('requiredCapacity must be greater than 0');
+  }
   // The gas/steam sizing equation divides by sqrt(M) after taking its square root, so a
   // non-positive molecular weight gives an infinite or imaginary orifice area.
   if (!(molecularWeight > 0)) {

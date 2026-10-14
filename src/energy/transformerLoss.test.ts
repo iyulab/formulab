@@ -122,16 +122,13 @@ describe('transformerLoss', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero rated capacity', () => {
-      const result = transformerLoss({
+    it('should throw RangeError for zero rated capacity', () => {
+      expect(() => transformerLoss({
         ratedCapacity: 0,
         coreLoss: 1800,
         copperLoss: 10500,
         loadFraction: 0.75,
-      });
-
-      expect(result.outputPower).toBe(0);
-      expect(result.efficiency).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle zero load (no-load condition)', () => {

@@ -30,6 +30,10 @@ import type { PressFitInput, PressFitResult } from './types.js';
  * not read here — changing it does not change the result.
  *
  * Reference: Shigley's Mechanical Engineering Design
+ *
+ * @throws {RangeError} shaftDiameter, holeDiameter, hubOuterDiameter, contactLength, youngsModulus or
+ *   frictionCoefficient is not greater than 0, or hubOuterDiameter does not exceed both shaftDiameter
+ *   and holeDiameter (no hub wall)
  */
 export function pressFit(input: PressFitInput): PressFitResult {
   // Note: poissonRatio is deliberately not destructured — see JSDoc (nu cancels
@@ -44,22 +48,15 @@ export function pressFit(input: PressFitInput): PressFitResult {
   } = input;
 
   // Validate inputs
-  if (shaftDiameter <= 0) throw new RangeError('shaftDiameter must be greater than 0');
-  if (holeDiameter <= 0) throw new RangeError('holeDiameter must be greater than 0');
-  if (hubOuterDiameter <= 0) throw new RangeError('hubOuterDiameter must be greater than 0');
-  if (contactLength <= 0) throw new RangeError('contactLength must be greater than 0');
-
-  if (hubOuterDiameter <= shaftDiameter) {
-    return {
-      interference: 0,
-      interfacePressure: 0,
-      assemblyForce: 0,
-      assemblyForceKN: 0,
-      holdingTorque: 0,
-      axialHoldingForce: 0,
-      hubHoopStress: 0,
-      shaftRadialStress: 0,
-    };
+  if (!(shaftDiameter > 0)) throw new RangeError('shaftDiameter must be greater than 0');
+  if (!(holeDiameter > 0)) throw new RangeError('holeDiameter must be greater than 0');
+  if (!(hubOuterDiameter > 0)) throw new RangeError('hubOuterDiameter must be greater than 0');
+  if (!(contactLength > 0)) throw new RangeError('contactLength must be greater than 0');
+  if (!(youngsModulus > 0)) throw new RangeError('youngsModulus must be greater than 0');
+  if (!(frictionCoefficient > 0)) throw new RangeError('frictionCoefficient must be greater than 0');
+  // A hub whose outside diameter does not clear the bore and the shaft has no wall to carry the fit.
+  if (!(hubOuterDiameter > Math.max(shaftDiameter, holeDiameter))) {
+    throw new RangeError('hubOuterDiameter must be greater than shaftDiameter and holeDiameter');
   }
 
   // Interference (mm)

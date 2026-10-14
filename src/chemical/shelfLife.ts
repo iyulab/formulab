@@ -12,11 +12,15 @@ import type { ShelfLifeInput, ShelfLifeResult } from './types.js';
  *
  * @param input - Shelf life input with reference values and Q10 factor
  * @returns Estimated shelf life at target temperature
- * @throws RangeError if q10 is not greater than 0
+ * @throws RangeError if shelfLifeAtRef or q10 is not greater than 0
  */
 export function shelfLife(input: ShelfLifeInput): ShelfLifeResult {
   const { shelfLifeAtRef, refTemp, targetTemp, q10 } = input;
 
+  // A negative reference shelf life scales to a negative one at any temperature.
+  if (!(shelfLifeAtRef > 0)) {
+    throw new RangeError('shelfLifeAtRef must be greater than 0');
+  }
   // Q10 is raised to a possibly negative or fractional power.
   if (!(q10 > 0)) {
     throw new RangeError('q10 must be greater than 0');

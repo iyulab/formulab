@@ -8,13 +8,30 @@ import type { CuttingInput, CuttingResult } from './types.js';
  * Feed rate = RPM x feed x (teeth for milling)
  * MRR = material removal rate in cm3/min
  *
- * @throws RangeError if toolDiameter is not positive
+ * @throws RangeError if cuttingSpeed or toolDiameter is not greater than 0, or a field the operation
+ *   reads is provided but not greater than 0 — turning: feedPerRev, depthOfCut; milling: feedPerTooth,
+ *   numberOfTeeth, depthOfCut, widthOfCut; drilling: feedPerRev. Fields the operation does not read are
+ *   ignored; an omitted feed or depth still yields a 0 feed rate / MRR (spindle speed only).
  */
 export function cutting(input: CuttingInput): CuttingResult {
   const { operation, cuttingSpeed, toolDiameter } = input;
 
-  if (toolDiameter <= 0) {
+  if (!(cuttingSpeed > 0)) {
+    throw new RangeError('cuttingSpeed must be greater than 0');
+  }
+  if (!(toolDiameter > 0)) {
     throw new RangeError('toolDiameter must be greater than 0');
+  }
+  const usedFields: Record<CuttingInput['operation'], readonly (keyof CuttingInput)[]> = {
+    turning: ['feedPerRev', 'depthOfCut'],
+    milling: ['feedPerTooth', 'numberOfTeeth', 'depthOfCut', 'widthOfCut'],
+    drilling: ['feedPerRev'],
+  };
+  for (const field of usedFields[operation] ?? []) {
+    const value = input[field];
+    if (value !== undefined && !((value as number) > 0)) {
+      throw new RangeError(`${field} must be greater than 0`);
+    }
   }
 
   // RPM = 1000 x Vc / (pi x D)

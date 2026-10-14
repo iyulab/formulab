@@ -21,10 +21,10 @@ export function lel(input: LelInput): LelResult {
   const { gases } = input;
 
   for (const gas of gases) {
-    if (gas.concentration < 0) {
+    if (!(gas.concentration >= 0)) {
       throw new RangeError(`gas "${gas.name}" concentration must not be negative`);
     }
-    if (gas.lel <= 0) {
+    if (!(gas.lel > 0)) {
       throw new RangeError(`gas "${gas.name}" LEL must be greater than 0`);
     }
   }

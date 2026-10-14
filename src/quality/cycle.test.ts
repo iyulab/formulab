@@ -70,12 +70,8 @@ describe('cycleTime', () => {
       expect(result.cv).toBeCloseTo(13.2, 0);
     });
 
-    it('should return 0 CV when average is 0', () => {
-      const result = cycleTime({
-        measurements: [0, 0, 0],
-      });
-
-      expect(result.cv).toBe(0);
+    it('should reject zero measurements (a cycle cannot take no time)', () => {
+      expect(() => cycleTime({ measurements: [0, 0, 0] })).toThrow(RangeError);
     });
   });
 
@@ -117,15 +113,8 @@ describe('cycleTime', () => {
       expect(result.cv).toBe(0);
     });
 
-    it('should handle negative values', () => {
-      const result = cycleTime({
-        measurements: [-5, -3, -4],
-      });
-
-      expect(result.average).toBe(-4);
-      expect(result.min).toBe(-5);
-      expect(result.max).toBe(-3);
-      expect(result.range).toBe(2);
+    it('should reject negative values', () => {
+      expect(() => cycleTime({ measurements: [-5, -3, -4] })).toThrow(RangeError);
     });
   });
 

@@ -21,9 +21,15 @@ const COMBUSTION_FACTORS: Record<FuelType, { factor: number; unit: string }> = {
  * @reference GHG Protocol, EPA Emission Factors Hub, IPCC 2006
  * @param input - Fuel type and quantity consumed
  * @returns CO2 emissions in kg and tonnes
+ * @throws {RangeError} quantity is negative
  */
 export function scope1Emissions(input: Scope1EmissionsInput): Scope1EmissionsResult {
   const { fuelType, quantity } = input;
+
+  // A negative fuel quantity would report a negative emission; offsets are outside this model.
+  if (!(quantity >= 0)) {
+    throw new RangeError('quantity must not be negative');
+  }
   const { factor, unit } = COMBUSTION_FACTORS[fuelType];
 
   const co2Kg = roundTo(quantity * factor, 2);

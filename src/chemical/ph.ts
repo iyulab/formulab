@@ -33,15 +33,16 @@ const DPKA_DT: Record<Exclude<BufferSystem, 'custom'>, number> = {
  *
  * @param input - pH calculation input with buffer system and concentrations
  * @returns pH result with pKa, buffer capacity, and effective range
+ * @throws {RangeError} acidConcentration or baseConcentration is not greater than 0
  */
 export function ph(input: PhInput): PhResult {
   const { bufferSystem, acidConcentration, baseConcentration, temperature, customPka } = input;
 
   // Guard against invalid concentrations
-  if (acidConcentration <= 0) {
+  if (!(acidConcentration > 0)) {
     throw new RangeError('acidConcentration must be greater than 0');
   }
-  if (baseConcentration <= 0) {
+  if (!(baseConcentration > 0)) {
     throw new RangeError('baseConcentration must be greater than 0');
   }
 

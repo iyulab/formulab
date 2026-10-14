@@ -15,6 +15,8 @@ import type { RadialChipThinningInput, RadialChipThinningResult } from './types.
  *
  * @param input - Chip thinning parameters
  * @returns RadialChipThinningResult with adjusted feed and thinning factor
+ * @throws RangeError if toolDiameter is not greater than 0, radialDepthOfCut is not in (0, toolDiameter),
+ *   or chipLoadTarget is not greater than 0
  */
 export function radialChipThinning(input: RadialChipThinningInput): RadialChipThinningResult {
   const { toolDiameter, radialDepthOfCut, chipLoadTarget } = input;
@@ -27,6 +29,9 @@ export function radialChipThinning(input: RadialChipThinningInput): RadialChipTh
   }
   if (!(radialDepthOfCut > 0) || radialDepthOfCut >= toolDiameter) {
     throw new RangeError('radialDepthOfCut must be greater than 0 and less than toolDiameter');
+  }
+  if (!(chipLoadTarget > 0)) {
+    throw new RangeError('chipLoadTarget must be greater than 0');
   }
 
   const D = toolDiameter;

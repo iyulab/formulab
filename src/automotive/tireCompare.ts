@@ -62,8 +62,19 @@ export function tireLoadCapacityKg(loadIndex: number): number {
  * - Circumference = Diameter x PI
  * - Revs per km = 1,000,000 / Circumference
  */
-function calculateTireData(spec: TireSpec): TireData {
+function calculateTireData(spec: TireSpec, label: string): TireData {
   const { width, aspect, rim, loadIndex } = spec;
+
+  // A negative dimension shrinks the diameter, down to a negative revs-per-km.
+  if (!(width > 0)) {
+    throw new RangeError(`${label}.width must be greater than 0`);
+  }
+  if (!(aspect > 0)) {
+    throw new RangeError(`${label}.aspect must be greater than 0`);
+  }
+  if (!(rim > 0)) {
+    throw new RangeError(`${label}.rim must be greater than 0`);
+  }
 
   const sidewallHeight = width * (aspect / 100);
   const rimDiameterMm = rim * INCHES_TO_MM;
@@ -84,15 +95,15 @@ function calculateTireData(spec: TireSpec): TireData {
  *
  * @param input - Two tire specifications to compare
  * @returns Comparison result with dimensions and differences
+ * @throws {RangeError} a tire's width, aspect or rim is not greater than 0, or its loadIndex is
+ *   outside 60-130
  */
 export function tireCompare(input: TireInput): TireResult {
-  const tire1Data = calculateTireData(input.tire1);
-  const tire2Data = calculateTireData(input.tire2);
+  const tire1Data = calculateTireData(input.tire1, 'tire1');
+  const tire2Data = calculateTireData(input.tire2, 'tire2');
 
   const diameterDiff = tire2Data.diameter - tire1Data.diameter;
-  const diameterDiffPercent = tire1Data.diameter > 0
-    ? (diameterDiff / tire1Data.diameter) * 100
-    : 0;
+  const diameterDiffPercent = (diameterDiff / tire1Data.diameter) * 100;
 
   // Speedometer correction: positive means speedo reads lower than actual
   // If tire2 is larger, actual speed is higher than displayed

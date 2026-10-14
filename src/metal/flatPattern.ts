@@ -21,7 +21,8 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
  * @param input - Flat pattern input parameters
  * @returns FlatPatternResult with flat length, BA, BD, and K-factor
  * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not strictly between 0 and 180°,
- *   kFactor is outside [0, 1], or a flange length (flangeC for a U-shape) is not positive
+ *   kFactor is outside [0, 1], a flange length (flangeC for a U-shape) is not positive, or the resulting
+ *   flat length is not positive (flanges shorter than the bend deductions — no such part exists)
  */
 export function flatPattern(input: FlatPatternInput): FlatPatternResult {
   const {
@@ -64,6 +65,10 @@ export function flatPattern(input: FlatPatternInput): FlatPatternResult {
   } else {
     // U-shape: two bends
     flatLength = flangeA + flangeB + flangeC - 2 * bd;
+  }
+
+  if (!(flatLength > 0)) {
+    throw new RangeError('flatLength must be greater than 0: the flanges are shorter than the bend deductions');
   }
 
   return {

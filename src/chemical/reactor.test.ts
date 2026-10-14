@@ -171,16 +171,13 @@ describe('reactor', () => {
       expect(result.totalVolume).toBeCloseTo(1178.1, 0);
     });
 
-    it('should handle zero fill ratio', () => {
-      const result = reactor({
+    it('should reject a zero fill ratio (an empty vessel has no working volume to size)', () => {
+      expect(() => reactor({
         shape: 'cylindrical',
         diameter: 1,
         height: 1,
         fillRatio: 0,
-      });
-
-      expect(result.workingVolume).toBe(0);
-      expect(result.workingVolumeLiters).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

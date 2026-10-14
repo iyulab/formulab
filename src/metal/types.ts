@@ -75,8 +75,10 @@ export interface BendAllowanceInput {
 
 export interface BendAllowanceResult {
   bendAllowance: number;    // mm
-  bendDeduction: number;    // mm
-  outsideSetback: number;   // mm
+  /** mm. `null` at a closed hem (180°), where the outside setback diverges. */
+  bendDeduction: number | null;
+  /** mm. `null` at a closed hem (180°): the mold lines never meet. */
+  outsideSetback: number | null;
   kFactor: number;          // used or default
   recommendedVDie: number;  // mm (8 x thickness)
   minBendRadius: number;    // mm
@@ -163,7 +165,9 @@ export interface PressTonnageInput {
   // Drawing
   punchDiameter?: number;   // mm
   blankDiameter?: number;   // mm (for calculating draw ratio)
-  drawRatio?: number;       // 0.6-1.2 (d/D ratio)
+  drawRatio?: number;       // d/D ratio, 0 < drawRatio < 1 (typically 0.45-0.6 for a first draw):
+                            // the blank D = d / drawRatio must exceed the punch d, so a ratio >= 1
+                            // (a blank no larger than the punch, nothing to draw) is refused
   frictionCoefficient?: number; // 0.05-0.15, default 0.1
   blankHolderPressure?: number; // MPa (2-5 MPa typical)
   dieRadius?: number;       // mm (die corner radius)

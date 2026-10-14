@@ -8,6 +8,8 @@ import type { BmsBalancingInput, BmsBalancingResult } from './types.js';
  * @reference BMS design guidelines, passive balancing
  * @param input - Cell voltages array, balancing current, cell capacity
  * @returns Balancing time estimates and cell-level details
+ * @throws {RangeError} cellVoltages is empty, any cell voltage is not greater than 0, or
+ *   balancingCurrentMA or cellCapacityAh is not greater than 0
  */
 export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
   const { cellVoltages, balancingCurrentMA, cellCapacityAh } = input;

@@ -17,10 +17,33 @@ const DEFAULT_RAPID_RATE = 10000; // mm/min
  *
  * @param input - Cycle time parameters
  * @returns CycleTimeEstimatorResult with time breakdown and utilization
- * @throws RangeError if a rapid move has a rapid rate that is not greater than 0
+ * @throws RangeError if an operation distance or time is negative, setupTime or partCount is
+ *   negative, a cutting move with a distance or feed rate has a feed rate that is missing or not
+ *   greater than 0, or a rapid move has a rapid rate that is not greater than 0
  */
 export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEstimatorResult {
   const { operations, setupTime = 0, partCount = 1 } = input;
+
+  if (!(setupTime >= 0)) {
+    throw new RangeError('setupTime must not be negative');
+  }
+  if (!(partCount >= 0)) {
+    throw new RangeError('partCount must not be negative');
+  }
+  operations.forEach((op, i) => {
+    if (op.distance !== undefined && !(op.distance >= 0)) {
+      throw new RangeError(`operations[${i}].distance must not be negative`);
+    }
+    if (op.time !== undefined && !(op.time >= 0)) {
+      throw new RangeError(`operations[${i}].time must not be negative`);
+    }
+    // A cutting move with a distance but no positive feed has no duration to add; skipping it
+    // silently would under-report the cycle.
+    if (op.type === 'cutting' && (op.feedRate !== undefined || op.distance !== undefined)
+      && !(op.feedRate !== undefined && op.feedRate > 0)) {
+      throw new RangeError(`operations[${i}].feedRate must be greater than 0`);
+    }
+  });
 
   let cuttingTime = 0;   // seconds
   let rapidTime = 0;     // seconds
@@ -30,7 +53,7 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
   for (const op of operations) {
     switch (op.type) {
       case 'cutting': {
-        if (op.distance !== undefined && op.feedRate !== undefined && op.feedRate > 0) {
+        if (op.distance !== undefined && op.feedRate !== undefined) {
           cuttingTime += (op.distance / op.feedRate) * 60; // mm/(mm/min) → min → sec
         }
         break;

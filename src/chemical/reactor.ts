@@ -16,7 +16,8 @@ import { roundTo } from '../utils.js';
  *
  * @param input - Reactor dimensions and fill ratio
  * @returns Reactor volumes and surface area
- * @throws RangeError if diameter is not greater than 0, or a cylindrical height is not greater than 0
+ * @throws RangeError if diameter is not greater than 0, a cylindrical height is not greater than 0,
+ *   or fillRatio is not in (0, 1]
  */
 export function reactor(input: ReactorInput): ReactorResult {
   const { shape, diameter, fillRatio } = input;
@@ -24,6 +25,11 @@ export function reactor(input: ReactorInput): ReactorResult {
   // A zero diameter gives zero volume over zero surface area, which is not a ratio.
   if (!(diameter > 0)) {
     throw new RangeError('diameter must be greater than 0');
+  }
+  // A fill ratio is a fraction of the vessel: a negative one gives a negative working volume,
+  // and one above 1 overfills it.
+  if (!(fillRatio > 0 && fillRatio <= 1)) {
+    throw new RangeError('fillRatio must be greater than 0 and at most 1');
   }
   const radius = diameter / 2;
   let totalVolume: number;

@@ -1,5 +1,5 @@
 import { roundTo } from '../utils.js';
-import type { NutritionInput, NutritionResult, NutritionFacts, DailyValuePercents } from './types.js';
+import type { NutritionInput, NutritionResult, NutritionFacts, DailyValuePercents, NutrientIngredient } from './types.js';
 
 // FDA Daily Values (2020)
 const DAILY_VALUES = {
@@ -12,6 +12,11 @@ const DAILY_VALUES = {
   protein: 50,          // g
 };
 
+const INGREDIENT_FIELDS = [
+  'amountG', 'calories', 'totalFat', 'saturatedFat', 'transFat', 'cholesterol', 'sodium',
+  'totalCarbs', 'dietaryFiber', 'sugars', 'protein',
+] as const satisfies readonly (keyof NutrientIngredient)[];
+
 /**
  * Calculate nutrition facts per serving from ingredients
  *
@@ -20,9 +25,24 @@ const DAILY_VALUES = {
  *
  * @param input - Nutrition input with serving size and ingredients
  * @returns Nutrition result with per-serving facts and daily values
+ * @throws {RangeError} servingSize is not greater than 0, or an ingredient's amountG or any of its
+ *   nutrient values is negative
  */
 export function nutrition(input: NutritionInput): NutritionResult {
   const { servingSize, ingredients } = input;
+
+  // A serving of no food has no label to print, and a negative one flips every per-serving value.
+  if (!(servingSize > 0)) {
+    throw new RangeError('servingSize must be greater than 0');
+  }
+  // A negative amount or nutrient subtracts from the recipe total it is meant to add to.
+  for (const ing of ingredients) {
+    for (const field of INGREDIENT_FIELDS) {
+      if (!(ing[field] >= 0)) {
+        throw new RangeError(`ingredient "${ing.name}" ${field} must not be negative`);
+      }
+    }
+  }
 
   // Sum all ingredients (nutrients per 100g × amountG / 100)
   const totals: NutritionFacts = {

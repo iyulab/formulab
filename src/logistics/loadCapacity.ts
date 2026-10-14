@@ -15,9 +15,9 @@ import type { LoadCapacityInput, LoadCapacityResult } from './types.js';
  * @returns Effective capacity, derating, and utilization metrics, plus the parts that take the rated
  *   capacity down to the net capacity (`ratedCapacity − loadCenterLoss − attachmentWeightLoss`, before
  *   the zero floor).
- * @throws {RangeError} attachmentWeightLoss or actualLoad is negative.
- * @remarks Non-positive rated capacity or load-center inputs return a zeroed result (legacy sentinel).
- *   Two boundary substitutions are disclosed rather than silent: a load center shorter than rated keeps
+ * @throws {RangeError} ratedCapacity, ratedLoadCenter or actualLoadCenter is not greater than 0, or
+ *   attachmentWeightLoss or actualLoad is negative.
+ * @remarks Two boundary substitutions are disclosed rather than silent: a load center shorter than rated keeps
  *   the rated capacity (`capacityCappedAtRated`) — the moment ratio would exceed the nameplate — and an
  *   attachment heavier than the derated capacity floors the net capacity at 0 (`netCapacityClamped`).
  */
@@ -30,27 +30,22 @@ export function loadCapacity(input: LoadCapacityInput): LoadCapacityResult {
     attachmentWeightLoss = 0,
   } = input;
 
-  if (attachmentWeightLoss < 0) {
+  // The derating is a ratio of the two load centres and a share of the rated capacity, so none
+  // of the three may be zero; a negative one flips the sign of the capacity.
+  if (!(ratedCapacity > 0)) {
+    throw new RangeError('ratedCapacity must be greater than 0');
+  }
+  if (!(ratedLoadCenter > 0)) {
+    throw new RangeError('ratedLoadCenter must be greater than 0');
+  }
+  if (!(actualLoadCenter > 0)) {
+    throw new RangeError('actualLoadCenter must be greater than 0');
+  }
+  if (!(attachmentWeightLoss >= 0)) {
     throw new RangeError('attachmentWeightLoss must not be negative');
   }
-  if (actualLoad !== undefined && actualLoad < 0) {
+  if (actualLoad !== undefined && !(actualLoad >= 0)) {
     throw new RangeError('actualLoad must not be negative');
-  }
-
-  if (ratedCapacity <= 0 || ratedLoadCenter <= 0 || actualLoadCenter <= 0) {
-    return {
-      ratedCapacity: 0,
-      effectiveCapacity: 0,
-      loadCenterDerating: 0,
-      loadCenterLoss: 0,
-      capacityCappedAtRated: false,
-      attachmentWeightLoss: 0,
-      netCapacity: 0,
-      netCapacityClamped: false,
-      utilization: null,
-      isOverloaded: null,
-      safetyMargin: null,
-    };
   }
 
   // Derate capacity for a load center beyond the rated one; never exceed the nameplate capacity

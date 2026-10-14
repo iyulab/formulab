@@ -71,7 +71,7 @@ function computeSide(
  *   exactly).
  *
  * @throws {RangeError} At least one of upperSpecLimit/lowerSpecLimit is required
- * @throws {RangeError} sigma must be positive
+ * @throws {RangeError} sigma must be positive (NaN refused; spec limits may be negative)
  * @throws {RangeError} acceptableProportion and rejectableProportion must be between 0 and 1
  * @throws {RangeError} rejectableProportion must exceed acceptableProportion
  * @throws {RangeError} alpha and beta must be between 0 and 1
@@ -88,7 +88,7 @@ export function acceptanceControlChart(input: AcceptanceControlChartInput): Acce
   if (upperSpecLimit === undefined && lowerSpecLimit === undefined) {
     throw new RangeError('At least one of upperSpecLimit or lowerSpecLimit is required');
   }
-  if (sigma <= 0) {
+  if (!(sigma > 0)) {
     throw new RangeError('sigma must be positive');
   }
   if (p0 <= 0 || p0 >= 1 || p1 <= 0 || p1 >= 1) {

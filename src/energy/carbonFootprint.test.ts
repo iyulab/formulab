@@ -97,13 +97,11 @@ describe('carbonFootprint', () => {
       expect(result.carsEquivalent).toBe(0);
     });
 
-    it('should handle negative electricity usage', () => {
-      const result = carbonFootprint({
+    it('should throw RangeError for negative electricity usage', () => {
+      expect(() => carbonFootprint({
         electricityUsage: -100,
         emissionFactor: 500,
-      });
-
-      expect(result.co2Kg).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle very small usage', () => {

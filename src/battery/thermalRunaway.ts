@@ -8,6 +8,9 @@ import type { ThermalRunawayInput, ThermalRunawayResult } from './types.js';
  * @reference SAE J2464, UN 38.3
  * @param input - Ambient temp, current, IR, heat transfer parameters, runaway onset temp
  * @returns Steady-state temperature, safety margin, and safety status
+ * @throws {RangeError} internalResistanceOhm is negative, or heatTransferCoeff or surfaceAreaM2 is
+ *   not greater than 0
+ * @remarks currentA may be signed (charge vs discharge); the heat is I²R either way.
  */
 export function thermalRunaway(input: ThermalRunawayInput): ThermalRunawayResult {
   const {
@@ -19,6 +22,10 @@ export function thermalRunaway(input: ThermalRunawayInput): ThermalRunawayResult
     runawayTempC,
   } = input;
 
+  // A negative resistance would absorb heat and report the cell cooler than ambient.
+  if (!(internalResistanceOhm >= 0)) {
+    throw new RangeError('internalResistanceOhm must not be negative');
+  }
   // The steady-state rise divides the generated heat by hA; a non-positive coefficient
   // or area describes a cell that cannot shed heat at all, which is not a temperature.
   if (!(heatTransferCoeff > 0)) {

@@ -39,7 +39,7 @@ describe('dilution', () => {
           v1: 100,
           v2: 0,
         })
-      ).toThrow('Cannot solve for c2: v2 must be non-zero');
+      ).toThrow(new RangeError('v2 must be greater than 0'));
     });
   });
 
@@ -66,7 +66,7 @@ describe('dilution', () => {
           v1: 200,
           c2: 0,
         })
-      ).toThrow('Cannot solve for v2: c2 must be non-zero');
+      ).toThrow(new RangeError('c2 must be greater than 0'));
     });
   });
 
@@ -92,7 +92,7 @@ describe('dilution', () => {
           c2: 5,
           v2: 400,
         })
-      ).toThrow('Cannot solve for c1: v1 must be non-zero');
+      ).toThrow(new RangeError('v1 must be greater than 0'));
     });
   });
 
@@ -118,7 +118,7 @@ describe('dilution', () => {
           c2: 6,
           v2: 500,
         })
-      ).toThrow('Cannot solve for v1: c1 must be non-zero');
+      ).toThrow(new RangeError('c1 must be greater than 0'));
     });
   });
 

@@ -92,7 +92,9 @@ const RESIN_PROPERTIES: Record<Exclude<ResinType, 'custom'>, ResinProperties> = 
  *
  * @param input - Injection cycle input with resin type and dimensions
  * @returns Cycle time breakdown and total
- * @throws RangeError if the resin density is not greater than 0, or injectionRate is given and not greater than 0
+ * @throws RangeError if wallThickness is not greater than 0, shotWeight, moldOpenCloseTime or
+ *   ejectionTime is negative, the resin density is
+ *   not greater than 0, or injectionRate is given and not greater than 0
  */
 export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult {
   const {
@@ -103,6 +105,22 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
     moldOpenCloseTime = 3,
     ejectionTime = 0.5,
   } = input;
+
+  // Cooling time goes with the square of the thickness, which would hide a negative one; a part
+  // with no wall has nothing to cool.
+  if (!(wallThickness > 0)) {
+    throw new RangeError('wallThickness must be greater than 0');
+  }
+  // A negative weight or phase time subtracts from the cycle it is meant to add to.
+  if (!(shotWeight >= 0)) {
+    throw new RangeError('shotWeight must not be negative');
+  }
+  if (!(moldOpenCloseTime >= 0)) {
+    throw new RangeError('moldOpenCloseTime must not be negative');
+  }
+  if (!(ejectionTime >= 0)) {
+    throw new RangeError('ejectionTime must not be negative');
+  }
 
   // Get resin properties
   let props: ResinProperties;
@@ -118,26 +136,6 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
     props = RESIN_PROPERTIES[resin];
   }
 
-  // Calculate cooling time
-  // tc = (s^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw)), s = full wall thickness
-  const s = wallThickness;
-  const piSquared = Math.PI * Math.PI;
-  const tempRatioNumerator = props.meltTemp - props.moldTemp;
-  const tempRatioDenominator = props.ejectionTemp - props.moldTemp;
-
-  let coolingTime: number;
-  if (tempRatioDenominator <= 0 || props.thermalDiffusivity <= 0) {
-    coolingTime = 0;
-  } else {
-    const tempRatio = (8 / piSquared) * (tempRatioNumerator / tempRatioDenominator);
-    if (tempRatio <= 0) {
-      coolingTime = 0;
-    } else {
-      coolingTime = (s * s / (piSquared * props.thermalDiffusivity)) * Math.log(tempRatio);
-    }
-  }
-
-  // Calculate fill time
   // Volume = shot weight / density (g / (g/cm^3) = cm^3); fill time then divides by the rate.
   if (!(props.density > 0)) {
     throw new RangeError('density must be greater than 0');
@@ -145,6 +143,30 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
   if (injectionRate !== undefined && !(injectionRate > 0)) {
     throw new RangeError('injectionRate must be greater than 0');
   }
+
+  // Calculate cooling time
+  // tc = (s^2 / (PI^2 * alpha)) * ln((8/PI^2) * (Tm - Tw) / (Te - Tw)), s = full wall thickness
+  const s = wallThickness;
+  const piSquared = Math.PI * Math.PI;
+  const tempRatioNumerator = props.meltTemp - props.moldTemp;
+  const tempRatioDenominator = props.ejectionTemp - props.moldTemp;
+
+  if (!(props.thermalDiffusivity > 0)) {
+    throw new RangeError('thermalDiffusivity must be greater than 0');
+  }
+  if (!(tempRatioDenominator > 0)) {
+    throw new RangeError('ejectionTemp must be higher than moldTemp');
+  }
+  // The cooling-time model is the first term of the slab conduction series; it is positive only when
+  // (8/π²)·(Tm − Tw)/(Te − Tw) > 1. A melt temperature at or barely above the ejection temperature
+  // falls outside it and gave a negative cooling time.
+  const tempRatio = (8 / piSquared) * (tempRatioNumerator / tempRatioDenominator);
+  if (!(tempRatio > 1)) {
+    throw new RangeError('meltTemp is too close to ejectionTemp for the cooling-time model ((8/π²)·(Tm − Tw)/(Te − Tw) must exceed 1)');
+  }
+  const coolingTime = (s * s / (piSquared * props.thermalDiffusivity)) * Math.log(tempRatio);
+
+  // Calculate fill time
   const volume = shotWeight / props.density;
   // Default injection rate: estimate based on typical machine (~50-150 cm^3/s)
   const effectiveInjectionRate = injectionRate ?? 80;

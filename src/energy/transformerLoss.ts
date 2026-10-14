@@ -10,6 +10,8 @@ import type { TransformerLossInput, TransformerLossResult } from './types.js';
  *
  * @param input - Transformer parameters
  * @returns Transformer loss result with efficiency and optimal loading
+ * @throws {RangeError} ratedCapacity is not greater than 0; loadFraction or powerFactor is outside
+ *   [0, 1]; or coreLoss, copperLoss, operatingHours or energyCost is negative
  */
 export function transformerLoss(input: TransformerLossInput): TransformerLossResult {
   const {
@@ -22,17 +24,28 @@ export function transformerLoss(input: TransformerLossInput): TransformerLossRes
     energyCost,
   } = input;
 
-  if (ratedCapacity <= 0 || coreLoss < 0 || copperLoss < 0) {
-    return {
-      outputPower: 0,
-      totalLoss: 0,
-      coreLossAtLoad: 0,
-      copperLossAtLoad: 0,
-      efficiency: 0,
-      optimalLoadFraction: 0,
-      annualLossEnergy: null,
-      annualLossCost: null,
-    };
+  // A transformer with no rating carries nothing; a negative loss, duration or price flips the
+  // sign of a loss or cost, and the load share and power factor are fractions.
+  if (!(ratedCapacity > 0)) {
+    throw new RangeError('ratedCapacity must be greater than 0');
+  }
+  if (!(coreLoss >= 0)) {
+    throw new RangeError('coreLoss must not be negative');
+  }
+  if (!(copperLoss >= 0)) {
+    throw new RangeError('copperLoss must not be negative');
+  }
+  if (!(loadFraction >= 0) || loadFraction > 1) {
+    throw new RangeError('loadFraction must be between 0 and 1');
+  }
+  if (!(powerFactor >= 0) || powerFactor > 1) {
+    throw new RangeError('powerFactor must be between 0 and 1');
+  }
+  if (operatingHours !== undefined && !(operatingHours >= 0)) {
+    throw new RangeError('operatingHours must not be negative');
+  }
+  if (energyCost !== undefined && !(energyCost >= 0)) {
+    throw new RangeError('energyCost must not be negative');
   }
 
   // Output power in W = kVA × loadFraction × powerFactor × 1000

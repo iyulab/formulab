@@ -8,7 +8,8 @@ import type { WeightedScoreInput, WeightedScoreResult, WeightedScoreAlternative 
  * @returns Ranked alternatives with weighted scores and normalized weights
  * @throws RangeError if criteria/weights/alternatives/scores are missing or empty,
  *   if criteria and weights lengths differ, if the scores matrix dimensions do not
- *   match alternatives × criteria, or if the weight sum is 0
+ *   match alternatives × criteria, if any weight is negative, or if the weight sum is 0
+ * @remarks Scores may be negative (a penalty criterion); weights may not.
  */
 export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
   const { criteria, weights, alternatives, scores } = input;
@@ -32,6 +33,13 @@ export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
       throw new RangeError(`each scores row must have one value per criterion (${criteria.length}), got ${row.length}`);
     }
   }
+
+  // A negative weight turns a criterion into its opposite and can flip the ranking.
+  weights.forEach((w, j) => {
+    if (!(w >= 0)) {
+      throw new RangeError(`weights[${j}] must not be negative, got ${w}`);
+    }
+  });
 
   // Normalize weights to sum to 1
   const weightSum = weights.reduce((a, v) => a + v, 0);

@@ -10,6 +10,10 @@ import type { HeatPumpInput, HeatPumpResult } from './types.js';
  *   - Efficiency = COP / COP_Carnot × 100
  *
  * @reference EN 14511 — Air conditioners, liquid chilling packages and heat pumps
+ *
+ * @throws {RangeError} compressorPower is not greater than 0 (the COP divides by the electrical
+ *   input); heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost is
+ *   negative; or boilerEfficiency, when given, is outside (0, 1]
  */
 export function heatPump(input: HeatPumpInput): HeatPumpResult {
   const {
@@ -18,8 +22,33 @@ export function heatPump(input: HeatPumpInput): HeatPumpResult {
     boilerEfficiency, fuelCost,
   } = input;
 
+  // The COP is the heat delivered per unit of electrical input, so a pump with no compressor
+  // input has no COP to report; a negative capacity, power, duration or price flips its sign.
+  if (!(compressorPower > 0)) {
+    throw new RangeError('compressorPower must be greater than 0');
+  }
+  if (!(heatingCapacity >= 0)) {
+    throw new RangeError('heatingCapacity must not be negative');
+  }
+  if (!(auxiliaryPower >= 0)) {
+    throw new RangeError('auxiliaryPower must not be negative');
+  }
+  if (operatingHours != null && !(operatingHours >= 0)) {
+    throw new RangeError('operatingHours must not be negative');
+  }
+  if (electricityRate != null && !(electricityRate >= 0)) {
+    throw new RangeError('electricityRate must not be negative');
+  }
+  if (fuelCost != null && !(fuelCost >= 0)) {
+    throw new RangeError('fuelCost must not be negative');
+  }
+  // The boiler comparison divides the delivered heat by the boiler efficiency.
+  if (boilerEfficiency != null && (!(boilerEfficiency > 0) || boilerEfficiency > 1)) {
+    throw new RangeError('boilerEfficiency must be greater than 0 and at most 1');
+  }
+
   const totalPower = compressorPower + auxiliaryPower;
-  const cop = totalPower > 0 ? heatingCapacity / totalPower : 0;
+  const cop = heatingCapacity / totalPower;
 
   // Carnot COP (theoretical maximum)
   const tSinkK = sinkTemp + 273.15;
@@ -41,7 +70,7 @@ export function heatPump(input: HeatPumpInput): HeatPumpResult {
     if (electricityRate != null) {
       annualElecCost = roundTo(annualElectricity * electricityRate, 2);
 
-      if (boilerEfficiency != null && fuelCost != null && boilerEfficiency > 0) {
+      if (boilerEfficiency != null && fuelCost != null) {
         const heatDelivered = heatingCapacity * operatingHours;
         annualFuelCost = roundTo((heatDelivered / boilerEfficiency) * fuelCost, 2);
         annualSavings = roundTo(annualFuelCost - annualElecCost, 2);

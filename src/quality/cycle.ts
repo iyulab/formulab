@@ -7,9 +7,16 @@ import type { CycleTimeInput, CycleTimeResult } from './types.js';
  *
  * @param input - Cycle time input with measurements array and optional target
  * @returns Statistical analysis results
+ * @throws {RangeError} a measurement is not greater than 0 (a cycle cannot take zero or negative time)
  */
 export function cycleTime(input: CycleTimeInput): CycleTimeResult {
   const { measurements } = input;
+
+  measurements.forEach((m, i) => {
+    if (!(m > 0)) {
+      throw new RangeError(`measurements[${i}] must be greater than 0`);
+    }
+  });
 
   // Handle empty array
   if (measurements.length === 0) {
@@ -50,8 +57,8 @@ export function cycleTime(input: CycleTimeInput): CycleTimeResult {
     stdDev = Math.sqrt(sumSquaredDiff / (n - 1));
   }
 
-  // Coefficient of Variation (CV) in percentage
-  const cv = average > 0 ? (stdDev / average) * 100 : 0;
+  // Coefficient of Variation (CV) in percentage — average > 0 since every measurement is
+  const cv = (stdDev / average) * 100;
 
   return {
     count,

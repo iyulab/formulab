@@ -25,7 +25,7 @@ describe('kFactorReverse', () => {
           insideRadius: c.insideRadius,
           kFactor: c.kFactor,
         });
-        const measuredFlatLength = c.legA + c.legB - fwd.bendDeduction;
+        const measuredFlatLength = c.legA + c.legB - fwd.bendDeduction!;
         const result = kFactorReverse({
           thickness: c.thickness,
           bendAngle: c.bendAngle,

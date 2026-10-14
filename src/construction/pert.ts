@@ -81,12 +81,27 @@ function topologicalSort(tasks: PertTask[]): PertTask[] | null {
  *
  * @param input - PERT input with tasks and optional deadline
  * @returns PERT analysis result
- * @throws RangeError if tasks is empty or contains a circular dependency
+ * @throws RangeError if tasks is empty, a task's optimistic/mostLikely/pessimistic estimate is negative
+ *   or out of order (optimistic ≤ mostLikely ≤ pessimistic is required), deadline is negative, or the
+ *   tasks contain a circular dependency
  */
 export function pert(input: PertInput): PertResult {
   const { tasks, deadline } = input;
   if (tasks.length === 0) {
     throw new RangeError('tasks must not be empty');
+  }
+  for (const t of tasks) {
+    for (const field of ['optimistic', 'mostLikely', 'pessimistic'] as const) {
+      if (!(t[field] >= 0)) {
+        throw new RangeError(`task ${t.id} ${field} must not be negative`);
+      }
+    }
+    if (!(t.optimistic <= t.mostLikely && t.mostLikely <= t.pessimistic)) {
+      throw new RangeError(`task ${t.id} estimates must satisfy optimistic <= mostLikely <= pessimistic`);
+    }
+  }
+  if (deadline !== undefined && !(deadline >= 0)) {
+    throw new RangeError('deadline must not be negative');
   }
 
   // Cycle detection

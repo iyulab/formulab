@@ -6,17 +6,25 @@ import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './ty
  *
  * Uses First Fit Decreasing (FFD) or Best Fit Decreasing (BFD) algorithm.
  *
- * @throws RangeError if stockLength is not positive, pieces is empty, total piece
- *   quantity is 0, or any piece length exceeds stockLength
+ * @throws RangeError if stockLength is not positive, kerf is negative, pieces is empty, a piece
+ *   length is not positive, total piece quantity is 0, or any piece length exceeds stockLength
  */
 export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
   const { stockLength, kerf, pieces, algorithm } = input;
-  if (stockLength <= 0) {
+  if (!(stockLength > 0)) {
     throw new RangeError('stockLength must be greater than 0');
+  }
+  if (!(kerf >= 0)) {
+    throw new RangeError('kerf must not be negative');
   }
   if (pieces.length === 0) {
     throw new RangeError('pieces must not be empty');
   }
+  pieces.forEach((p, i) => {
+    if (!(p.length > 0)) {
+      throw new RangeError(`pieces[${i}].length must be greater than 0`);
+    }
+  });
 
   // Expand quantities
   const expanded: { length: number; label: string }[] = [];

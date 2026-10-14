@@ -6,9 +6,17 @@ import type { DowntimeInput, DowntimeResult } from './types.js';
  *
  * @param input - Downtime input parameters
  * @returns Downtime cost breakdown
+ * @throws {RangeError} hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits or unitPrice < 0
  */
 export function downtime(input: DowntimeInput): DowntimeResult {
   const { hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits, unitPrice } = input;
+
+  const fields = { hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits, unitPrice };
+  for (const [name, value] of Object.entries(fields)) {
+    if (!(value >= 0)) {
+      throw new RangeError(`${name} must not be negative`);
+    }
+  }
 
   const downtimeHours = downtimeMinutes / 60;
   const lostUnits = plannedProductionUnits * downtimeHours;

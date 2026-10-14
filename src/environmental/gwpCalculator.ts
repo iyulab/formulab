@@ -28,9 +28,15 @@ const GWP_TABLE: Record<GhgGas, Record<GwpTimeHorizon, number>> = {
  * @reference IPCC AR6 (2021)
  * @param input - Gas type, quantity, and time horizon
  * @returns CO2 equivalent in kg and tonnes
+ * @throws {RangeError} quantityKg is negative
  */
 export function gwpCalculator(input: GwpCalculatorInput): GwpCalculatorResult {
   const { gas, quantityKg, timeHorizon = 'GWP100' } = input;
+
+  // A negative release (a removal) is outside this conversion's model.
+  if (!(quantityKg >= 0)) {
+    throw new RangeError('quantityKg must not be negative');
+  }
 
   const gwpFactor = GWP_TABLE[gas][timeHorizon];
   const co2eqKg = roundTo(quantityKg * gwpFactor, 2);

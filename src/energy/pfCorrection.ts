@@ -11,6 +11,9 @@ import type { PfCorrectionInput, PfCorrectionResult } from './types.js';
  *
  * @param input - Power factor correction input parameters
  * @returns Power factor correction result with kVAR, costs, and savings
+ * @throws {RangeError} currentPf or targetPf is outside (0, 1]; pfPenaltyThreshold is outside
+ *   [0, 1]; or kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar is
+ *   negative
  */
 export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
   const {
@@ -31,6 +34,25 @@ export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
   }
   if (!(targetPf > 0) || targetPf > 1) {
     throw new RangeError('targetPf must be greater than 0 and at most 1');
+  }
+  if (!(pfPenaltyThreshold >= 0) || pfPenaltyThreshold > 1) {
+    throw new RangeError('pfPenaltyThreshold must be between 0 and 1');
+  }
+  // A negative power, rate, duration or unit cost flips the sign of a kVAR, cost or penalty.
+  if (!(kW >= 0)) {
+    throw new RangeError('kW must not be negative');
+  }
+  if (!(electricityRate >= 0)) {
+    throw new RangeError('electricityRate must not be negative');
+  }
+  if (!(monthlyUsageHours >= 0)) {
+    throw new RangeError('monthlyUsageHours must not be negative');
+  }
+  if (!(pfPenaltyRate >= 0)) {
+    throw new RangeError('pfPenaltyRate must not be negative');
+  }
+  if (!(capacitorCostPerKvar >= 0)) {
+    throw new RangeError('capacitorCostPerKvar must not be negative');
   }
 
   // Calculate current and target apparent power (kVA)

@@ -22,7 +22,8 @@ import type { SafetyStockInput, SafetyStockResult } from './types.js';
  *
  * @param input - Demand and lead time parameters with service level
  * @returns Safety stock, reorder point, and related metrics
- * @throws RangeError if serviceLevel is not strictly between 0 and 1, or avgLeadTime is negative
+ * @throws RangeError if serviceLevel is not strictly between 0 and 1, or avgLeadTime, avgDemand,
+ *   demandStdDev or leadTimeStdDev is negative
  */
 export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   const { avgDemand, demandStdDev, avgLeadTime, leadTimeStdDev, serviceLevel } = input;
@@ -37,6 +38,17 @@ export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   // Lead-time demand variance scales with the lead time and is square-rooted.
   if (!(avgLeadTime >= 0)) {
     throw new RangeError('avgLeadTime must not be negative');
+  }
+  // A negative demand flips the sign of the lead-time demand and the reorder point; a standard
+  // deviation cannot be negative (it is squared, so the sign would be silently dropped).
+  if (!(avgDemand >= 0)) {
+    throw new RangeError('avgDemand must not be negative');
+  }
+  if (!(demandStdDev >= 0)) {
+    throw new RangeError('demandStdDev must not be negative');
+  }
+  if (!(leadTimeStdDev >= 0)) {
+    throw new RangeError('leadTimeStdDev must not be negative');
   }
 
   const zScore = normalInvCDF(serviceLevel);

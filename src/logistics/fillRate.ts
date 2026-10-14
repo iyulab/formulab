@@ -45,12 +45,22 @@ export function fillRate(input: FillRateInput): FillRateResult {
  *
  * @param input - Service level calculation inputs
  * @returns Service level results
+ * @throws {RangeError} safetyStock or demandStdDev is negative
  */
 export function serviceLevel(input: ServiceLevelInput): ServiceLevelResult {
   const { demandStdDev, safetyStock } = input;
 
-  // Handle zero/invalid inputs
-  if (demandStdDev <= 0) {
+  // A negative safety stock is a shortfall, not a buffer, and a standard deviation cannot be
+  // negative; either one flips the sign of the z-score.
+  if (!(safetyStock >= 0)) {
+    throw new RangeError('safetyStock must not be negative');
+  }
+  if (!(demandStdDev >= 0)) {
+    throw new RangeError('demandStdDev must not be negative');
+  }
+
+  // Deterministic demand: any buffer covers it, none leaves the mean-demand coin flip
+  if (demandStdDev === 0) {
     return {
       zScore: 0,
       serviceLevel: safetyStock > 0 ? 100 : 50,

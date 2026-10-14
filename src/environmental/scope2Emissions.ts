@@ -40,6 +40,8 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  *   not embed residual-mix emission factors, since they are jurisdiction- and year-specific
  *   published figures; callers supply `residualMixFactor` from their own residual-mix disclosure
  *   source, e.g. AIB (Europe) or an equivalent national tracking-system publication)
+ * @throws {RangeError} electricityKwh is negative, or a given customFactor, supplierFactor or
+ *   residualMixFactor is negative
  * @throws {RangeError} customFactor is required when region is "custom"
  * @throws {RangeError} contractedKwh cannot be negative
  * @throws {RangeError} supplierFactor is required when contractedKwh > 0
@@ -52,6 +54,21 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  */
 export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsResult {
   const { electricityKwh, region, customFactor, contractedKwh, supplierFactor, residualMixFactor } = input;
+
+  // A negative consumption or emission factor would report a negative emission; offsets and
+  // removals are outside this model.
+  if (!(electricityKwh >= 0)) {
+    throw new RangeError('electricityKwh must not be negative');
+  }
+  if (customFactor != null && !(customFactor >= 0)) {
+    throw new RangeError('customFactor must not be negative');
+  }
+  if (supplierFactor != null && !(supplierFactor >= 0)) {
+    throw new RangeError('supplierFactor must not be negative');
+  }
+  if (residualMixFactor != null && !(residualMixFactor >= 0)) {
+    throw new RangeError('residualMixFactor must not be negative');
+  }
 
   let gridFactor: number;
   if (region === 'custom') {

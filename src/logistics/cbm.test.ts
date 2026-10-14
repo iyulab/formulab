@@ -148,30 +148,24 @@ describe('cbm', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle zero dimensions', () => {
-      const result = cbm({
+    it('should throw RangeError for zero dimensions', () => {
+      expect(() => cbm({
         length: 0,
         width: 50,
         height: 40,
         quantity: 1,
         unit: 'cm',
-      });
-
-      expect(result.cbmPerUnit).toBe(0);
-      expect(result.totalCbm).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should handle zero quantity', () => {
-      const result = cbm({
+    it('should throw RangeError for zero quantity', () => {
+      expect(() => cbm({
         length: 100,
         width: 50,
         height: 40,
         quantity: 0,
         unit: 'cm',
-      });
-
-      expect(result.cbmPerUnit).toBeCloseTo(0.2, 4);
-      expect(result.totalCbm).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

@@ -22,16 +22,16 @@ import type { OeeInput, OeeResult } from './types.js';
  * @returns OEE result with factors (0-1), percentages (0-100), and `cascade` — 100 % reduced by
  *   availability, performance, quality in that order (unrounded; last `remaining` is OEE %)
  * @throws {RangeError} plannedTime, runTime, idealCycleTime or totalCount ≤ 0; runTime > plannedTime;
- *   goodCount < 0 or > totalCount
+ *   goodCount < 0 or > totalCount (NaN in any of them is refused too)
  */
 export function oee(input: OeeInput): OeeResult {
   const { rawData } = input;
   const { plannedTime, runTime, totalCount, goodCount, idealCycleTime } = rawData;
 
-  if (plannedTime <= 0) {
+  if (!(plannedTime > 0)) {
     throw new RangeError(`Invalid input: plannedTime (${plannedTime}) must be positive`);
   }
-  if (runTime <= 0) {
+  if (!(runTime > 0)) {
     throw new RangeError(`Invalid input: runTime (${runTime}) must be positive`);
   }
   if (runTime > plannedTime) {
@@ -39,13 +39,13 @@ export function oee(input: OeeInput): OeeResult {
       `Invalid input: runTime (${runTime}) cannot exceed plannedTime (${plannedTime})`
     );
   }
-  if (idealCycleTime <= 0) {
+  if (!(idealCycleTime > 0)) {
     throw new RangeError(`Invalid input: idealCycleTime (${idealCycleTime}) must be positive`);
   }
-  if (totalCount <= 0) {
+  if (!(totalCount > 0)) {
     throw new RangeError(`Invalid input: totalCount (${totalCount}) must be positive`);
   }
-  if (goodCount < 0) {
+  if (!(goodCount >= 0)) {
     throw new RangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`);
   }
   if (goodCount > totalCount) {

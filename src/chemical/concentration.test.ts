@@ -117,17 +117,13 @@ describe('concentration', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for unknown unit', () => {
-      const result = concentration({
+    it('should reject an unknown unit instead of returning zeros', () => {
+      expect(() => concentration({
         fromUnit: 'unknown' as never,
         value: 1,
         molecularWeight: 100,
         solutionDensity: 1.0,
-      });
-
-      expect(result.molPerL).toBe(0);
-      expect(result.wtPercent).toBe(0);
-      expect(result.ppm).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle very small concentrations', () => {

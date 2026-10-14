@@ -174,15 +174,18 @@ export function nioshLifting(input: NioshInput): NioshResult {
     loadWeight,
   } = input;
 
-  if (
-    horizontalDistance < 0 ||
-    verticalDistance < 0 ||
-    verticalTravel < 0 ||
-    asymmetryAngle < 0 ||
-    frequency < 0 ||
-    loadWeight < 0
-  ) {
-    throw new RangeError('distances, asymmetryAngle, frequency, and loadWeight must not be negative');
+  // NaN is refused too: a NaN distance would fall through every clamp and table lookup.
+  for (const [name, value] of [
+    ['horizontalDistance', horizontalDistance],
+    ['verticalDistance', verticalDistance],
+    ['verticalTravel', verticalTravel],
+    ['asymmetryAngle', asymmetryAngle],
+    ['frequency', frequency],
+    ['loadWeight', loadWeight],
+  ] as const) {
+    if (!(value >= 0)) {
+      throw new RangeError(`${name} must not be negative`);
+    }
   }
 
   // Calculate multipliers

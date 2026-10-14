@@ -23,11 +23,16 @@ function addDays(date: string, days: number): string {
  *
  * @param input - Expiry input parameters
  * @returns Expiry result with dates and remaining time
+ * @throws {RangeError} calculateExpiry mode with a negative shelfLifeDays
  */
 export function expiry(input: ExpiryInput): ExpiryResult {
   const { mode, productionDate, shelfLifeDays, expiryDate, today } = input;
 
   if (mode === 'calculateExpiry') {
+    // A negative shelf life puts the expiry date before production.
+    if (!(shelfLifeDays >= 0)) {
+      throw new RangeError('shelfLifeDays must not be negative');
+    }
     // Given production date + shelf life → calculate expiry
     const calculatedExpiry = addDays(productionDate, shelfLifeDays);
     const remaining = daysBetween(today, calculatedExpiry);

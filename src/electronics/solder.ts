@@ -2,13 +2,11 @@ import type { SolderInput, SolderResult } from './types.js';
 import { roundTo } from '../utils.js';
 
 /**
- * Round to specified decimal places
- */
-
-/**
  * Calculate solder paste consumption for SMT production
  * @param input - Solder paste parameters
  * @returns Solder paste volume and weight calculations
+ * @throws {RangeError} padCount, avgPadArea, stencilThickness, transferEfficiency, density,
+ *   boardsPerPanel or panelCount is not greater than 0
  */
 export function solderPaste(input: SolderInput): SolderResult {
   const {
@@ -21,12 +19,14 @@ export function solderPaste(input: SolderInput): SolderResult {
     panelCount,
   } = input;
 
-  // Guard against zero/negative values
-  if (padCount <= 0) {
-    throw new RangeError('padCount must be greater than 0');
-  }
-  if (stencilThickness <= 0) {
-    throw new RangeError('stencilThickness must be greater than 0');
+  // Every quantity is a count or a physical magnitude; zero or negative has no meaning.
+  const fields = {
+    padCount, avgPadArea, stencilThickness, transferEfficiency, density, boardsPerPanel, panelCount,
+  };
+  for (const [name, value] of Object.entries(fields)) {
+    if (!(value > 0)) {
+      throw new RangeError(`${name} must be greater than 0`);
+    }
   }
 
   // Volume per board (mm3)

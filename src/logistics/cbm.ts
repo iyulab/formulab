@@ -26,9 +26,24 @@ function toMeters(value: number, unit: 'mm' | 'cm' | 'm'): number {
  *
  * @param input - Cargo dimensions and quantity
  * @returns CBM per unit and total CBM
+ * @throws {RangeError} length, width, height or quantity is not greater than 0
  */
 export function cbm(input: CbmInput): CbmResult {
   const { length, width, height, quantity, unit } = input;
+
+  // A negative dimension or quantity flips the sign of the volume; a zero one is no cargo.
+  if (!(length > 0)) {
+    throw new RangeError('length must be greater than 0');
+  }
+  if (!(width > 0)) {
+    throw new RangeError('width must be greater than 0');
+  }
+  if (!(height > 0)) {
+    throw new RangeError('height must be greater than 0');
+  }
+  if (!(quantity > 0)) {
+    throw new RangeError('quantity must be greater than 0');
+  }
 
   // Convert dimensions to meters
   const lengthM = toMeters(length, unit);

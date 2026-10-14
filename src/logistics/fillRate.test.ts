@@ -150,13 +150,11 @@ describe('serviceLevel', () => {
       expect(result.serviceLevel).toBe(100);
     });
 
-    it('should handle negative safety stock', () => {
-      const result = serviceLevel({
+    it('should throw RangeError for negative safety stock', () => {
+      expect(() => serviceLevel({
         demandStdDev: 100,
         safetyStock: -100,
-      });
-
-      expect(result.serviceLevel).toBeLessThan(50);
+      })).toThrow(RangeError);
     });
   });
 });

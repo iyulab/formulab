@@ -357,7 +357,9 @@ function calculateFloorCoverage(placedBoxes: PlacedBox3D[]): number {
  *
  * @param input - Pallet specifications and box types
  * @returns Placement results with metrics
- * @throws RangeError if any box weight is not greater than 0
+ * @throws RangeError if any box weight, length, width or height is not greater than 0, a given
+ *   customLength or customWidth is not greater than 0, or maxStackHeight or maxPayload is negative
+ *   (0 selects the default)
  */
 export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   const warnings: string[] = [];
@@ -380,6 +382,28 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
     if (!(box.weight > 0)) {
       throw new RangeError('box weight must be greater than 0');
     }
+    // A box with a zero or negative side has no volume to place and breaks the collision test.
+    if (!(box.length > 0)) {
+      throw new RangeError('box length must be greater than 0');
+    }
+    if (!(box.width > 0)) {
+      throw new RangeError('box width must be greater than 0');
+    }
+    if (!(box.height > 0)) {
+      throw new RangeError('box height must be greater than 0');
+    }
+  }
+  if (input.customLength != null && !(input.customLength > 0)) {
+    throw new RangeError('customLength must be greater than 0');
+  }
+  if (input.customWidth != null && !(input.customWidth > 0)) {
+    throw new RangeError('customWidth must be greater than 0');
+  }
+  if (input.maxStackHeight != null && !(input.maxStackHeight >= 0)) {
+    throw new RangeError('maxStackHeight must not be negative');
+  }
+  if (input.maxPayload != null && !(input.maxPayload >= 0)) {
+    throw new RangeError('maxPayload must not be negative');
   }
 
   if (input.boxes.length > 5) {

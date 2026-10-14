@@ -81,29 +81,24 @@ describe('boilerEfficiency', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero fuel rate', () => {
-      const result = boilerEfficiency({
+    it('should throw RangeError for zero fuel rate', () => {
+      expect(() => boilerEfficiency({
         fuelRate: 0,
         fuelHeatValue: 42000,
         steamOutput: 10000,
         steamEnthalpy: 2760,
         feedwaterEnthalpy: 420,
-      });
-
-      expect(result.efficiency).toBe(0);
-      expect(result.heatInput).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero heat value', () => {
-      const result = boilerEfficiency({
+    it('should throw RangeError for zero heat value', () => {
+      expect(() => boilerEfficiency({
         fuelRate: 1000,
         fuelHeatValue: 0,
         steamOutput: 10000,
         steamEnthalpy: 2760,
         feedwaterEnthalpy: 420,
-      });
-
-      expect(result.efficiency).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle high-efficiency boiler', () => {

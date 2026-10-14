@@ -12,9 +12,22 @@ import type { AbcInput, AbcResult, AbcClassification } from './types.js';
  *   - C: remaining items
  *
  * @reference Silver, E.A. "Inventory Management and Production Planning and Scheduling", 3rd Ed.
+ *
+ * @throws {RangeError} an item's annualUsage or unitCost is negative
  */
 export function abcAnalysis(input: AbcInput): AbcResult {
   const { items, thresholdA = 80, thresholdB = 95 } = input;
+
+  // A negative usage or cost gives a negative annual value, which sorts below every real item
+  // and pulls the cumulative share past 100%.
+  for (const item of items) {
+    if (!(item.annualUsage >= 0)) {
+      throw new RangeError('annualUsage must not be negative');
+    }
+    if (!(item.unitCost >= 0)) {
+      throw new RangeError('unitCost must not be negative');
+    }
+  }
 
   const withValues = items.map(item => ({
     ...item,

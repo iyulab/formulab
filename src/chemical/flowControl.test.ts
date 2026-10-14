@@ -30,14 +30,15 @@ describe('flowControl', () => {
       expect(high.cv).toBeCloseTo(low.cv * 2, 0);
     });
 
-    it('should handle zero pressure drop', () => {
-      const result = flowControl({
+    it('throws for no pressure drop (or a reversed one) instead of a zero Cv', () => {
+      expect(() => flowControl({
         flowRate: 10, inletPressure: 500, outletPressure: 500,
         fluidDensity: 999, fluidType: 'liquid',
-      });
-
-      expect(result.cv).toBe(0);
-      expect(result.pressureDrop).toBe(0);
+      })).toThrow(RangeError);
+      expect(() => flowControl({
+        flowRate: 10, inletPressure: 500, outletPressure: 600,
+        fluidDensity: 999, fluidType: 'liquid',
+      })).toThrow(RangeError);
     });
   });
 

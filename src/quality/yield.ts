@@ -20,10 +20,10 @@ export function yieldCalc(input: YieldInput): YieldResult {
     throw new RangeError('steps must contain at least one process step');
   }
   steps.forEach((step, i) => {
-    if (step.total <= 0) {
+    if (!(step.total > 0)) {
       throw new RangeError(`step ${i + 1}: total (${step.total}) must be positive`);
     }
-    if (step.good < 0 || step.good > step.total) {
+    if (!(step.good >= 0 && step.good <= step.total)) {
       throw new RangeError(`step ${i + 1}: good (${step.good}) must be between 0 and total (${step.total})`);
     }
   });

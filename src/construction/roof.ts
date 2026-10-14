@@ -24,16 +24,23 @@ function getPitchDescription(risePerTwelve: number): string {
  *
  * @param input - Roof input parameters
  * @returns Roof calculation results
+ * @throws {RangeError} run ≤ 0, rise < 0, or footprintLength / footprintWidth ≤ 0
  */
 export function roof(input: RoofInput): RoofResult {
   const { rise, run, footprintLength, footprintWidth } = input;
 
   // Validate inputs
-  if (run <= 0) {
+  if (!(run > 0)) {
     throw new RangeError('Run must be greater than zero');
   }
-  if (rise < 0) {
+  if (!(rise >= 0)) {
     throw new RangeError('Rise must be non-negative');
+  }
+  if (!(footprintLength > 0)) {
+    throw new RangeError('footprintLength must be greater than 0');
+  }
+  if (!(footprintWidth > 0)) {
+    throw new RangeError('footprintWidth must be greater than 0');
   }
 
   // Calculate slope ratio (normalized to 12-unit run for pitch notation)

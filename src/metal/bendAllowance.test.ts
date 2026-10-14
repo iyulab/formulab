@@ -267,8 +267,16 @@ describe('bendAllowance — bend domain', () => {
     expect(Number.isFinite(bendAllowance({ ...base, bendAngle: 179 }).outsideSetback)).toBe(true);
   });
 
-  it('throws at a closed hem (180°), where the setback diverges, and at 0° or below', () => {
-    for (const bendAngle of [180, 200, 0, -30]) {
+  it('at a closed hem (180°) states the bend allowance and no setback, which diverges there', () => {
+    // BA = π × (2 + 0.44 × 2) = 9.05 mm (mild steel K 0.44)
+    const r = bendAllowance({ ...base, bendAngle: 180 });
+    expect(r.bendAllowance).toBeCloseTo(Math.PI * (2 + 0.44 * 2), 6);
+    expect(r.outsideSetback).toBeNull();
+    expect(r.bendDeduction).toBeNull();
+  });
+
+  it('throws beyond 180° and at 0° or below', () => {
+    for (const bendAngle of [180.5, 200, 0, -30]) {
       expect(() => bendAllowance({ ...base, bendAngle })).toThrow(RangeError);
     }
   });

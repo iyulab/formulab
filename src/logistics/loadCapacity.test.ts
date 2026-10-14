@@ -129,34 +129,28 @@ describe('loadCapacity', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero rated capacity', () => {
-      const result = loadCapacity({
+    it('should throw RangeError for zero rated capacity', () => {
+      expect(() => loadCapacity({
         ratedCapacity: 0,
         ratedLoadCenter: 500,
         actualLoadCenter: 500,
-      });
-
-      expect(result.effectiveCapacity).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero rated load center', () => {
-      const result = loadCapacity({
+    it('should throw RangeError for zero rated load center', () => {
+      expect(() => loadCapacity({
         ratedCapacity: 2500,
         ratedLoadCenter: 0,
         actualLoadCenter: 500,
-      });
-
-      expect(result.effectiveCapacity).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero actual load center', () => {
-      const result = loadCapacity({
+    it('should throw RangeError for zero actual load center', () => {
+      expect(() => loadCapacity({
         ratedCapacity: 2500,
         ratedLoadCenter: 500,
         actualLoadCenter: 0,
-      });
-
-      expect(result.effectiveCapacity).toBe(0);
+      })).toThrow(RangeError);
     });
   });
 

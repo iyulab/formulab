@@ -270,8 +270,8 @@ describe('injectionCycle', () => {
       expect(result.coolingTime).toBeGreaterThan(5);
     });
 
-    it('should handle invalid thermal conditions gracefully', () => {
-      const result = injectionCycle({
+    it('throws for invalid thermal conditions instead of a zero cooling time', () => {
+      expect(() => injectionCycle({
         resin: 'custom',
         wallThickness: 2,
         shotWeight: 30,
@@ -279,9 +279,10 @@ describe('injectionCycle', () => {
         meltTemp: 100,
         moldTemp: 100,
         ejectionTemp: 100,
-      });
-
-      expect(result.coolingTime).toBe(0);
+      })).toThrow(RangeError);
+      // Ordered temperatures, but the melt barely above ejection: (8/π²)·45/40 = 0.91 < 1 gave a negative time.
+      expect(() => injectionCycle({ resin: 'custom', wallThickness: 2, shotWeight: 30, thermalDiffusivity: 0.12, meltTemp: 95, moldTemp: 50, ejectionTemp: 90 }))
+        .toThrow(RangeError);
     });
   });
 

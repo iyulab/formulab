@@ -109,8 +109,8 @@ function calculatePositionalWeights(tasks: BalancingTask[]): Map<string, number>
  *
  * @param input - Line balancing input parameters
  * @returns Line balancing result
- * @throws RangeError if tasks is empty, cycleTime is not positive, a task's
- *   time exceeds cycleTime (infeasible), or the precedence graph is cyclic
+ * @throws RangeError if tasks is empty, cycleTime is not positive, a task's time is not
+ *   positive or exceeds cycleTime (infeasible), or the precedence graph is cyclic
  */
 export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   const { tasks, cycleTime } = input;
@@ -118,8 +118,13 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   if (tasks.length === 0) {
     throw new RangeError('tasks must not be empty');
   }
-  if (cycleTime <= 0) {
+  if (!(cycleTime > 0)) {
     throw new RangeError('cycleTime must be greater than 0');
+  }
+  for (const t of tasks) {
+    if (!(t.time > 0)) {
+      throw new RangeError(`task ${t.id} time must be greater than 0`);
+    }
   }
 
   // Check if any task exceeds cycle time

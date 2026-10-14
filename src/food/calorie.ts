@@ -23,13 +23,13 @@ const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
 export function calorie(input: CalorieInput): CalorieResult {
   const { gender, age, weightKg, heightCm, activityLevel } = input;
 
-  if (weightKg <= 0) {
+  if (!(weightKg > 0)) {
     throw new RangeError('weightKg must be greater than 0');
   }
-  if (heightCm <= 0) {
+  if (!(heightCm > 0)) {
     throw new RangeError('heightCm must be greater than 0');
   }
-  if (age <= 0) {
+  if (!(age > 0)) {
     throw new RangeError('age must be greater than 0');
   }
 

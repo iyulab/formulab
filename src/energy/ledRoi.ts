@@ -11,6 +11,8 @@ import type { LedRoiInput, LedRoiResult } from './types.js';
  *
  * @param input - LED retrofit parameters
  * @returns LED ROI result with energy savings, cost savings, and payback
+ * @throws {RangeError} fixtureCount or operatingHours is not greater than 0, or oldWatts,
+ *   newWatts, electricityRate, fixtureCost, installationCost or co2Factor is negative
  */
 export function ledRoi(input: LedRoiInput): LedRoiResult {
   const {
@@ -24,17 +26,31 @@ export function ledRoi(input: LedRoiInput): LedRoiResult {
     co2Factor = 0.5,
   } = input;
 
-  if (fixtureCount <= 0 || operatingHours <= 0) {
-    return {
-      oldAnnualEnergy: 0,
-      newAnnualEnergy: 0,
-      annualEnergySaved: 0,
-      energyReduction: 0,
-      annualCostSaved: 0,
-      totalInvestment: 0,
-      paybackPeriod: null,
-      co2Saved: 0,
-    };
+  // A retrofit of no fixtures, or of fixtures that never run, has no saving to report; a negative
+  // wattage, rate, cost or emission factor flips the sign of a saving.
+  if (!(fixtureCount > 0)) {
+    throw new RangeError('fixtureCount must be greater than 0');
+  }
+  if (!(operatingHours > 0)) {
+    throw new RangeError('operatingHours must be greater than 0');
+  }
+  if (!(oldWatts >= 0)) {
+    throw new RangeError('oldWatts must not be negative');
+  }
+  if (!(newWatts >= 0)) {
+    throw new RangeError('newWatts must not be negative');
+  }
+  if (!(electricityRate >= 0)) {
+    throw new RangeError('electricityRate must not be negative');
+  }
+  if (!(fixtureCost >= 0)) {
+    throw new RangeError('fixtureCost must not be negative');
+  }
+  if (!(installationCost >= 0)) {
+    throw new RangeError('installationCost must not be negative');
+  }
+  if (!(co2Factor >= 0)) {
+    throw new RangeError('co2Factor must not be negative');
   }
 
   const oldAnnualEnergy = (fixtureCount * oldWatts * operatingHours) / 1000;

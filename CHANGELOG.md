@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.55.0] - 2026-10-14
+
 ### Changed
 
 - **Six geometry functions now throw for inputs outside the domain of their formulas.** Each checked only
@@ -19,16 +21,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `metal/tap()` — a pitch too coarse for the diameter (D = 10, P = 20) gave a −6.24 mm tap drill. Throws when
     the minor diameter would not be positive (p ≥ D / 1.0825), and for a thread percentage outside (0, 100].
   - `metal/bendAllowance()` and `metal/flatPattern()` — a 180° bend returned a flat length of −1.6 × 10¹⁷ mm,
-    because the outside setback (R + T)·tan(θ/2) diverges at a closed hem. Both throw for a bend angle outside
-    (0, 180), a thickness ≤ 0, a negative inside radius and a K-factor outside [0, 1]; `flatPattern()` also for a
-    flange ≤ 0. Both were documented as not validating at all. `bendAllowance()` keeps its warnings for a radius
-    below the minimum and an angle above 170°.
+    because the outside setback (R + T)·tan(θ/2) diverges at a closed hem. Both throw for a thickness ≤ 0, a
+    negative inside radius and a K-factor outside [0, 1]; `flatPattern()` for a bend angle outside (0, 180), a
+    flange ≤ 0 and a resulting flat length ≤ 0. Both were documented as not validating at all.
+    **Breaking (types):** `bendAllowance()` accepts a closed hem (180°) — its bend allowance θ(R + kT) is defined —
+    and returns `outsideSetback` and `bendDeduction` as `null` there; both fields are now `number | null`. It
+    throws beyond 180°. It keeps its warnings for a radius below the minimum and an angle above 170°.
   - `safety/ladderAngle()` — a ladder shorter than the given base distance or height returned 0° and a height of
     0 m with a warning. Throws; a ladder exactly as long as the leg still returns the 90°/0° result with a warning.
   - `metal/kFactorReverse()` (and `kFactorReverseRange()`) — measurements that do not belong to the bend returned a
     K-factor outside [0, 1] (a 90° part entered as a 60° bend gave −1.67). Throws for such a K and for a negative
     inside radius. Three of its own tests used flat lengths that implied K = 2.0, −0.57 and 5.4 and passed on
     `> 0` / bracketing assertions; they now use flat lengths from `bendAllowance()`.
+
+- **About seventy functions now throw for a negative physical quantity, instead of returning a result with its
+  sign flipped.** Found by the new sign-flip audit (below): 106 functions accepted a negative length, time, count,
+  cost, rate, efficiency or concentration and returned a "result" — a negative cycle time, a negative pallet,
+  a negative shelf life. Each input was judged by hand: where a negative value means something (measured data,
+  coordinates, cash flows, temperatures in °C/°F, load direction, deviations, specification limits, scores, pKa,
+  recycling credits, a charging current) it is still accepted, and the remaining 62 audit reports are of that
+  kind. Where it does not, the function throws `RangeError`. Every new condition is in `ERRORS.md` and has a
+  test that sees the throw (183 `throw` rows, up from 158).
+- **Zero-filled results replaced by throws** where the input has no answer: `pressFit()` with a hub outer
+  diameter at or below the bore (no hub wall), `cycleTimeEstimator()` silently skipping a cutting move without a
+  positive feed rate, `pert()` with estimates out of order, `concentration()` with an unknown unit, `reactor()`
+  with a zero fill ratio, the zero-input sentinels of `boilerEfficiency()`, `heatPump()`, `ledRoi()`,
+  `transformerLoss()`, `carbonFootprint()`, `loadCapacity()`, `cbm()` and `serviceLevel()`, `flowControl()` with
+  no pressure drop (it returned Cv 0), and `injectionCycle()` with the ejection temperature at or below the mold
+  temperature (it returned a cooling time of 0).
+- **Readings that contradict each other** now throw: `internalResistance()` with a load voltage above the
+  open-circuit voltage, `selfDischarge()` with a final voltage above the initial one, `boilerEfficiency()` with
+  steam carrying more heat than the fuel supplies, and `injectionCycle()` with a melt temperature too close to
+  the ejection temperature for its cooling-time model (it returned a negative cooling time).
+- `metal/types.ts` documented `drawRatio` as 0.6–1.2; a ratio at or above 1 means a blank no larger than the
+  punch. It is now documented as (0, 1) and refused outside it.
 
 ### Added
 

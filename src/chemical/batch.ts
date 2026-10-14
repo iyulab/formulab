@@ -9,7 +9,7 @@ import type { BatchInput, BatchResult } from './types.js';
  * @param input - Batch scaling input with original size, target size, and ingredients
  * @returns Batch result with scale factor and scaled ingredients
  * @throws {RangeError} originalBatchSize not a positive finite number (nothing to scale from), or
- *   targetBatchSize negative or non-finite.
+ *   targetBatchSize negative or non-finite, or an ingredient amount is negative.
  */
 export function batch(input: BatchInput): BatchResult {
   const { originalBatchSize, targetBatchSize, ingredients } = input;
@@ -19,6 +19,12 @@ export function batch(input: BatchInput): BatchResult {
   }
   if (!Number.isFinite(targetBatchSize) || targetBatchSize < 0) {
     throw new RangeError('targetBatchSize must be a non-negative finite number');
+  }
+  // A negative amount scales to a negative quantity to weigh out.
+  for (const ing of ingredients) {
+    if (!(ing.amount >= 0)) {
+      throw new RangeError(`ingredient "${ing.name}" amount must not be negative`);
+    }
   }
 
   const scaleFactor = targetBatchSize / originalBatchSize;

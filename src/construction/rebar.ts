@@ -64,7 +64,8 @@ export function getRebarUnitWeight(size: RebarSize): number {
  *
  * @param input - Rebar size, length, and quantity
  * @returns Rebar weight calculation results
- * @throws {RangeError} size is not a known rebar designation (D4–D8, D10–D32, D35–D57)
+ * @throws {RangeError} size is not a known rebar designation (D4–D8, D10–D32, D35–D57), or length or
+ *   quantity is not greater than 0
  */
 export function rebarWeight(input: RebarInput): RebarResult {
   const { size, length, quantity } = input;
@@ -72,6 +73,12 @@ export function rebarWeight(input: RebarInput): RebarResult {
   const unitWeight = REBAR_UNIT_WEIGHTS[size];
   if (unitWeight === undefined) {
     throw new RangeError(`unknown rebar size: ${String(size)}`);
+  }
+  if (!(length > 0)) {
+    throw new RangeError('length must be greater than 0');
+  }
+  if (!(quantity > 0)) {
+    throw new RangeError('quantity must be greater than 0');
   }
   const totalLength = roundTo(length * quantity, 2);
   const totalWeight = roundTo(unitWeight * totalLength, 2);

@@ -8,14 +8,28 @@ import type { InternalResistanceInput, InternalResistanceResult } from './types.
  * @reference IEC 61960, direct current internal resistance (DCIR)
  * @param input - Open circuit voltage, load voltage, and load current
  * @returns Resistance in Ohm and mOhm, voltage drop, and power loss
+ * @throws {RangeError} openCircuitVoltage or loadVoltage is negative, or loadCurrentA is not
+ *   greater than 0
  */
 export function internalResistance(input: InternalResistanceInput): InternalResistanceResult {
   const { openCircuitVoltage, loadVoltage, loadCurrentA } = input;
 
+  // A terminal voltage below zero is not a cell under load; it flips the sign of the drop.
+  if (!(openCircuitVoltage >= 0)) {
+    throw new RangeError('openCircuitVoltage must not be negative');
+  }
+  if (!(loadVoltage >= 0)) {
+    throw new RangeError('loadVoltage must not be negative');
+  }
   if (!(loadCurrentA > 0)) {
     throw new RangeError('loadCurrentA must be greater than 0');
   }
 
+  // Under load the terminal voltage sags below the open-circuit voltage; a higher one would mean a
+  // negative internal resistance — the two readings do not belong to one discharge.
+  if (loadVoltage > openCircuitVoltage) {
+    throw new RangeError('loadVoltage must not exceed openCircuitVoltage');
+  }
   const voltageDrop = roundTo(openCircuitVoltage - loadVoltage, 4);
   const resistanceOhm = roundTo(voltageDrop / loadCurrentA, 6);
   const resistanceMilliOhm = roundTo(resistanceOhm * 1000, 3);

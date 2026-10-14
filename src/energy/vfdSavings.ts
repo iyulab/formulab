@@ -15,6 +15,8 @@ const CO2_FACTOR = 0.5;
  *
  * @param input - VFD savings input parameters
  * @returns VFD savings result with power reduction, costs, and CO2 savings
+ * @throws {RangeError} motorKw or fullSpeedRpm is not greater than 0; loadFactor or vfdEfficiency
+ *   is outside (0, 1]; or newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost is negative
  */
 export function vfdSavings(input: VfdSavingsInput): VfdSavingsResult {
   const {
@@ -36,12 +38,27 @@ export function vfdSavings(input: VfdSavingsInput): VfdSavingsResult {
   if (!(fullSpeedRpm > 0)) {
     throw new RangeError('fullSpeedRpm must be greater than 0');
   }
-  if (!(loadFactor > 0)) {
-    throw new RangeError('loadFactor must be greater than 0');
+  if (!(loadFactor > 0) || loadFactor > 1) {
+    throw new RangeError('loadFactor must be greater than 0 and at most 1');
   }
   // The drive's own losses divide the shaft power by its efficiency.
-  if (!(vfdEfficiency > 0)) {
-    throw new RangeError('vfdEfficiency must be greater than 0');
+  if (!(vfdEfficiency > 0) || vfdEfficiency > 1) {
+    throw new RangeError('vfdEfficiency must be greater than 0 and at most 1');
+  }
+  // A negative speed is cubed into a negative power; a negative duration, rate or cost flips
+  // the sign of a cost or payback. A speed above full speed is not refused: the affinity law
+  // still holds there and the result reports the higher consumption as a negative saving.
+  if (!(newSpeedRpm >= 0)) {
+    throw new RangeError('newSpeedRpm must not be negative');
+  }
+  if (!(runningHoursPerYear >= 0)) {
+    throw new RangeError('runningHoursPerYear must not be negative');
+  }
+  if (!(electricityRate >= 0)) {
+    throw new RangeError('electricityRate must not be negative');
+  }
+  if (!(vfdCost >= 0)) {
+    throw new RangeError('vfdCost must not be negative');
   }
 
   // Calculate speed ratio

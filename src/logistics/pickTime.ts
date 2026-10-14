@@ -14,6 +14,8 @@ import type { PickTimeInput, PickTimeResult } from './types.js';
  *
  * @param input - Pick time parameters
  * @returns Pick time breakdown and productivity metrics
+ * @throws {RangeError} speed or itemsPerOrder is not greater than 0, or distance,
+ *   searchTimePerItem, pickTimePerItem or documentationTime is negative
  */
 export function pickTime(input: PickTimeInput): PickTimeResult {
   const {
@@ -27,8 +29,13 @@ export function pickTime(input: PickTimeInput): PickTimeResult {
     batchSize = 1,
   } = input;
 
-  if (speed <= 0) throw new RangeError('speed must be greater than 0');
-  if (itemsPerOrder <= 0) throw new RangeError('itemsPerOrder must be greater than 0');
+  if (!(speed > 0)) throw new RangeError('speed must be greater than 0');
+  if (!(itemsPerOrder > 0)) throw new RangeError('itemsPerOrder must be greater than 0');
+  // A negative distance or time subtracts from the order's total and inflates orders per hour.
+  if (!(distance >= 0)) throw new RangeError('distance must not be negative');
+  if (!(searchTimePerItem >= 0)) throw new RangeError('searchTimePerItem must not be negative');
+  if (!(pickTimePerItem >= 0)) throw new RangeError('pickTimePerItem must not be negative');
+  if (!(documentationTime >= 0)) throw new RangeError('documentationTime must not be negative');
 
   // Calculate base times
   // Travel time = distance / speed, convert to seconds (speed is per minute)

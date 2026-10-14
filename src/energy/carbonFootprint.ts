@@ -16,18 +16,18 @@ const KG_CO2_PER_CAR_PER_YEAR = 4600;
  *
  * @param input - Carbon footprint input parameters
  * @returns Carbon footprint result with CO2 emissions and environmental equivalents
+ * @throws {RangeError} electricityUsage or emissionFactor is negative
  */
 export function carbonFootprint(input: CarbonFootprintInput): CarbonFootprintResult {
   const { electricityUsage, emissionFactor } = input;
 
-  // Handle edge case - zero usage
-  if (electricityUsage <= 0) {
-    return {
-      co2Kg: 0,
-      co2Tonnes: 0,
-      treesEquivalent: 0,
-      carsEquivalent: 0,
-    };
+  // A negative usage or emission factor would report a negative emission, which this
+  // electricity-only model does not represent (offsets and credits are outside it).
+  if (!(electricityUsage >= 0)) {
+    throw new RangeError('electricityUsage must not be negative');
+  }
+  if (!(emissionFactor >= 0)) {
+    throw new RangeError('emissionFactor must not be negative');
   }
 
   // Calculate CO2 emissions

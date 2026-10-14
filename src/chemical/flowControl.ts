@@ -15,7 +15,7 @@ import type { FlowControlInput, FlowControlResult } from './types.js';
  *
  * @reference ISA-75.01.01-2012 — Flow equations for sizing control valves
  * @reference IEC 60534-2-1 — Industrial-process control valves
- * @throws RangeError if inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
+ * @throws RangeError if flowRate is negative, or inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
  */
 export function flowControl(input: FlowControlInput): FlowControlResult {
   const {
@@ -23,6 +23,10 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     temperature = 20, molecularWeight, specificHeatRatio = 1.4,
   } = input;
 
+  // A negative flow sizes a negative Cv and velocity.
+  if (!(flowRate >= 0)) {
+    throw new RangeError('flowRate must not be negative');
+  }
   // The pressure ratio divides by the inlet pressure and the sizing coefficient takes the
   // square root of the specific gravity, so neither may be zero or negative.
   if (!(inletPressure > 0)) {
@@ -42,6 +46,10 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
   }
 
   const pressureDrop = inletPressure - outletPressure; // kPa
+  // Flow through a valve needs a pressure drop across it; none (or a reversed one) has no Cv.
+  if (!(pressureDrop > 0)) {
+    throw new RangeError('outletPressure must be lower than inletPressure');
+  }
 
   // Reference density: water = 999 kg/m³
   const sg = fluidDensity / 999;

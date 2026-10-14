@@ -53,9 +53,18 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     obstacleHeight = 0,
   } = input;
 
-  if (HD <= 0) throw new RangeError('dRingHeight must be greater than 0');
-  if (L < 0 || DD < 0 || HS < 0 || SF < 0 || obstacleHeight < 0 || (workingHeight !== undefined && workingHeight < 0)) {
-    throw new RangeError('lanyardLength, decelerationDistance, harnessStretch, safetyFactor, workingHeight and obstacleHeight must not be negative');
+  if (!(HD > 0)) throw new RangeError('dRingHeight must be greater than 0');
+  for (const [name, value] of [
+    ['lanyardLength', L],
+    ['decelerationDistance', DD],
+    ['harnessStretch', HS],
+    ['safetyFactor', SF],
+    ['obstacleHeight', obstacleHeight],
+  ] as const) {
+    if (!(value >= 0)) throw new RangeError(`${name} must not be negative`);
+  }
+  if (workingHeight !== undefined && !(workingHeight >= 0)) {
+    throw new RangeError('workingHeight must not be negative');
   }
 
   const clearanceBelowAnchor = L + DD + HS + HD + SF;

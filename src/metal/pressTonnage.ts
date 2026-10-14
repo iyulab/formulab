@@ -172,9 +172,13 @@ function estimateNumberOfDraws(
  *
  * @param input - Press tonnage input parameters
  * @returns PressTonnageResult with forces, draw analysis, and warnings
- * @throws RangeError if thickness or dieOpening is not greater than 0, if a drawing
- *   operation has a punchDiameter that is not greater than 0, or if operation is 'combined'
- *   but no operations array is provided
+ * @throws RangeError if thickness, dieOpening, tensileStrength, shearStrength, safetyFactor,
+ *   frictionCoefficient or dieRadius is not greater than 0; blankHolderPressure or blankDiameter is
+ *   negative; a provided drawRatio is not greater than 0; a single operation lacks its own positive
+ *   dimension (blanking: cuttingPerimeter, bending: bendLength, drawing: punchDiameter); a combined
+ *   operation has a negative cuttingPerimeter, bendLength or punchDiameter (0 = step not included);
+ *   the blank diameter (given, or derived as punchDiameter / drawRatio) does not exceed the punch
+ *   diameter; or operation is 'combined' but no operations array is provided
  */
 export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   const {
@@ -201,6 +205,48 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   }
   if (!(dieOpening > 0)) {
     throw new RangeError('dieOpening must be greater than 0');
+  }
+  const positive = { tensileStrength, shearStrength, safetyFactor, frictionCoefficient, dieRadius };
+  for (const [name, value] of Object.entries(positive)) {
+    if (!(value > 0)) {
+      throw new RangeError(`${name} must be greater than 0`);
+    }
+  }
+  const nonNegative = { blankHolderPressure, blankDiameter, cuttingPerimeter, bendLength, punchDiameter };
+  for (const [name, value] of Object.entries(nonNegative)) {
+    if (!(value >= 0)) {
+      throw new RangeError(`${name} must not be negative`);
+    }
+  }
+  if (input.drawRatio !== undefined && !(input.drawRatio > 0)) {
+    throw new RangeError('drawRatio must be greater than 0');
+  }
+  // A single operation is meaningless without its own dimension; in a combined operation a 0
+  // dimension means that step is not part of the job.
+  if (operation === 'blanking' && !(cuttingPerimeter > 0)) {
+    throw new RangeError('cuttingPerimeter must be greater than 0');
+  }
+  if (operation === 'bending' && !(bendLength > 0)) {
+    throw new RangeError('bendLength must be greater than 0');
+  }
+  const drawing = operation === 'drawing' || (operation === 'combined' && punchDiameter > 0);
+  if (drawing) {
+    // The draw ratio divides by the punch diameter and the Siebel term takes ln(D / d).
+    if (!(punchDiameter > 0)) {
+      throw new RangeError('punchDiameter must be greater than 0 for drawing');
+    }
+    const derivedBlank = blankDiameter > 0
+      ? blankDiameter
+      : input.drawRatio !== undefined ? punchDiameter / input.drawRatio : 0;
+    // A blank no larger than the punch has nothing to draw: ln(D / d) ≤ 0 and the blank holder
+    // area π/4 × (D² − d²) turns negative.
+    if (derivedBlank > 0 && !(derivedBlank > punchDiameter)) {
+      throw new RangeError('blankDiameter must be greater than punchDiameter');
+    }
+  }
+  // Combined operation requires an explicit operations array
+  if (operation === 'combined' && !input.operations) {
+    throw new RangeError('operations is required for combined operation');
   }
 
   let blankingForce = 0;
@@ -236,14 +282,10 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   }
 
   // Calculate drawing force with enhanced formula
-  if (operation === 'drawing' || (operation === 'combined' && punchDiameter > 0)) {
+  if (drawing) {
     // Determine blank diameter and draw ratio
     let D = blankDiameter;
     const d = punchDiameter;
-    // The draw ratio divides by the punch diameter and the Siebel term takes ln(D / d).
-    if (!(d > 0)) {
-      throw new RangeError('punchDiameter must be greater than 0 for drawing');
-    }
 
     // If blank diameter not provided, estimate from drawRatio input
     if (D <= 0 && input.drawRatio && input.drawRatio > 0) {
@@ -300,11 +342,6 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
         breakdown.push({ operation: 'blankHolder', force: roundTo(blankHolderForce, 2) });
       }
     }
-  }
-
-  // Combined operation requires an explicit operations array
-  if (operation === 'combined' && !input.operations) {
-    throw new RangeError('operations is required for combined operation');
   }
 
   // Calculate total force (blank holder adds to drawing force requirement)

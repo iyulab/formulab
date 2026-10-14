@@ -8,6 +8,8 @@ import type { EsgSummaryInput, EsgSummaryResult } from './types.js';
  * @reference TCFD, CDP, SBTi
  * @param input - Baseline, current, and target emissions data
  * @returns Reduction progress, annual rate, and on-track status
+ * @throws {RangeError} baselineCo2Tonnes is not greater than 0, currentCo2Tonnes or
+ *   targetCo2Tonnes is negative, or baselineYear, currentYear or targetYear is not a positive year
  */
 export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
   const {
@@ -23,6 +25,23 @@ export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
   // percentage to report rather than an infinite one.
   if (!(baselineCo2Tonnes > 0)) {
     throw new RangeError('baselineCo2Tonnes must be greater than 0');
+  }
+  // Negative emissions (net removals) are outside this tracking model, and the years are
+  // calendar years.
+  if (!(currentCo2Tonnes >= 0)) {
+    throw new RangeError('currentCo2Tonnes must not be negative');
+  }
+  if (!(targetCo2Tonnes >= 0)) {
+    throw new RangeError('targetCo2Tonnes must not be negative');
+  }
+  if (!(baselineYear > 0)) {
+    throw new RangeError('baselineYear must be greater than 0');
+  }
+  if (!(currentYear > 0)) {
+    throw new RangeError('currentYear must be greater than 0');
+  }
+  if (!(targetYear > 0)) {
+    throw new RangeError('targetYear must be greater than 0');
   }
 
   const reductionTonnes = roundTo(baselineCo2Tonnes - currentCo2Tonnes, 2);

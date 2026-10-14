@@ -80,8 +80,11 @@ const V_DIE_MULTIPLIER = 8;
  *
  * @param input - Bend allowance input parameters
  * @returns BendAllowanceResult with BA, BD, OSSB, K-factor, recommended V-die, min bend radius
- * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not strictly between 0 and 180°
- *   (the setback diverges at a closed hem), or kFactor is outside [0, 1]
+ * At a closed hem (180°) the bend allowance is defined but the mold lines never meet, so
+ * `outsideSetback` and `bendDeduction` are `null` there (they diverge as θ → 180°).
+ *
+ * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not in (0, 180], or kFactor is
+ *   outside [0, 1]
  */
 export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
   const {
@@ -95,7 +98,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
 
   // Get K-factor: use provided or default from table
   const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
-  assertBendDomain({ thickness, bendAngle, insideRadius, kFactor });
+  assertBendDomain({ thickness, bendAngle, insideRadius, kFactor }, { allowClosedHem: true });
 
   // Minimum bend radius: read the normative table where one covers this material, and fall
   // back to the conventional multiplier only where it does not. A flat multiple of thickness
@@ -135,12 +138,14 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
 
   // Calculate Outside Setback (OSSB)
   // OSSB = (inside radius + thickness) x tan(angle / 2)
+  // At a closed hem tan(90°) diverges: there is no setback to state.
+  const closedHem = bendAngle === 180;
   const halfAngleRad = bendAngleRad / 2;
-  const ossb = (insideRadius + thickness) * Math.tan(halfAngleRad);
+  const ossb = closedHem ? null : (insideRadius + thickness) * Math.tan(halfAngleRad);
 
   // Calculate Bend Deduction (BD)
   // BD = 2 x OSSB - BA
-  const bd = 2 * ossb - ba;
+  const bd = ossb === null ? null : 2 * ossb - ba;
 
   return {
     bendAllowance: ba,

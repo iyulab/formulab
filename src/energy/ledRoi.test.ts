@@ -128,29 +128,24 @@ describe('ledRoi', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero fixture count', () => {
-      const result = ledRoi({
+    it('should throw RangeError for zero fixture count', () => {
+      expect(() => ledRoi({
         fixtureCount: 0,
         oldWatts: 250,
         newWatts: 100,
         operatingHours: 4000,
         electricityRate: 0.12,
-      });
-
-      expect(result.annualEnergySaved).toBe(0);
-      expect(result.co2Saved).toBe(0);
+      })).toThrow(RangeError);
     });
 
-    it('should return zeros for zero operating hours', () => {
-      const result = ledRoi({
+    it('should throw RangeError for zero operating hours', () => {
+      expect(() => ledRoi({
         fixtureCount: 100,
         oldWatts: 250,
         newWatts: 100,
         operatingHours: 0,
         electricityRate: 0.12,
-      });
-
-      expect(result.annualEnergySaved).toBe(0);
+      })).toThrow(RangeError);
     });
 
     it('should handle same wattage (no improvement)', () => {

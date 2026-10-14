@@ -11,7 +11,8 @@ import type { ProductCarbonFootprintInput, ProductCarbonFootprintResult } from '
  *   values are valid (end-of-life recycling credits). When the total is ≤ 0 the stage
  *   percentages are reported as 0 (valid-but-degenerate; a share of a non-positive
  *   total is not meaningful).
- * @throws {RangeError} empty stages, or productionQuantity ≤ 0
+ * @throws {RangeError} empty stages, or productionQuantity is not greater than 0 (NaN included).
+ *   Negative stage values are not refused — they are this model's recycling credits.
  */
 export function productCarbonFootprint(input: ProductCarbonFootprintInput): ProductCarbonFootprintResult {
   const { stages, productionQuantity } = input;
@@ -19,7 +20,7 @@ export function productCarbonFootprint(input: ProductCarbonFootprintInput): Prod
   if (!stages || stages.length === 0) {
     throw new RangeError('stages must contain at least one lifecycle stage');
   }
-  if (productionQuantity <= 0) {
+  if (!(productionQuantity > 0)) {
     throw new RangeError('productionQuantity must be greater than 0');
   }
 
