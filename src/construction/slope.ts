@@ -6,7 +6,9 @@ import type { SlopeInput, SlopeResult } from './types.js';
  * Slope can be expressed as:
  * - Percent: rise/run × 100 (e.g., 10% = 10m rise per 100m run)
  * - Degrees: angle from horizontal (e.g., 45° = 100% slope)
- * - Ratio: 1:N where N is run per 1 unit rise (e.g., 1:10 = 10% slope)
+ * - Ratio: 1:N where N is run per 1 unit rise (e.g., 1:10 = 10% slope). N is a magnitude: a
+ *   downhill −10% grade is also 1:10, its direction carried by the signed percent and degrees.
+ *   Flat ground has no 1:N form, so `ratio` is null there.
  *
  * @param input - Slope value and its unit
  * @returns Slope in all units
@@ -20,12 +22,12 @@ export function slope(input: SlopeInput): SlopeResult {
     throw new RangeError('ratio value must be greater than 0');
   }
 
-  // Handle zero value (flat ground for percent/degrees)
+  // Handle zero value (flat ground for percent/degrees): no rise, so no 1:N
   if (value === 0) {
     return {
       percent: 0,
       degrees: 0,
-      ratio: 0,
+      ratio: null,
       risePerMeter: 0,
     };
   }
@@ -53,8 +55,8 @@ export function slope(input: SlopeInput): SlopeResult {
   // Degrees: arctan(percent/100)
   const degrees = Math.atan(percent / 100) * (180 / Math.PI);
 
-  // Ratio: 1:N where N = 100/percent
-  const ratio = percent > 0 ? 100 / percent : 0;
+  // Ratio: 1:N where N = 100/|percent| — the same N uphill and downhill
+  const ratio = percent !== 0 ? 100 / Math.abs(percent) : null;
 
   // Rise per meter: percent × 10 (mm per 1m horizontal run)
   const risePerMeter = percent * 10;

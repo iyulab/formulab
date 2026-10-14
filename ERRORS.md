@@ -163,7 +163,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `getRebarUnitWeight()` | `null` | Unknown size returns `undefined` (plain lookup) |
 | `getAggregateDensity()` | `safe` | Unknown type returns 0 sentinel |
 | `aggregateCoverage()` | `throw` | volumeM3 ≤ 0, depthCm ≤ 0 |
-| `slope()` | `throw` | ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat) |
+| `slope()` | `throw` | ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form) |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
 | `brick()` | `throw` | wallArea ≤ 0, unknown brick size, custom dimensions ≤ 0, mortarThickness < 0 |
 | `pert()` | `throw` | Empty tasks, circular dependencies |

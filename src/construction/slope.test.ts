@@ -82,8 +82,19 @@ describe('slope', () => {
 
       expect(result.percent).toBe(0);
       expect(result.degrees).toBe(0);
-      expect(result.ratio).toBe(0);
+      expect(result.ratio).toBeNull();
       expect(result.risePerMeter).toBe(0);
+    });
+
+    it('gives a downhill grade the same 1:N as the uphill one, the direction in the signed fields', () => {
+      const down = slope({ fromUnit: 'percent', value: -5 });
+      expect(down.ratio).toBe(20); // 1:20, not 0
+      expect(down.degrees).toBeCloseTo(-2.862, 3);
+      expect(down.risePerMeter).toBe(-50);
+
+      const fromDegrees = slope({ fromUnit: 'degrees', value: -45 });
+      expect(fromDegrees.ratio).toBeCloseTo(1, 10);
+      expect(fromDegrees.percent).toBeCloseTo(-100, 10);
     });
 
     it('should throw for zero ratio (1:0 is vertical, not flat)', () => {

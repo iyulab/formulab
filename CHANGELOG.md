@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-10-14
+
+### Changed
+
+- **`construction/slope()` gives a downhill grade its 1:N ratio, and flat ground no ratio.** A negative
+  percent or angle returned `ratio: 0`, so −5% read as "1:0" or "0" next to its −2.86°, and flat ground
+  returned the same 0. `ratio` is now the magnitude N = 100/|percent| for any non-zero grade (−5% and 5%
+  are both 1:20; the direction stays in the signed `percent`, `degrees` and `risePerMeter`), and `null`
+  on flat ground, which has no 1:N form. `SlopeResult.ratio` is now `number | null`.
+
 ## [0.51.0] - 2026-09-29
 
 ### Changed

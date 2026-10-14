@@ -127,7 +127,7 @@ export interface SlopeInput {
 export interface SlopeResult {
   percent: number;
   degrees: number;
-  ratio: number;      // 1:N
+  ratio: number | null; // N in 1:N — run per unit of rise, as a magnitude (a downhill grade has the same N; the sign is in percent/degrees/risePerMeter); null on flat ground, which has no 1:N form
   risePerMeter: number; // mm rise per 1m horizontal
 }
 
