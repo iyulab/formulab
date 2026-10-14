@@ -138,11 +138,8 @@ describe('lel', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty gases array', () => {
-      const result = lel({ gases: [] });
-      expect(result.mixtureLel).toBe(0);
-      expect(result.percentOfLel).toBe(0);
-      expect(result.status).toBe('safe');
+    it('rejects an empty gas list — there is nothing to assess', () => {
+      expect(() => lel({ gases: [] })).toThrow(/gases must not be empty/);
     });
 
     it('should handle zero concentration', () => {
@@ -151,6 +148,9 @@ describe('lel', () => {
       });
       expect(result.percentOfLel).toBe(0);
       expect(result.status).toBe('safe');
+      // No gas present → the mixture has no composition: no LEL and no margin to it (not 0)
+      expect(result.mixtureLel).toBeNull();
+      expect(result.safetyMargin).toBeNull();
     });
   });
 });

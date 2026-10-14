@@ -120,3 +120,11 @@ describe('containerFit rejects inputs that would produce a non-finite result', (
     expect(() => containerFit({ container: { length: 12000, width: 2350, height: 2400 }, cargo: { length: 0, width: 400, height: 500 }, allowRotation: false })).toThrow(RangeError);
   });
 });
+
+describe('containerFit with an empty container', () => {
+  it('rejects a container with no inside length, width or height', () => {
+    for (const container of [{ length: 0, width: 2350, height: 2390 }, { length: 5900, width: 0, height: 2390 }, { length: 5900, width: 2350, height: 0 }]) {
+      expect(() => containerFit({ container, cargo: { length: 400, width: 300, height: 200 }, allowRotation: true })).toThrow(/container length, width and height/);
+    }
+  });
+});

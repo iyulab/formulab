@@ -28,14 +28,15 @@ export function npv(input: NpvInput): NpvResult {
   const npvValue = pvCashFlows - initialInvestment;
 
   const pvTotal = pvCashFlows;
-  const profitabilityIndex = initialInvestment === 0 ? 0 : pvTotal / initialInvestment;
+  // PI = PV / investment — with nothing invested there is no ratio (it was reported as 0).
+  const profitabilityIndex = initialInvestment === 0 ? null : pvTotal / initialInvestment;
 
   const irr = calculateIrr(initialInvestment, cashFlows);
 
   return {
     npv: roundTo(npvValue, 6),
     irr: irr !== null ? roundTo(irr, 6) : null,
-    profitabilityIndex: roundTo(profitabilityIndex, 6),
+    profitabilityIndex: profitabilityIndex === null ? null : roundTo(profitabilityIndex, 6),
   };
 }
 

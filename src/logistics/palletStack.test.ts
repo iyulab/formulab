@@ -152,3 +152,11 @@ describe('palletStack rejects inputs that would produce a non-finite result', ()
     expect(() => palletStack({ pallet: { length: 1200, width: 800 }, box: { length: 400, width: 0, height: 300 }, maxHeight: 1500, allowRotation: false })).toThrow(RangeError);
   });
 });
+
+describe('palletStack with no pallet', () => {
+  it('rejects a pallet with no deck and a stack height of 0', () => {
+    const box = { length: 400, width: 300, height: 200 };
+    expect(() => palletStack({ pallet: { length: 0, width: 1000 }, box, maxHeight: 1500, allowRotation: true })).toThrow(/pallet length and width/);
+    expect(() => palletStack({ pallet: { length: 1200, width: 1000 }, box, maxHeight: 0, allowRotation: true })).toThrow(/maxHeight must be greater than 0/);
+  });
+});

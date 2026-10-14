@@ -15,7 +15,7 @@ import type { FlowControlInput, FlowControlResult } from './types.js';
  *
  * @reference ISA-75.01.01-2012 — Flow equations for sizing control valves
  * @reference IEC 60534-2-1 — Industrial-process control valves
- * @throws RangeError if flowRate is negative, or inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
+ * @throws RangeError if flowRate is not greater than 0, or inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
  */
 export function flowControl(input: FlowControlInput): FlowControlResult {
   const {
@@ -23,9 +23,9 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     temperature = 20, molecularWeight, specificHeatRatio = 1.4,
   } = input;
 
-  // A negative flow sizes a negative Cv and velocity.
-  if (!(flowRate >= 0)) {
-    throw new RangeError('flowRate must not be negative');
+  // A valve is sized for a flow; with none every coefficient is 0 (and a negative one is negative).
+  if (!(flowRate > 0)) {
+    throw new RangeError('flowRate must be greater than 0');
   }
   // The pressure ratio divides by the inlet pressure and the sizing coefficient takes the
   // square root of the specific gravity, so neither may be zero or negative.
@@ -61,7 +61,7 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
   if (fluidType === 'liquid') {
     // IEC 60534 liquid sizing in metric units gives Kv: Kv = Q(m³/h) × √(SG / ΔP(bar))
     const dpBar = pressureDrop / 100;
-    cv = dpBar <= 0 ? 0 : (flowRate * Math.sqrt(sg / dpBar)) / 0.865;
+    cv = (flowRate * Math.sqrt(sg / dpBar)) / 0.865;
   } else {
     // Gas/Steam sizing
     // Critical pressure ratio for choked flow
@@ -84,9 +84,7 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     const Y = 1 - xEffective / (3 * xCritical); // Expansion factor
     const Z = 1.0;
 
-    cv = p1Bar <= 0 || xEffective <= 0
-      ? 0
-      : (flowRate / (N9 * p1Bar * Y)) * Math.sqrt((MW * T * Z) / xEffective) / 0.865;
+    cv = (flowRate / (N9 * p1Bar * Y)) * Math.sqrt((MW * T * Z) / xEffective) / 0.865;
   }
 
   const kv = cv * 0.865;

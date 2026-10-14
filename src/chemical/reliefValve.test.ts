@@ -173,18 +173,24 @@ describe('reliefValve', () => {
       expect(result.orificeExceedsMax).toBe(false);
     });
 
-    it('does not flag the liquid zero-differential edge (requiredArea = 0)', () => {
-      const result = reliefValve({
+    it('refuses a liquid relief with no differential — an area of 0 would pick the smallest orifice as adequate', () => {
+      expect(() => reliefValve({
         requiredCapacity: 1000,
         setPressure: 100,
         backPressure: 500, // back pressure above relieving pressure → dp <= 0
         temperature: 20,
         fluidType: 'liquid',
-      });
+      })).toThrow(/no differential/);
+    });
 
-      expect(result.requiredArea).toBe(0);
-      expect(result.orificeExceedsMax).toBe(false);
-      expect(result.suggestedMinValves).toBe(1); // degenerate zero-area case still suggests one valve
+    it('refuses a set pressure of 0 gauge', () => {
+      expect(() => reliefValve({
+        requiredCapacity: 10000,
+        setPressure: 0,
+        backPressure: 0,
+        temperature: 25,
+        fluidType: 'liquid',
+      })).toThrow(/setPressure must be greater than 0/);
     });
   });
 

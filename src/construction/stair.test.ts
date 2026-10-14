@@ -299,3 +299,9 @@ describe('stair contract restoration (2026-07 audit)', () => {
     expect(Number.isFinite(result.actualRiserHeight)).toBe(true);
   });
 });
+
+describe('stair with no horizontal run', () => {
+  it('rejects a run of 0 — there are no treads to size (it came back as 0 mm treads at 90°)', () => {
+    expect(() => stair({ totalRise: 2800, totalRun: 0 })).toThrow(/totalRun must be greater than 0/);
+  });
+});

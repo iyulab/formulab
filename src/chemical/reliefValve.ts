@@ -49,8 +49,9 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  * actual multi-valve installation must be re-sized per API 520, since inlet and back-pressure
  * corrections change each valve's capacity.
  *
- * @throws {RangeError} requiredCapacity, molecularWeight, specificGravity, specificHeatRatio (must
- *   exceed 1) or compressibility is not positive
+ * @throws {RangeError} requiredCapacity, setPressure, molecularWeight, specificGravity, specificHeatRatio
+ *   (must exceed 1) or compressibility is not positive; or, for a liquid, the relieving pressure does not
+ *   exceed the back pressure (no differential to drive the flow)
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   const {
@@ -66,6 +67,10 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   // A negative relieving rate sizes a negative orifice area.
   if (!(requiredCapacity > 0)) {
     throw new RangeError('requiredCapacity must be greater than 0');
+  }
+  // A relief valve set at 0 gauge opens at atmospheric pressure — there is nothing to protect.
+  if (!(setPressure > 0)) {
+    throw new RangeError('setPressure must be greater than 0');
   }
   // The gas/steam sizing equation divides by sqrt(M) after taking its square root, so a
   // non-positive molecular weight gives an infinite or imaginary orifice area.
@@ -106,12 +111,13 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
     const Kv = 1.0; // Viscosity correction
     const dp = P1 - (backPressure + patm); // kPa
     const G = specificGravity;
-    if (dp <= 0) {
-      requiredArea = 0;
-    } else {
-      const QLpm = (requiredCapacity / (G * 999)) * 1000 / 60; // kg/h → L/min
-      requiredArea = ((11.78 * QLpm) / (Kd * Kw * Kc * Kv)) * Math.sqrt(G / dp);
+    // With no differential the liquid does not flow through any orifice. An area of 0 selected the
+    // smallest orifice as adequate — the most dangerous answer a sizing function can give.
+    if (!(dp > 0)) {
+      throw new RangeError('relieving pressure must exceed the back pressure for a liquid relief (no differential to drive the flow)');
     }
+    const QLpm = (requiredCapacity / (G * 999)) * 1000 / 60; // kg/h → L/min
+    requiredArea = ((11.78 * QLpm) / (Kd * Kw * Kc * Kv)) * Math.sqrt(G / dp);
   }
 
   // Select the smallest standard orifice that covers the required area. API 526 tops out at

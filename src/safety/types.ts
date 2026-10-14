@@ -356,10 +356,10 @@ export interface LelInput {
 }
 
 export interface LelResult {
-  mixtureLel: number;         // %
-  totalConcentration: number; // %
-  percentOfLel: number;       // %
+  mixtureLel: number | null;    // %; null with no gas present (no mixture composition)
+  totalConcentration: number;   // %
+  percentOfLel: number;         // %
   status: 'safe' | 'caution' | 'danger';
-  safetyMargin: number;       // remaining % before LEL
+  safetyMargin: number | null;  // remaining % before LEL; null with mixtureLel
   contributions: { name: string; fraction: number }[];
 }

@@ -130,8 +130,8 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `reactor()` | `throw` | diameter ≤ 0, cylindrical height ≤ 0, fillRatio outside (0, 1] |
 | `shelfLife()` | `throw` | shelfLifeAtRef ≤ 0, q10 ≤ 0 |
 | `injectionCycle()` | `throw` | wallThickness ≤ 0; shotWeight/moldOpenCloseTime/ejectionTime < 0; resin density ≤ 0, injectionRate ≤ 0 (when given); thermalDiffusivity ≤ 0; ejectionTemp ≤ moldTemp; (8/π²)·(Tm − Tw)/(Te − Tw) ≤ 1 — the melt too close to the ejection temperature for the cooling-time model |
-| `flowControl()` | `throw` | flowRate < 0, inletPressure ≤ 0, outletPressure ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
-| `reliefValve()` | `throw` | requiredCapacity ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0. Liquid with back pressure at or above the relieving pressure → requiredArea 0 |
+| `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
+| `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
 | `pid()` | `throw` | Non-positive process params (processGain/deadTime/timeConstant ≤ 0, or ultimateGain/ultimatePeriod ≤ 0) |
 
 ### Electronics (12 functions)
@@ -169,7 +169,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `brick()` | `throw` | wallArea ≤ 0, unknown brick size, custom dimensions ≤ 0, mortarThickness < 0, wasteFactor < 0 |
 | `pert()` | `throw` | Empty tasks, an estimate < 0, estimates not ordered optimistic ≤ mostLikely ≤ pessimistic, deadline < 0, circular dependencies |
 | `roof()` | `throw` | run ≤ 0, rise < 0, footprintLength/footprintWidth ≤ 0 |
-| `stair()` | `throw` | totalRise ≤ 0, totalRun < 0, riserHeight < 0 (riserHeight 0 = auto-calculate) |
+| `stair()` | `throw` | totalRise ≤ 0, totalRun ≤ 0, riserHeight < 0 (riserHeight 0 = auto-calculate) |
 
 ### Automotive (9 functions)
 
@@ -228,7 +228,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `havsCalculate()` | `throw` | a tool has negative vibrationMagnitude/exposureTime (empty/all-zero tool list is valid) |
 | `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight |
 | `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied); ladderLength shorter than the given height or baseDistance (equal returns a 90°/0° result with `warnings`) |
-| `lel()` | `throw` | a gas component has negative (or NaN) concentration or non-positive LEL (empty gas list is valid → 'safe') |
+| `lel()` | `throw` | empty gas list; a gas component has negative (or NaN) concentration or non-positive LEL. All concentrations 0 → 0 % LEL, 'safe', mixtureLel and safetyMargin null (no mixture composition) |
 | `nioshLifting()` | `throw` | any distance/angle/frequency/loadWeight negative (NaN included). RWL=0 (sustained high-frequency lifting) → liftingIndex=Infinity, an intentional sentinel. |
 | `noiseExposure()` | `throw` | an exposure entry has negative duration (empty list is valid → compliant) |
 | `respiratorCalculate()` | `throw` | oel ≤ 0, or concentration < 0. concentration=0 (no hazard) → safetyMargin=Infinity, an intentional sentinel. |
@@ -244,12 +244,12 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `abcAnalysis()` | `throw` | empty items; an item's annualUsage or unitCost < 0; every item's annual value 0 (no share to classify by) |
 | `cbm()` | `throw` | length, width, height or quantity ≤ 0 |
-| `containerFit()` | `throw` | cargo dimension ≤ 0. A box larger than the container in every orientation fits 0 times — a real answer, not a sentinel |
+| `containerFit()` | `throw` | cargo or container dimension ≤ 0. A box larger than the container in every orientation fits 0 times — a real answer, not a sentinel |
 | `eoq()` | `throw` | annualDemand, orderCost or holdingCost ≤ 0 (NaN included) |
 | `inventoryTurnover()` | `throw` | periodDays ≤ 0; cogs or averageInventory < 0. averageInventory 0 → turnoverRatio and gmroii null (0 days of supply); cogs 0 → daysOfSupply/weeksOfSupply null (the stock never runs out); gmroii null when grossMargin omitted |
 | `loadCapacity()` | `throw`/`null` | ratedCapacity, ratedLoadCenter or actualLoadCenter ≤ 0; attachmentWeightLoss or actualLoad < 0; utilization/isOverloaded/safetyMargin = null when actualLoad omitted |
 | `pallet3d()` | `throw` | box weight/length/width/height ≤ 0; given customLength/customWidth ≤ 0; maxStackHeight or maxPayload < 0 (0 = default); empty boxes |
-| `palletStack()` | `throw` | box dimension ≤ 0. A box exceeding the pallet or maxHeight in every orientation stacks 0 boxes — a real answer, not a sentinel |
+| `palletStack()` | `throw` | box dimension, pallet length or width, or maxHeight ≤ 0. A box exceeding the pallet or maxHeight in every orientation stacks 0 boxes — a real answer, not a sentinel |
 | `safetyStock()` | `throw` | serviceLevel ∉ (0, 1); avgLeadTime, avgDemand, demandStdDev or leadTimeStdDev < 0 |
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
 | `tsp()` | `throw` | Empty nodes (a single node returns a single-node result, does not throw) |
@@ -333,7 +333,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `linearInterpolation()` | `throw` | Missing/mismatched x·y, fewer than 2 points |
 | `movingAverage()` | `throw` | Empty data, window < 1 or > data length, unknown method |
 | `normalize()` | `throw` | Empty data, unknown method |
-| `npv()` | `throw` | initialInvestment < 0, empty cashFlows, discountRate outside [0, 1); `irr: null` on non-convergence (intentional) |
+| `npv()` | `throw` | initialInvestment < 0, empty cashFlows, discountRate outside [0, 1); `irr: null` on non-convergence (intentional); `profitabilityIndex: null` with no initial investment |
 | `percentile()` | `throw` | Empty data, p outside 0–100 |
 | `regression()` | `throw` | Missing/mismatched x·y, fewer than 2 points, zero variance in x |
 | `roi()` | `throw` | investment/annualReturn/years ≤ 0 |

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`chemical/reliefValve()` no longer sizes a liquid relief with no pressure differential as the smallest
+  orifice.** With the back pressure at or above the relieving pressure (or a set pressure of 0 gauge, where the
+  overpressure adds nothing) it returned `requiredArea: 0`, selected orifice 'D' and reported it as adequate. It
+  now throws; a `setPressure` ≤ 0 throws too.
+
+### Changed
+
+- **More zero inputs that described nothing to calculate now throw** — found by a new discovery audit
+  (`pnpm audit:zero-inputs`) that sets each numeric input to 0 and reports a result that collapses to zeros:
+  `construction/stair()` with no horizontal run (0 mm treads at 90°), `chemical/flowControl()` with no flow (Cv 0),
+  `logistics/containerFit()` with a container dimension of 0 and `logistics/palletStack()` with a pallet length,
+  width or `maxHeight` of 0 (0 units — a box that does not fit still answers 0), and `safety/lel()` with an empty gas
+  list.
+- **Outputs with no value are `null`:** `utility/npv()` `profitabilityIndex` with no initial investment, and
+  `safety/lel()` `mixtureLel` and `safetyMargin` when every concentration is 0 (the atmosphere is still 0 % LEL and
+  'safe'). **Breaking (types).**
+
 ## [0.56.0] - 2026-10-14
 
 ### Changed

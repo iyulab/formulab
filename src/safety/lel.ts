@@ -31,13 +31,18 @@ export function lel(input: LelInput): LelResult {
 
   const totalConcentration = gases.reduce((s, g) => s + g.concentration, 0);
 
-  if (totalConcentration === 0 || gases.length === 0) {
+  // No gases → nothing to assess. No concentration → the atmosphere is at 0 % LEL and safe, but the
+  // mixture has no composition, so its LEL and the margin to it have no value (both were 0).
+  if (gases.length === 0) {
+    throw new RangeError('gases must not be empty');
+  }
+  if (totalConcentration === 0) {
     return {
-      mixtureLel: 0,
+      mixtureLel: null,
       totalConcentration: 0,
       percentOfLel: 0,
       status: 'safe',
-      safetyMargin: 0,
+      safetyMargin: null,
       contributions: gases.map(g => ({ name: g.name, fraction: 0 })),
     };
   }
@@ -56,14 +61,10 @@ export function lel(input: LelInput): LelResult {
     });
   }
 
-  const mixtureLel = sumFractionOverLel > 0 ? 1 / sumFractionOverLel : 0;
-  const percentOfLel = mixtureLel > 0
-    ? (totalConcentration / mixtureLel) * 100
-    : 0;
-
-  const safetyMargin = mixtureLel > 0
-    ? mixtureLel - totalConcentration
-    : 0;
+  // Some gas is present and every LEL is positive, so the sum is positive.
+  const mixtureLel = 1 / sumFractionOverLel;
+  const percentOfLel = (totalConcentration / mixtureLel) * 100;
+  const safetyMargin = mixtureLel - totalConcentration;
 
   // Status — industry %LEL convention (matches confinedSpace):
   // safe < 10%, caution 10–25%, danger > 25%

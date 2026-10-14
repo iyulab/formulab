@@ -30,7 +30,7 @@ const DEFAULT_RISER = 170;
  *
  * @param input - Stair input parameters
  * @returns Stair calculation results
- * @throws {RangeError} totalRise ≤ 0, totalRun < 0, or riserHeight < 0 (riserHeight 0
+ * @throws {RangeError} totalRise ≤ 0, totalRun ≤ 0, or riserHeight < 0 (riserHeight 0
  *   means "auto-calculate", the established contract)
  */
 export function stair(input: StairInput): StairResult {
@@ -39,8 +39,9 @@ export function stair(input: StairInput): StairResult {
   if (totalRise <= 0) {
     throw new RangeError('totalRise must be greater than 0');
   }
-  if (totalRun < 0) {
-    throw new RangeError('totalRun must not be negative');
+  // A flight with no horizontal run has no treads to size (it came back as 0 mm treads at 90°).
+  if (!(totalRun > 0)) {
+    throw new RangeError('totalRun must be greater than 0');
   }
   if (riserHeight !== undefined && riserHeight < 0) {
     // riserHeight 0 is the established "auto-calculate" sentinel; negative is invalid

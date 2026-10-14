@@ -54,10 +54,8 @@ describe('chemical physical-input domains', () => {
       expect(() => flowControl({ flowRate: -10, inletPressure: 500, outletPressure: 300, fluidDensity: 999, fluidType: 'liquid' })).toThrow(RangeError);
     });
 
-    it('accepts zero flow: no valve opening needed', () => {
-      const result = flowControl({ flowRate: 0, inletPressure: 500, outletPressure: 300, fluidDensity: 999, fluidType: 'liquid' });
-      expect(result.cv).toBe(0);
-      expect(result.velocity).toBe(0);
+    it('refuses zero flow — there is no flow to size the valve for', () => {
+      expect(() => flowControl({ flowRate: 0, inletPressure: 500, outletPressure: 300, fluidDensity: 999, fluidType: 'liquid' })).toThrow(/flowRate must be greater than 0/);
     });
   });
 

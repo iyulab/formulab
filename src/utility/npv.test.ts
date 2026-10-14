@@ -79,3 +79,11 @@ describe('npv', () => {
     })).toThrow(RangeError);
   });
 });
+
+describe('npv with nothing invested', () => {
+  it('has no profitability index — a ratio to 0 has no value (not 0)', () => {
+    const r = npv({ initialInvestment: 0, cashFlows: [100, 100], discountRate: 0.1 });
+    expect(r.profitabilityIndex).toBeNull();
+    expect(r.npv).toBeGreaterThan(0);
+  });
+});

@@ -107,7 +107,8 @@
     "check:function-counts": "node scripts/count-functions.mjs",
     "check:documented-throws": "node scripts/check-documented-throws.mjs",
     "check:nonfinite-outputs": "node scripts/check-nonfinite-outputs.mjs",
-    "audit:sign-flips": "node scripts/audit-sign-flips.mjs"
+    "audit:sign-flips": "node scripts/audit-sign-flips.mjs",
+    "audit:zero-inputs": "node scripts/audit-zero-inputs.mjs"
   },
   "keywords": [
     "manufacturing",

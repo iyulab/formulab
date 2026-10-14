@@ -199,7 +199,7 @@ export interface NpvInput {
 export interface NpvResult {
   npv: number;
   irr: number | null;
-  profitabilityIndex: number;
+  profitabilityIndex: number | null; // null with no initial investment (no ratio)
 }
 
 /**
