@@ -11,6 +11,7 @@ import { flatPattern } from './metal/flatPattern.js';
 import { bendAllowance } from './metal/bendAllowance.js';
 import { metalWeight } from './metal/metalWeight.js';
 import { bmsBalancing } from './battery/bmsBalancing.js';
+import { gageRR } from './quality/gageRR.js';
 import type { ConcentrationInput, FlowControlInput, ReliefValveInput } from './chemical/types.js';
 import type { FlatPatternInput, MetalWeightInput } from './metal/types.js';
 import type { BmsBalancingInput } from './battery/types.js';
@@ -103,5 +104,28 @@ describe('range checks (0.58.0)', () => {
     const input = { balancingCurrentMA: 100, cellCapacityAh: 3 } as Omit<BmsBalancingInput, 'cellVoltages'>;
     expect(() => bmsBalancing({ ...input, cellVoltages: [3.7] })).toThrow(/at least 2 cells/);
     expect(() => bmsBalancing(input as BmsBalancingInput)).toThrow(/at least 2 cells/);
+  });
+});
+
+describe('range checks (0.59.0)', () => {
+  it('gageRR refuses a tolerance given as 0 or less instead of ignoring it', () => {
+    const measurements = [
+      [[1, 1.1], [1.05, 1.0]],
+      [[2, 2.1], [2.05, 1.95]],
+    ];
+    expect(() => gageRR({ measurements, tolerance: 0 })).toThrow(/tolerance must be greater than 0/);
+    expect(() => gageRR({ measurements, tolerance: -1 })).toThrow(/tolerance must be greater than 0/);
+    expect(gageRR({ measurements, tolerance: 1 }).percentTolerance).not.toBeNull();
+  });
+
+  it('ledRoi refuses a replacement that draws nothing', () => {
+    const input = { fixtureCount: 10, oldWatts: 60, newWatts: 0, operatingHours: 4000, electricityRate: 0.15, fixtureCost: 30, installationCost: 0, co2Factor: 0.4 };
+    expect(() => ledRoi(input)).toThrow(/newWatts must be greater than 0/);
+  });
+
+  it('reliefValve refuses a liquid below absolute zero too', () => {
+    const liquid = { requiredCapacity: 100, setPressure: 500, backPressure: 0, temperature: -300, fluidType: 'liquid' } as ReliefValveInput;
+    expect(() => reliefValve(liquid)).toThrow(/absolute zero/);
+    expect(() => reliefValve({ ...liquid, temperature: 20 })).not.toThrow();
   });
 });

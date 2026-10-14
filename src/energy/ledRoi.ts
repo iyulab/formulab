@@ -11,8 +11,8 @@ import type { LedRoiInput, LedRoiResult } from './types.js';
  *
  * @param input - LED retrofit parameters
  * @returns LED ROI result with energy savings, cost savings, and payback
- * @throws {RangeError} fixtureCount, operatingHours or oldWatts is not greater than 0, or
- *   newWatts, electricityRate, fixtureCost, installationCost or co2Factor is negative
+ * @throws {RangeError} fixtureCount, operatingHours, oldWatts or newWatts is not greater than 0, or
+ *   electricityRate, fixtureCost, installationCost or co2Factor is negative
  */
 export function ledRoi(input: LedRoiInput): LedRoiResult {
   requireFinite('ledRoi', input);
@@ -40,8 +40,9 @@ export function ledRoi(input: LedRoiInput): LedRoiResult {
   if (!(oldWatts > 0)) {
     throw new RangeError('oldWatts must be greater than 0');
   }
-  if (!(newWatts >= 0)) {
-    throw new RangeError('newWatts must not be negative');
+  // A replacement drawing nothing is not a light — it reads as a 100 % saving.
+  if (!(newWatts > 0)) {
+    throw new RangeError('newWatts must be greater than 0');
   }
   if (!(electricityRate >= 0)) {
     throw new RangeError('electricityRate must not be negative');

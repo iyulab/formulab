@@ -331,13 +331,17 @@ function gageRRAnova(input: GageRRInput): GageRRResult {
  * Dispatches to the Average-Range method (default) or the ANOVA method per `input.method`.
  * See {@link gageRRAverageRange} and {@link gageRRAnova} for the method-specific formulas.
  *
- * @throws {RangeError} empty or ragged measurements, a reading that is not finite; Average-Range: a
+ * @throws {RangeError} empty or ragged measurements, a tolerance given and not greater than 0; Average-Range: a
  *   study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts); ANOVA: fewer than
  *   2 parts, operators or trials
  */
 export function gageRR(input: GageRRInput): GageRRResult {
   requireFinite('gageRR', input);
   validateStudyShape(input.measurements);
+  // A tolerance ≤ 0 used to be read as «no tolerance» — %GRR-of-tolerance quietly null for a value given.
+  if (input.tolerance !== undefined && !(input.tolerance > 0)) {
+    throw new RangeError('tolerance must be greater than 0 when given');
+  }
   return input.method === 'anova' ? gageRRAnova(input) : gageRRAverageRange(input);
 }
 

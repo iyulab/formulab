@@ -75,7 +75,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
-| `gageRR()` | `throw` | Empty or ragged measurements; Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
+| `gageRR()` | `throw` | Empty or ragged measurements; a tolerance given and ≤ 0 (read as «no tolerance» before 0.59.0); Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; usl ≤ lsl. Identical measurements (σ = 0) → cm/cmk/isCapable null |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items, an item value < 0 |
@@ -133,7 +133,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `shelfLife()` | `throw` | shelfLifeAtRef ≤ 0, q10 ≤ 0 |
 | `injectionCycle()` | `throw` | wallThickness ≤ 0; shotWeight ≤ 0 (a shot of 0 g gave a parts-per-hour rate before 0.58.0); moldOpenCloseTime/ejectionTime < 0; resin density ≤ 0, injectionRate ≤ 0 (when given); thermalDiffusivity ≤ 0; ejectionTemp ≤ moldTemp; (8/π²)·(Tm − Tw)/(Te − Tw) ≤ 1 — the melt too close to the ejection temperature for the cooling-time model |
 | `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure < 0 (absolute) or ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
-| `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; overpressure < 0; gas/steam temperature ≤ −273.15 °C; liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
+| `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; overpressure < 0; temperature ≤ −273.15 °C (any fluid since 0.59.0 — liquid sizing does not read it, but a value below absolute zero describes nothing); liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
 | `pid()` | `throw` | A parameter the method needs missing (it was replaced by 1 before 0.58.0) or not > 0 (NaN included): processGain/deadTime/timeConstant, or ultimateGain/ultimatePeriod |
 
 ### Electronics (12 functions)
@@ -271,7 +271,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `carbonFootprint()` | `throw` | electricityUsage or emissionFactor < 0 |
 | `cusum()` | `throw` | empty values; a given allowance < 0 or decisionInterval ≤ 0; a given stdDev ≤ 0; σ needed (allowance or decisionInterval omitted) but not estimable — fewer than 2 values or all equal (σ = 1 was substituted before 0.56.0) |
 | `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; sink not warmer than source → copCarnot/efficiency null) |
-| `ledRoi()` | `throw` | fixtureCount, operatingHours or oldWatts ≤ 0 (an old fixture drawing 0 W gave a 0 % reduction beside added use before 0.58.0); newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
+| `ledRoi()` | `throw` | fixtureCount, operatingHours, oldWatts or newWatts ≤ 0 (an old fixture drawing 0 W gave a 0 % reduction beside added use before 0.58.0; a replacement drawing 0 W a 100 % saving before 0.59.0); electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
 | `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths null) |
 | `transformerLoss()` | `throw` | ratedCapacity ≤ 0; loadFraction or powerFactor ∉ [0, 1]; coreLoss, copperLoss, operatingHours or energyCost < 0 (annual fields null without operatingHours/energyCost) |
 | `vfdSavings()` | `throw` | motorKw or fullSpeedRpm ≤ 0; loadFactor or vfdEfficiency ∉ (0, 1]; newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost < 0 (annualSavings ≤ 0 → paybackYears null) |

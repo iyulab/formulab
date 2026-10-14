@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Three inputs that were accepted silently now throw**: `quality/gageRR()` a `tolerance` given as 0 or less (it was
+  read as «no tolerance» and `percentTolerance` came back null); `energy/ledRoi()` a `newWatts` of 0 (a replacement
+  that draws nothing read as a 100 % saving); `chemical/reliefValve()` a temperature at or below absolute zero for a
+  liquid too (liquid sizing does not read it, but no fluid is below absolute zero).
+
 ## [0.58.0] - 2026-10-15
 
 ### Changed

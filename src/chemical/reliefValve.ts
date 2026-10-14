@@ -51,8 +51,8 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  *
  * @throws {RangeError} requiredCapacity, setPressure, molecularWeight, specificGravity, specificHeatRatio
  *   (must exceed 1) or compressibility is not positive; or, for a liquid, the relieving pressure does not
- *   exceed the back pressure (no differential to drive the flow); overpressure is negative; or, for gas or
- *   steam, temperature is not above -273.15 °C
+ *   exceed the back pressure (no differential to drive the flow); overpressure is negative; or temperature is
+ *   not above -273.15 °C
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   requireFinite('reliefValve', input);
@@ -93,8 +93,8 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   if (!(overpressure >= 0)) {
     throw new RangeError('overpressure must not be negative');
   }
-  // Gas sizing takes the square root of the absolute temperature.
-  if (fluidType !== 'liquid' && !(temperature > -273.15)) {
+  // No fluid is below absolute zero; gas sizing also takes the square root of the absolute temperature.
+  if (!(temperature > -273.15)) {
     throw new RangeError('temperature must be above absolute zero (-273.15 °C)');
   }
 
