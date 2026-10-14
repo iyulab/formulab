@@ -267,7 +267,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `powerCost()` | `throw` | powerFactor or pfPenaltyThreshold ∉ [0, 1]; energyConsumption, energyRate, demandPeak, demandRate, pfPenaltyRate or fixedCharges < 0 |
 | `boilerEfficiency()` | `throw` | fuelRate or fuelHeatValue ≤ 0; steamOutput, steamEnthalpy, feedwaterEnthalpy, operatingHours or fuelCost < 0; steamEnthalpy < feedwaterEnthalpy; a heat output above the fuel heat input (efficiency above 100 %) (annual fields null without operatingHours/fuelCost) |
 | `carbonFootprint()` | `throw` | electricityUsage or emissionFactor < 0 |
-| `cusum()` | `throw` | empty values; a given stdDev ≤ 0; σ needed (allowance or decisionInterval omitted) but not estimable — fewer than 2 values or all equal (σ = 1 was substituted before 0.56.0) |
+| `cusum()` | `throw` | empty values; a given allowance < 0 or decisionInterval ≤ 0; a given stdDev ≤ 0; σ needed (allowance or decisionInterval omitted) but not estimable — fewer than 2 values or all equal (σ = 1 was substituted before 0.56.0) |
 | `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; sink not warmer than source → copCarnot/efficiency null) |
 | `ledRoi()` | `throw` | fixtureCount or operatingHours ≤ 0; oldWatts, newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
 | `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths null) |

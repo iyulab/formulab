@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.56.0] - 2026-10-14
+
 ### Changed
 
 - **Outputs that have no value are `null`, not 0.** A 0 in these fields read as an answer — a payback of
@@ -39,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`energy/cusum()` no longer substitutes σ = 1 when it cannot estimate σ.** With constant readings or a single
   one, the auto σ fell back to 1 in whatever unit the readings use, which set the decision interval at random. It
   now throws there unless `stdDev` or both `allowance` and `decisionInterval` are given; σ is not needed at all
-  when both are. An empty series and a given `stdDev` ≤ 0 throw too.
+  when both are. An empty series, a given `stdDev` ≤ 0, a negative `allowance` and a `decisionInterval` ≤ 0 throw
+  too.
 - **Invalid input that returned an all-zero result now throws.** `logistics/eoq()` (annual demand, order cost or
   holding cost ≤ 0), `logistics/kanban()` (a negative safety factor), `metal/gear()` (a missing or non-positive
   module, pitch diameter or tooth count — the result described a 0 mm gear), `food/nutrition()` (ingredients adding

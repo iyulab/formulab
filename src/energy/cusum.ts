@@ -18,7 +18,8 @@ import type { CusumInput, CusumResult } from './types.js';
  * @reference ISO 50001:2018 — CUSUM for energy monitoring
  * @reference Montgomery, D.C. "Introduction to Statistical Quality Control", Ch. 9
  *
- * @throws {RangeError} values is empty; a given stdDev is not greater than 0; or σ is needed (allowance
+ * @throws {RangeError} values is empty; a given allowance is negative or decisionInterval is not
+ *   greater than 0; a given stdDev is not greater than 0; or σ is needed (allowance
  *   or decisionInterval omitted) and cannot be estimated because there are fewer than 2 values or they
  *   are all equal
  */
@@ -29,6 +30,15 @@ export function cusum(input: CusumInput): CusumResult {
   // No readings → no chart; an empty «in control» result would read as a verdict.
   if (n === 0) {
     throw new RangeError('values must not be empty');
+  }
+
+  // A negative allowance widens nothing — it makes C⁺ and C⁻ grow on target data; a decision
+  // interval ≤ 0 signals on the first reading.
+  if (input.allowance != null && !(input.allowance >= 0)) {
+    throw new RangeError('allowance must not be negative');
+  }
+  if (input.decisionInterval != null && !(input.decisionInterval > 0)) {
+    throw new RangeError('decisionInterval must be greater than 0');
   }
 
   // K and H are multiples of σ unless both are given. An auto σ needs data that varies:

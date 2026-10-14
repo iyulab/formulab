@@ -94,6 +94,11 @@ describe('cusum', () => {
       expect(() => cusum({ values: [10, 11], target: 10, stdDev: 0 })).toThrow(/stdDev must be greater than 0/);
     });
 
+    it('rejects a negative allowance and a decision interval that is not positive', () => {
+      expect(() => cusum({ values: [10, 11], target: 10, stdDev: 1, allowance: -0.5 })).toThrow(/allowance must not be negative/);
+      expect(() => cusum({ values: [10, 11], target: 10, stdDev: 1, decisionInterval: 0 })).toThrow(/decisionInterval must be greater than 0/);
+    });
+
     it('needs no σ when both allowance and decision interval are given', () => {
       const r = cusum({ values: [10, 10, 10], target: 10, allowance: 0.5, decisionInterval: 5 });
       expect(r.cusumPositive).toEqual([0, 0, 0]);
