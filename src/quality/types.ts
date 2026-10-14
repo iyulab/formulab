@@ -47,13 +47,17 @@ export interface CpkInput {
   stdDev: number; // standard deviation
 }
 
+/**
+ * The indices divide by σ, so with σ = 0 they have no value (`null`) — not 0, which reads as
+ * «incapable», and not infinity. `withinSpecPercent` is still defined: every part is the mean.
+ */
 export interface CpkResult {
-  cp: number;     // process capability (potential)
-  cpk: number;    // process capability index (actual)
-  cpu: number;    // upper process capability
-  cpl: number;    // lower process capability
+  cp: number | null;     // process capability (potential)
+  cpk: number | null;    // process capability index (actual)
+  cpu: number | null;    // upper process capability
+  cpl: number | null;    // lower process capability
   withinSpecPercent: number; // estimated % of output within [LSL, USL] under a normal model (short-term σ)
-  sigmaLevel: number; // sigma level (min of upper and lower z-scores)
+  sigmaLevel: number | null; // sigma level (min of upper and lower z-scores)
 }
 
 /**
@@ -242,19 +246,14 @@ export interface PpkInput {
   stdDev: number;  // overall (long-term) standard deviation
 }
 
+/** Same shape and σ = 0 rule as `CpkResult`, with the long-term σ. */
 export interface PpkResult {
-  pp: number;               // process performance (spread)
-  ppk: number;              // process performance index
-  ppu: number;              // upper process performance (Ppu)
-  ppl: number;              // lower process performance (Ppl)
+  pp: number | null;        // process performance (spread)
+  ppk: number | null;       // process performance index
+  ppu: number | null;       // upper process performance (Ppu)
+  ppl: number | null;       // lower process performance (Ppl)
   withinSpecPercent: number; // percentage within spec
-  sigmaLevel: number;       // sigma level (= 3 × Ppk)
-  /** @deprecated Use `ppu`. Retained as an alias for backward compatibility; removed in a future release. */
-  ppUpper: number;
-  /** @deprecated Use `ppl`. Retained as an alias for backward compatibility; removed in a future release. */
-  ppLower: number;
-  /** @deprecated Use `sigmaLevel`. Retained as an alias for backward compatibility; removed in a future release. */
-  sigma: number;
+  sigmaLevel: number | null; // sigma level (= 3 × Ppk)
 }
 
 /**
@@ -452,9 +451,9 @@ export interface CmkInput {
 export interface CmkResult {
   mean: number;
   stdDev: number;
-  cm: number;              // Machine capability (= Cp)
-  cmk: number;             // Machine capability index (= Cpk)
-  isCapable: boolean;      // Cmk >= 1.67
+  cm: number | null;       // Machine capability (= Cp); null when the measurements do not vary
+  cmk: number | null;      // Machine capability index (= Cpk); null with cm
+  isCapable: boolean | null; // Cmk >= 1.67; null with cmk
 }
 
 /**

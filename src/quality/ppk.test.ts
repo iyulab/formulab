@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ppk } from './ppk.js';
+import { cpk } from './cpk.js';
 
 describe('ppk', () => {
   describe('Pp calculation', () => {
@@ -43,7 +44,7 @@ describe('ppk', () => {
       // Ppl = (105 - 90) / 9 = 1.67
       // Ppk = min(0.56, 1.67) = 0.56
       expect(result.ppk).toBeCloseTo(0.56, 1);
-      expect(result.ppUpper).toBeLessThan(result.ppLower);
+      expect(result.ppu).toBeLessThan(result.ppl);
     });
 
     it('should return lower Ppk when process is off-center (low)', () => {
@@ -58,7 +59,7 @@ describe('ppk', () => {
       // Ppl = (95 - 90) / 9 = 0.56
       // Ppk = min(1.67, 0.56) = 0.56
       expect(result.ppk).toBeCloseTo(0.56, 1);
-      expect(result.ppLower).toBeLessThan(result.ppUpper);
+      expect(result.ppl).toBeLessThan(result.ppu);
     });
   });
 
@@ -102,7 +103,7 @@ describe('ppk', () => {
       });
 
       // Sigma = 3 * Ppk = 3 * 1.11 = 3.33
-      expect(result.sigma).toBeCloseTo(3.33, 1);
+      expect(result.sigmaLevel).toBeCloseTo(3.33, 1);
     });
 
     it('should show 6 sigma capability', () => {
@@ -114,38 +115,12 @@ describe('ppk', () => {
       });
 
       expect(result.ppk).toBeCloseTo(2.0, 1);
-      expect(result.sigma).toBeCloseTo(6.0, 0);
-    });
-  });
-
-  describe('field naming (cpk-aligned aliases)', () => {
-    it('should expose ppu/ppl/sigmaLevel matching the deprecated ppUpper/ppLower/sigma', () => {
-      const result = ppk({
-        usl: 110,
-        lsl: 90,
-        mean: 103,
-        stdDev: 3,
-      });
-
-      expect(result.ppu).toBe(result.ppUpper);
-      expect(result.ppl).toBe(result.ppLower);
-      expect(result.sigmaLevel).toBe(result.sigma);
-    });
-
-    it('should expose zeroed aliases on degenerate input', () => {
-      const result = ppk({ usl: 110, lsl: 90, mean: 100, stdDev: 0 });
-
-      expect(result.ppu).toBe(0);
-      expect(result.ppl).toBe(0);
-      expect(result.sigmaLevel).toBe(0);
-      expect(result.ppUpper).toBe(0);
-      expect(result.ppLower).toBe(0);
-      expect(result.sigma).toBe(0);
+      expect(result.sigmaLevel).toBeCloseTo(6.0, 0);
     });
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero standard deviation', () => {
+    it('has no indices when the process does not vary (σ = 0)', () => {
       const result = ppk({
         usl: 110,
         lsl: 90,
@@ -153,21 +128,24 @@ describe('ppk', () => {
         stdDev: 0,
       });
 
-      expect(result.pp).toBe(0);
-      expect(result.ppk).toBe(0);
-      expect(result.withinSpecPercent).toBe(0);
+      expect(result.pp).toBeNull();
+      expect(result.ppk).toBeNull();
+      expect(result.ppu).toBeNull();
+      expect(result.ppl).toBeNull();
+      expect(result.sigmaLevel).toBeNull();
+      expect(result.withinSpecPercent).toBe(100);
     });
 
-    it('should return zeros for negative standard deviation', () => {
-      const result = ppk({
-        usl: 110,
-        lsl: 90,
-        mean: 100,
-        stdDev: -1,
-      });
+    it('rejects a negative standard deviation', () => {
+      expect(() => ppk({ usl: 110, lsl: 90, mean: 100, stdDev: -1 })).toThrow(/stdDev/);
+    });
 
-      expect(result.pp).toBe(0);
-      expect(result.ppk).toBe(0);
+    it('has exactly the cpk() field values for the same σ', () => {
+      const p = ppk({ usl: 110, lsl: 90, mean: 103, stdDev: 3 });
+      const c = cpk({ usl: 110, lsl: 90, mean: 103, stdDev: 3 });
+      expect([p.pp, p.ppk, p.ppu, p.ppl, p.sigmaLevel, p.withinSpecPercent])
+        .toEqual([c.cp, c.cpk, c.cpu, c.cpl, c.sigmaLevel, c.withinSpecPercent]);
+      expect(Object.keys(p).sort()).toEqual(['pp', 'ppk', 'ppl', 'ppu', 'sigmaLevel', 'withinSpecPercent']);
     });
 
     it('should handle mean outside spec limits', () => {
@@ -179,7 +157,7 @@ describe('ppk', () => {
       });
 
       // Ppu = (110 - 115) / 9 = -0.56
-      expect(result.ppUpper).toBeLessThan(0);
+      expect(result.ppu).toBeLessThan(0);
       expect(result.ppk).toBeLessThan(0);
     });
 
@@ -222,7 +200,7 @@ describe('ppk', () => {
 
       expect(result.pp).toBeCloseTo(1.11, 1);
       // Off-center toward USL
-      expect(result.ppUpper).toBeLessThan(result.ppLower);
+      expect(result.ppu).toBeLessThan(result.ppl);
     });
 
     it('should analyze temperature control process', () => {
@@ -236,7 +214,7 @@ describe('ppk', () => {
 
       // Pp = 10 / 6 = 1.67
       expect(result.pp).toBeCloseTo(1.67, 1);
-      expect(result.sigma).toBeCloseTo(5, 0);
+      expect(result.sigmaLevel).toBeCloseTo(5, 0);
     });
 
     it('should identify incapable process', () => {

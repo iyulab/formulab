@@ -17,31 +17,39 @@ import type { CusumInput, CusumResult } from './types.js';
  * @reference Page, E.S. (1954). "Continuous inspection schemes"
  * @reference ISO 50001:2018 — CUSUM for energy monitoring
  * @reference Montgomery, D.C. "Introduction to Statistical Quality Control", Ch. 9
+ *
+ * @throws {RangeError} values is empty; a given stdDev is not greater than 0; or σ is needed (allowance
+ *   or decisionInterval omitted) and cannot be estimated because there are fewer than 2 values or they
+ *   are all equal
  */
 export function cusum(input: CusumInput): CusumResult {
   const { values, target } = input;
   const n = values.length;
 
+  // No readings → no chart; an empty «in control» result would read as a verdict.
   if (n === 0) {
-    return {
-      cusumPositive: [],
-      cusumNegative: [],
-      signals: [],
-      isOutOfControl: false,
-      shiftDetected: 'none',
-    };
+    throw new RangeError('values must not be empty');
   }
 
-  // Auto-calculate stdDev if not provided
-  let sigma = input.stdDev;
-  if (sigma == null) {
-    const mean = values.reduce((s, v) => s + v, 0) / n;
-    sigma = Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1));
-    if (!Number.isFinite(sigma) || sigma <= 0) sigma = 1;
+  // K and H are multiples of σ unless both are given. An auto σ needs data that varies:
+  // substituting σ = 1 (in whatever unit the readings are) would set the decision interval
+  // at random.
+  let K = input.allowance;
+  let H = input.decisionInterval;
+  if (K == null || H == null) {
+    let sigma = input.stdDev;
+    if (sigma == null) {
+      const mean = values.reduce((s, v) => s + v, 0) / n;
+      sigma = n > 1 ? Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1)) : 0;
+      if (!(sigma > 0) || !Number.isFinite(sigma)) {
+        throw new RangeError('stdDev cannot be estimated from these values (fewer than 2, or all equal) — give stdDev, or both allowance and decisionInterval');
+      }
+    } else if (!(sigma > 0) || !Number.isFinite(sigma)) {
+      throw new RangeError('stdDev must be greater than 0');
+    }
+    K ??= sigma / 2;
+    H ??= 5 * sigma;
   }
-
-  const K = input.allowance ?? sigma / 2;
-  const H = input.decisionInterval ?? 5 * sigma;
 
   const cusumPositive: number[] = [];
   const cusumNegative: number[] = [];

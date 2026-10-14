@@ -84,10 +84,20 @@ describe('cusum', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty array', () => {
-      const result = cusum({ values: [], target: 10 });
-      expect(result.cusumPositive).toHaveLength(0);
-      expect(result.isOutOfControl).toBe(false);
+    it('rejects an empty series — there is nothing to chart', () => {
+      expect(() => cusum({ values: [], target: 10 })).toThrow(/values must not be empty/);
+    });
+
+    it('rejects an auto σ it cannot estimate instead of substituting 1', () => {
+      expect(() => cusum({ values: [10, 10, 10], target: 10 })).toThrow(/cannot be estimated/);
+      expect(() => cusum({ values: [10], target: 10 })).toThrow(/cannot be estimated/);
+      expect(() => cusum({ values: [10, 11], target: 10, stdDev: 0 })).toThrow(/stdDev must be greater than 0/);
+    });
+
+    it('needs no σ when both allowance and decision interval are given', () => {
+      const r = cusum({ values: [10, 10, 10], target: 10, allowance: 0.5, decisionInterval: 5 });
+      expect(r.cusumPositive).toEqual([0, 0, 0]);
+      expect(r.isOutOfControl).toBe(false);
     });
 
     it('should handle single value', () => {

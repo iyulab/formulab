@@ -1,4 +1,5 @@
 import { roundTo } from '../utils.js';
+import { capabilityIndices } from './capability.js';
 import type { CmkInput, CmkResult } from './types.js';
 
 /**
@@ -13,38 +14,34 @@ import type { CmkInput, CmkResult } from './types.js';
  * @reference ISO 22514-3:2020 — Machine performance studies
  *
  * @param input - Raw measurements and specification limits
- * @returns Machine capability indices
+ * @returns Machine capability indices — `cm`, `cmk` and `isCapable` are `null` when the
+ *   measurements do not vary (σ = 0)
+ * @throws {RangeError} fewer than 2 measurements, a measurement that is not finite, or usl not
+ *   greater than lsl
  */
 export function cmk(input: CmkInput): CmkResult {
   const { measurements, lsl, usl } = input;
   const n = measurements.length;
 
-  if (n === 0) {
-    return { mean: 0, stdDev: 0, cm: 0, cmk: 0, isCapable: false };
+  // A sample standard deviation needs two readings; with fewer there is no study to report.
+  if (n < 2) {
+    throw new RangeError('measurements must contain at least 2 values');
   }
+  measurements.forEach((v, i) => {
+    if (!Number.isFinite(v)) {
+      throw new RangeError(`measurements[${i}] must be finite`);
+    }
+  });
 
-  // Mean
   const mean = measurements.reduce((s, v) => s + v, 0) / n;
-
-  // Sample standard deviation (guard n=1 → 0/0)
-  const variance = n > 1 ? measurements.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1) : 0;
-  const stdDev = Math.sqrt(variance);
-
-  if (stdDev <= 0 || !Number.isFinite(stdDev)) {
-    return { mean: roundTo(mean, 4), stdDev: 0, cm: 0, cmk: 0, isCapable: false };
-  }
-
-  const specWidth = usl - lsl;
-  const cm = specWidth / (6 * stdDev);
-  const cmkUpper = (usl - mean) / (3 * stdDev);
-  const cmkLower = (mean - lsl) / (3 * stdDev);
-  const cmkValue = Math.min(cmkUpper, cmkLower);
+  const stdDev = Math.sqrt(measurements.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1));
+  const c = capabilityIndices(usl, lsl, mean, stdDev);
 
   return {
     mean: roundTo(mean, 4),
     stdDev: roundTo(stdDev, 4),
-    cm: roundTo(cm, 4),
-    cmk: roundTo(cmkValue, 4),
-    isCapable: cmkValue >= 1.67,
+    cm: c.spread,
+    cmk: c.index,
+    isCapable: c.index === null ? null : c.index >= 1.67,
   };
 }

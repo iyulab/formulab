@@ -39,7 +39,7 @@ adequate", documented in the function's `@remarks`, and the function validates i
 (`oel > 0`, `concentration >= 0`) in the ordinary way. It is exempt from the "no Infinity in output
 fields" rule; an execution-based NaN audit must allowlist it.
 
-**Exception — capability-index family.** `cpk()`, `ppk()`, and `cmk()` do **not** throw on a degenerate spread (`stdDev ≤ 0`, or empty/constant measurements for `cmk()`). They return a **zero-valued result** as a sentinel instead. This is intentional and covered by tests. The "no silent NaN/Infinity" guarantee still holds (0 is finite), but these three are exempt from the "validation failures → throw" rule.
+**Capability-index family (0.56.0).** `cpk()`, `ppk()` and `cmk()` used to return an all-zero result for a degenerate spread, which read as «incapable» — the opposite of a process that does not vary. They now throw for invalid input (negative σ, crossed limits, fewer than 2 measurements for `cmk()`) and return the indices as `null` at σ = 0.
 
 ## Error Patterns by Domain
 
@@ -56,7 +56,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `oee()` | `throw` | plannedTime, runTime, idealCycleTime or totalCount ≤ 0; runTime > plannedTime; goodCount < 0 or > totalCount |
-| `cpk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
+| `cpk()` | `throw` | usl ≤ lsl; a limit or the mean not finite; stdDev < 0 or not finite. stdDev = 0 → cp/cpk/cpu/cpl/sigmaLevel null (they divide by σ); withinSpecPercent 100 or 0 |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `acceptanceControlChart()` | `throw` | no spec limit; sigma ≤ 0; proportions outside (0, 1) or rejectable ≤ acceptable; alpha/beta outside (0, 1) |
 | `cycleTime()` | `throw` | empty measurements; a measurement ≤ 0 (NaN included) |
@@ -69,12 +69,12 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `dpmo()` | `throw` | defects < 0, units ≤ 0, opportunities ≤ 0, defects > units × opportunities |
 | `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time ≤ 0 or > cycleTime (infeasible), circular dependency |
 | `mtbf()` | `throw` | totalOperatingTime ≤ 0, numberOfFailures ≤ 0 |
-| `ppk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
+| `ppk()` | `throw` | as `cpk()` (same arithmetic, long-term σ) |
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
 | `gageRR()` | `throw` | Insufficient data; `method: 'anova'` also throws for fewer than 2 parts, 2 operators, or 2 trials |
-| `cmk()` | `safe` | empty measurements or computed stdDev ≤ 0 → returns zero-valued result; does not throw |
+| `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; usl ≤ lsl. Identical measurements (σ = 0) → cm/cmk/isCapable null |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items, an item value < 0 |
 
@@ -236,7 +236,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `ventilationRate()` | `throw` | non-positive room dimensions/occupants; custom space type without positive customAch |
 | `wbgtCalculate()` | `safe` | all inputs (incl. negative °C) produce a valid index |
 
-**Sentinel exceptions (intentional `Infinity`).** `respiratorCalculate()` returns `safetyMargin = Infinity` when `concentration = 0` (no hazard → any respirator is infinitely adequate), and `nioshLifting()` returns `liftingIndex = Infinity` when the frequency multiplier drives `RWL` to 0 (no weight is acceptable). Both arise from **valid** inputs and are tested, analogous to the capability-index zero-sentinel exception above.
+**Sentinel exceptions (intentional `Infinity`).** `respiratorCalculate()` returns `safetyMargin = Infinity` when `concentration = 0` (no hazard → any respirator is infinitely adequate), and `nioshLifting()` returns `liftingIndex = Infinity` when the frequency multiplier drives `RWL` to 0 (no weight is acceptable). Both arise from **valid** inputs and are tested: the quantity is genuinely unbounded there, not undefined.
 
 ### Logistics (17 functions)
 
@@ -267,7 +267,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `powerCost()` | `throw` | powerFactor or pfPenaltyThreshold ∉ [0, 1]; energyConsumption, energyRate, demandPeak, demandRate, pfPenaltyRate or fixedCharges < 0 |
 | `boilerEfficiency()` | `throw` | fuelRate or fuelHeatValue ≤ 0; steamOutput, steamEnthalpy, feedwaterEnthalpy, operatingHours or fuelCost < 0; steamEnthalpy < feedwaterEnthalpy; a heat output above the fuel heat input (efficiency above 100 %) (annual fields null without operatingHours/fuelCost) |
 | `carbonFootprint()` | `throw` | electricityUsage or emissionFactor < 0 |
-| `cusum()` | `safe` | Empty values → empty arrays, shiftDetected 'none' (sentinel) |
+| `cusum()` | `throw` | empty values; a given stdDev ≤ 0; σ needed (allowance or decisionInterval omitted) but not estimable — fewer than 2 values or all equal (σ = 1 was substituted before 0.56.0) |
 | `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; sink not warmer than source → copCarnot/efficiency null) |
 | `ledRoi()` | `throw` | fixtureCount or operatingHours ≤ 0; oldWatts, newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
 | `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths null) |
@@ -326,7 +326,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `calculateUnit()` | `throw` | Unknown category/fromUnit/toUnit |
 | `getUnitCategories()` | `safe` | — |
 | `getUnitsForCategory()` | `safe` | Unknown category returns [] |
-| `correlation()` | `throw` | Missing/mismatched x·y, fewer than 2 points; zero variance → `{ r: 0, r2: 0, n }` sentinel (see Exception below) |
+| `correlation()` | `throw` | Missing/mismatched x·y, fewer than 2 points; zero variance (constant x or y) → `r`/`r2` null |
 | `depreciation()` | `throw` | assetCost ≤ 0, salvageValue < 0 or ≥ assetCost, usefulLife ≤ 0, unknown method |
 | `histogram()` | `throw` | Empty data, resolved bins < 1 |
 | `lcc()` | `throw` | initialCost < 0, lifespan ≤ 0, discountRate outside [0, 1) |
@@ -342,11 +342,11 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 As of v0.13.0 all utility functions follow the standard `throw` pattern — the former `Result | null` signatures (16 functions: assignment, bilinearInterpolation, correlation, depreciation, histogram, lcc, linearInterpolation, movingAverage, normalize, npv, percentile, regression, roi, statistics, unit, weightedScore) were migrated to `RangeError` throws with descriptive messages. One deliberate `null` remains: `NpvResult.irr: number | null` models IRR non-convergence, which is a domain answer rather than an invalid input.
 
-**Exception — `correlation()` zero-variance sentinel.** `correlation()` throws `RangeError` for genuinely invalid input (mismatched lengths, fewer than 2 points), but for **valid** input where one variable has zero variance (constant data, so the Pearson denominator `√(ΣΔx²·ΣΔy²) = 0`) it returns `{ r: 0, r2: 0, n }` rather than throwing or emitting `NaN`. This is the same "valid-but-degenerate → finite sentinel" pattern as the capability-index family: constant data has an undefined correlation, and `r = 0` is reported as the finite sentinel. (Note: `r = 0` reads as "no linear correlation"; whether that is the ideal representation of "undefined" is a product question, not an error-handling one.)
+**`correlation()` and constant data (0.56.0).** For valid input where one variable has zero variance, the Pearson denominator is 0 and the correlation is undefined: `r` and `r2` are `null`. The former `r = 0` read as «no linear correlation», which constant data does not show either way.
 
 ## Consumer Guidance
 
-Most functions follow the same error pattern: invalid inputs throw `RangeError`. The exceptions are the capability-index family (`cpk()`, `ppk()`, `cmk()`), which returns a zero-valued result for a degenerate spread instead of throwing, and `correlation()`, which returns `r = 0` for zero-variance (constant) data — both are valid-but-degenerate sentinels (see Exception notes above).
+Most functions follow the same error pattern: invalid inputs throw `RangeError`, and an output that has no value for valid input (constant data, a zero spread) is `null` — never a 0 that reads as an answer.
 
 ```typescript
 import { cRate } from 'formulab/battery';

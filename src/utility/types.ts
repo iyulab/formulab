@@ -103,8 +103,8 @@ export interface CorrelationInput {
 }
 
 export interface CorrelationResult {
-  r: number;
-  r2: number;
+  r: number | null;  // null when x or y does not vary (undefined correlation)
+  r2: number | null;
   n: number;
 }
 

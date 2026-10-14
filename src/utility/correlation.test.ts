@@ -22,8 +22,15 @@ describe('correlation', () => {
     expect(result.r).toBeLessThan(1);
   });
 
-  it('should return zero for no correlation', () => {
+  it('has no correlation for constant data — null, not r = 0 («no linear relation»)', () => {
     const result = correlation({ x: [1, 2, 3, 4, 5], y: [5, 5, 5, 5, 5] });
+    expect(result.r).toBeNull();
+    expect(result.r2).toBeNull();
+    expect(result.n).toBe(5);
+  });
+
+  it('reports r = 0 for data that varies with no linear relation', () => {
+    const result = correlation({ x: [1, 2, 3, 4, 5], y: [4, 1, 0, 1, 4] });
     expect(result.r).toBe(0);
   });
 

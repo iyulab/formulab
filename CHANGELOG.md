@@ -26,6 +26,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     are 0 days of supply; with no COGS the turnover is 0 and `daysOfSupply`/`weeksOfSupply` are `null` (the stock
     never runs out). Both used to return an all-zero result. A negative COGS or inventory now throws.
   - `machining/cycleTimeEstimator()` `utilization` — `null` when the operations add up to no time.
+- **`quality/cpk()`, `ppk()` and `cmk()` no longer report a process that does not vary as incapable.** At σ = 0
+  they returned every index as 0 — «Cpk 0» — where the indices are undefined (they divide by σ). The indices are
+  now `null` there and `withinSpecPercent` is 100 or 0 (every part is the mean). They now throw for a negative σ,
+  for crossed or equal limits (usl ≤ lsl gave negative indices) and, for `cmk()`, for fewer than 2 measurements
+  (a sample σ needs two; one measurement or none returned zeros). The three share one implementation.
+  **Breaking (types):** the index fields and `cmk()` `isCapable` become nullable.
+- **`quality/ppk()` drops the deprecated `ppUpper`, `ppLower` and `sigma` aliases.** Use `ppu`, `ppl` and
+  `sigmaLevel`, which carry the same values.
+- **`utility/correlation()` returns `r` and `r2` as `null` for constant data.** `r = 0` read as «no linear
+  relation»; the correlation is undefined when x or y does not vary. **Breaking (types).**
+- **`energy/cusum()` no longer substitutes σ = 1 when it cannot estimate σ.** With constant readings or a single
+  one, the auto σ fell back to 1 in whatever unit the readings use, which set the decision interval at random. It
+  now throws there unless `stdDev` or both `allowance` and `decisionInterval` are given; σ is not needed at all
+  when both are. An empty series and a given `stdDev` ≤ 0 throw too.
 - **An empty input list throws instead of returning an all-zero result.** `quality/cycleTime()` (no
   measurements), `machining/cycleTimeEstimator()` (no operations), `logistics/pallet3d()` (no boxes) and
   `logistics/abcAnalysis()` (no items, or items whose annual values are all 0 — there is no share to classify by;

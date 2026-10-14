@@ -8,9 +8,8 @@ import type { CorrelationInput, CorrelationResult } from './types.js';
  * @returns Correlation coefficient r, r-squared, and sample size n
  * @throws RangeError if x and y lengths differ or contain fewer than 2 points
  * @remarks For valid input where one variable has zero variance (constant data),
- * the Pearson denominator is 0 and correlation is undefined; this returns
- * `{ r: 0, r2: 0, n }` as a finite sentinel rather than throwing or emitting NaN
- * (same valid-but-degenerate policy as the capability-index family — see ERRORS.md).
+ * the Pearson denominator is 0 and correlation is undefined; `r` and `r2` are `null`.
+ * A 0 would state «no linear relation», which constant data does not show either way.
  */
 export function correlation(input: CorrelationInput): CorrelationResult {
   const { x, y } = input;
@@ -38,7 +37,8 @@ export function correlation(input: CorrelationInput): CorrelationResult {
   }
 
   const denom = Math.sqrt(sumX2 * sumY2);
-  if (denom === 0) return { r: 0, r2: 0, n };
+  // Constant data has no correlation — r = 0 would read as «no linear relation».
+  if (denom === 0) return { r: null, r2: null, n };
 
   const r = sumXY / denom;
 

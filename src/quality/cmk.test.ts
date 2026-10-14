@@ -64,27 +64,17 @@ describe('cmk', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for empty measurements', () => {
-      const result = cmk({ measurements: [], lsl: 0, usl: 10 });
-      expect(result.mean).toBe(0);
-      expect(result.cm).toBe(0);
-      expect(result.cmk).toBe(0);
-      expect(result.isCapable).toBe(false);
+    it('rejects fewer than 2 measurements — a sample σ needs two', () => {
+      expect(() => cmk({ measurements: [], lsl: 0, usl: 10 })).toThrow(/at least 2/);
+      expect(() => cmk({ measurements: [5], lsl: 0, usl: 10 })).toThrow(/at least 2/);
     });
 
-    it('should handle single measurement', () => {
-      const result = cmk({ measurements: [5], lsl: 0, usl: 10 });
-      // Single measurement → stdDev = NaN from 0/0 division
-      expect(result.cm).toBe(0);
-      expect(result.isCapable).toBe(false);
-    });
-
-    it('should handle all identical measurements', () => {
+    it('has no indices when every measurement is identical (σ = 0)', () => {
       const result = cmk({ measurements: [5, 5, 5, 5, 5], lsl: 0, usl: 10 });
       expect(result.stdDev).toBe(0);
-      expect(result.cm).toBe(0);
-      expect(result.cmk).toBe(0);
-      expect(result.isCapable).toBe(false);
+      expect(result.cm).toBeNull();
+      expect(result.cmk).toBeNull();
+      expect(result.isCapable).toBeNull();
     });
   });
 });

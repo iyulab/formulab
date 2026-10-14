@@ -99,7 +99,7 @@ describe('cpk', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero standard deviation', () => {
+    it('has no indices when the process does not vary (σ = 0) — not 0, which reads as incapable', () => {
       const result = cpk({
         usl: 110,
         lsl: 90,
@@ -107,23 +107,20 @@ describe('cpk', () => {
         stdDev: 0,
       });
 
-      expect(result.cp).toBe(0);
-      expect(result.cpk).toBe(0);
-      expect(result.cpu).toBe(0);
-      expect(result.cpl).toBe(0);
-      expect(result.withinSpecPercent).toBe(0);
-      expect(result.sigmaLevel).toBe(0);
+      expect(result.cp).toBeNull();
+      expect(result.cpk).toBeNull();
+      expect(result.cpu).toBeNull();
+      expect(result.cpl).toBeNull();
+      expect(result.sigmaLevel).toBeNull();
+      // Every part is the mean, which is inside the limits
+      expect(result.withinSpecPercent).toBe(100);
+      expect(cpk({ usl: 110, lsl: 90, mean: 111, stdDev: 0 }).withinSpecPercent).toBe(0);
     });
 
-    it('should return zeros for negative standard deviation', () => {
-      const result = cpk({
-        usl: 110,
-        lsl: 90,
-        mean: 100,
-        stdDev: -1,
-      });
-
-      expect(result.cpk).toBe(0);
+    it('rejects a negative standard deviation and crossed limits', () => {
+      expect(() => cpk({ usl: 110, lsl: 90, mean: 100, stdDev: -1 })).toThrow(/stdDev/);
+      expect(() => cpk({ usl: 90, lsl: 110, mean: 100, stdDev: 1 })).toThrow(/usl must be greater than lsl/);
+      expect(() => cpk({ usl: 100, lsl: 100, mean: 100, stdDev: 1 })).toThrow(/usl must be greater than lsl/);
     });
 
     it('should handle mean outside specification limits', () => {

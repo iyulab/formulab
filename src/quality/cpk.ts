@@ -1,5 +1,4 @@
-import { roundTo } from '../utils.js';
-import { normalCDF } from '../math.js';
+import { capabilityIndices } from './capability.js';
 import type { CpkInput, CpkResult } from './types.js';
 
 /**
@@ -28,45 +27,22 @@ import type { CpkInput, CpkResult } from './types.js';
  *   - Cpk ≥ 1.33: Capable process (4σ from nearest spec)
  *   - Cpk ≥ 2.00: Six Sigma process (6σ from nearest spec)
  *   - Cpk = Cp when process is perfectly centered
- *   - stdDev ≤ 0: returns a zero-valued result (no meaningful capability); does not throw
+ *   - stdDev = 0: every index is `null` (it divides by σ); withinSpecPercent is 100 or 0
  *
  * @param input - Cpk input parameters
  * @returns Cpk result with capability indices, sigma level, and within-spec percentage
+ * @throws {RangeError} usl is not greater than lsl, a limit or the mean is not finite, or stdDev
+ *   is negative or not finite
  */
 export function cpk(input: CpkInput): CpkResult {
   const { usl, lsl, mean, stdDev } = input;
-
-  // Edge case — non-positive σ has no meaningful capability; return zero sentinel
-  if (stdDev <= 0) {
-    return { cp: 0, cpk: 0, cpu: 0, cpl: 0, withinSpecPercent: 0, sigmaLevel: 0 };
-  }
-
-  // Cp = (USL - LSL) / (6 * sigma)
-  const cp = (usl - lsl) / (6 * stdDev);
-
-  // Cpu = (USL - mean) / (3 * sigma)
-  const cpu = (usl - mean) / (3 * stdDev);
-
-  // Cpl = (mean - LSL) / (3 * sigma)
-  const cpl = (mean - lsl) / (3 * stdDev);
-
-  // Cpk = min(Cpu, Cpl)
-  const cpkValue = Math.min(cpu, cpl);
-
-  // Sigma level = min z-score = 3 * Cpk
-  const sigmaLevel = 3 * cpkValue;
-
-  // Estimated fraction within spec under a normal model (short-term σ)
-  const zUpper = (usl - mean) / stdDev;
-  const zLower = (lsl - mean) / stdDev;
-  const withinSpecPercent = (normalCDF(zUpper) - normalCDF(zLower)) * 100;
-
+  const c = capabilityIndices(usl, lsl, mean, stdDev);
   return {
-    cp: roundTo(cp, 4),
-    cpk: roundTo(cpkValue, 4),
-    cpu: roundTo(cpu, 4),
-    cpl: roundTo(cpl, 4),
-    withinSpecPercent: roundTo(withinSpecPercent, 4),
-    sigmaLevel: roundTo(sigmaLevel, 2),
+    cp: c.spread,
+    cpk: c.index,
+    cpu: c.upper,
+    cpl: c.lower,
+    withinSpecPercent: c.withinSpecPercent,
+    sigmaLevel: c.sigmaLevel,
   };
 }
