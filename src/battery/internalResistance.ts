@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { InternalResistanceInput, InternalResistanceResult } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { InternalResistanceInput, InternalResistanceResult } from './types.
  *   greater than 0
  */
 export function internalResistance(input: InternalResistanceInput): InternalResistanceResult {
+  requireFinite('internalResistance', input);
   const { openCircuitVoltage, loadVoltage, loadCurrentA } = input;
 
   // A terminal voltage below zero is not a cell under load; it flips the sign of the drop.

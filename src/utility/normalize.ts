@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { NormalizeInput, NormalizeResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { NormalizeInput, NormalizeResult } from './types.js';
  * @throws RangeError if data is empty or method is not 'min-max' or 'z-score'
  */
 export function normalize(input: NormalizeInput): NormalizeResult {
+  requireFinite('normalize', input);
   const { data, method } = input;
   if (!data || data.length === 0) {
     throw new RangeError('data must contain at least one value');

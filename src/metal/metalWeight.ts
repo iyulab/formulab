@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { MetalWeightInput, MetalWeightResult, MaterialName } from './types.js';
 
 /**
@@ -31,14 +31,19 @@ const MATERIAL_DENSITIES: Record<MaterialName, number> = {
  *
  * @param input - Metal weight input parameters (discriminated by shape)
  * @returns MetalWeightResult with weight (kg), volume (cm³), and density (g/cm³)
- * @throws {RangeError} a dimension (length, width, thickness, diameter, outerDiameter, height) is not
+ * @throws {RangeError} materialName is unknown; a dimension (length, width, thickness, diameter, outerDiameter, height) is not
  *   greater than 0; innerDiameter < 0 or ≥ outerDiameter; an angle thickness exceeds its width or height
  */
 export function metalWeight(input: MetalWeightInput): MetalWeightResult {
+  requireFinite('metalWeight', input);
   const { shape, length, materialName } = input;
 
   if (!(length > 0)) throw new RangeError('length must be positive');
 
+  // An unknown material has no density: the weight came back empty with no reason given.
+  if (!Object.hasOwn(MATERIAL_DENSITIES, materialName)) {
+    throw new RangeError(`materialName must be one of ${Object.keys(MATERIAL_DENSITIES).join(', ')}, got ${String(materialName)}`);
+  }
   const density = MATERIAL_DENSITIES[materialName];
 
   let crossSectionArea: number; // mm2
@@ -76,6 +81,11 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
       // L-angle: two legs minus the corner overlap
       crossSectionArea = (input.width * input.thickness) + (input.height * input.thickness) - (input.thickness * input.thickness);
       break;
+    }
+    default: {
+      // Unreachable for typed callers; untyped form/API data gets a reason, not an empty weight.
+      const unknownShape: never = shape;
+      throw new RangeError(`shape must be plate, round, pipe, or angle, got ${String(unknownShape)}`);
     }
   }
 

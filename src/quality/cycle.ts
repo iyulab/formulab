@@ -1,4 +1,5 @@
 import type { CycleTimeInput, CycleTimeResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate Cycle Time statistics
@@ -10,6 +11,7 @@ import type { CycleTimeInput, CycleTimeResult } from './types.js';
  * @throws {RangeError} measurements is empty, or a measurement is not greater than 0 (a cycle cannot take zero or negative time)
  */
 export function cycleTime(input: CycleTimeInput): CycleTimeResult {
+  requireFinite('cycleTime', input);
   const { measurements } = input;
 
   measurements.forEach((m, i) => {

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PowerInput, PowerResult } from './types.js';
 
 // Power conversion constants
@@ -19,6 +19,7 @@ const KW_TO_PS = 1.35962;
  * @returns Power in all units
  */
 export function power(input: PowerInput): PowerResult {
+  requireFinite('power', input);
   const { fromUnit, value } = input;
 
   // Handle zero value

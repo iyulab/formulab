@@ -1,5 +1,5 @@
 import type { StencilInput, StencilResult, ComponentType } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -23,6 +23,7 @@ const RECOMMENDATIONS: Record<ComponentType, { areaRatio: number; aspectRatio: n
  * @reference IPC-7525 — Stencil Design Guidelines (area ratio >= 0.66, aspect ratio >= 1.5 recommended minimums)
  */
 export function stencilAperture(input: StencilInput): StencilResult {
+  requireFinite('stencilAperture', input);
   const { shape, apertureWidth, apertureLength, stencilThickness, componentType } = input;
 
   // Validate inputs

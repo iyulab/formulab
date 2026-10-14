@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PressTonnageInput, PressTonnageResult, BendType } from './types.js';
 
 /**
@@ -181,6 +181,7 @@ function estimateNumberOfDraws(
  *   diameter; or operation is 'combined' but no operations array is provided
  */
 export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
+  requireFinite('pressTonnage', input);
   const {
     operation,
     thickness,

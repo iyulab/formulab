@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BrakingDistanceInput, BrakingDistanceResult } from './types.js';
 
 /**
@@ -19,6 +19,7 @@ import type { BrakingDistanceInput, BrakingDistanceResult } from './types.js';
  * @returns stopping distance components
  */
 export function brakingDistance(input: BrakingDistanceInput): BrakingDistanceResult {
+  requireFinite('brakingDistance', input);
   const { speed, friction, reactionTime, grade } = input;
 
   if (speed <= 0) throw new RangeError('Speed must be positive');

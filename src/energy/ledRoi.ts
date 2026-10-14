@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LedRoiInput, LedRoiResult } from './types.js';
 
 /**
@@ -11,10 +11,11 @@ import type { LedRoiInput, LedRoiResult } from './types.js';
  *
  * @param input - LED retrofit parameters
  * @returns LED ROI result with energy savings, cost savings, and payback
- * @throws {RangeError} fixtureCount or operatingHours is not greater than 0, or oldWatts,
+ * @throws {RangeError} fixtureCount, operatingHours or oldWatts is not greater than 0, or
  *   newWatts, electricityRate, fixtureCost, installationCost or co2Factor is negative
  */
 export function ledRoi(input: LedRoiInput): LedRoiResult {
+  requireFinite('ledRoi', input);
   const {
     fixtureCount,
     oldWatts,
@@ -34,8 +35,10 @@ export function ledRoi(input: LedRoiInput): LedRoiResult {
   if (!(operatingHours > 0)) {
     throw new RangeError('operatingHours must be greater than 0');
   }
-  if (!(oldWatts >= 0)) {
-    throw new RangeError('oldWatts must not be negative');
+  // A fixture drawing nothing has no energy to save: the reduction is undefined and every newWatts
+  // reads as added use.
+  if (!(oldWatts > 0)) {
+    throw new RangeError('oldWatts must be greater than 0');
   }
   if (!(newWatts >= 0)) {
     throw new RangeError('newWatts must not be negative');
@@ -56,7 +59,7 @@ export function ledRoi(input: LedRoiInput): LedRoiResult {
   const oldAnnualEnergy = (fixtureCount * oldWatts * operatingHours) / 1000;
   const newAnnualEnergy = (fixtureCount * newWatts * operatingHours) / 1000;
   const annualEnergySaved = oldAnnualEnergy - newAnnualEnergy;
-  const energyReduction = oldAnnualEnergy > 0 ? (annualEnergySaved / oldAnnualEnergy) * 100 : 0;
+  const energyReduction = (annualEnergySaved / oldAnnualEnergy) * 100;
   const annualCostSaved = annualEnergySaved * electricityRate;
 
   const totalInvestment = (fixtureCost * fixtureCount) + installationCost;

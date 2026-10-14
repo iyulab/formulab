@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { SpringbackInput, SpringbackResult, BendingMaterial } from './types.js';
 
 /**
@@ -63,6 +63,7 @@ const MATERIAL_PROPS: Record<Exclude<BendingMaterial, 'custom'>, { yieldStrength
  *                      set), outside the springback model's domain
  */
 export function springback(input: SpringbackInput): SpringbackResult {
+  requireFinite('springback', input);
   const { thickness, bendRadius, bendAngle, material = 'mildSteel' } = input;
 
   if (!(thickness > 0)) {

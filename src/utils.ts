@@ -18,3 +18,41 @@ export function roundTo(value: number, decimals: number = 2): number {
   const sign = Math.sign(value) || 1;
   return Math.round((value + sign * Number.EPSILON) * factor) / factor;
 }
+
+/**
+ * Refuse any non-finite number anywhere in a function's input — the library-wide input contract.
+ *
+ * A guard written `x <= 0` lets NaN through (every comparison with NaN is false), and the formula then
+ * returns `null` outputs beside a confident verdict. Checking each field by hand left 99 functions open
+ * to it (2026-10 execution audit; `check:nonfinite-inputs` keeps it closed); one walk at the entry point closes the
+ * class. Nested objects and arrays are walked; strings, booleans, null and undefined are not numbers
+ * and are left to the function's own validation.
+ *
+ * @param fn - The public function's name, for the message
+ * @param input - The function's argument (or an object of its arguments)
+ * @throws {RangeError} When any number in `input` is NaN or ±Infinity
+ */
+export function requireFinite(fn: string, input: unknown): void {
+  const bad = firstNonFinite(input, '');
+  if (bad !== null) {
+    throw new RangeError(`${fn}: ${bad.path || 'input'} must be a finite number (got ${bad.value})`);
+  }
+}
+
+function firstNonFinite(value: unknown, path: string): { path: string; value: number } | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? null : { path, value };
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const bad = firstNonFinite(value[i], `${path}[${i}]`);
+      if (bad) return bad;
+    }
+    return null;
+  }
+  if (value !== null && typeof value === 'object') {
+    for (const [key, v] of Object.entries(value)) {
+      const bad = firstNonFinite(v, path ? `${path}.${key}` : key);
+      if (bad) return bad;
+    }
+  }
+  return null;
+}

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
 import { assertBendDomain } from './bendDomain.js';
 import type {
@@ -83,10 +83,11 @@ const V_DIE_MULTIPLIER = 8;
  * At a closed hem (180°) the bend allowance is defined but the mold lines never meet, so
  * `outsideSetback` and `bendDeduction` are `null` there (they diverge as θ → 180°).
  *
- * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not in (0, 180], or kFactor is
- *   outside [0, 1]
+ * @throws RangeError if material is unknown and no kFactor is given, thickness ≤ 0, insideRadius < 0,
+ *   bendAngle is not in (0, 180], or kFactor is outside [0, 1]
  */
 export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
+  requireFinite('bendAllowance', input);
   const {
     thickness,
     bendAngle,
@@ -95,6 +96,11 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
     rollingDirection = 'longitudinal',
   } = input;
   const warnings: string[] = [];
+
+  // An unknown material used to surface as «kFactor outside [0, 1]» — the wrong field.
+  if (input.kFactor === undefined && !Object.hasOwn(K_FACTOR_TABLE, material)) {
+    throw new RangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`);
+  }
 
   // Get K-factor: use provided or default from table
   const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];

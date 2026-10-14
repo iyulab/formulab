@@ -1,4 +1,5 @@
 import type { CompressedAirCostInput, CompressedAirCostResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 // Conversion factor: 1 m³ = 35.3147 ft³ (cubic feet)
 const M3_TO_FT3 = 35.3147;
@@ -16,6 +17,7 @@ const M3_TO_FT3 = 35.3147;
  * @throws RangeError if compressorPower, runningHours, or airOutput is not positive, or electricityRate or maintenanceCost is negative
  */
 export function compressedAirCost(input: CompressedAirCostInput): CompressedAirCostResult {
+  requireFinite('compressedAirCost', input);
   const { compressorPower, runningHours, electricityRate, airOutput, maintenanceCost } = input;
 
   if (compressorPower <= 0) {

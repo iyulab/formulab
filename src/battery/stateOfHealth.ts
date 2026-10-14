@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { StateOfHealthInput, StateOfHealthResult, SohStatus } from './types.js';
 
 /**
@@ -11,6 +11,7 @@ import type { StateOfHealthInput, StateOfHealthResult, SohStatus } from './types
  * @throws {RangeError} ratedCapacityAh is not greater than 0, or measuredCapacityAh is negative
  */
 export function stateOfHealth(input: StateOfHealthInput): StateOfHealthResult {
+  requireFinite('stateOfHealth', input);
   const { measuredCapacityAh, ratedCapacityAh } = input;
 
   if (!(ratedCapacityAh > 0)) {

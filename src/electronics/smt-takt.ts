@@ -1,5 +1,5 @@
 import type { SmtTaktInput, SmtTaktResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Calculate SMT line takt time and throughput
@@ -14,6 +14,7 @@ import { roundTo } from '../utils.js';
  * @throws {RangeError} placementRate, componentsPerBoard or boardsPerPanel ≤ 0; setupTimeSec or availableTimeMin < 0
  */
 export function smtTakt(input: SmtTaktInput): SmtTaktResult {
+  requireFinite('smtTakt', input);
   const {
     placementRate,
     componentsPerBoard,

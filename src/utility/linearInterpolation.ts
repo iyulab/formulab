@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LinearInterpolationInput, LinearInterpolationResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { LinearInterpolationInput, LinearInterpolationResult } from './type
  *   or fewer than 2 points are provided
  */
 export function linearInterpolation(input: LinearInterpolationInput): LinearInterpolationResult {
+  requireFinite('linearInterpolation', input);
   const { x, y, target } = input;
   if (!x || !y) {
     throw new RangeError('x and y arrays are required');

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PressFitInput, PressFitResult } from './types.js';
 
 /**
@@ -38,6 +38,7 @@ import type { PressFitInput, PressFitResult } from './types.js';
 export function pressFit(input: PressFitInput): PressFitResult {
   // Note: poissonRatio is deliberately not destructured — see JSDoc (nu cancels
   // out of every output for the same-material, solid-shaft model).
+  requireFinite('pressFit', input);
   const {
     shaftDiameter,
     holeDiameter,

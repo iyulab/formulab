@@ -1,4 +1,5 @@
 import type { ResistorBands, ResistorResult, ColorName } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Digit value carried by each band colour.
@@ -152,6 +153,7 @@ function toleranceValue(color: string): number {
  *   or an unknown color in a digit/multiplier/tolerance/tempCoeff position
  */
 export function resistorDecode(input: ResistorBands): ResistorResult {
+  requireFinite('resistorDecode', input);
   const { bandCount, bands } = input;
 
   if (bandCount !== 4 && bandCount !== 5 && bandCount !== 6) {

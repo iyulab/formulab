@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { AbcInput, AbcResult, AbcClassification } from './types.js';
 
 /**
@@ -17,6 +17,7 @@ import type { AbcInput, AbcResult, AbcClassification } from './types.js';
  *   item's annual value is 0 (there is no share to classify by)
  */
 export function abcAnalysis(input: AbcInput): AbcResult {
+  requireFinite('abcAnalysis', input);
   const { items, thresholdA = 80, thresholdB = 95 } = input;
 
   // A negative usage or cost gives a negative annual value, which sorts below every real item

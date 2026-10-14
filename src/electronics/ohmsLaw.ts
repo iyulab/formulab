@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { OhmsLawInput, OhmsLawResult } from './types.js';
 
 /**
@@ -14,6 +14,7 @@ import type { OhmsLawInput, OhmsLawResult } from './types.js';
  * @returns all four electrical quantities
  */
 export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
+  requireFinite('ohmsLaw', input);
   let voltage: number;
   let current: number;
   let resistance: number;

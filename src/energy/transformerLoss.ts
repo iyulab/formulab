@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TransformerLossInput, TransformerLossResult } from './types.js';
 
 /**
@@ -14,6 +14,7 @@ import type { TransformerLossInput, TransformerLossResult } from './types.js';
  *   [0, 1]; or coreLoss, copperLoss, operatingHours or energyCost is negative
  */
 export function transformerLoss(input: TransformerLossInput): TransformerLossResult {
+  requireFinite('transformerLoss', input);
   const {
     ratedCapacity,
     coreLoss,

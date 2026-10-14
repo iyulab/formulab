@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TruePositionInput, TruePositionResult } from './types.js';
 
 /**
@@ -20,6 +20,7 @@ import type { TruePositionInput, TruePositionResult } from './types.js';
  *   featureSize or mmcSize. Negative coordinates are valid — positions are measured from a datum.
  */
 export function truePosition(input: TruePositionInput): TruePositionResult {
+  requireFinite('truePosition', input);
   const { actualX, actualY, nominalX, nominalY, tolerance, featureSize, mmcSize } = input;
 
   for (const [name, v] of [['actualX', actualX], ['actualY', actualY], ['nominalX', nominalX], ['nominalY', nominalY]] as const) {

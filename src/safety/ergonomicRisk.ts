@@ -1,4 +1,5 @@
 import type { RebaInput, RebaResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 // REBA Table A: Trunk × Neck × Legs (1-indexed)
 // Values per the published REBA worksheet (Hignett & McAtamney 2000)
@@ -82,6 +83,7 @@ function clampIdx(val: number, min: number, max: number): number {
  *   `coupling` (Step 11: good/fair/poor/unacceptable → +0..+3) defaults to 'good'.
  */
 export function ergonomicRisk(input: RebaInput): RebaResult {
+  requireFinite('ergonomicRisk', input);
   if (input.load < 0) {
     throw new RangeError('load must not be negative');
   }

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { RoughnessInput, RoughnessResult } from './types.js';
 
 /**
@@ -59,6 +59,7 @@ function findClosest(key: 'ra' | 'rz', value: number) {
  * @throws RangeError if value is not positive
  */
 export function roughness(input: RoughnessInput): RoughnessResult {
+  requireFinite('roughness', input);
   const { fromScale, value } = input;
 
   if (value <= 0) {

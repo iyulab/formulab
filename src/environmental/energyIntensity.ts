@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EnergyIntensityInput, EnergyIntensityResult } from './types.js';
 
 /**
@@ -11,6 +11,7 @@ import type { EnergyIntensityInput, EnergyIntensityResult } from './types.js';
  * @throws {RangeError} totalEnergyMJ < 0, or productionUnits ≤ 0
  */
 export function energyIntensity(input: EnergyIntensityInput): EnergyIntensityResult {
+  requireFinite('energyIntensity', input);
   const { totalEnergyMJ, productionUnits, revenueUsd } = input;
 
   if (totalEnergyMJ < 0) {

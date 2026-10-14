@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingInput, ChargingResult } from './types.js';
 
 /**
@@ -19,6 +19,7 @@ import type { ChargingInput, ChargingResult } from './types.js';
  *   or if batteryCapacityKwh, chargerPowerKw or efficiency is not greater than 0
  */
 export function evCharging(input: ChargingInput): ChargingResult {
+  requireFinite('evCharging', input);
   const { batteryCapacityKwh, chargerPowerKw, socStartPercent, socEndPercent, efficiency } = input;
 
   // A negative capacity returns a negative energy and charging time.

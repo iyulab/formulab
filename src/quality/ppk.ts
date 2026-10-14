@@ -1,5 +1,6 @@
 import { capabilityIndices } from './capability.js';
 import type { PpkInput, PpkResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate Process Performance Index (Ppk)
@@ -19,6 +20,7 @@ import type { PpkInput, PpkResult } from './types.js';
  *   is negative or not finite
  */
 export function ppk(input: PpkInput): PpkResult {
+  requireFinite('ppk', input);
   const { usl, lsl, mean, stdDev } = input;
   const c = capabilityIndices(usl, lsl, mean, stdDev);
   return {

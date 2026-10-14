@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { VentilationRateInput, VentilationRateResult, SpaceType } from './types.js';
 
 /**
@@ -28,6 +28,7 @@ const ACH_TABLE: Record<Exclude<SpaceType, 'custom'>, number> = {
  * @returns ventilation requirements in multiple units
  */
 export function ventilationRate(input: VentilationRateInput): VentilationRateResult {
+  requireFinite('ventilationRate', input);
   const { roomLength, roomWidth, roomHeight, occupants, activityLevel, spaceType, customAch } = input;
 
   if (roomLength <= 0 || roomWidth <= 0 || roomHeight <= 0) {

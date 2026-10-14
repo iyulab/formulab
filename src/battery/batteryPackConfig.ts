@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryPackConfigInput, BatteryPackConfigResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { BatteryPackConfigInput, BatteryPackConfigResult } from './types.js
  * @returns Series/parallel count, actual voltage/capacity, total energy
  */
 export function batteryPackConfig(input: BatteryPackConfigInput): BatteryPackConfigResult {
+  requireFinite('batteryPackConfig', input);
   const { cellVoltage, cellCapacityAh, targetVoltage, targetCapacityAh } = input;
 
   if (!(cellVoltage > 0)) {

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ScrewInput, ScrewResult, ScrewSpec } from './types.js';
 
 /**
@@ -39,6 +39,7 @@ export function getDesignations(): string[] {
  * @throws RangeError if the screw designation is unknown
  */
 export function screw(input: ScrewInput): ScrewResult {
+  requireFinite('screw', input);
   const spec = SCREW_TABLE[input.designation];
   if (!spec) {
     throw new RangeError('unknown screw designation: ' + input.designation);

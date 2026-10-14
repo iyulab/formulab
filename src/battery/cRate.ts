@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CRateInput, CRateResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { CRateInput, CRateResult } from './types.js';
  * @returns C-rate, current, and theoretical charge/discharge time
  */
 export function cRate(input: CRateInput): CRateResult {
+  requireFinite('cRate', input);
   if (input.capacityAh <= 0) throw new RangeError('capacityAh must be positive');
 
   let cRateValue: number;

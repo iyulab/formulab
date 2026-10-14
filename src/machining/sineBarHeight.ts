@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { SineBarHeightInput, SineBarHeightResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { SineBarHeightInput, SineBarHeightResult } from './types.js';
  *   than 0, or roundToBlock rounds the stack beyond the bar length
  */
 export function sineBarHeight(input: SineBarHeightInput): SineBarHeightResult {
+  requireFinite('sineBarHeight', input);
   const { angle, sineBarLength, roundToBlock } = input;
 
   // The actual angle is recovered as asin(roundedHeight / sineBarLength).

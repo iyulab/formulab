@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PercentileInput, PercentileResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { PercentileInput, PercentileResult } from './types.js';
  * @throws RangeError if data is empty or percentile is outside [0, 100]
  */
 export function percentile(input: PercentileInput): PercentileResult {
+  requireFinite('percentile', input);
   const { data, percentile: p } = input;
   if (!data || data.length === 0) {
     throw new RangeError('data must contain at least one value');

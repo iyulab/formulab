@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingLossInput, ChargingLossResult } from './types.js';
 
 // Default charger efficiencies by type — typical real-world AC-DC conversion efficiency for
@@ -31,6 +31,7 @@ const DEFAULT_CHARGER_EFFICIENCY: Record<string, number> = {
  * and golden-tested against hand-computed values.
  */
 export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
+  requireFinite('chargingLoss', input);
   const {
     batteryCapacity, chargerPower, chargerType,
     batteryEfficiency = 0.95,

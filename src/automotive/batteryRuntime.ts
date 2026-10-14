@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryInput, BatteryResult } from './types.js';
 
 /**
@@ -15,6 +15,7 @@ import type { BatteryInput, BatteryResult } from './types.js';
  *   not in (0, 1]
  */
 export function batteryRuntime(input: BatteryInput): BatteryResult {
+  requireFinite('batteryRuntime', input);
   const { capacityAh, voltageV, loadW, efficiency } = input;
 
   if (!(capacityAh > 0)) {

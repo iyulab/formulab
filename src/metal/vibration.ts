@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { VibrationInput, VibrationResult, VibrationMaterial, FrequencyMode } from './types.js';
 
 interface MaterialVibrationProps {
@@ -46,6 +46,7 @@ const simplySuportedLambda = (n: number): number => n * Math.PI;
  *   or if innerDiameter is not less than outerDiameter for a hollow section
  */
 export function vibration(input: VibrationInput): VibrationResult {
+  requireFinite('vibration', input);
   const { system, material } = input;
 
   // Custom material properties enter square roots (√(E·I/ρ·A), √(G·J/…)).

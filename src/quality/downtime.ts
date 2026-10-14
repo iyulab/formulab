@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { DowntimeInput, DowntimeResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { DowntimeInput, DowntimeResult } from './types.js';
  * @throws {RangeError} hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits or unitPrice < 0
  */
 export function downtime(input: DowntimeInput): DowntimeResult {
+  requireFinite('downtime', input);
   const { hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits, unitPrice } = input;
 
   const fields = { hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits, unitPrice };

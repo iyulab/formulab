@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { DegreeDayInput, DegreeDayResult } from './types.js';
 
 /**
@@ -13,6 +13,7 @@ import type { DegreeDayInput, DegreeDayResult } from './types.js';
  * @throws RangeError if dailyTemps is empty
  */
 export function degreeDay(input: DegreeDayInput): DegreeDayResult {
+  requireFinite('degreeDay', input);
   const { dailyTemps, baseHeating = 18, baseCooling = 24 } = input;
   const totalDays = dailyTemps.length;
 

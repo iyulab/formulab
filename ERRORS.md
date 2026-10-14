@@ -12,6 +12,8 @@ This document defines formulab's error handling policy and documents the error b
 
 3. **Predictable error contract**: Every public function documents its error behavior via `@throws` JSDoc tags.
 
+4. **No non-finite input (0.58.0)**: Every public function refuses NaN and ±Infinity anywhere in its argument — nested objects and arrays included — with `RangeError('<fn>: <path> must be a finite number (got NaN)')`, before any other check. A guard written `x <= 0` lets NaN through, and until 0.58.0 99 functions turned it into `null` outputs beside a confident verdict (an arc-flash study with no incident energy that still named PPE category 4). The rows below list each function's own conditions; this one applies to all of them and is not repeated. `pnpm check:nonfinite-inputs` (CI) enforces it by execution. Type guards (`is…Input`) check shape only and still return `true` for a NaN field — the function they guard refuses it.
+
 ### Current Status
 
 All 15 domains were audited against source on 2026-07-13, and again on 2026-09-09 — the second
@@ -73,7 +75,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
-| `gageRR()` | `throw` | Empty or ragged measurements, a reading not finite; Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
+| `gageRR()` | `throw` | Empty or ragged measurements; Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
 | `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; usl ≤ lsl. Identical measurements (σ = 0) → cm/cmk/isCapable null |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items, an item value < 0 |
@@ -82,16 +84,16 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `metalWeight()` | `throw` | Non-positive dimensions, innerDiameter < 0, outerDiameter ≤ innerDiameter, angle thickness > width or height |
-| `bendAllowance()` | `throw` | thickness ≤ 0; insideRadius < 0; bendAngle not in (0, 180]; kFactor outside [0, 1]. At a closed hem (180°) `outsideSetback` and `bendDeduction` are `null` (the setback diverges; the bend allowance is defined). A radius below the minimum and an angle above 170° still return with `warnings` |
+| `metalWeight()` | `throw` | Unknown materialName or shape (an unknown material returned an empty weight before 0.58.0), non-positive dimensions, innerDiameter < 0, outerDiameter ≤ innerDiameter, angle thickness > width or height |
+| `bendAllowance()` | `throw` | unknown material with no kFactor (reported as a kFactor out of range before 0.58.0); thickness ≤ 0; insideRadius < 0; bendAngle not in (0, 180]; kFactor outside [0, 1]. At a closed hem (180°) `outsideSetback` and `bendDeduction` are `null` (the setback diverges; the bend allowance is defined). A radius below the minimum and an angle above 170° still return with `warnings` |
 | `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
-| `flatPattern()` | `throw` | the `bendAllowance()` bend domain; flangeA or flangeB ≤ 0; flangeC ≤ 0 for a U-shape; resulting flatLength ≤ 0 (flanges shorter than the bend setbacks) |
+| `flatPattern()` | `throw` | shapeType not lShape/uShape (an unknown one was bent as a U before 0.58.0); unknown material with no kFactor; the `bendAllowance()` bend domain; flangeA or flangeB ≤ 0; flangeC ≤ 0 for a U-shape; resulting flatLength ≤ 0 (flanges shorter than the bend setbacks) |
 | `kFactorReverse()` | `throw` | thickness ≤ 0; bendAngle not in (0, 180); insideRadius < 0; measurements that imply a K-factor outside [0, 1] (the flat length does not belong to this bend) |
 | `pressTonnage()` | `throw` | thickness, dieOpening, strengths, safetyFactor, frictionCoefficient, dieRadius ≤ 0; blankHolderPressure/blankDiameter < 0; drawRatio given and ≤ 0; blanking/bending/drawing without its positive perimeter/bendLength/punchDiameter (combined: < 0); blank diameter ≤ punch diameter; combined without operations |
 | `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
 | `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |
 | `cutting()` | `throw` | cuttingSpeed or toolDiameter ≤ 0; a feed/depth/width/teeth field the operation reads given and ≤ 0 |
-| `cuttingStock()` | `throw` | stockLength ≤ 0, kerf < 0, empty pieces, piece length ≤ 0, total quantity 0, piece length > stockLength |
+| `cuttingStock()` | `throw` | stockLength ≤ 0, kerf < 0, empty pieces, piece length ≤ 0, a piece quantity that is not a whole number > 0 (0 and negatives were dropped and 2.5 cut as 3 before 0.58.0), piece length > stockLength |
 | `gear()` | `throw` | fromModule: module or teethGear1 missing or ≤ 0, a given teethGear2 ≤ 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or ≤ 0 |
 | `hardness()` | `safe` | Out-of-range value clamps to the boundary table row, disclosed via `outOfTableRange: true` |
 | `material()` | `throw` | Unknown grade |
@@ -122,16 +124,16 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `batch()` | `throw` | originalBatchSize ≤ 0 or non-finite; targetBatchSize < 0 or non-finite; ingredient amount < 0 |
-| `concentration()` | `throw` | unknown fromUnit, value < 0, molecularWeight/solutionDensity ≤ 0 |
+| `concentration()` | `throw` | unknown fromUnit, value < 0, molecularWeight/solutionDensity ≤ 0, more than 100 wt% solute (wt% > 100, ppm > 10⁶, or a molarity implying it) |
 | `dilution()` | `throw` | any of the three given values ≤ 0 |
 | `heatTransfer()` | `throw` | conductivity ≤ 0, area ≤ 0, thickness ≤ 0, coefficient ≤ 0, emissivity out of range, absolute temp ≤ 0 |
 | `ph()` | `throw` | concentrations ≤ 0 or NaN |
 | `pipeFlow()` | `throw` | diameter ≤ 0, flowRate ≤ 0 |
 | `reactor()` | `throw` | diameter ≤ 0, cylindrical height ≤ 0, fillRatio outside (0, 1] |
 | `shelfLife()` | `throw` | shelfLifeAtRef ≤ 0, q10 ≤ 0 |
-| `injectionCycle()` | `throw` | wallThickness ≤ 0; shotWeight/moldOpenCloseTime/ejectionTime < 0; resin density ≤ 0, injectionRate ≤ 0 (when given); thermalDiffusivity ≤ 0; ejectionTemp ≤ moldTemp; (8/π²)·(Tm − Tw)/(Te − Tw) ≤ 1 — the melt too close to the ejection temperature for the cooling-time model |
-| `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
-| `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
+| `injectionCycle()` | `throw` | wallThickness ≤ 0; shotWeight ≤ 0 (a shot of 0 g gave a parts-per-hour rate before 0.58.0); moldOpenCloseTime/ejectionTime < 0; resin density ≤ 0, injectionRate ≤ 0 (when given); thermalDiffusivity ≤ 0; ejectionTemp ≤ moldTemp; (8/π²)·(Tm − Tw)/(Te − Tw) ≤ 1 — the melt too close to the ejection temperature for the cooling-time model |
+| `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure < 0 (absolute) or ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
+| `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; overpressure < 0; gas/steam temperature ≤ −273.15 °C; liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
 | `pid()` | `throw` | A parameter the method needs missing (it was replaced by 1 before 0.58.0) or not > 0 (NaN included): processGain/deadTime/timeConstant, or ultimateGain/ultimatePeriod |
 
 ### Electronics (12 functions)
@@ -197,7 +199,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `internalResistance()` | `throw` | openCircuitVoltage/loadVoltage < 0, loadVoltage > openCircuitVoltage (a negative resistance), loadCurrentA ≤ 0 |
 | `selfDischarge()` | `throw` | initialVoltage/finalVoltage/nominalVoltage/days ≤ 0, finalVoltage > initialVoltage (a negative discharge rate) |
 | `thermalRunaway()` | `throw` | internalResistanceOhm < 0, heatTransferCoeff/surfaceAreaM2 ≤ 0. A negative currentA (charging) is valid — heat is I²R |
-| `bmsBalancing()` | `throw` | Empty cellVoltages, any cell voltage ≤ 0, balancingCurrentMA/cellCapacityAh ≤ 0 |
+| `bmsBalancing()` | `throw` | cellVoltages missing or fewer than 2 cells (nothing to balance; a missing list was a TypeError before 0.58.0), any cell voltage ≤ 0, balancingCurrentMA/cellCapacityAh ≤ 0 |
 | `chargingProfile()` | `throw` | capacity ≤ 0 |
 
 ### Machining (12 functions)
@@ -226,7 +228,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `ergonomicRisk()` | `throw` | load < 0 (joint angles may be negative and are not checked) |
 | `fallClearance()` | `throw` | dRingHeight ≤ 0, or lanyardLength/decelerationDistance/harnessStretch/safetyFactor/workingHeight/obstacleHeight negative (NaN included). A negative anchorAboveFeet (anchor below the feet) is valid geometry and is reported through the free-fall warning. Without workingHeight, `clearanceAboveObstacle` and `isAdequate` are `null` (not computable), not a throw. |
 | `havsCalculate()` | `throw` | a tool has negative vibrationMagnitude/exposureTime (empty/all-zero tool list is valid) |
-| `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight |
+| `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, workplaneHeight < 0, or luminaireHeight ≤ workplaneHeight |
 | `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied); ladderLength shorter than the given height or baseDistance (equal returns a 90°/0° result with `warnings`) |
 | `lel()` | `throw` | empty gas list; a gas component has negative (or NaN) concentration or non-positive LEL. All concentrations 0 → 0 % LEL, 'safe', mixtureLel and safetyMargin null (no mixture composition) |
 | `nioshLifting()` | `throw` | any distance/angle/frequency/loadWeight negative (NaN included). RWL=0 (sustained high-frequency lifting) → liftingIndex=Infinity, an intentional sentinel. |
@@ -269,7 +271,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `carbonFootprint()` | `throw` | electricityUsage or emissionFactor < 0 |
 | `cusum()` | `throw` | empty values; a given allowance < 0 or decisionInterval ≤ 0; a given stdDev ≤ 0; σ needed (allowance or decisionInterval omitted) but not estimable — fewer than 2 values or all equal (σ = 1 was substituted before 0.56.0) |
 | `heatPump()` | `throw` | compressorPower ≤ 0; heatingCapacity, auxiliaryPower, operatingHours, electricityRate or fuelCost < 0; boilerEfficiency ∉ (0, 1] (annual fields null when omitted; sink not warmer than source → copCarnot/efficiency null) |
-| `ledRoi()` | `throw` | fixtureCount or operatingHours ≤ 0; oldWatts, newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
+| `ledRoi()` | `throw` | fixtureCount, operatingHours or oldWatts ≤ 0 (an old fixture drawing 0 W gave a 0 % reduction beside added use before 0.58.0); newWatts, electricityRate, fixtureCost, installationCost or co2Factor < 0 (paybackPeriod null when totalInvestment or annualCostSaved ≤ 0) |
 | `pfCorrection()` | `throw` | currentPf/targetPf ∉ (0, 1]; pfPenaltyThreshold ∉ [0, 1]; kW, electricityRate, monthlyUsageHours, pfPenaltyRate or capacitorCostPerKvar < 0 (monthlySavings ≤ 0 → paybackMonths null) |
 | `transformerLoss()` | `throw` | ratedCapacity ≤ 0; loadFraction or powerFactor ∉ [0, 1]; coreLoss, copperLoss, operatingHours or energyCost < 0 (annual fields null without operatingHours/energyCost) |
 | `vfdSavings()` | `throw` | motorKw or fullSpeedRpm ≤ 0; loadFactor or vfdEfficiency ∉ (0, 1]; newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost < 0 (annualSavings ≤ 0 → paybackYears null) |

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ShelfLifeInput, ShelfLifeResult } from './types.js';
 
 /**
@@ -15,6 +15,7 @@ import type { ShelfLifeInput, ShelfLifeResult } from './types.js';
  * @throws RangeError if shelfLifeAtRef or q10 is not greater than 0
  */
 export function shelfLife(input: ShelfLifeInput): ShelfLifeResult {
+  requireFinite('shelfLife', input);
   const { shelfLifeAtRef, refTemp, targetTemp, q10 } = input;
 
   // A negative reference shelf life scales to a negative one at any temperature.

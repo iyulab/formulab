@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { StandardTimeInput, StandardTimeResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { StandardTimeInput, StandardTimeResult } from './types.js';
  * @throws {RangeError} Allowance percent must be between 0 and 100
  */
 export function standardTime(input: StandardTimeInput): StandardTimeResult {
+  requireFinite('standardTime', input);
   const { observedTime, ratingFactor, allowancePercent } = input;
 
   if (!Number.isFinite(observedTime) || observedTime <= 0) {

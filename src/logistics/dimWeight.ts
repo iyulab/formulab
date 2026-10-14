@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { DimWeightInput, DimWeightResult, CarrierType } from './types.js';
 
 // DIM factors (cubic inches per pound, converted to cubic cm per kg)
@@ -23,6 +23,7 @@ const DIM_FACTORS: Record<CarrierType, number> = {
  * @returns Dimensional weight calculation results
  */
 export function dimWeight(input: DimWeightInput): DimWeightResult {
+  requireFinite('dimWeight', input);
   const { length, width, height, actualWeight, carrier } = input;
 
   if (length <= 0) throw new RangeError('length must be greater than 0');

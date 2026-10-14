@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PipeFlowInput, PipeFlowResult, PipeMaterial } from './types.js';
 
 /**
@@ -53,6 +53,7 @@ function swameeJainFriction(Re: number, epsilonM: number, diameterM: number): nu
  * @returns pressure drop, velocity, Reynolds number, flow regime
  */
 export function pipeFlow(input: PipeFlowInput): PipeFlowResult {
+  requireFinite('pipeFlow', input);
   const { flowRate, pipeDiameter, pipeLength, pipeMaterial, fluidDensity, fluidViscosity, customRoughness } = input;
 
   if (flowRate <= 0) throw new RangeError('Flow rate must be positive');

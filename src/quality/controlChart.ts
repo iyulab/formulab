@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ControlChartInput, ControlChartResult, ControlLimit, SubgroupStat } from './types.js';
 
 /**
@@ -135,6 +135,7 @@ const IMR_CONSTANTS = {
  * @returns control limits, subgroup statistics, out-of-control points
  */
 export function controlChart(input: ControlChartInput): ControlChartResult {
+  requireFinite('controlChart', input);
   const { chartType, subgroups } = input;
 
   if (subgroups.length < 2) {

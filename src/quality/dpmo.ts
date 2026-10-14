@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { DpmoInput, DpmoResult } from './types.js';
 
@@ -28,6 +28,7 @@ function dpmoToSigma(dpmoValue: number): number {
  *   exceeds units × opportunities (a yield below 0 %)
  */
 export function dpmo(input: DpmoInput): DpmoResult {
+  requireFinite('dpmo', input);
   const { defects, units, opportunities } = input;
 
   // Validate inputs

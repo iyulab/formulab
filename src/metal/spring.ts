@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { SpringInput, SpringMaterial, SpringResult } from './types.js';
 
 // Shear modulus (G) in MPa for common spring materials
@@ -18,6 +18,7 @@ const SHEAR_MODULUS: Record<SpringMaterial, number> = {
  * Shear stress: tau = 8PD / (pi x d^3) x Ks
  */
 export function spring(input: SpringInput): SpringResult {
+  requireFinite('spring', input);
   const { wireDiameter, meanCoilDiameter, activeCoils, force, material } = input;
 
   // Validate inputs

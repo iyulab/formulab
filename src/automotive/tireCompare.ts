@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TireInput, TireResult, TireData, TireSpec } from './types.js';
 
 // Conversion constants
@@ -43,6 +43,7 @@ const TIRE_LOAD_INDEX_KG: Record<number, number> = {
  * @throws {RangeError} loadIndex is outside the supported 60-130 range
  */
 export function tireLoadCapacityKg(loadIndex: number): number {
+  requireFinite('tireLoadCapacityKg', loadIndex);
   const capacity = TIRE_LOAD_INDEX_KG[loadIndex];
   if (capacity == null) {
     throw new RangeError(`loadIndex must be an integer between 60 and 130 (got ${loadIndex})`);
@@ -99,6 +100,7 @@ function calculateTireData(spec: TireSpec, label: string): TireData {
  *   outside 60-130
  */
 export function tireCompare(input: TireInput): TireResult {
+  requireFinite('tireCompare', input);
   const tire1Data = calculateTireData(input.tire1, 'tire1');
   const tire2Data = calculateTireData(input.tire2, 'tire2');
 

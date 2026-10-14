@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { GaugeBlockStackInput, GaugeBlockStackResult } from './types.js';
 
 /**
@@ -98,6 +98,7 @@ const SETS: Record<string, number[]> = {
  *   in the set (no stack of this set can reach it).
  */
 export function gaugeBlockStack(input: GaugeBlockStackInput): GaugeBlockStackResult {
+  requireFinite('gaugeBlockStack', input);
   const { targetDimension, availableSet = 'metric47' } = input;
 
   const setBlocks = SETS[availableSet];

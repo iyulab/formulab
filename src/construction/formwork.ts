@@ -1,5 +1,5 @@
 import type { ElementType, FormworkInput, FormworkResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Standard plywood sheet area (4' x 8' = 1.22m x 2.44m = 2.9768 m²)
@@ -88,6 +88,7 @@ function validateDimensions(
  *   width; wall: length, height), or if quantity is not positive
  */
 export function formwork(input: FormworkInput): FormworkResult {
+  requireFinite('formwork', input);
   const { elementType, length, width, height, quantity, reuses } = input;
 
   validateDimensions(elementType, length, width, height);

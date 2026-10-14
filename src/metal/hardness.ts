@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { HardnessScale, HardnessInput, HardnessResult } from './types.js';
 
 interface ConversionRow {
@@ -52,6 +52,7 @@ function interpolate(
  * are not flagged. Interpolation within the table is the method's intended behavior.
  */
 export function hardness(input: HardnessInput): HardnessResult {
+  requireFinite('hardness', input);
   const { fromScale, value } = input;
 
   // Sort table by the source scale ascending

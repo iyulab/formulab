@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { StabilityStudyInput, StabilityStudyResult } from './types.js';
 
 const R = 8.314e-3; // Gas constant in kJ/(mol·K)
@@ -21,6 +21,7 @@ const R = 8.314e-3; // Gas constant in kJ/(mol·K)
  *   (there is no Arrhenius line to extrapolate); or the extrapolation is not representable
  */
 export function stabilityStudy(input: StabilityStudyInput): StabilityStudyResult {
+  requireFinite('stabilityStudy', input);
   const { dataPoints, shelfLifeCriterion, storageTemp } = input;
 
   // The shelf life is the time to reach the criterion; a criterion ≤ 0 is reached at once, and a

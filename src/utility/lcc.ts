@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LccInput, LccResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { LccInput, LccResult } from './types.js';
  *   or discountRate is outside [0, 1)
  */
 export function lcc(input: LccInput): LccResult {
+  requireFinite('lcc', input);
   const { initialCost, annualOperatingCost, annualMaintenanceCost, disposalCost, lifespan, discountRate } = input;
   if (initialCost < 0) {
     throw new RangeError(`initialCost must be >= 0, got ${initialCost}`);

@@ -1,4 +1,5 @@
 import type { LoadInput, LoadResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate beam load analysis results
@@ -12,6 +13,7 @@ import type { LoadInput, LoadResult } from './types.js';
  *   selected load type is missing, or pointPosition lies outside [0, span]
  */
 export function beamLoad(input: LoadInput): LoadResult {
+  requireFinite('beamLoad', input);
   const { loadType, support, span, uniformLoad, pointLoad, pointPosition } = input;
 
   // Validate span

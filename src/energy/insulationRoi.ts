@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
  *   or operatingHours, energyCost or installationCost is negative
  */
 export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
+  requireFinite('insulationRoi', input);
   const {
     surfaceArea,
     tempDifference,

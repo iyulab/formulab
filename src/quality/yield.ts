@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
 import type { YieldInput, YieldResult } from './types.js';
 
@@ -14,6 +14,7 @@ import type { YieldInput, YieldResult } from './types.js';
  * @throws {RangeError} no steps; a step with total ≤ 0, good < 0, or good > total
  */
 export function yieldCalc(input: YieldInput): YieldResult {
+  requireFinite('yieldCalc', input);
   const { steps } = input;
 
   if (!steps || steps.length === 0) {

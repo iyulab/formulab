@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BearingInput, BearingResult } from './types.js';
 
 /**
@@ -20,6 +20,7 @@ import type { BearingInput, BearingResult } from './types.js';
  * @throws RangeError if dynamicLoadRating, equivalentLoad, or rpm is not positive
  */
 export function bearing(input: BearingInput): BearingResult {
+  requireFinite('bearing', input);
   const { bearingType, dynamicLoadRating, equivalentLoad, rpm } = input;
 
   // Validate inputs

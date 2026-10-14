@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EsgSummaryInput, EsgSummaryResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { EsgSummaryInput, EsgSummaryResult } from './types.js';
  *   or currentYear is before baselineYear
  */
 export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
+  requireFinite('esgSummary', input);
   const {
     baselineYear,
     baselineCo2Tonnes,

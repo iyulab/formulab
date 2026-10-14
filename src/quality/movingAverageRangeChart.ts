@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { XBAR_R_CONSTANTS } from './controlChart.js';
 import type {
   ControlLimit,
@@ -47,6 +47,7 @@ function mean(arr: number[]): number {
 export function movingAverageRangeChart(
   input: MovingAverageRangeChartInput,
 ): MovingAverageRangeChartResult {
+  requireFinite('movingAverageRangeChart', input);
   const { values, windowSize: k } = input;
 
   if (k < 2 || k > 25) {

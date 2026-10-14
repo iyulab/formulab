@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ThermalRunawayInput, ThermalRunawayResult } from './types.js';
 
 /**
@@ -13,6 +13,7 @@ import type { ThermalRunawayInput, ThermalRunawayResult } from './types.js';
  * @remarks currentA may be signed (charge vs discharge); the heat is I²R either way.
  */
 export function thermalRunaway(input: ThermalRunawayInput): ThermalRunawayResult {
+  requireFinite('thermalRunaway', input);
   const {
     ambientTempC,
     currentA,

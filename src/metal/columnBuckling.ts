@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type {
   ColumnEndCondition,
   ColumnBucklingInput,
@@ -55,6 +55,7 @@ const K_FACTOR: Record<ColumnEndCondition, number> = {
  *   is not positive
  */
 export function columnBuckling(input: ColumnBucklingInput): ColumnBucklingResult {
+  requireFinite('columnBuckling', input);
   const { youngsModulus, momentOfInertia, area, length, endCondition, yieldStrength } = input;
 
   if (youngsModulus <= 0) {

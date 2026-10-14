@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type {
   AcceptanceControlChartInput,
@@ -79,6 +79,7 @@ function computeSide(
  * @returns APL/RPL/ACL per side and the required sample size
  */
 export function acceptanceControlChart(input: AcceptanceControlChartInput): AcceptanceControlChartResult {
+  requireFinite('acceptanceControlChart', input);
   const {
     upperSpecLimit, lowerSpecLimit, sigma,
     acceptableProportion: p0, rejectableProportion: p1,

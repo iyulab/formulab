@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { AssignmentInput, AssignmentResult, AssignmentPair } from './types.js';
 
 /**
@@ -11,6 +11,7 @@ import type { AssignmentInput, AssignmentResult, AssignmentPair } from './types.
  * @throws RangeError if matrix is empty or has an empty first row
  */
 export function solveAssignment(input: AssignmentInput): AssignmentResult {
+  requireFinite('solveAssignment', input);
   const { matrix, rowLabels, colLabels, objective } = input;
 
   if (matrix.length === 0 || matrix[0].length === 0) {

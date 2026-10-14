@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { RadialChipThinningInput, RadialChipThinningResult } from './types.js';
 
 /**
@@ -19,6 +19,7 @@ import type { RadialChipThinningInput, RadialChipThinningResult } from './types.
  *   or chipLoadTarget is not greater than 0
  */
 export function radialChipThinning(input: RadialChipThinningInput): RadialChipThinningResult {
+  requireFinite('radialChipThinning', input);
   const { toolDiameter, radialDepthOfCut, chipLoadTarget } = input;
 
   // The thinning factor divides by sqrt(ae x (D - ae)); outside 0 < ae < D that radicand

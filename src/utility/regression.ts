@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { RegressionInput, RegressionResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { RegressionInput, RegressionResult } from './types.js';
  *   if fewer than 2 data points are provided, or if all x values are identical
  */
 export function regression(input: RegressionInput): RegressionResult {
+  requireFinite('regression', input);
   const { x, y } = input;
   if (!x || !y) {
     throw new RangeError('x and y data arrays are required');

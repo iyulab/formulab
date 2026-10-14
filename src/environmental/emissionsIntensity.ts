@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EmissionsIntensityInput, EmissionsIntensityResult } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { EmissionsIntensityInput, EmissionsIntensityResult } from './types.
  *   is negative (a zero denominator leaves its field undefined)
  */
 export function emissionsIntensity(input: EmissionsIntensityInput): EmissionsIntensityResult {
+  requireFinite('emissionsIntensity', input);
   const { totalCo2Kg, productionUnits, revenueUsd, employees } = input;
 
   // Negative emissions (offsets, removals) are outside this intensity model, and a negative

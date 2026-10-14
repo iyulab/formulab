@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { GearRatioInput, GearRatioResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { GearRatioInput, GearRatioResult } from './types.js';
  *   in (0, 1]. Signed inputSpeed/inputTorque are accepted as rotation direction.
  */
 export function gearRatio(input: GearRatioInput): GearRatioResult {
+  requireFinite('gearRatio', input);
   const { drivingTeeth, drivenTeeth, inputSpeed, inputTorque, efficiency } = input;
 
   if (!(drivingTeeth > 0)) {

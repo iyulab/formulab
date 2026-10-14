@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ThreadInput, ThreadResult } from './types.js';
 
 const METRIC_THREADS: Record<string, { majorDiameter: number; pitch: number; tapDrill: number }> = {
@@ -53,6 +53,7 @@ export function getUnifiedSizes(): string[] {
  *   (unified major diameter, TPI, and tap drill sizes)
  */
 export function thread(input: ThreadInput): ThreadResult {
+  requireFinite('thread', input);
   if (input.type === 'metric') {
     const spec = METRIC_THREADS[input.size];
     if (!spec) {

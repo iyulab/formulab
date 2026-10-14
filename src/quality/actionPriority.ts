@@ -4,6 +4,7 @@ import type {
   ActionPriorityLevel,
   ApRatingBand,
 } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * AIAG-VDA 2019 Action Priority (AP) Matrix
@@ -31,6 +32,7 @@ import type {
  * @throws {RangeError} Detection must be between 1 and 10
  */
 export function actionPriority(input: ActionPriorityInput): ActionPriorityResult {
+  requireFinite('actionPriority', input);
   const { severity, occurrence, detection } = input;
 
   if (!Number.isFinite(severity) || severity < 1 || severity > 10) {

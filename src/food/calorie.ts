@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CalorieInput, CalorieResult, ActivityLevel } from './types.js';
 
 const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
@@ -21,6 +21,7 @@ const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
  * @throws RangeError if weightKg, heightCm, or age is not greater than 0
  */
 export function calorie(input: CalorieInput): CalorieResult {
+  requireFinite('calorie', input);
   const { gender, age, weightKg, heightCm, activityLevel } = input;
 
   if (!(weightKg > 0)) {

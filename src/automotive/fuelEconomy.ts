@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { FuelInput, FuelResult } from './types.js';
 
 // Conversion constants
@@ -20,6 +20,7 @@ const LITERS_PER_UK_GALLON = 4.54609;
  * @throws RangeError if value is not greater than 0
  */
 export function fuelEconomy(input: FuelInput): FuelResult {
+  requireFinite('fuelEconomy', input);
   const { fromUnit, value } = input;
 
   if (value <= 0) {

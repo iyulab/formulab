@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { FlowControlInput, FlowControlResult } from './types.js';
 
 /**
@@ -15,9 +15,11 @@ import type { FlowControlInput, FlowControlResult } from './types.js';
  *
  * @reference ISA-75.01.01-2012 — Flow equations for sizing control valves
  * @reference IEC 60534-2-1 — Industrial-process control valves
- * @throws RangeError if flowRate is not greater than 0, or inletPressure or fluidDensity is not greater than 0; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
+ * @throws RangeError if flowRate is not greater than 0, inletPressure or fluidDensity is not greater than 0,
+ *   or outletPressure is negative or not below inletPressure; for gas/steam, if molecularWeight is given and not greater than 0, or temperature is not above -273.15 °C
  */
 export function flowControl(input: FlowControlInput): FlowControlResult {
+  requireFinite('flowControl', input);
   const {
     flowRate, inletPressure, outletPressure, fluidDensity, fluidType,
     temperature = 20, molecularWeight, specificHeatRatio = 1.4,
@@ -43,6 +45,11 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
     if (!(temperature > -273.15)) {
       throw new RangeError('temperature must be above absolute zero (-273.15 °C)');
     }
+  }
+
+  // The pressure ratio ΔP/P1 is taken on absolute pressures; below vacuum there is no pressure.
+  if (!(outletPressure >= 0)) {
+    throw new RangeError('outletPressure must not be negative (absolute pressure)');
   }
 
   const pressureDrop = inletPressure - outletPressure; // kPa

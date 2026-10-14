@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TriangleSolverInput, TriangleSolverResult } from './types.js';
 
 const DEG = Math.PI / 180;
@@ -24,6 +24,7 @@ const RAD = 180 / Math.PI;
  * @returns TriangleSolverResult with all sides, angles, area, and perimeter
  */
 export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult {
+  requireFinite('triangleSolver', input);
   let { a, b, c, A, B, C } = input;
 
   // A side of zero collapses the law of cosines onto a zero denominator and every angle

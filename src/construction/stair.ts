@@ -1,5 +1,5 @@
 import type { StairInput, StairResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Riser heights used when the caller asks for auto-calculation, in millimetres.
@@ -34,6 +34,7 @@ const DEFAULT_RISER = 170;
  *   means "auto-calculate", the established contract)
  */
 export function stair(input: StairInput): StairResult {
+  requireFinite('stair', input);
   const { totalRise, totalRun, riserHeight } = input;
 
   if (totalRise <= 0) {

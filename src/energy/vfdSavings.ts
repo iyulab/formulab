@@ -1,4 +1,5 @@
 import type { VfdSavingsInput, VfdSavingsResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 // Average CO2 emission factor (kg CO2 per kWh)
 const CO2_FACTOR = 0.5;
@@ -19,6 +20,7 @@ const CO2_FACTOR = 0.5;
  *   is outside (0, 1]; or newSpeedRpm, runningHoursPerYear, electricityRate or vfdCost is negative
  */
 export function vfdSavings(input: VfdSavingsInput): VfdSavingsResult {
+  requireFinite('vfdSavings', input);
   const {
     motorKw,
     fullSpeedRpm,

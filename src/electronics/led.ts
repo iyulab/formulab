@@ -1,5 +1,5 @@
 import type { LedResistorInput, LedResistorResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -49,6 +49,7 @@ function findNearestStandardResistor(resistance: number): number {
  * @throws Error if supply voltage <= forward voltage or current <= 0
  */
 export function ledResistor(input: LedResistorInput): LedResistorResult {
+  requireFinite('ledResistor', input);
   const { supplyVoltage, forwardVoltage, forwardCurrent } = input;
 
   // Validate inputs

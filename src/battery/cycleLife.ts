@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryChemistry, CycleLifeInput, CycleLifeResult, DodCurve } from './types.js';
 
 /**
@@ -82,6 +82,7 @@ function getTemperatureFactor(tempC: number): number {
  * @throws {RangeError} depthOfDischarge is not greater than 0 and at most 100, or the chemistry is unknown
  */
 export function cycleLife(input: CycleLifeInput): CycleLifeResult {
+  requireFinite('cycleLife', input);
   const { chemistry, depthOfDischarge, temperatureC } = input;
 
   if (!Number.isFinite(depthOfDischarge) || depthOfDischarge <= 0 || depthOfDischarge > 100) {

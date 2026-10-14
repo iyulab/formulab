@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WeldingInput, WeldingResult, WeldingRod, WeldingBaseMetal } from './types.js';
 
 /**
@@ -63,6 +63,7 @@ function getRodDiameter(thickness: number): number {
  *   design, so treat these as a starting point rather than a cited standard.
  */
 export function welding(input: WeldingInput): WeldingResult {
+  requireFinite('welding', input);
   const { baseMetal, position, thickness } = input;
 
   if (thickness <= 0) throw new RangeError('thickness must be greater than 0');

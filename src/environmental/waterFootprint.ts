@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WaterFootprintInput, WaterFootprintResult } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { WaterFootprintInput, WaterFootprintResult } from './types.js';
  * @throws {RangeError} any water volume < 0
  */
 export function waterFootprint(input: WaterFootprintInput): WaterFootprintResult {
+  requireFinite('waterFootprint', input);
   const { blueWaterM3, greenWaterM3, greyWaterM3, productionUnits } = input;
 
   if (blueWaterM3 < 0 || greenWaterM3 < 0 || greyWaterM3 < 0) {

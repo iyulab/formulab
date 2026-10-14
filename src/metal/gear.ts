@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { GearInput, GearResult } from './types.js';
 
 // Standard pressure angle for spur gears (degrees)
@@ -21,6 +21,7 @@ const PRESSURE_ANGLE_RAD = (PRESSURE_ANGLE_DEG * Math.PI) / 180;
  *   greater than 0
  */
 export function gear(input: GearInput): GearResult {
+  requireFinite('gear', input);
   const { mode } = input;
 
   let module: number;

@@ -1,5 +1,5 @@
 import type { ReactorInput, ReactorResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Calculate reactor vessel dimensions and volumes.
@@ -20,6 +20,7 @@ import { roundTo } from '../utils.js';
  *   or fillRatio is not in (0, 1]
  */
 export function reactor(input: ReactorInput): ReactorResult {
+  requireFinite('reactor', input);
   const { shape, diameter, fillRatio } = input;
 
   // A zero diameter gives zero volume over zero surface area, which is not a ratio.

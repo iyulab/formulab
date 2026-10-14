@@ -1,5 +1,5 @@
 import type { RebarSize, RebarInput, RebarResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Rebar unit weights in kg/m
@@ -56,6 +56,7 @@ const REBAR_UNIT_WEIGHTS: Record<RebarSize, number> = {
  * @returns Unit weight in kg/m
  */
 export function getRebarUnitWeight(size: RebarSize): number {
+  requireFinite('getRebarUnitWeight', size);
   return REBAR_UNIT_WEIGHTS[size];
 }
 
@@ -68,6 +69,7 @@ export function getRebarUnitWeight(size: RebarSize): number {
  *   quantity is not greater than 0
  */
 export function rebarWeight(input: RebarInput): RebarResult {
+  requireFinite('rebarWeight', input);
   const { size, length, quantity } = input;
 
   const unitWeight = REBAR_UNIT_WEIGHTS[size];

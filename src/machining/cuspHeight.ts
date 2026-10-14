@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CuspHeightInput, CuspHeightResult } from './types.js';
 
 /**
@@ -17,6 +17,7 @@ import type { CuspHeightInput, CuspHeightResult } from './types.js';
  *   without the guard the square root goes negative and the result is silently NaN)
  */
 export function cuspHeight(input: CuspHeightInput): CuspHeightResult {
+  requireFinite('cuspHeight', input);
   const { toolRadius, stepover } = input;
 
   if (!(toolRadius > 0)) {

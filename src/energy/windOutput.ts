@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WindOutputInput, WindOutputResult } from './types.js';
 
 /**
@@ -23,6 +23,7 @@ import type { WindOutputInput, WindOutputResult } from './types.js';
  *   negative
  */
 export function windOutput(input: WindOutputInput): WindOutputResult {
+  requireFinite('windOutput', input);
   const {
     ratedPower, hubHeight, averageWindSpeed,
     referenceHeight = 10,

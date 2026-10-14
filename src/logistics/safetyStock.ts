@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { SafetyStockInput, SafetyStockResult } from './types.js';
 
@@ -26,6 +26,7 @@ import type { SafetyStockInput, SafetyStockResult } from './types.js';
  *   demandStdDev or leadTimeStdDev is negative
  */
 export function safetyStock(input: SafetyStockInput): SafetyStockResult {
+  requireFinite('safetyStock', input);
   const { avgDemand, demandStdDev, avgLeadTime, leadTimeStdDev, serviceLevel } = input;
 
   // The z-score is the inverse normal CDF of the service level, which diverges at both

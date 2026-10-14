@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LoadCapacityInput, LoadCapacityResult } from './types.js';
 
 /**
@@ -22,6 +22,7 @@ import type { LoadCapacityInput, LoadCapacityResult } from './types.js';
  *   attachment heavier than the derated capacity floors the net capacity at 0 (`netCapacityClamped`).
  */
 export function loadCapacity(input: LoadCapacityInput): LoadCapacityResult {
+  requireFinite('loadCapacity', input);
   const {
     ratedCapacity,
     ratedLoadCenter,

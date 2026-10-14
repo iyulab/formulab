@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PidInput, PidResult } from './types.js';
 
 /** A tuning parameter the method needs. A missing one was replaced by 1 — tuning for a process nobody entered. */
@@ -29,6 +29,7 @@ function required(value: number | undefined, name: string): number {
  *   the step-response methods, ultimateGain/ultimatePeriod for Z-N ultimate) or not greater than 0
  */
 export function pid(input: PidInput): PidResult {
+  requireFinite('pid', input);
   const { method, controllerType } = input;
 
   let kp = 0;

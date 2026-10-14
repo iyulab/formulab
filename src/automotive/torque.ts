@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TorqueInput, TorqueResult } from './types.js';
 
 // Torque conversion constants
@@ -19,6 +19,7 @@ const NM_TO_FTLBF = 0.73756;
  * @returns Torque in all units
  */
 export function torque(input: TorqueInput): TorqueResult {
+  requireFinite('torque', input);
   const { fromUnit, value } = input;
 
   // Handle zero value

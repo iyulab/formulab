@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF, normalInvCDF } from '../math.js';
 import type { PpmInput, PpmResult } from './types.js';
 
@@ -31,6 +31,7 @@ function defectRateToSigma(defectRate: number): number {
  *   different quality level than requested.
  */
 export function ppm(input: PpmInput): PpmResult {
+  requireFinite('ppm', input);
   let defectRate: number;
 
   switch (input.convertFrom) {

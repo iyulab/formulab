@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PowerCostInput, PowerCostResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { PowerCostInput, PowerCostResult } from './types.js';
  *   energyRate, demandPeak, demandRate, pfPenaltyRate or fixedCharges is negative
  */
 export function powerCost(input: PowerCostInput): PowerCostResult {
+  requireFinite('powerCost', input);
   const {
     energyConsumption,
     energyRate,

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { VaAnalysisInput, VaAnalysisResult, CategorySummary } from './types.js';
 
 /**
@@ -14,6 +14,7 @@ import type { VaAnalysisInput, VaAnalysisResult, CategorySummary } from './types
  * @throws {RangeError} All activity durations must be non-negative
  */
 export function vaAnalysis(input: VaAnalysisInput): VaAnalysisResult {
+  requireFinite('vaAnalysis', input);
   const { activities } = input;
 
   if (!Array.isArray(activities) || activities.length < 1) {

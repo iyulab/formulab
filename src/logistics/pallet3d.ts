@@ -10,6 +10,7 @@ import type {
   PalletStandard,
   PalletSpec,
 } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /** Standard pallet dimensions by region */
 const PALLET_SPECS: Record<Exclude<PalletStandard, 'custom'>, PalletSpec> = {
@@ -362,6 +363,7 @@ function calculateFloorCoverage(placedBoxes: PlacedBox3D[]): number {
  *   (0 selects the default)
  */
 export function pallet3d(input: Pallet3DInput): Pallet3DResult {
+  requireFinite('pallet3d', input);
   const warnings: string[] = [];
 
   // No boxes → no load plan. An empty plan with a 0 × 0 × 0 pallet would read as a result.

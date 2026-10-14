@@ -1,4 +1,5 @@
 import type { SlopeInput, SlopeResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Convert slope between different units
@@ -16,6 +17,7 @@ import type { SlopeInput, SlopeResult } from './types.js';
  *   between −90 and 90 (tan diverges at ±90°: a 95° input would otherwise read back as −85°)
  */
 export function slope(input: SlopeInput): SlopeResult {
+  requireFinite('slope', input);
   const { fromUnit, value } = input;
 
   // A ratio of 1:N with N <= 0 is vertical/undefined, not flat ground.

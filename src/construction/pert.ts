@@ -1,6 +1,6 @@
 import { validatePrecedence } from '../precedence.js';
 import type { PertInput, PertResult, PertTaskResult, PertTask } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF } from '../math.js';
 
 /**
@@ -88,6 +88,7 @@ function topologicalSort(tasks: PertTask[]): PertTask[] | null {
  *   tasks contain a circular dependency
  */
 export function pert(input: PertInput): PertResult {
+  requireFinite('pert', input);
   const { tasks, deadline } = input;
   if (tasks.length === 0) {
     throw new RangeError('tasks must not be empty');

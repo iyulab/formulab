@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { GridRegion, Scope2EmissionsInput, Scope2EmissionsResult } from './types.js';
 
 /**
@@ -53,6 +53,7 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  * @returns Location-based CO2 emissions always; market-based additionally when requested
  */
 export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsResult {
+  requireFinite('scope2Emissions', input);
   const { electricityKwh, region, customFactor, contractedKwh, supplierFactor, residualMixFactor } = input;
 
   // A negative consumption or emission factor would report a negative emission; offsets and

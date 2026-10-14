@@ -1,5 +1,5 @@
 import { validatePrecedence } from '../precedence.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LineBalancingInput, LineBalancingResult, WorkStation, PositionalWeight, BalancingTask } from './types.js';
 
 function detectCycle(tasks: BalancingTask[]): boolean {
@@ -115,6 +115,7 @@ function calculatePositionalWeights(tasks: BalancingTask[]): Map<string, number>
  *   the precedence graph is cyclic
  */
 export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
+  requireFinite('lineBalancing', input);
   const { tasks, cycleTime } = input;
 
   if (tasks.length === 0) {

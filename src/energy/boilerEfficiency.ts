@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BoilerEfficiencyInput, BoilerEfficiencyResult } from './types.js';
 
 /**
@@ -15,6 +15,7 @@ import type { BoilerEfficiencyInput, BoilerEfficiencyResult } from './types.js';
  *   is negative
  */
 export function boilerEfficiency(input: BoilerEfficiencyInput): BoilerEfficiencyResult {
+  requireFinite('boilerEfficiency', input);
   const {
     fuelRate,
     fuelHeatValue,

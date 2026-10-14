@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BilinearInterpolationInput, BilinearInterpolationResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { BilinearInterpolationInput, BilinearInterpolationResult } from './
  *   or if any z row length does not match y length
  */
 export function bilinearInterpolation(input: BilinearInterpolationInput): BilinearInterpolationResult {
+  requireFinite('bilinearInterpolation', input);
   const { x, y, z, targetX, targetY } = input;
   if (!x || x.length < 2) {
     throw new RangeError(`x must contain at least 2 points, got ${x?.length ?? 0}`);

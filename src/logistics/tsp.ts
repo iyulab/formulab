@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TspInput, TspResult, TspNode } from './types.js';
 
 /**
@@ -115,6 +115,7 @@ function bruteForce(nodes: TspNode[]): { tour: number[]; distance: number } | nu
  * @throws RangeError if nodes contains fewer than 1 element
  */
 export function tsp(input: TspInput): TspResult {
+  requireFinite('tsp', input);
   const { nodes } = input;
   if (nodes.length < 2) {
     if (nodes.length === 1) return {

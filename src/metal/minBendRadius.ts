@@ -3,6 +3,7 @@ import type {
   MinBendRadiusDin6935Result,
   Din6935StrengthClass,
 } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Minimum permissible bend radius for cold-bent flat steel, per DIN 6935.
@@ -91,6 +92,7 @@ const NEXT_SIZE_UP_ABOVE_ANGLE = 120;
 export function minBendRadiusDin6935(
   input: MinBendRadiusDin6935Input,
 ): MinBendRadiusDin6935Result | null {
+  requireFinite('minBendRadiusDin6935', input);
   const { thickness, strengthClass, rollingDirection, bendAngle = 90 } = input;
 
   if (!Number.isFinite(thickness) || thickness <= 0) {

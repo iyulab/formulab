@@ -1,4 +1,5 @@
 import type { MotorEfficiencyInput, MotorEfficiencyResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate motor efficiency upgrade economics
@@ -14,6 +15,7 @@ import type { MotorEfficiencyInput, MotorEfficiencyResult } from './types.js';
  *   [0, 1]; or motorPower, runningHours, electricityRate or upgradeCost is negative
  */
 export function motorEfficiency(input: MotorEfficiencyInput): MotorEfficiencyResult {
+  requireFinite('motorEfficiency', input);
   const {
     motorPower,
     runningHours,

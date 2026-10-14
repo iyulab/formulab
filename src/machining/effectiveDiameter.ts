@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EffectiveDiameterInput, EffectiveDiameterResult } from './types.js';
 
 /**
@@ -25,6 +25,7 @@ import type { EffectiveDiameterInput, EffectiveDiameterResult } from './types.js
  * @returns EffectiveDiameterResult with effective diameter, RPM correction factor, and effective RPM when Vc is given
  */
 export function effectiveDiameter(input: EffectiveDiameterInput): EffectiveDiameterResult {
+  requireFinite('effectiveDiameter', input);
   const { toolDiameter, axialDepthOfCut, cuttingSpeed } = input;
 
   if (toolDiameter <= 0) {

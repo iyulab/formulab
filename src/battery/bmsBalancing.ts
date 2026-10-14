@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BmsBalancingInput, BmsBalancingResult } from './types.js';
 
 /**
@@ -8,14 +8,17 @@ import type { BmsBalancingInput, BmsBalancingResult } from './types.js';
  * @reference BMS design guidelines, passive balancing
  * @param input - Cell voltages array, balancing current, cell capacity
  * @returns Balancing time estimates and cell-level details
- * @throws {RangeError} cellVoltages is empty, any cell voltage is not greater than 0, or
+ * @throws {RangeError} cellVoltages is missing or lists fewer than 2 cells, any cell voltage is not greater than 0, or
  *   balancingCurrentMA or cellCapacityAh is not greater than 0
  */
 export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
+  requireFinite('bmsBalancing', input);
   const { cellVoltages, balancingCurrentMA, cellCapacityAh } = input;
 
-  if (cellVoltages.length === 0) {
-    throw new RangeError('cellVoltages must not be empty');
+  // Balancing moves charge between cells: one cell has nothing to balance against, and a missing
+  // list used to fail as a TypeError inside the function.
+  if (!Array.isArray(cellVoltages) || cellVoltages.length < 2) {
+    throw new RangeError('cellVoltages must list at least 2 cells');
   }
   // The balancing time divides by the pack average, so a cell at or below zero volts
   // would drive it to infinity rather than describing a pack that can be balanced.

@@ -1,4 +1,5 @@
 import type { PasteType, ReflowResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Reflow profile data for different solder paste types
@@ -73,6 +74,7 @@ export function getPasteTypes(): PasteType[] {
  * @returns Reflow profile or undefined if paste type is invalid
  */
 export function reflowProfile(pasteType: PasteType): ReflowResult | undefined {
+  requireFinite('reflowProfile', pasteType);
   const profile = REFLOW_PROFILES[pasteType];
   if (!profile) {
     return undefined;

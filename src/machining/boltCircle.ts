@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BoltCircleInput, BoltCircleResult, BoltHole } from './types.js';
 
 /**
@@ -15,6 +15,7 @@ import type { BoltCircleInput, BoltCircleResult, BoltHole } from './types.js';
  * @returns BoltCircleResult with hole coordinates and angular spacing
  */
 export function boltCircle(input: BoltCircleInput): BoltCircleResult {
+  requireFinite('boltCircle', input);
   const { boltCircleDiameter, numberOfHoles, startAngle = 0 } = input;
 
   if (!(boltCircleDiameter > 0)) {

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { StatisticsInput, StatisticsResult } from './types.js';
 
 /**
@@ -13,6 +13,7 @@ import type { StatisticsInput, StatisticsResult } from './types.js';
  * @throws RangeError if data is missing or empty
  */
 export function statistics(input: StatisticsInput): StatisticsResult {
+  requireFinite('statistics', input);
   const { data } = input;
   if (!data || data.length === 0) {
     throw new RangeError('data must contain at least 1 value');

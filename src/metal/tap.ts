@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { TapInput, TapResult } from './types.js';
 
 /**
@@ -22,6 +22,7 @@ import type { TapInput, TapResult } from './types.js';
  * @reference ISO 68-1, basic profile for ISO general purpose metric screw threads.
  */
 export function tap(input: TapInput): TapResult {
+  requireFinite('tap', input);
   const { standard, majorDiameter, pitch: inputPitch, threadPercentage = 75 } = input;
 
   // Validate inputs

@@ -1,4 +1,5 @@
 import type { NelsonRulesInput, NelsonRulesResult, NelsonViolation } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Nelson Rules for SPC Control Chart Analysis
@@ -14,6 +15,7 @@ import type { NelsonRulesInput, NelsonRulesResult, NelsonViolation } from './typ
  * @throws {RangeError} Sigma must be a positive number
  */
 export function nelsonRules(input: NelsonRulesInput): NelsonRulesResult {
+  requireFinite('nelsonRules', input);
   const { values, centerLine, sigma, rules = [1, 2, 3, 4, 5, 6, 7, 8] } = input;
 
   if (!Array.isArray(values) || values.length < 1) {

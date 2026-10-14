@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
 
 /*
@@ -42,6 +42,7 @@ const MAX_DECELERATION = Math.max(3.5 * 0.3048, 1.07); // m
  * @remarks anchorAboveFeet may be negative (an anchor below the feet); the free-fall warning reports it.
  */
 export function fallClearance(input: FallClearanceInput): FallClearanceResult {
+  requireFinite('fallClearance', input);
   const {
     lanyardLength: L,
     decelerationDistance: DD,

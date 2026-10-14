@@ -1,4 +1,5 @@
 import type { PfCorrectionInput, PfCorrectionResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate power factor correction requirements and savings
@@ -16,6 +17,7 @@ import type { PfCorrectionInput, PfCorrectionResult } from './types.js';
  *   negative
  */
 export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
+  requireFinite('pfCorrection', input);
   const {
     kW,
     currentPf,

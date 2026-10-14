@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF } from '../math.js';
 import type {
   FillRateInput,
@@ -17,6 +17,7 @@ import type {
  * @returns Fill rate results
  */
 export function fillRate(input: FillRateInput): FillRateResult {
+  requireFinite('fillRate', input);
   const { totalOrders, filledComplete } = input;
 
   if (totalOrders <= 0) throw new RangeError('totalOrders must be greater than 0');
@@ -48,6 +49,7 @@ export function fillRate(input: FillRateInput): FillRateResult {
  * @throws {RangeError} safetyStock or demandStdDev is negative
  */
 export function serviceLevel(input: ServiceLevelInput): ServiceLevelResult {
+  requireFinite('serviceLevel', input);
   const { demandStdDev, safetyStock } = input;
 
   // A negative safety stock is a shortfall, not a buffer, and a standard deviation cannot be

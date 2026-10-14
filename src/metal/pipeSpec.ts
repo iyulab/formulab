@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PipeSpecInput, PipeSpecResult, PipeSchedule } from './types.js';
 
 interface PipeDimension {
@@ -94,6 +94,7 @@ export function getPipeSizes(): string[] {
 }
 
 export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
+  requireFinite('pipeSpec', input);
   const { standard, nominalSize, schedule } = input;
 
   // Normalize nominal size

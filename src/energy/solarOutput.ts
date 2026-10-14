@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { SolarOutputInput, SolarOutputResult } from './types.js';
 
 // Annual-average share of global horizontal irradiance that is diffuse (temperate climates).
@@ -102,6 +102,7 @@ function tiltOrientationEfficiency(tiltDeg: number, azimuthDeg: number, latDeg: 
  * @returns energy production estimates
  */
 export function solarOutput(input: SolarOutputInput): SolarOutputResult {
+  requireFinite('solarOutput', input);
   const {
     panelWattage, panelCount, peakSunHours,
     systemEfficiency, tiltAngle, latitude, azimuthOffset,

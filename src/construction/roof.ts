@@ -1,5 +1,5 @@
 import type { RoofInput, RoofResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Get pitch description based on rise per 12 units
@@ -27,6 +27,7 @@ function getPitchDescription(risePerTwelve: number): string {
  * @throws {RangeError} run ≤ 0, rise < 0, or footprintLength / footprintWidth ≤ 0
  */
 export function roof(input: RoofInput): RoofResult {
+  requireFinite('roof', input);
   const { rise, run, footprintLength, footprintWidth } = input;
 
   // Validate inputs

@@ -1,4 +1,5 @@
 import type { EarthworkInput, EarthworkResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate earthwork volumes
@@ -13,6 +14,7 @@ import type { EarthworkInput, EarthworkResult } from './types.js';
  *   or if swellFactor/shrinkFactor is not positive
  */
 export function earthwork(input: EarthworkInput): EarthworkResult {
+  requireFinite('earthwork', input);
   const { length, width, depth, swellFactor, shrinkFactor } = input;
 
   if (length <= 0) {

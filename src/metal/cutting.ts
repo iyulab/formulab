@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CuttingInput, CuttingResult } from './types.js';
 
 /**
@@ -14,6 +14,7 @@ import type { CuttingInput, CuttingResult } from './types.js';
  *   ignored; an omitted feed or depth still yields a 0 feed rate / MRR (spindle speed only).
  */
 export function cutting(input: CuttingInput): CuttingResult {
+  requireFinite('cutting', input);
   const { operation, cuttingSpeed, toolDiameter } = input;
 
   if (!(cuttingSpeed > 0)) {

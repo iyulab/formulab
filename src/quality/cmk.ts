@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { capabilityIndices } from './capability.js';
 import type { CmkInput, CmkResult } from './types.js';
 
@@ -20,6 +20,7 @@ import type { CmkInput, CmkResult } from './types.js';
  *   greater than lsl
  */
 export function cmk(input: CmkInput): CmkResult {
+  requireFinite('cmk', input);
   const { measurements, lsl, usl } = input;
   const n = measurements.length;
 

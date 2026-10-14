@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CusumInput, CusumResult } from './types.js';
 
 /**
@@ -24,6 +24,7 @@ import type { CusumInput, CusumResult } from './types.js';
  *   are all equal
  */
 export function cusum(input: CusumInput): CusumResult {
+  requireFinite('cusum', input);
   const { values, target } = input;
   const n = values.length;
 

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type {
   BeamSupportType,
   BeamDeflectionInput,
@@ -106,6 +106,7 @@ function resolveLoads(input: BeamDeflectionInput): { w: number; P: number } {
  *   not positive, or a load value required by the selected load type is missing.
  */
 export function beamDeflection(input: BeamDeflectionInput): BeamDeflectionResult {
+  requireFinite('beamDeflection', input);
   const { support, span, youngsModulus, momentOfInertia, deflectionLimitRatio } = input;
 
   if (span <= 0) {
@@ -148,6 +149,8 @@ export function beamDeflection(input: BeamDeflectionInput): BeamDeflectionResult
  * @throws {RangeError} same validation as {@link beamDeflection}, plus count < 2.
  */
 export function beamDeflectionCurve(input: BeamDeflectionInput, count = 41): BeamDeflectionCurvePoint[] {
+  requireFinite('beamDeflectionCurve', input);
+  requireFinite('beamDeflectionCurve', { count });
   if (input.span <= 0) {
     throw new RangeError('span must be greater than 0');
   }

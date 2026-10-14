@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type {
   WeldHeatInput,
   WeldHeatResult,
@@ -203,6 +203,7 @@ function calculateHAZHardness(
  * @throws {RangeError} voltage, current, travelSpeed, or thickness is not positive
  */
 export function weldHeat(input: WeldHeatInput): WeldHeatResult {
+  requireFinite('weldHeat', input);
   const { process, voltage, current, travelSpeed, baseMetal, thickness } = input;
 
   // Validation

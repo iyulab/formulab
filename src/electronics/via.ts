@@ -1,5 +1,5 @@
 import type { ViaInput, ViaResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -30,6 +30,7 @@ const IPC_C = 0.725;
  *   is not positive
  */
 export function viaCurrent(input: ViaInput): ViaResult {
+  requireFinite('viaCurrent', input);
   const { holeDiameter, platingThickness, viaLength, tempRise } = input;
 
   // Validate inputs

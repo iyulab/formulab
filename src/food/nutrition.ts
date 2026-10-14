@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { NutritionInput, NutritionResult, NutritionFacts, DailyValuePercents, NutrientIngredient } from './types.js';
 
 // FDA Daily Values (2020)
@@ -29,6 +29,7 @@ const INGREDIENT_FIELDS = [
  *   nutrient values is negative, or the ingredients add up to 0 g (none, or all 0)
  */
 export function nutrition(input: NutritionInput): NutritionResult {
+  requireFinite('nutrition', input);
   const { servingSize, ingredients } = input;
 
   // A serving of no food has no label to print, and a negative one flips every per-serving value.

@@ -1,5 +1,5 @@
 import type { InjectionCycleInput, InjectionCycleResult, InjectionCyclePhase, ResinType } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Resin properties for cooling time calculation
@@ -92,11 +92,12 @@ const RESIN_PROPERTIES: Record<Exclude<ResinType, 'custom'>, ResinProperties> = 
  *
  * @param input - Injection cycle input with resin type and dimensions
  * @returns Cycle time breakdown and total
- * @throws RangeError if wallThickness is not greater than 0, shotWeight, moldOpenCloseTime or
+ * @throws RangeError if wallThickness or shotWeight is not greater than 0, moldOpenCloseTime or
  *   ejectionTime is negative, the resin density is
  *   not greater than 0, or injectionRate is given and not greater than 0
  */
 export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult {
+  requireFinite('injectionCycle', input);
   const {
     resin,
     wallThickness,
@@ -111,9 +112,10 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
   if (!(wallThickness > 0)) {
     throw new RangeError('wallThickness must be greater than 0');
   }
-  // A negative weight or phase time subtracts from the cycle it is meant to add to.
-  if (!(shotWeight >= 0)) {
-    throw new RangeError('shotWeight must not be negative');
+  // A shot with no material fills nothing — a cycle rate for it is a rate for no parts. A negative
+  // weight or phase time subtracts from the cycle it is meant to add to.
+  if (!(shotWeight > 0)) {
+    throw new RangeError('shotWeight must be greater than 0');
   }
   if (!(moldOpenCloseTime >= 0)) {
     throw new RangeError('moldOpenCloseTime must not be negative');

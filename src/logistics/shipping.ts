@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ShippingInput, ShippingResult } from './types.js';
 
 /**
@@ -17,6 +17,7 @@ import type { ShippingInput, ShippingResult } from './types.js';
  *   positive for truck mode, or the shipping mode is unknown
  */
 export function shipping(input: ShippingInput): ShippingResult {
+  requireFinite('shipping', input);
   const { mode, weight, volume, distance } = input;
 
   if (weight <= 0) {

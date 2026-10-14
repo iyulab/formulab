@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ToolDeflectionInput, ToolDeflectionResult, ToolMaterial } from './types.js';
 
 /**
@@ -24,6 +24,7 @@ const TOOL_MODULUS: Record<ToolMaterial, number> = {
  * @throws RangeError if toolDiameter, stickout or the Young's modulus is not positive, or cuttingForce is negative
  */
 export function toolDeflection(input: ToolDeflectionInput): ToolDeflectionResult {
+  requireFinite('toolDeflection', input);
   const { toolDiameter, stickout, cuttingForce, material = 'carbide' } = input;
 
   if (toolDiameter <= 0) throw new RangeError('toolDiameter must be positive');

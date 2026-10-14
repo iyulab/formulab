@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CorrelationInput, CorrelationResult } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { CorrelationInput, CorrelationResult } from './types.js';
  * A 0 would state «no linear relation», which constant data does not show either way.
  */
 export function correlation(input: CorrelationInput): CorrelationResult {
+  requireFinite('correlation', input);
   const { x, y } = input;
   if (!x || !y || x.length !== y.length) {
     throw new RangeError(`x and y must have the same length, got ${x?.length ?? 0} and ${y?.length ?? 0}`);

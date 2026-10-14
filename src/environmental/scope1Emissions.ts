@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { FuelType, Scope1EmissionsInput, Scope1EmissionsResult } from './types.js';
 
 /**
@@ -24,6 +24,7 @@ const COMBUSTION_FACTORS: Record<FuelType, { factor: number; unit: string }> = {
  * @throws {RangeError} quantity is negative
  */
 export function scope1Emissions(input: Scope1EmissionsInput): Scope1EmissionsResult {
+  requireFinite('scope1Emissions', input);
   const { fuelType, quantity } = input;
 
   // A negative fuel quantity would report a negative emission; offsets are outside this model.

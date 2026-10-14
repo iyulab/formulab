@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type {
   WeldElectrodeClass,
   WeldStrengthInput,
@@ -62,6 +62,7 @@ const ASD_SHEAR_FACTOR = 0.30;
  *   appliedLoad is negative
  */
 export function weldStrength(input: WeldStrengthInput): WeldStrengthResult {
+  requireFinite('weldStrength', input);
   const { legSize, weldLength, electrode, appliedLoad } = input;
   const weldCount = input.weldCount ?? 1;
 

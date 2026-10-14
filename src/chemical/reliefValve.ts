@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ReliefValveInput, ReliefValveResult } from './types.js';
 
 // API 526 standard orifice designations (mm²)
@@ -51,9 +51,11 @@ const API_ORIFICES: { letter: string; area: number }[] = [
  *
  * @throws {RangeError} requiredCapacity, setPressure, molecularWeight, specificGravity, specificHeatRatio
  *   (must exceed 1) or compressibility is not positive; or, for a liquid, the relieving pressure does not
- *   exceed the back pressure (no differential to drive the flow)
+ *   exceed the back pressure (no differential to drive the flow); overpressure is negative; or, for gas or
+ *   steam, temperature is not above -273.15 °C
  */
 export function reliefValve(input: ReliefValveInput): ReliefValveResult {
+  requireFinite('reliefValve', input);
   const {
     requiredCapacity, setPressure, backPressure, temperature, fluidType,
     // Steam goes through the gas equation, so its default must be water's, not air's: 29 made every
@@ -85,6 +87,15 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
   }
   if (!(compressibility > 0)) {
     throw new RangeError('compressibility must be greater than 0');
+  }
+
+  // Overpressure is the allowance above set pressure while relieving; a negative one relieves below set.
+  if (!(overpressure >= 0)) {
+    throw new RangeError('overpressure must not be negative');
+  }
+  // Gas sizing takes the square root of the absolute temperature.
+  if (fluidType !== 'liquid' && !(temperature > -273.15)) {
+    throw new RangeError('temperature must be above absolute zero (-273.15 °C)');
   }
 
   // Atmospheric pressure

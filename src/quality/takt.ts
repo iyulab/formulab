@@ -1,4 +1,5 @@
 import type { TaktTimeInput, TaktTimeResult, TimeUnit } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Convert time to hours based on unit
@@ -27,6 +28,7 @@ function toHours(time: number, unit: TimeUnit): number {
  *   time) there is no pace to set, and 0 would read as "no time per unit".
  */
 export function taktTime(input: TaktTimeInput): TaktTimeResult {
+  requireFinite('taktTime', input);
   const { availableTime, demand, timeUnit } = input;
 
   if (!Number.isFinite(availableTime) || availableTime <= 0) {

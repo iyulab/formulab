@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { NpvInput, NpvResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { NpvInput, NpvResult } from './types.js';
  *   or discountRate is outside [0, 1)
  */
 export function npv(input: NpvInput): NpvResult {
+  requireFinite('npv', input);
   const { initialInvestment, cashFlows, discountRate } = input;
   if (initialInvestment < 0) {
     throw new RangeError(`initialInvestment must be >= 0, got ${initialInvestment}`);

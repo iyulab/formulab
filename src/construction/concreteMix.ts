@@ -1,5 +1,5 @@
 import type { ConcreteGrade, ConcreteInput, ConcreteResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 interface MixDesign {
   cementPerM3: number;  // kg cement per m³
@@ -35,6 +35,7 @@ const MIX_DESIGNS: Record<ConcreteGrade, MixDesign> = {
  * @throws {RangeError} unknown grade, or volume ≤ 0
  */
 export function concreteMix(input: ConcreteInput): ConcreteResult {
+  requireFinite('concreteMix', input);
   const { grade, volume } = input;
   const design = MIX_DESIGNS[grade];
   if (design === undefined) {

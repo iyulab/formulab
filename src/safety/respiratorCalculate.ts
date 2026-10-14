@@ -1,4 +1,5 @@
 import type { RespiratorInput, RespiratorResult, RespiratorType } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * OSHA Assigned Protection Factors (APFs)
@@ -72,6 +73,7 @@ function calculateSafetyMargin(apf: number, requiredAPF: number): number {
  *   an intentional sentinel meaning "any respirator is infinitely adequate".
  */
 export function respiratorCalculate(input: RespiratorInput): RespiratorResult {
+  requireFinite('respiratorCalculate', input);
   const { concentration, oel, respiratorType } = input;
 
   if (oel <= 0) {

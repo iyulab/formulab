@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ThreadAngle, ThreadOverWiresInput, ThreadOverWiresResult } from './types.js';
 
 /** d₂ = d − k·P: the pitch-diameter factor k for each supported thread form. */
@@ -36,6 +36,7 @@ const PITCH_DIAMETER_FACTOR: Readonly<Record<ThreadAngle, number>> = {
  *   diameter would not be positive (60°: P ≥ d / 0.6495 — no such thread exists).
  */
 export function threadOverWires(input: ThreadOverWiresInput): ThreadOverWiresResult {
+  requireFinite('threadOverWires', input);
   const { majorDiameter, pitch, threadAngle = 60 } = input;
 
   if (!Number.isFinite(majorDiameter) || majorDiameter <= 0) {

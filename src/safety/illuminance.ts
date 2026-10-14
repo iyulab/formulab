@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { IlluminanceInput, IlluminanceResult } from './types.js';
 
 /**
@@ -44,9 +44,10 @@ function lookupCU(roomIndex: number): number {
  * @param input - Room dimensions and lighting parameters
  * @returns Number of fixtures needed and lighting metrics
  * @throws {RangeError} roomLength, roomWidth, lumensPerLuminaire, or targetLux ≤ 0,
- *   or the mounting height above the workplane (luminaireHeight − workplaneHeight) ≤ 0.
+ *   workplaneHeight < 0, or the mounting height above the workplane (luminaireHeight − workplaneHeight) ≤ 0.
  */
 export function illuminance(input: IlluminanceInput): IlluminanceResult {
+  requireFinite('illuminance', input);
   const {
     roomLength,
     roomWidth,
@@ -68,6 +69,11 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   }
 
   const area = roomLength * roomWidth;
+  // Heights are above the floor; a workplane below it moves the luminaire's mounting height into the
+  // ground and every index computed from it with it.
+  if (!(workplaneHeight >= 0)) {
+    throw new RangeError('workplaneHeight must not be negative (height above the floor)');
+  }
   const hm = luminaireHeight - workplaneHeight;
 
   if (hm <= 0) {

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { MtbfInput, MtbfResult } from './types.js';
 
 /**
@@ -34,6 +34,7 @@ import type { MtbfInput, MtbfResult } from './types.js';
  *   numberOfFailures is not positive (MTBF is undefined with zero failures)
  */
 export function mtbf(input: MtbfInput): MtbfResult {
+  requireFinite('mtbf', input);
   const { totalOperatingTime, totalRepairTime, numberOfFailures } = input;
 
   // Validate inputs

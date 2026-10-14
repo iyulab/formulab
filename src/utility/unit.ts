@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { UnitCategory, UnitDef, UnitInput, UnitResult } from './types.js';
 
 /**
@@ -153,6 +153,7 @@ export function getUnitCategories(): UnitCategory[] {
  * @returns Array of unit definitions
  */
 export function getUnitsForCategory(category: UnitCategory): UnitDef[] {
+  requireFinite('getUnitsForCategory', category);
   return UNITS[category] ?? [];
 }
 
@@ -168,6 +169,7 @@ export function getUnitsForCategory(category: UnitCategory): UnitDef[] {
  *   is not a supported unit in the category
  */
 export function calculateUnit(input: UnitInput): UnitResult {
+  requireFinite('calculateUnit', input);
   const units = UNITS[input.category];
   if (!units) {
     throw new RangeError(`unknown unit category '${input.category}'`);

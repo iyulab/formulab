@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './types.js';
 
 /**
@@ -7,9 +7,11 @@ import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './ty
  * Uses First Fit Decreasing (FFD) or Best Fit Decreasing (BFD) algorithm.
  *
  * @throws RangeError if stockLength is not positive, kerf is negative, pieces is empty, a piece
- *   length is not positive, total piece quantity is 0, or any piece length exceeds stockLength
+ *   length is not positive, a piece quantity is not a whole number greater than 0, or any piece
+ *   length exceeds stockLength
  */
 export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
+  requireFinite('cuttingStock', input);
   const { stockLength, kerf, pieces, algorithm } = input;
   if (!(stockLength > 0)) {
     throw new RangeError('stockLength must be greater than 0');
@@ -24,6 +26,10 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
     if (!(p.length > 0)) {
       throw new RangeError(`pieces[${i}].length must be greater than 0`);
     }
+    // A count of pieces: 0 or a negative one was silently dropped from the plan, 2.5 cut as 3.
+    if (!(Number.isInteger(p.quantity) && p.quantity > 0)) {
+      throw new RangeError(`pieces[${i}].quantity must be a whole number greater than 0`);
+    }
   });
 
   // Expand quantities
@@ -32,9 +38,6 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
     for (let i = 0; i < p.quantity; i++) {
       expanded.push({ length: p.length, label: p.label ?? `${p.length}` });
     }
-  }
-  if (expanded.length === 0) {
-    throw new RangeError('total piece quantity must be greater than 0');
   }
 
   // Check if any piece exceeds stock length

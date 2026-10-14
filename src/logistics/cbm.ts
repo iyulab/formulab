@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CbmInput, CbmResult } from './types.js';
 
 /**
@@ -29,6 +29,7 @@ function toMeters(value: number, unit: 'mm' | 'cm' | 'm'): number {
  * @throws {RangeError} length, width, height or quantity is not greater than 0
  */
 export function cbm(input: CbmInput): CbmResult {
+  requireFinite('cbm', input);
   const { length, width, height, quantity, unit } = input;
 
   // A negative dimension or quantity flips the sign of the volume; a zero one is no cargo.

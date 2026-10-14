@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
 import type { OeeInput, OeeResult } from './types.js';
 
@@ -25,6 +25,7 @@ import type { OeeInput, OeeResult } from './types.js';
  *   goodCount < 0 or > totalCount (NaN in any of them is refused too)
  */
 export function oee(input: OeeInput): OeeResult {
+  requireFinite('oee', input);
   const { rawData } = input;
   const { plannedTime, runTime, totalCount, goodCount, idealCycleTime } = rawData;
 

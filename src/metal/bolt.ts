@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BoltInput, BoltResult } from './types.js';
 
 /**
@@ -23,6 +23,7 @@ import type { BoltInput, BoltResult } from './types.js';
  * Reference: Machinery's Handbook, VDI 2230
  */
 export function bolt(input: BoltInput): BoltResult {
+  requireFinite('bolt', input);
   const { mode, diameter, pitch, kFactor, tensileStrength } = input;
 
   // Validate inputs
@@ -87,6 +88,7 @@ export function bolt(input: BoltInput): BoltResult {
  * Get K-factor for common lubrication conditions
  */
 export function getKFactor(condition: string): number {
+  requireFinite('getKFactor', condition);
   const factors: Record<string, number> = {
     dry: 0.20,
     oiled: 0.15,
@@ -100,6 +102,7 @@ export function getKFactor(condition: string): number {
  * Get standard ISO metric thread pitch for nominal diameter
  */
 export function getStandardPitch(diameter: number): number {
+  requireFinite('getStandardPitch', diameter);
   const pitches: Record<number, number> = {
     3: 0.5,
     4: 0.7,

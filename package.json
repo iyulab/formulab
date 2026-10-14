@@ -1,6 +1,6 @@
 {
   "name": "formulab",
-  "version": "0.57.0",
+  "version": "0.58.0",
   "description": "Manufacturing & Engineering calculation formulas library - 203 industrial calculations across 15 domains for OEE, Cpk, SPC, FMEA, Nelson Rules, metal weight, CNC machining, GD&T, battery, environmental, pipe flow, logistics, IE time study, and more",
   "type": "module",
   "main": "./dist/index.js",
@@ -107,6 +107,7 @@
     "check:function-counts": "node scripts/count-functions.mjs",
     "check:documented-throws": "node scripts/check-documented-throws.mjs",
     "check:nonfinite-outputs": "node scripts/check-nonfinite-outputs.mjs",
+    "check:nonfinite-inputs": "node scripts/check-nonfinite-inputs.mjs",
     "audit:sign-flips": "node scripts/audit-sign-flips.mjs",
     "audit:zero-inputs": "node scripts/audit-zero-inputs.mjs"
   },

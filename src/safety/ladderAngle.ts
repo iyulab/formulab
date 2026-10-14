@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LadderAngleInput, LadderAngleResult } from './types.js';
 
 const DEG = 180 / Math.PI;
@@ -28,6 +28,7 @@ export const LADDER_COMPLIANT_ANGLE_RANGE = { min: 70, max: 80 } as const;
  *   when it is used as a given (i.e. height and baseDistance are not both supplied).
  */
 export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
+  requireFinite('ladderAngle', input);
   let { ladderLength, height, baseDistance } = input;
   const warnings: string[] = [];
 

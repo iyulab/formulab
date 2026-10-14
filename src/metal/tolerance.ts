@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ToleranceInput, ToleranceResult } from './types.js';
 
 // Size ranges [min, max] in mm
@@ -97,6 +97,7 @@ function getToleranceValue(nominal: number, itGrade: number): number {
  *   or the deviation letter is unknown
  */
 export function tolerance(input: ToleranceInput): ToleranceResult {
+  requireFinite('tolerance', input);
   const { nominalSize, fitType, deviationLetter, itGrade } = input;
 
   const idx = getSizeRangeIndex(nominalSize);

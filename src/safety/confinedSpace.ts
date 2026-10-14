@@ -1,4 +1,5 @@
 import type { ConfinedSpaceInput, ConfinedSpaceResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Confined Space Atmospheric Assessment — OSHA 29 CFR 1910.146
@@ -18,6 +19,7 @@ import type { ConfinedSpaceInput, ConfinedSpaceResult } from './types.js';
  *   so zero values are accepted; only physically impossible values throw.
  */
 export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
+  requireFinite('confinedSpace', input);
   const { oxygenPercent, lelPercent, h2sPpm, coPpm, customGas } = input;
 
   if (oxygenPercent < 0 || oxygenPercent > 100) {

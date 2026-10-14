@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { RpnInput, RpnResult, RiskLevel } from './types.js';
 
 /**
@@ -28,6 +28,7 @@ function clampScore(value: number): number {
  * @returns RPN analysis result
  */
 export function rpn(input: RpnInput): RpnResult {
+  requireFinite('rpn', input);
   const { severity, occurrence, detection } = input;
 
   // Validate and clamp inputs to 1-10 scale

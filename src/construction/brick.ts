@@ -1,5 +1,5 @@
 import type { BrickInput, BrickResult, BrickSize, BrickDimensions } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Standard brick sizes in mm
@@ -23,6 +23,7 @@ export const BRICK_SIZES: Record<Exclude<BrickSize, 'custom'>, BrickDimensions> 
  * @throws {RangeError} wallArea ≤ 0, unknown brickSize, custom dimensions ≤ 0, mortarThickness < 0, or wasteFactor < 0
  */
 export function brick(input: BrickInput): BrickResult {
+  requireFinite('brick', input);
   const { wallArea, brickSize, customLength, customHeight, mortarThickness, wasteFactor } = input;
 
   if (!(wallArea > 0)) {

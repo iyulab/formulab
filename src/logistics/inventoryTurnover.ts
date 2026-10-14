@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { InventoryTurnoverInput, InventoryTurnoverResult } from './types.js';
 
 /**
@@ -15,6 +15,7 @@ import type { InventoryTurnoverInput, InventoryTurnoverResult } from './types.js
  * @throws {RangeError} periodDays is not greater than 0, or cogs or averageInventory is negative
  */
 export function inventoryTurnover(input: InventoryTurnoverInput): InventoryTurnoverResult {
+  requireFinite('inventoryTurnover', input);
   const {
     cogs,
     averageInventory,

@@ -71,10 +71,13 @@ describe('chemical physical-input domains', () => {
       expect(() => injectionCycle({ resin: 'abs', wallThickness: 0, shotWeight: 50 })).toThrow(RangeError);
     });
 
-    it('accepts zero shot weight and zero handling times', () => {
-      const result = injectionCycle({ resin: 'abs', wallThickness: 3, shotWeight: 0, moldOpenCloseTime: 0, ejectionTime: 0 });
-      expect(result.fillTime).toBe(0);
-      expect(result.totalCycleTime).toBe(result.coolingTime + result.packingTime);
+    it('refuses a shot with no material — a cycle rate for it is a rate for no parts', () => {
+      expect(() => injectionCycle({ resin: 'abs', wallThickness: 3, shotWeight: 0 })).toThrow(/shotWeight must be greater than 0/);
+    });
+
+    it('accepts zero handling times', () => {
+      const result = injectionCycle({ resin: 'abs', wallThickness: 3, shotWeight: 50, moldOpenCloseTime: 0, ejectionTime: 0 });
+      expect(result.totalCycleTime).toBeCloseTo(result.fillTime + result.coolingTime + result.packingTime, 1);
     });
   });
 

@@ -326,7 +326,7 @@ describe('gageRR study shape', () => {
     const ragged = study(5, 3, 3); ragged[2] = ragged[2].slice(0, 2);
     expect(() => gageRR({ measurements: ragged })).toThrow(/part 3 has 2 operators/);
     const nan = study(5, 3, 3); nan[1][1][1] = NaN;
-    expect(() => gageRR({ measurements: nan })).toThrow(/not a finite number/);
+    expect(() => gageRR({ measurements: nan })).toThrow(/measurements\[1\]\[1\]\[1\] must be a finite number/);
     expect(() => gageRR({ measurements: [] })).toThrow(/must not be empty/);
   });
 });

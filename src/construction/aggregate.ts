@@ -1,5 +1,5 @@
 import type { AggregateInput, AggregateResult, AggregateType, AggregateDensity } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Common aggregate densities (kg/m³)
@@ -21,6 +21,7 @@ export const AGGREGATE_DENSITIES: AggregateDensity[] = [
  * @throws {RangeError} the type is not in the table
  */
 export function getAggregateDensity(type: AggregateType): number | null {
+  requireFinite('getAggregateDensity', type);
   const aggregate = AGGREGATE_DENSITIES.find(a => a.type === type);
   // A density of 0 for an unknown type would turn every volume into 0 kg.
   if (!aggregate) {
@@ -38,6 +39,7 @@ export function getAggregateDensity(type: AggregateType): number | null {
  * @returns Coverage area in square meters
  */
 export function aggregateCoverage(volumeM3: number, depthCm: number): number {
+  requireFinite('aggregateCoverage', { volumeM3, depthCm });
   if (volumeM3 <= 0 || depthCm <= 0) {
     throw new RangeError('Volume and depth must be greater than zero');
   }
@@ -60,6 +62,7 @@ export function aggregateCoverage(volumeM3: number, depthCm: number): number {
  * @returns Aggregate calculation results
  */
 export function aggregate(input: AggregateInput): AggregateResult {
+  requireFinite('aggregate', input);
   const { length, width, depth, depthUnit, aggregateType, customDensity } = input;
 
   // Validate inputs

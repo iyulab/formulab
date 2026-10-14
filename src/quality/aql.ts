@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { AqlInput, AqlResult, InspectionLevel } from './types.js';
 
 // Sample size code letters — ISO 2859-1:1999 Table 1 / ANSI Z1.4 Table I
@@ -126,6 +126,7 @@ function getAcceptReject(
  * @returns AQL sampling plan result
  */
 export function aql(input: AqlInput): AqlResult {
+  requireFinite('aql', input);
   const { lotSize, aqlLevel, inspectionLevel } = input;
 
   // Guard against invalid lot size

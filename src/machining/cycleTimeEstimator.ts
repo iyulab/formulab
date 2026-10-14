@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CycleTimeEstimatorInput, CycleTimeEstimatorResult } from './types.js';
 
 const DEFAULT_RAPID_RATE = 10000; // mm/min
@@ -22,6 +22,7 @@ const DEFAULT_RAPID_RATE = 10000; // mm/min
  *   greater than 0, or a rapid move has a rapid rate that is not greater than 0
  */
 export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEstimatorResult {
+  requireFinite('cycleTimeEstimator', input);
   const { operations, setupTime = 0, partCount = 1 } = input;
 
   // A cycle with no moves has no time to estimate — a 0 s cycle would read as an answer.

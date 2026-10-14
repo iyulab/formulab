@@ -1,4 +1,5 @@
 import type { HaccpCategory, HaccpInput, HaccpResult, HaccpCheckItem } from './types.js';
+import { requireFinite } from '../utils.js';
 
 const CHECKLIST_DATA: Record<HaccpCategory, HaccpCheckItem[]> = {
   receiving: [
@@ -64,6 +65,7 @@ export function getCategories(): HaccpCategory[] {
  * @returns HACCP result with checklist items, or null for invalid category
  */
 export function haccp(input: HaccpInput): HaccpResult | null {
+  requireFinite('haccp', input);
   const items = CHECKLIST_DATA[input.category];
   if (!items) return null;
 

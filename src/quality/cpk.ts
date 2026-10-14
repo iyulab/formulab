@@ -1,5 +1,6 @@
 import { capabilityIndices } from './capability.js';
 import type { CpkInput, CpkResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate Cpk (Process Capability Index)
@@ -35,6 +36,7 @@ import type { CpkInput, CpkResult } from './types.js';
  *   is negative or not finite
  */
 export function cpk(input: CpkInput): CpkResult {
+  requireFinite('cpk', input);
   const { usl, lsl, mean, stdDev } = input;
   const c = capabilityIndices(usl, lsl, mean, stdDev);
   return {

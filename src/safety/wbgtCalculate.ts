@@ -1,4 +1,5 @@
 import type { WbgtInput, WbgtResult, WorkloadIntensity } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * WBGT limits in degrees Celsius by workload class and acclimatization state.
@@ -68,6 +69,7 @@ const WBGT_THRESHOLDS: Record<
  * @returns WBGT result with index, threshold, and status
  */
 export function wbgtCalculate(input: WbgtInput): WbgtResult {
+  requireFinite('wbgtCalculate', input);
   const {
     dryBulbTemp,
     wetBulbTemp,

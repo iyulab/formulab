@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
 import type {
   NioshInput,
@@ -163,6 +163,7 @@ function getCouplingMultiplier(
  *   riskLevel is classified from the rounded liftingIndex so the two always agree.
  */
 export function nioshLifting(input: NioshInput): NioshResult {
+  requireFinite('nioshLifting', input);
   const {
     horizontalDistance,
     verticalDistance,

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { MovingAverageInput, MovingAverageResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { MovingAverageInput, MovingAverageResult } from './types.js';
  *   window exceeds data length, or method is not 'sma' or 'ema'
  */
 export function movingAverage(input: MovingAverageInput): MovingAverageResult {
+  requireFinite('movingAverage', input);
   const { data, window, method } = input;
   if (!data || data.length === 0) {
     throw new RangeError('data must contain at least one value');

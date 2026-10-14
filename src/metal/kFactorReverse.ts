@@ -1,5 +1,6 @@
 import { propagate } from '../math.js';
 import type { KFactorReverseInput, KFactorReverseResult, KFactorReverseRangeResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Reverse calculate K-factor from measured flat length.
@@ -21,6 +22,7 @@ import type { KFactorReverseInput, KFactorReverseResult, KFactorReverseRangeResu
  *   means the measured flat length does not belong to this bend (a 95° bend measured as a 90° one gave −0.62)
  */
 export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult {
+  requireFinite('kFactorReverse', input);
   const {
     thickness,
     bendAngle,
@@ -99,6 +101,8 @@ export function kFactorReverseRange(
   input: KFactorReverseInput,
   measurementUncertaintyMm = 0.02,
 ): KFactorReverseRangeResult {
+  requireFinite('kFactorReverseRange', input);
+  requireFinite('kFactorReverseRange', { measurementUncertaintyMm });
   const { value, min, max } = propagate(
     input,
     {

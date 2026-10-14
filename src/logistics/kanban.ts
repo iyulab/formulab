@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { KanbanInput, KanbanResult } from './types.js';
 
 /**
@@ -20,6 +20,7 @@ import type { KanbanInput, KanbanResult } from './types.js';
  *   safetyFactor is negative
  */
 export function kanban(input: KanbanInput): KanbanResult {
+  requireFinite('kanban', input);
   const { dailyDemand, leadTime, safetyFactor, containerQuantity } = input;
 
   if (!(dailyDemand > 0)) throw new RangeError('dailyDemand must be greater than 0');

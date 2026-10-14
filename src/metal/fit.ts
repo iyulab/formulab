@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { tolerance } from './tolerance.js';
 import type { FitInput, FitResult } from './types.js';
 
@@ -27,6 +27,7 @@ import type { FitInput, FitResult } from './types.js';
  *   or a deviation letter is unknown (propagated from `tolerance()`)
  */
 export function fit(input: FitInput): FitResult {
+  requireFinite('fit', input);
   const { nominalSize, holeDeviation, holeGrade, shaftDeviation, shaftGrade } = input;
 
   const hole = tolerance({

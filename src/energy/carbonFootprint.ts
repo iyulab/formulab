@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { CarbonFootprintInput, CarbonFootprintResult } from './types.js';
 
 // Constants for environmental equivalents
@@ -19,6 +19,7 @@ const KG_CO2_PER_CAR_PER_YEAR = 4600;
  * @throws {RangeError} electricityUsage or emissionFactor is negative
  */
 export function carbonFootprint(input: CarbonFootprintInput): CarbonFootprintResult {
+  requireFinite('carbonFootprint', input);
   const { electricityUsage, emissionFactor } = input;
 
   // A negative usage or emission factor would report a negative emission, which this

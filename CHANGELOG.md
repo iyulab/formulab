@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.58.0] - 2026-10-15
+
 ### Changed
+
+- **Every function refuses a non-finite input.** NaN or ±Infinity anywhere in the argument — nested objects and
+  arrays included — throws `RangeError('<fn>: <path> must be a finite number (got NaN)')` before any other check.
+  A guard written `x <= 0` lets NaN through (every comparison with NaN is false): an execution check found 99
+  functions that accepted it and answered with `null` outputs beside a confident verdict — `safety/arcFlash()` with
+  no incident energy still named PPE category 4, `metal/weldHeat()` a HAZ hardness, `chemical/pipeFlow()` a flow
+  regime. New CI gate `pnpm check:nonfinite-inputs` sets each input to NaN and to Infinity and fails on a call that
+  returns. Type guards (`is…Input`) are unchanged — they check shape.
+- **More inputs outside their range throw**, each with the field it is about:
+  `chemical/concentration()` more than 100 wt% solute (wt% > 100, ppm > 10⁶, or a molarity implying it);
+  `chemical/injectionCycle()` `shotWeight` 0 (a rate of parts with no material); `chemical/flowControl()` a
+  negative absolute `outletPressure`; `chemical/reliefValve()` gas or steam at or below absolute zero, and a
+  negative `overpressure`; `energy/ledRoi()` `oldWatts` 0 (0 % reduction beside added use);
+  `safety/illuminance()` a workplane below the floor; `metal/cuttingStock()` a piece quantity that is not a whole
+  number above 0 (0 and negatives were dropped silently, 2.5 was cut as 3); `metal/flatPattern()` an unknown
+  `shapeType` (bent as a U) and, with `metal/bendAllowance()`, an unknown material with no `kFactor` (reported as a
+  K-factor out of range); `metal/metalWeight()` an unknown material or shape (an empty weight);
+  `battery/bmsBalancing()` fewer than 2 cells or a missing list (a `TypeError`).
 
 - **`quality/lineBalancing()` no longer loops forever on a predecessor that names no task** — the station filler
   waited for a task that never completes until memory ran out. It and `construction/pert()` (which dropped such a
@@ -15,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of «circular dependency». Shared internal check `src/precedence.ts`.
 - **`quality/gageRR()` refuses a study outside the AIAG constant tables** for the Average-Range method (2–3
   trials, 2–3 operators, 2–10 parts) instead of computing with the 3/3/10 constants; empty or ragged measurement
-  arrays and non-finite readings throw for both methods.
+  arrays throw for both methods.
 - **`chemical/pid()` refuses a missing tuning parameter** instead of substituting 1, and a NaN one.
 
 ## [0.57.0] - 2026-10-15

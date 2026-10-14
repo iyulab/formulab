@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingProfileInput, ChargingProfileResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { ChargingProfileInput, ChargingProfileResult } from './types.js';
  * @returns Phase durations, Ah delivered per phase, average C-rate
  */
 export function chargingProfile(input: ChargingProfileInput): ChargingProfileResult {
+  requireFinite('chargingProfile', input);
   const {
     capacityAh,
     chargingCurrentA,

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WeightedScoreInput, WeightedScoreResult, WeightedScoreAlternative } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { WeightedScoreInput, WeightedScoreResult, WeightedScoreAlternative 
  * @remarks Scores may be negative (a penalty criterion); weights may not.
  */
 export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
+  requireFinite('weightedScore', input);
   const { criteria, weights, alternatives, scores } = input;
   if (!criteria || !weights || !alternatives || !scores) {
     throw new RangeError('criteria, weights, alternatives and scores are required');

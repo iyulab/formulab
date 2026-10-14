@@ -1,5 +1,5 @@
 import type { CapacitorCodeInput, CapacitorCodeResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -12,6 +12,7 @@ import { roundTo } from '../utils.js';
  * @throws Error if code is invalid
  */
 export function capacitorDecode(input: CapacitorCodeInput): CapacitorCodeResult {
+  requireFinite('capacitorDecode', input);
   const { code } = input;
 
   // Validate: must be exactly 3 digits

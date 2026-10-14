@@ -1,5 +1,5 @@
 import type { SolderInput, SolderResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Calculate solder paste consumption for SMT production
@@ -9,6 +9,7 @@ import { roundTo } from '../utils.js';
  *   boardsPerPanel or panelCount is not greater than 0
  */
 export function solderPaste(input: SolderInput): SolderResult {
+  requireFinite('solderPaste', input);
   const {
     padCount,
     avgPadArea,

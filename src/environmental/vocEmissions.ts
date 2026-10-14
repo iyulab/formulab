@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { VocEmissionsInput, VocEmissionsResult } from './types.js';
 
 /**
@@ -12,6 +12,7 @@ import type { VocEmissionsInput, VocEmissionsResult } from './types.js';
  * @throws {RangeError} totalVocKg < 0, or an efficiency outside [0, 1]
  */
 export function vocEmissions(input: VocEmissionsInput): VocEmissionsResult {
+  requireFinite('vocEmissions', input);
   const { totalVocKg, captureEfficiency, destructionEfficiency } = input;
 
   if (totalVocKg < 0) {

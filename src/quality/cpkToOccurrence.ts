@@ -1,4 +1,5 @@
 import type { CpkToOccurrenceInput, CpkToOccurrenceResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Map Cpk (Process Capability Index) to FMEA Occurrence rating
@@ -11,6 +12,7 @@ import type { CpkToOccurrenceInput, CpkToOccurrenceResult } from './types.js';
  * @throws {RangeError} Cpk must be a non-negative number
  */
 export function cpkToOccurrence(input: CpkToOccurrenceInput): CpkToOccurrenceResult {
+  requireFinite('cpkToOccurrence', input);
   const { cpk } = input;
 
   if (!Number.isFinite(cpk) || cpk < 0) {

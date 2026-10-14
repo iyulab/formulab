@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LelInput, LelResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { LelInput, LelResult } from './types.js';
  *   gas list (no flammable gas present) is a valid input that reports 'safe'.
  */
 export function lel(input: LelInput): LelResult {
+  requireFinite('lel', input);
   const { gases } = input;
 
   for (const gas of gases) {

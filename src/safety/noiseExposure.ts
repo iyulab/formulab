@@ -1,4 +1,5 @@
 import type { NoiseExposureInput, NoiseExposureResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate allowable exposure time for a given sound level (OSHA formula)
@@ -39,6 +40,7 @@ function getAllowableTime(soundLevel: number): number {
  *   reports a compliant 0% dose.
  */
 export function noiseExposure(input: NoiseExposureInput): NoiseExposureResult {
+  requireFinite('noiseExposure', input);
   const { exposures } = input;
 
   for (const exposure of exposures) {

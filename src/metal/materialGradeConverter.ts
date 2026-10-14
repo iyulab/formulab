@@ -1,4 +1,5 @@
 import type { MaterialStandard, MaterialGradeConverterInput, MaterialGradeConverterResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 interface GradeEntry {
   astm: string | null;
@@ -80,6 +81,7 @@ const LOOKUP = buildLookup();
  * @returns Equivalent grades in all 5 standards with category info
  */
 export function materialGradeConverter(input: MaterialGradeConverterInput): MaterialGradeConverterResult {
+  requireFinite('materialGradeConverter', input);
   const key = `${input.standard}:${input.grade.toUpperCase()}`;
   const entry = LOOKUP.get(key);
 

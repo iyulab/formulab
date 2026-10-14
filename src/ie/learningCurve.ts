@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { LearningCurveInput, LearningCurveResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { LearningCurveInput, LearningCurveResult } from './types.js';
  * @throws {RangeError} Unit number must be a positive integer
  */
 export function learningCurve(input: LearningCurveInput): LearningCurveResult {
+  requireFinite('learningCurve', input);
   const { firstUnitTime, learningRate, unitNumber, model = 'unit' } = input;
 
   if (!Number.isFinite(firstUnitTime) || firstUnitTime <= 0) {

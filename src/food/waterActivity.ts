@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WaterActivityInput, WaterActivityResult } from './types.js';
 
 /**
@@ -17,6 +17,7 @@ import type { WaterActivityInput, WaterActivityResult } from './types.js';
  * @throws {RangeError} aw is outside [0, 1]
  */
 export function waterActivity(input: WaterActivityInput): WaterActivityResult {
+  requireFinite('waterActivity', input);
   const { aw, temperature = 25 } = input;
 
   // Water activity is a ratio of vapour pressures, from 0 (bone dry) to 1 (pure water).

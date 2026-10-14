@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EnergyDensityInput, EnergyDensityResult } from './types.js';
 
 /**
@@ -11,6 +11,7 @@ import type { EnergyDensityInput, EnergyDensityResult } from './types.js';
  *   given and not greater than 0 (an omitted one gives a null density)
  */
 export function energyDensity(input: EnergyDensityInput): EnergyDensityResult {
+  requireFinite('energyDensity', input);
   const { capacityAh, nominalVoltage, massKg, volumeL } = input;
 
   // A negative capacity or voltage returns a negative energy and negative densities.

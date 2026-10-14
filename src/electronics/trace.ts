@@ -1,5 +1,5 @@
 import type { TraceInput, TraceResult } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -40,6 +40,7 @@ const COPPER_RESISTIVITY = 0.6787;
  * @throws {RangeError} current ≤ 0, tempRise ≤ 0, or copperWeight ≤ 0
  */
 export function traceWidth(input: TraceInput): TraceResult {
+  requireFinite('traceWidth', input);
   const { current, tempRise, copperWeight, layer } = input;
 
   if (current <= 0) {

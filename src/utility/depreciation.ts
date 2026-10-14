@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { DepreciationInput, DepreciationResult, DepreciationYearEntry } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { DepreciationInput, DepreciationResult, DepreciationYearEntry } fro
  *   salvageValue >= assetCost, or method is unknown
  */
 export function depreciation(input: DepreciationInput): DepreciationResult {
+  requireFinite('depreciation', input);
   const { assetCost, salvageValue, usefulLife, method } = input;
   if (assetCost <= 0) throw new RangeError(`assetCost must be > 0, got ${assetCost}`);
   if (salvageValue < 0) throw new RangeError(`salvageValue must be >= 0, got ${salvageValue}`);

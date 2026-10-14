@@ -1,4 +1,5 @@
 import type { BatchInput, BatchResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate batch scaling for recipe ingredients.
@@ -12,6 +13,7 @@ import type { BatchInput, BatchResult } from './types.js';
  *   targetBatchSize negative or non-finite, or an ingredient amount is negative.
  */
 export function batch(input: BatchInput): BatchResult {
+  requireFinite('batch', input);
   const { originalBatchSize, targetBatchSize, ingredients } = input;
 
   if (!Number.isFinite(originalBatchSize) || originalBatchSize <= 0) {

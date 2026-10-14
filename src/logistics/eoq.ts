@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { EoqInput, EoqResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { EoqInput, EoqResult } from './types.js';
  * @throws {RangeError} annualDemand, orderCost or holdingCost is not greater than 0
  */
 export function eoq(input: EoqInput): EoqResult {
+  requireFinite('eoq', input);
   const { annualDemand, orderCost, holdingCost } = input;
 
   // EOQ = √(2DS/H) needs all three positive: a zero demand or order cost gives no orders to

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ProductCarbonFootprintInput, ProductCarbonFootprintResult } from './types.js';
 
 /**
@@ -14,6 +14,7 @@ import type { ProductCarbonFootprintInput, ProductCarbonFootprintResult } from '
  *   Negative stage values are not refused — they are this model's recycling credits.
  */
 export function productCarbonFootprint(input: ProductCarbonFootprintInput): ProductCarbonFootprintResult {
+  requireFinite('productCarbonFootprint', input);
   const { stages, productionQuantity } = input;
 
   if (!stages || stages.length === 0) {

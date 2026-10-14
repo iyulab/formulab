@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ThermalComfortInput, ThermalComfortResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { ThermalComfortInput, ThermalComfortResult } from './types.js';
  *   are not range-checked.
  */
 export function thermalComfort(input: ThermalComfortInput): ThermalComfortResult {
+  requireFinite('thermalComfort', input);
   const { airTemp, radiantTemp, airVelocity, relativeHumidity, metabolicRate, clothingInsulation } = input;
 
   if (relativeHumidity < 0 || relativeHumidity > 100) {

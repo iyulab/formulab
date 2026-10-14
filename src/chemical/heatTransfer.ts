@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { HeatTransferInput, HeatTransferResult } from './types.js';
 
 /**
@@ -26,6 +26,7 @@ const STEFAN_BOLTZMANN = 5.670374419e-8;
  * @returns heat transfer rate and related quantities
  */
 export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
+  requireFinite('heatTransfer', input);
   let heatRate: number;
   let area: number;
   let tempDifference: number;

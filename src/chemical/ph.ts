@@ -1,5 +1,5 @@
 import type { PhInput, PhResult, BufferSystem } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * pKa values at 25C for common buffer systems
@@ -36,6 +36,7 @@ const DPKA_DT: Record<Exclude<BufferSystem, 'custom'>, number> = {
  * @throws {RangeError} acidConcentration or baseConcentration is not greater than 0
  */
 export function ph(input: PhInput): PhResult {
+  requireFinite('ph', input);
   const { bufferSystem, acidConcentration, baseConcentration, temperature, customPka } = input;
 
   // Guard against invalid concentrations

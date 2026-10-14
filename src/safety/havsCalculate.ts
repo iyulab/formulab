@@ -1,4 +1,5 @@
 import type { HavsInput, HavsResult, ToolExposure } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Daily exposure action value (EAV) for hand-arm vibration, in m/s² A(8).
@@ -103,6 +104,7 @@ function calculateMaxDailyExposure(tools: ToolExposure[]): number {
  *   (or all-zero) tool list is a valid input that reports no exposure.
  */
 export function havsCalculate(input: HavsInput): HavsResult {
+  requireFinite('havsCalculate', input);
   const { tools } = input;
 
   for (const t of tools) {

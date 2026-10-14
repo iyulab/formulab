@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { PickTimeInput, PickTimeResult } from './types.js';
 
 /**
@@ -18,6 +18,7 @@ import type { PickTimeInput, PickTimeResult } from './types.js';
  *   searchTimePerItem, pickTimePerItem or documentationTime is negative
  */
 export function pickTime(input: PickTimeInput): PickTimeResult {
+  requireFinite('pickTime', input);
   const {
     mode,
     distance,

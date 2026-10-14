@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { FreightClassInput, FreightClassResult } from './types.js';
 
 /**
@@ -36,6 +36,7 @@ const FREIGHT_CLASS_TABLE: Array<{ minDensity: number; maxDensity: number; freig
  * @returns Freight class determination results
  */
 export function freightClass(input: FreightClassInput): FreightClassResult {
+  requireFinite('freightClass', input);
   const { weight, length, width, height } = input;
 
   if (weight <= 0) throw new RangeError('weight must be greater than 0');

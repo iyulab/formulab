@@ -1,4 +1,5 @@
 import type { FlangeSpecInput, FlangeSpecResult, PressureClass } from './types.js';
+import { requireFinite } from '../utils.js';
 
 interface FlangeDimension {
   od: number;                // flange OD, mm
@@ -89,6 +90,7 @@ export function getFlangeSizes(): string[] {
 }
 
 export function flangeSpec(input: FlangeSpecInput): FlangeSpecResult {
+  requireFinite('flangeSpec', input);
   const { standard, pressureClass, nominalSize } = input;
 
   if (standard === 'EN_1092_1') {

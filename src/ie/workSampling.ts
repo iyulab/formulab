@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { WorkSamplingInput, WorkSamplingResult } from './types.js';
 
@@ -19,6 +19,7 @@ import type { WorkSamplingInput, WorkSamplingResult } from './types.js';
  * @throws {RangeError} Accuracy must be a positive number
  */
 export function workSampling(input: WorkSamplingInput): WorkSamplingResult {
+  requireFinite('workSampling', input);
   const { totalObservations, activityObservations, confidence, accuracy } = input;
 
   if (!Number.isFinite(totalObservations) || totalObservations <= 0) {

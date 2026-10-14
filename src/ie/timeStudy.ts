@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { TimeStudyInput, TimeStudyResult } from './types.js';
 
@@ -20,6 +20,7 @@ import type { TimeStudyInput, TimeStudyResult } from './types.js';
  * @throws {RangeError} Accuracy must be a positive number
  */
 export function timeStudy(input: TimeStudyInput): TimeStudyResult {
+  requireFinite('timeStudy', input);
   const { observations, confidence, accuracy } = input;
 
   if (!Array.isArray(observations) || observations.length < 2) {

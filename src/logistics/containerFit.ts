@@ -1,4 +1,5 @@
 import type { ContainerFitInput, ContainerFitResult, BoxOrientation } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Generate all possible orientations for a box
@@ -42,6 +43,7 @@ function getOrientations(l: number, w: number, h: number, allowRotation: boolean
  * @throws RangeError if any cargo or container dimension is not greater than 0
  */
 export function containerFit(input: ContainerFitInput): ContainerFitResult {
+  requireFinite('containerFit', input);
   const { container, cargo, allowRotation } = input;
 
   // Each container dimension is divided by a cargo dimension.

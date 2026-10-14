@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { SelfDischargeInput, SelfDischargeResult } from './types.js';
 
 /**
@@ -10,6 +10,7 @@ import type { SelfDischargeInput, SelfDischargeResult } from './types.js';
  * @throws {RangeError} initialVoltage, finalVoltage, days or nominalVoltage is not greater than 0
  */
 export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
+  requireFinite('selfDischarge', input);
   const { initialVoltage, finalVoltage, days, nominalVoltage } = input;
 
   // A negative voltage reading is not a resting cell and flips the sign of the drop.

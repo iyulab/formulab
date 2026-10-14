@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { HeatPumpInput, HeatPumpResult } from './types.js';
 
 /**
@@ -16,6 +16,7 @@ import type { HeatPumpInput, HeatPumpResult } from './types.js';
  *   negative; or boilerEfficiency, when given, is outside (0, 1]
  */
 export function heatPump(input: HeatPumpInput): HeatPumpResult {
+  requireFinite('heatPump', input);
   const {
     sourceTemp, sinkTemp, heatingCapacity, compressorPower,
     auxiliaryPower = 0, operatingHours, electricityRate,

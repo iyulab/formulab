@@ -1,4 +1,5 @@
 import type { PalletStackInput, PalletStackResult, BoxOrientation } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Generate floor placement orientations for a box
@@ -29,6 +30,7 @@ function getFloorOrientations(l: number, w: number, h: number, allowRotation: bo
  * @throws RangeError if any box dimension, the pallet length or width, or maxHeight is not greater than 0
  */
 export function palletStack(input: PalletStackInput): PalletStackResult {
+  requireFinite('palletStack', input);
   const { pallet, box, maxHeight, allowRotation } = input;
 
   // Each pallet dimension and the stack height are divided by a box dimension.

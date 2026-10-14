@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { HistogramInput, HistogramResult, HistogramBin } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { HistogramInput, HistogramResult, HistogramBin } from './types.js';
  * @throws RangeError if data is empty or bins < 1
  */
 export function histogram(input: HistogramInput): HistogramResult {
+  requireFinite('histogram', input);
   const { data } = input;
   if (!data || data.length === 0) {
     throw new RangeError('data must contain at least one value');

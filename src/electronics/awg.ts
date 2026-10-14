@@ -1,5 +1,5 @@
 import type { AwgInput, AwgResult, AwgMaterial } from './types.js';
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 
 /**
  * Round to specified decimal places
@@ -35,6 +35,7 @@ const CURRENT_DENSITY: Record<AwgMaterial, number> = {
  *   (the geometric diameter series this formula reproduces)
  */
 export function awgProperties(input: AwgInput): AwgResult {
+  requireFinite('awgProperties', input);
   const { awg, material, tempC } = input;
 
   if (awg < 0 || awg > 40) {

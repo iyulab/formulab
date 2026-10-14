@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { WeibullInput, WeibullResult } from './types.js';
 
 /**
@@ -17,6 +17,7 @@ import type { WeibullInput, WeibullResult } from './types.js';
  * @throws RangeError if fewer than 2 failure times are given, any is not greater than 0, all are identical, or missionTime is negative
  */
 export function weibull(input: WeibullInput): WeibullResult {
+  requireFinite('weibull', input);
   const { failureTimes, missionTime } = input;
 
   // Median rank regression fits a line through (ln t, ln ln(1/(1−F))): it needs at least two

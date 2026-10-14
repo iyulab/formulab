@@ -1,4 +1,5 @@
 import type { DilutionInput, DilutionResult } from './types.js';
+import { requireFinite } from '../utils.js';
 
 /**
  * Calculate dilution using C1V1 = C2V2 equation.
@@ -10,6 +11,7 @@ import type { DilutionInput, DilutionResult } from './types.js';
  * @throws {RangeError} any of the three given concentrations or volumes is not greater than 0
  */
 export function dilution(input: DilutionInput): DilutionResult {
+  requireFinite('dilution', input);
   let resultC1: number;
   let resultV1: number;
   let resultC2: number;

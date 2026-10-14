@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
 
 /**
@@ -28,6 +28,7 @@ import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
  * @returns section properties
  */
 export function momentOfInertia(input: MomentOfInertiaInput): MomentOfInertiaResult {
+  requireFinite('momentOfInertia', input);
   switch (input.shape) {
     case 'rectangle':
       return calcRectangle(input.width, input.height);

@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ArcFlashInput, ArcFlashResult, ArcFlashEquipment } from './types.js';
 
 /** IEEE 1584-2002 model range (clause 4) — the empirical equations were fitted only inside it. */
@@ -57,6 +57,7 @@ const ENCLOSED: Record<ArcFlashEquipment, boolean> = {
  *   (no distance exponent in Table 4)
  */
 export function arcFlash(input: ArcFlashInput): ArcFlashResult {
+  requireFinite('arcFlash', input);
   const { voltage, boltedFaultCurrent, workingDistance, faultClearingTime, gapBetweenConductors, equipment, grounding } = input;
 
   if (voltage <= 0) throw new RangeError('voltage must be greater than 0');

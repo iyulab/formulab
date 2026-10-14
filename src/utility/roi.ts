@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { RoiInput, RoiResult } from './types.js';
 
 /**
@@ -9,6 +9,7 @@ import type { RoiInput, RoiResult } from './types.js';
  * @throws RangeError if investment, annualReturn or years is not > 0
  */
 export function roi(input: RoiInput): RoiResult {
+  requireFinite('roi', input);
   const { investment, annualReturn, years } = input;
   if (investment <= 0) {
     throw new RangeError(`investment must be > 0, got ${investment}`);

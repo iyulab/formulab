@@ -1,4 +1,5 @@
 import type { ConcentrationInput, ConcentrationResult } from './types.js';
+import { requireFinite, roundTo } from '../utils.js';
 
 /**
  * Convert concentration between mol/L, wt%, and ppm.
@@ -11,10 +12,12 @@ import type { ConcentrationInput, ConcentrationResult } from './types.js';
  *
  * @param input - Concentration input with source unit, value, molecular weight, and density
  * @returns All three concentration units
- * @throws {RangeError} fromUnit is not molPerL, wtPercent or ppm, value is negative, or
+ * @throws {RangeError} fromUnit is not molPerL, wtPercent or ppm, value is negative or more than
+ *   100 wt% (10⁶ ppm, or a molarity implying it), or
  *   molecularWeight or solutionDensity is not greater than 0
  */
 export function concentration(input: ConcentrationInput): ConcentrationResult {
+  requireFinite('concentration', input);
   const { fromUnit, value, molecularWeight, solutionDensity } = input;
 
   // A concentration is an amount of solute; a negative one converts to negative values in every unit.
@@ -64,6 +67,12 @@ export function concentration(input: ConcentrationInput): ConcentrationResult {
       const unknownUnit: never = fromUnit;
       throw new RangeError(`fromUnit must be molPerL, wtPercent or ppm, got ${String(unknownUnit)}`);
     }
+  }
+
+  // A solution cannot hold more solute than its own mass (100 wt% = 10⁶ ppm); a molarity that
+  // implies it describes a density or molecular weight that does not belong to this solution.
+  if (wtPercent > 100) {
+    throw new RangeError(`value describes ${roundTo(wtPercent, 2)} wt% solute — a solution holds at most 100 wt% (10⁶ ppm)`);
   }
 
   return { molPerL, wtPercent, ppm };

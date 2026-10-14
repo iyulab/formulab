@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { Scope3Category, Scope3EmissionsInput, Scope3EmissionsResult } from './types.js';
 
 /**
@@ -26,6 +26,7 @@ const SPEND_BASED_FACTORS: Record<Scope3Category, number> = {
  * @throws {RangeError} spendUsd is negative
  */
 export function scope3Emissions(input: Scope3EmissionsInput): Scope3EmissionsResult {
+  requireFinite('scope3Emissions', input);
   const { category, spendUsd } = input;
 
   // A negative spend (a refund) would report a negative emission; offsets are outside this model.

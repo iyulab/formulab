@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { ExpiryInput, ExpiryResult } from './types.js';
 
 function daysBetween(a: string, b: string): number {
@@ -27,6 +27,7 @@ function addDays(date: string, days: number): string {
  *   with an expiryDate before the productionDate
  */
 export function expiry(input: ExpiryInput): ExpiryResult {
+  requireFinite('expiry', input);
   const { mode, productionDate, shelfLifeDays, expiryDate, today } = input;
 
   if (mode === 'calculateExpiry') {

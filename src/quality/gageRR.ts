@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import { fCDF } from '../math.js';
 import type { GageRRInput, GageRRResult } from './types.js';
 
@@ -336,12 +336,13 @@ function gageRRAnova(input: GageRRInput): GageRRResult {
  *   2 parts, operators or trials
  */
 export function gageRR(input: GageRRInput): GageRRResult {
+  requireFinite('gageRR', input);
   validateStudyShape(input.measurements);
   return input.method === 'anova' ? gageRRAnova(input) : gageRRAverageRange(input);
 }
 
 /**
- * Every part must have the same operators and every operator the same trials, all finite — a
+ * Every part must have the same operators and every operator the same trials (finiteness is checked at entry by `requireFinite`) — a
  * ragged study reads past the end of shorter arrays.
  */
 function validateStudyShape(measurements: GageRRInput['measurements']): void {
@@ -361,11 +362,6 @@ function validateStudyShape(measurements: GageRRInput['measurements']): void {
       if (readings.length !== trials) {
         throw new RangeError(`part ${p + 1}, operator ${o + 1} has ${readings.length} trials, the study has ${trials}`);
       }
-      readings.forEach((v, t) => {
-        if (!Number.isFinite(v)) {
-          throw new RangeError(`part ${p + 1}, operator ${o + 1}, trial ${t + 1} is not a finite number`);
-        }
-      });
     });
   });
 }

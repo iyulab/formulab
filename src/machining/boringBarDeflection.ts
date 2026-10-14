@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { BoringBarDeflectionInput, BoringBarDeflectionResult, BoringBarMaterial } from './types.js';
 
 /**
@@ -35,6 +35,7 @@ const BAR_MODULUS: Record<BoringBarMaterial, number> = {
  * @returns BoringBarDeflectionResult with deflection, L/D ratio, and recommendation
  */
 export function boringBarDeflection(input: BoringBarDeflectionInput): BoringBarDeflectionResult {
+  requireFinite('boringBarDeflection', input);
   const { barDiameter, overhang, cuttingForce, material = 'steel' } = input;
 
   if (barDiameter <= 0) throw new RangeError('barDiameter must be positive');

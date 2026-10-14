@@ -1,4 +1,4 @@
-import { roundTo } from '../utils.js';
+import { roundTo, requireFinite } from '../utils.js';
 import type { GhgGas, GwpTimeHorizon, GwpCalculatorInput, GwpCalculatorResult } from './types.js';
 
 /**
@@ -31,6 +31,7 @@ const GWP_TABLE: Record<GhgGas, Record<GwpTimeHorizon, number>> = {
  * @throws {RangeError} quantityKg is negative
  */
 export function gwpCalculator(input: GwpCalculatorInput): GwpCalculatorResult {
+  requireFinite('gwpCalculator', input);
   const { gas, quantityKg, timeHorizon = 'GWP100' } = input;
 
   // A negative release (a removal) is outside this conversion's model.
