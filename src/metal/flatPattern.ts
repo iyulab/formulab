@@ -1,4 +1,5 @@
 import type { FlatPatternInput, FlatPatternResult, BendingMaterial } from './types.js';
+import { assertBendDomain } from './bendDomain.js';
 
 /**
  * Default K-factor values by material
@@ -19,6 +20,8 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
  *
  * @param input - Flat pattern input parameters
  * @returns FlatPatternResult with flat length, BA, BD, and K-factor
+ * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not strictly between 0 and 180°,
+ *   kFactor is outside [0, 1], or a flange length (flangeC for a U-shape) is not positive
  */
 export function flatPattern(input: FlatPatternInput): FlatPatternResult {
   const {
@@ -34,6 +37,10 @@ export function flatPattern(input: FlatPatternInput): FlatPatternResult {
 
   // Get K-factor: use provided or default from table
   const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
+  assertBendDomain({ thickness, bendAngle, insideRadius, kFactor });
+  if (!(flangeA > 0) || !(flangeB > 0) || (shapeType !== 'lShape' && !(flangeC > 0))) {
+    throw new RangeError('flange lengths must be greater than 0');
+  }
 
   // Convert bend angle to radians
   const bendAngleRad = (bendAngle * Math.PI) / 180;

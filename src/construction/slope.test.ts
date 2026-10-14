@@ -146,3 +146,25 @@ describe('slope', () => {
     });
   });
 });
+
+describe('slope — degree domain (tan diverges at ±90°)', () => {
+  it('accepts degrees just inside (−90, 90), downhill included', () => {
+    expect(slope({ fromUnit: 'degrees', value: 89.9 }).percent).toBeGreaterThan(50000);
+    expect(slope({ fromUnit: 'degrees', value: -45 }).percent).toBeCloseTo(-100, 6);
+  });
+
+  it('throws at and beyond ±90° instead of reading 95° back as −85°', () => {
+    for (const value of [90, 95, -90, -120]) {
+      expect(() => slope({ fromUnit: 'degrees', value })).toThrow(RangeError);
+    }
+  });
+
+  it('throws for a non-finite value in any unit', () => {
+    expect(() => slope({ fromUnit: 'percent', value: Number.POSITIVE_INFINITY })).toThrow(RangeError);
+    expect(() => slope({ fromUnit: 'degrees', value: Number.NaN })).toThrow(RangeError);
+  });
+
+  it('still accepts a very steep but finite percent', () => {
+    expect(slope({ fromUnit: 'percent', value: 1_000_000 }).degrees).toBeCloseTo(89.9943, 3);
+  });
+});

@@ -27,6 +27,9 @@ export function tap(input: TapInput): TapResult {
   // Validate inputs
   if (majorDiameter <= 0) throw new RangeError('majorDiameter must be greater than 0');
   if (inputPitch <= 0) throw new RangeError('pitch must be greater than 0');
+  if (!(threadPercentage > 0 && threadPercentage <= 100)) {
+    throw new RangeError('threadPercentage must be greater than 0 and at most 100');
+  }
 
   // Convert TPI to metric pitch for unified threads
   const pitch = standard === 'metric' ? inputPitch : 25.4 / inputPitch;
@@ -43,6 +46,11 @@ export function tap(input: TapInput): TapResult {
   // Minor diameter (at the root of internal thread)
   // D_minor = D - 2 x (5H/8) for 100% thread
   const D_minor_full = majorDiameter - (1.25 * H);
+  // A pitch this coarse for the diameter (p ≥ D / 1.0825) leaves no core: the minor diameter and
+  // the tap drill would come out zero or negative.
+  if (!(D_minor_full > 0)) {
+    throw new RangeError('pitch is too coarse for the major diameter — the minor diameter would not be positive');
+  }
 
   // Pitch diameter (at mid-height of thread)
   // D_pitch = D - 2 x (3H/8) = D - 0.75H = D - 0.6495p

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Six geometry functions now throw for inputs outside the domain of their formulas.** Each checked only
+  that its inputs were positive, and returned finite numbers that read as results:
+  - `construction/slope()` — a degree value at or beyond ±90° (95° came back as −85° and −1,143 %). Throws for
+    degrees outside (−90, 90) and for a non-finite value in any unit. A very steep but finite percent is still
+    accepted.
+  - `machining/sineBarHeight()` — a negative angle gave a negative gauge stack, and past 90° the stack sets
+    180° − θ. Throws for an angle outside [0, 90].
+  - `metal/tap()` — a pitch too coarse for the diameter (D = 10, P = 20) gave a −6.24 mm tap drill. Throws when
+    the minor diameter would not be positive (p ≥ D / 1.0825), and for a thread percentage outside (0, 100].
+  - `metal/bendAllowance()` and `metal/flatPattern()` — a 180° bend returned a flat length of −1.6 × 10¹⁷ mm,
+    because the outside setback (R + T)·tan(θ/2) diverges at a closed hem. Both throw for a bend angle outside
+    (0, 180), a thickness ≤ 0, a negative inside radius and a K-factor outside [0, 1]; `flatPattern()` also for a
+    flange ≤ 0. Both were documented as not validating at all. `bendAllowance()` keeps its warnings for a radius
+    below the minimum and an angle above 170°.
+  - `safety/ladderAngle()` — a ladder shorter than the given base distance or height returned 0° and a height of
+    0 m with a warning. Throws; a ladder exactly as long as the leg still returns the 90°/0° result with a warning.
+
 ## [0.54.0] - 2026-10-14
 
 ### Changed

@@ -159,3 +159,21 @@ describe('tap', () => {
     });
   });
 });
+
+describe('tap — the minor diameter must stay positive', () => {
+  it('accepts the coarsest standard metric pitch for its diameter (M64 × 6)', () => {
+    expect(tap({ standard: 'metric', majorDiameter: 64, pitch: 6 }).minorDiameter).toBeGreaterThan(0);
+  });
+
+  it('throws when the pitch leaves no core (D = 10, P = 20 gave a −6.24 mm tap drill)', () => {
+    expect(() => tap({ standard: 'metric', majorDiameter: 10, pitch: 20 })).toThrow(RangeError);
+    // Boundary: D_minor = D − 1.0825·p, so p = D / 1.0825 is exactly zero core.
+    expect(() => tap({ standard: 'metric', majorDiameter: 10, pitch: 10 / (1.25 * 0.866025) })).toThrow(RangeError);
+  });
+
+  it('throws for a thread percentage outside (0, 100]', () => {
+    expect(() => tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 0 })).toThrow(RangeError);
+    expect(() => tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 120 })).toThrow(RangeError);
+    expect(tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 100 }).threadPercentage).toBe(100);
+  });
+});

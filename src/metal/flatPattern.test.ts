@@ -270,3 +270,17 @@ describe('flatPattern', () => {
     });
   });
 });
+
+describe('flatPattern — bend domain and flanges', () => {
+  const base = { thickness: 2, insideRadius: 2, flangeA: 50, flangeB: 30 };
+
+  it('throws at a closed hem (180° gave a flat length of −1.6 × 10¹⁷ mm)', () => {
+    expect(() => flatPattern({ ...base, shapeType: 'lShape', bendAngle: 180 })).toThrow(RangeError);
+  });
+
+  it('throws for a non-positive flange, and for a missing third flange on a U-shape', () => {
+    expect(() => flatPattern({ ...base, shapeType: 'lShape', bendAngle: 90, flangeA: 0 })).toThrow(RangeError);
+    expect(() => flatPattern({ ...base, shapeType: 'uShape', bendAngle: 90 })).toThrow(RangeError);
+    expect(flatPattern({ ...base, shapeType: 'lShape', bendAngle: 90 }).flatLength).toBeGreaterThan(0);
+  });
+});

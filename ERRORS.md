@@ -82,9 +82,9 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `metalWeight()` | `throw` | Non-positive dimensions, outerDiameter ≤ innerDiameter |
-| `bendAllowance()` | `safe` | — (out-of-range inputs produce warning strings, not throws) |
+| `bendAllowance()` | `throw` | thickness ≤ 0; insideRadius < 0; bendAngle not in (0, 180) — the setback diverges at a closed hem; kFactor outside [0, 1]. A radius below the minimum and an angle above 170° still return with `warnings` |
 | `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
-| `flatPattern()` | `safe` | — (no input validation) |
+| `flatPattern()` | `throw` | the `bendAllowance()` bend domain; flangeA or flangeB ≤ 0; flangeC ≤ 0 for a U-shape |
 | `kFactorReverse()` | `safe` | — (no input validation) |
 | `pressTonnage()` | `throw` | thickness ≤ 0, dieOpening ≤ 0, drawing with punchDiameter ≤ 0, combined without operations |
 | `bearing()` | `throw` | dynamicLoadRating ≤ 0, equivalentLoad ≤ 0, rpm ≤ 0 |
@@ -98,7 +98,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `roughness()` | `throw` | value ≤ 0 |
 | `screw()` | `throw` | Unknown designation |
 | `spring()` | `throw` | wireDiameter/meanCoilDiameter/activeCoils ≤ 0 |
-| `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0 |
+| `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0; threadPercentage not in (0, 100]; a pitch so coarse that the minor diameter is not positive (p ≥ D / 1.0825) |
 | `thread()` | `throw` | Unknown size |
 | `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
 | `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); custom youngsModulus/density/shearModulus ≤ 0; innerDiameter ≥ outerDiameter |
@@ -163,7 +163,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `getRebarUnitWeight()` | `null` | Unknown size returns `undefined` (plain lookup) |
 | `getAggregateDensity()` | `safe` | Unknown type returns 0 sentinel |
 | `aggregateCoverage()` | `throw` | volumeM3 ≤ 0, depthCm ≤ 0 |
-| `slope()` | `throw` | ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form) |
+| `slope()` | `throw` | value not finite; ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form); degrees not in (−90, 90) |
 | `aggregate()` | `throw` | Non-positive dimensions, unknown type |
 | `brick()` | `throw` | wallArea ≤ 0, unknown brick size, custom dimensions ≤ 0, mortarThickness < 0 |
 | `pert()` | `throw` | Empty tasks, circular dependencies |
@@ -205,7 +205,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `truePosition()` | `throw` | A non-finite coordinate; negative or non-finite tolerance, featureSize or mmcSize. Negative coordinates are valid (measured from a datum) |
 | `boltCircle()` | `throw` | diameter ≤ 0, holes ≤ 0 |
-| `sineBarHeight()` | `throw` | sineBarLength ≤ 0; roundToBlock rounds the stack beyond the bar length |
+| `sineBarHeight()` | `throw` | sineBarLength ≤ 0; angle not in [0, 90]; roundToBlock rounds the stack beyond the bar length |
 | `radialChipThinning()` | `throw` | toolDiameter ≤ 0 |
 | `toolDeflection()` | `throw` | toolDiameter ≤ 0, stickout ≤ 0, cuttingForce < 0, Young's modulus ≤ 0 |
 | `cuspHeight()` | `throw` | toolDiameter ≤ 0 |
@@ -226,7 +226,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `fallClearance()` | `throw` | dRingHeight ≤ 0, or lanyardLength/decelerationDistance/harnessStretch/safetyFactor/workingHeight/obstacleHeight negative. A negative anchorAboveFeet (anchor below the feet) is valid geometry and is reported through the free-fall warning. Without workingHeight, `clearanceAboveObstacle` and `isAdequate` are `null` (not computable), not a throw. |
 | `havsCalculate()` | `throw` | a tool has negative vibrationMagnitude/exposureTime (empty/all-zero tool list is valid) |
 | `illuminance()` | `throw` | roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight |
-| `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied) |
+| `ladderAngle()` | `throw` | provided height/baseDistance negative; ladderLength ≤ 0 when used as a given (height & baseDistance not both supplied); ladderLength shorter than the given height or baseDistance (equal returns a 90°/0° result with `warnings`) |
 | `lel()` | `throw` | a gas component has negative concentration or non-positive LEL (empty gas list is valid → 'safe') |
 | `nioshLifting()` | `throw` | any distance/angle/frequency/loadWeight negative. RWL=0 (sustained high-frequency lifting) → liftingIndex=Infinity, an intentional sentinel. |
 | `noiseExposure()` | `throw` | an exposure entry has negative duration (empty list is valid → compliant) |

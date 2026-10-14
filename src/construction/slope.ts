@@ -12,14 +12,22 @@ import type { SlopeInput, SlopeResult } from './types.js';
  *
  * @param input - Slope value and its unit
  * @returns Slope in all units
+ * @throws RangeError if the value is not finite, a ratio is ≤ 0, or a degree value is not strictly
+ *   between −90 and 90 (tan diverges at ±90°: a 95° input would otherwise read back as −85°)
  */
 export function slope(input: SlopeInput): SlopeResult {
   const { fromUnit, value } = input;
 
   // A ratio of 1:N with N <= 0 is vertical/undefined, not flat ground.
   // (percent/degrees value 0 is legitimately flat and returns zeros below.)
+  if (!Number.isFinite(value)) {
+    throw new RangeError('value must be a finite number');
+  }
   if (fromUnit === 'ratio' && value <= 0) {
     throw new RangeError('ratio value must be greater than 0');
+  }
+  if (fromUnit === 'degrees' && !(value > -90 && value < 90)) {
+    throw new RangeError('degrees must be between -90 and 90 (exclusive)');
   }
 
   // Handle zero value (flat ground for percent/degrees): no rise, so no 1:N

@@ -13,7 +13,8 @@ import type { SineBarHeightInput, SineBarHeightResult } from './types.js';
  *
  * @param input - Sine bar parameters
  * @returns SineBarHeightResult with exact and optionally rounded height
- * @throws RangeError if sineBarLength is not greater than 0, or roundToBlock rounds the gauge stack beyond the bar length
+ * @throws RangeError if sineBarLength is not greater than 0, the angle is outside [0, 90] degrees (a gauge stack
+ *   cannot be negative, and past 90° the same stack sets 180° − θ), or roundToBlock rounds the stack beyond the bar length
  */
 export function sineBarHeight(input: SineBarHeightInput): SineBarHeightResult {
   const { angle, sineBarLength, roundToBlock } = input;
@@ -21,6 +22,9 @@ export function sineBarHeight(input: SineBarHeightInput): SineBarHeightResult {
   // The actual angle is recovered as asin(roundedHeight / sineBarLength).
   if (!(sineBarLength > 0)) {
     throw new RangeError('sineBarLength must be greater than 0');
+  }
+  if (!(angle >= 0 && angle <= 90)) {
+    throw new RangeError('angle must be between 0 and 90 degrees');
   }
 
   const angleRad = (angle * Math.PI) / 180;
@@ -32,9 +36,8 @@ export function sineBarHeight(input: SineBarHeightInput): SineBarHeightResult {
 
   if (roundToBlock !== undefined && roundToBlock > 0) {
     const rounded = Math.round(height / roundToBlock) * roundToBlock;
-    // A coarse block increment can round the stack past the bar length (or below −length),
-    // where no angle exists.
-    if (Math.abs(rounded) > sineBarLength) {
+    // A coarse block increment can round the stack past the bar length, where no angle exists.
+    if (rounded > sineBarLength) {
       throw new RangeError('roundToBlock rounds the gauge stack beyond the sine bar length');
     }
     result.roundedHeight = roundTo(rounded, 4);

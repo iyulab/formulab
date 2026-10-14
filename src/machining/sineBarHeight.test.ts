@@ -79,3 +79,16 @@ describe('sineBarHeight rejects inputs that would produce a non-finite result', 
     expect(() => sineBarHeight({ angle: 80, sineBarLength: 100, roundToBlock: 60 })).toThrow(RangeError);
   });
 });
+
+describe('sineBarHeight — angle domain [0, 90]', () => {
+  it('accepts both ends of the domain', () => {
+    expect(sineBarHeight({ angle: 0, sineBarLength: 200 }).height).toBe(0);
+    expect(sineBarHeight({ angle: 90, sineBarLength: 200 }).height).toBe(200);
+  });
+
+  it('throws for a negative angle (a gauge stack cannot be negative) and past 90°', () => {
+    for (const angle of [-10, -0.001, 90.001, 95]) {
+      expect(() => sineBarHeight({ angle, sineBarLength: 200 })).toThrow(RangeError);
+    }
+  });
+});

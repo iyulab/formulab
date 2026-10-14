@@ -259,3 +259,24 @@ describe('bendAllowance', () => {
     });
   });
 });
+
+describe('bendAllowance — bend domain', () => {
+  const base = { thickness: 2, insideRadius: 2 };
+
+  it('accepts a bend just inside (0, 180)', () => {
+    expect(Number.isFinite(bendAllowance({ ...base, bendAngle: 179 }).outsideSetback)).toBe(true);
+  });
+
+  it('throws at a closed hem (180°), where the setback diverges, and at 0° or below', () => {
+    for (const bendAngle of [180, 200, 0, -30]) {
+      expect(() => bendAllowance({ ...base, bendAngle })).toThrow(RangeError);
+    }
+  });
+
+  it('throws for a non-positive thickness, a negative radius and a K-factor outside [0, 1]', () => {
+    expect(() => bendAllowance({ thickness: 0, insideRadius: 2, bendAngle: 90 })).toThrow(RangeError);
+    expect(() => bendAllowance({ thickness: 2, insideRadius: -1, bendAngle: 90 })).toThrow(RangeError);
+    expect(() => bendAllowance({ ...base, bendAngle: 90, kFactor: 1.2 })).toThrow(RangeError);
+    expect(bendAllowance({ thickness: 2, insideRadius: 0, bendAngle: 90, kFactor: 0 }).bendAllowance).toBe(0);
+  });
+});

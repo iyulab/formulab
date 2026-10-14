@@ -224,3 +224,19 @@ describe('ladderAngle', () => {
     });
   });
 });
+
+describe('ladderAngle — a ladder cannot be shorter than a leg', () => {
+  it('throws when the ladder is shorter than the base distance (6 m on a 7 m base gave 0°)', () => {
+    expect(() => ladderAngle({ ladderLength: 6, baseDistance: 7 })).toThrow(RangeError);
+  });
+
+  it('throws when the ladder is shorter than the height', () => {
+    expect(() => ladderAngle({ ladderLength: 4, height: 5 })).toThrow(RangeError);
+  });
+
+  it('keeps the degenerate equal case as a result with a warning', () => {
+    const r = ladderAngle({ ladderLength: 5, height: 5 });
+    expect(r.angle).toBe(90);
+    expect(r.warnings.length).toBeGreaterThan(0);
+  });
+});

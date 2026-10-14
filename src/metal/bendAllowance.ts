@@ -1,5 +1,6 @@
 import { roundTo } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
+import { assertBendDomain } from './bendDomain.js';
 import type {
   BendAllowanceInput,
   BendAllowanceResult,
@@ -79,6 +80,8 @@ const V_DIE_MULTIPLIER = 8;
  *
  * @param input - Bend allowance input parameters
  * @returns BendAllowanceResult with BA, BD, OSSB, K-factor, recommended V-die, min bend radius
+ * @throws RangeError if thickness ≤ 0, insideRadius < 0, bendAngle is not strictly between 0 and 180°
+ *   (the setback diverges at a closed hem), or kFactor is outside [0, 1]
  */
 export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
   const {
@@ -92,6 +95,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
 
   // Get K-factor: use provided or default from table
   const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
+  assertBendDomain({ thickness, bendAngle, insideRadius, kFactor });
 
   // Minimum bend radius: read the normative table where one covers this material, and fall
   // back to the conventional multiplier only where it does not. A flat multiple of thickness

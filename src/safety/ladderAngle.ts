@@ -50,7 +50,10 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     ladderLength = Math.sqrt(height * height + baseDistance * baseDistance);
   } else if (height !== undefined) {
     // height + ladderLength → baseDistance
-    if (ladderLength <= height) {
+    if (ladderLength < height) {
+      throw new RangeError('ladderLength must not be shorter than height');
+    }
+    if (ladderLength === height) {
       baseDistance = 0;
       warnings.push('Ladder length must be greater than height');
     } else {
@@ -58,7 +61,10 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     }
   } else if (baseDistance !== undefined) {
     // baseDistance + ladderLength → height
-    if (ladderLength <= baseDistance) {
+    if (ladderLength < baseDistance) {
+      throw new RangeError('ladderLength must not be shorter than baseDistance');
+    }
+    if (ladderLength === baseDistance) {
       height = 0;
       warnings.push('Ladder length must be greater than base distance');
     } else {
