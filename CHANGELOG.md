@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.54.0] - 2026-10-14
+
+### Changed
+
+- **Six functions now throw where `ERRORS.md` documented a throw and the code returned a result.**
+  None validated its input, and several returned numbers that read as valid:
+  - `automotive/chargingLoss()` — a state of charge above the target gave negative energy and a negative
+    charging time, a 0 kW charger a charging time of 0. Throws for capacity or power ≤ 0, a state of
+    charge outside [0, 100], a target at or below the current state, and an efficiency outside (0, 1].
+    The documented condition named a field the function does not have (`energyInput`).
+  - `machining/gaugeBlockStack()` — a 1000 mm target returned a 550 mm stack with an error of 450 mm.
+    Throws for a target ≤ 0 or above the sum of every block in the set. A target inside that range the
+    set cannot build exactly still returns the closest stack with `error` > 0, as before.
+  - `quality/taktTime()` — no demand or no available time returned a takt time of 0. Throws.
+  - `chemical/batch()` — an original batch size of 0 returned a scale factor of 0. Throws for an original
+    size ≤ 0 and a negative target.
+  - `quality/paretoAnalysis()` — an empty list returned an empty, all-zero summary. Throws.
+  - `machining/truePosition()` — throws for a non-finite coordinate and a negative tolerance or size. The
+    documented condition ("negative coordinates") was wrong: positions measured from a datum are often
+    negative, and they are accepted.
+
+  The tests that pinned the zero results now assert the throw.
+
+### Added
+
+- `pnpm check:documented-throws` (CI): every function `ERRORS.md` lists as `throw` must have a test that
+  sees it throw. Run on 0.52.0 it lists seven functions — the six above and `threadOverWires()` (fixed in
+  0.53.0); it passes on this release.
+
 ## [0.53.0] - 2026-10-14
 
 ### Changed

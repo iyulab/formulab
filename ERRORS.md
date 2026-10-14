@@ -59,7 +59,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `cpk()` | `safe` | stdDev ≤ 0 → returns zero-valued result (all indices = 0); does not throw |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `cycleTime()` | `safe` | — |
-| `taktTime()` | `throw` | demand = 0 |
+| `taktTime()` | `throw` | availableTime or demand ≤ 0 or non-finite |
 | `aql()` | `throw` | lotSize ≤ 0; negative aqlLevel → '-' zero-plan result (does not throw) |
 | `actionPriority()` | `throw` | severity/occurrence/detection outside 1–10 or non-finite |
 | `cpkToOccurrence()` | `throw` | cpk negative or non-finite |
@@ -120,7 +120,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `batch()` | `throw` | batchSize ≤ 0 |
+| `batch()` | `throw` | originalBatchSize ≤ 0 or non-finite; targetBatchSize < 0 or non-finite |
 | `concentration()` | `throw` | molecularWeight ≤ 0 |
 | `dilution()` | `throw` | Division by zero (denominator value = 0) |
 | `heatTransfer()` | `throw` | conductivity ≤ 0, area ≤ 0, thickness ≤ 0, coefficient ≤ 0, emissivity out of range, absolute temp ≤ 0 |
@@ -182,7 +182,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `tireCompare()` | `throw` | Invalid tire format |
 | `torque()` | `safe` | — |
 | `power()` | `safe` | — |
-| `chargingLoss()` | `throw` | energyInput ≤ 0 |
+| `chargingLoss()` | `throw` | batteryCapacity or chargerPower ≤ 0; soc or targetSoc outside [0, 100]; targetSoc ≤ soc (nothing to charge); chargerEfficiency or batteryEfficiency outside (0, 1] |
 
 ### Battery (10 functions)
 
@@ -203,7 +203,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
-| `truePosition()` | `throw` | Negative coordinates |
+| `truePosition()` | `throw` | A non-finite coordinate; negative or non-finite tolerance, featureSize or mmcSize. Negative coordinates are valid (measured from a datum) |
 | `boltCircle()` | `throw` | diameter ≤ 0, holes ≤ 0 |
 | `sineBarHeight()` | `throw` | sineBarLength ≤ 0; roundToBlock rounds the stack beyond the bar length |
 | `radialChipThinning()` | `throw` | toolDiameter ≤ 0 |
@@ -212,7 +212,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `effectiveDiameter()` | `throw` | Invalid depth |
 | `boringBarDeflection()` | `throw` | barDiameter ≤ 0, overhang ≤ 0, cuttingForce < 0 |
 | `threadOverWires()` | `throw` | majorDiameter, pitch or a given wireSize ≤ 0 or non-finite; threadAngle not 60/55/29/30; pitch so coarse the pitch diameter is not positive (60°: P ≥ d / 0.6495; 29°/30°: P ≥ 2d) |
-| `gaugeBlockStack()` | `throw` | Target out of range |
+| `gaugeBlockStack()` | `throw` | targetDimension ≤ 0 or non-finite, or above the sum of every block in the set. A target inside that range the set cannot build exactly returns the closest stack with `error` > 0 |
 | `triangleSolver()` | `throw` | Invalid triangle (negative sides, sum ≥ 180°) |
 | `cycleTimeEstimator()` | `throw` | rapid move with rapidRate ≤ 0. Empty operations → zero times (sentinel) |
 

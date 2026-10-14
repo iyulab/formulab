@@ -94,17 +94,11 @@ describe('batch', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle original batch size of zero', () => {
-      const result = batch({
-        originalBatchSize: 0,
-        targetBatchSize: 100,
-        ingredients: [
-          { name: 'Flour', amount: 500, unit: 'g' },
-        ],
-      });
-
-      expect(result.scaleFactor).toBe(0);
-      expect(result.scaledIngredients[0].scaledAmount).toBe(0);
+    it('throws for an original batch size of zero or less (nothing to scale from)', () => {
+      const ingredients = [{ name: 'Flour', amount: 500, unit: 'g' }];
+      expect(() => batch({ originalBatchSize: 0, targetBatchSize: 100, ingredients })).toThrow(RangeError);
+      expect(() => batch({ originalBatchSize: -5, targetBatchSize: 100, ingredients })).toThrow(RangeError);
+      expect(() => batch({ originalBatchSize: 10, targetBatchSize: -1, ingredients })).toThrow(RangeError);
     });
 
     it('should handle target batch size of zero', () => {

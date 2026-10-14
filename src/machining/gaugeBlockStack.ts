@@ -92,12 +92,22 @@ const SETS: Record<string, number[]> = {
  * @reference Oberg, E. et al. "Machinery's Handbook", 31st Ed. — Gauge blocks.
  *
  * @param input - Gauge block stack parameters
- * @returns GaugeBlockStackResult with selected blocks and error
+ * @returns GaugeBlockStackResult with selected blocks and error. A target inside the set's range
+ *   that the set cannot build exactly returns the closest stack with `error` > 0.
+ * @throws {RangeError} targetDimension not a positive finite number, or above the sum of every block
+ *   in the set (no stack of this set can reach it).
  */
 export function gaugeBlockStack(input: GaugeBlockStackInput): GaugeBlockStackResult {
   const { targetDimension, availableSet = 'metric47' } = input;
 
   const setBlocks = SETS[availableSet];
+  if (!Number.isFinite(targetDimension) || targetDimension <= 0) {
+    throw new RangeError('targetDimension must be a positive finite number');
+  }
+  const setTotal = roundTo(setBlocks.reduce((sum, b) => sum + b, 0), 4);
+  if (targetDimension > setTotal) {
+    throw new RangeError(`targetDimension ${targetDimension} is above what the ${availableSet} set can stack (${setTotal})`);
+  }
   const used = new Set<number>();
   const blocks: number[] = [];
   // Round target to block-set precision: metric blocks resolve to 0.001mm (3dp),

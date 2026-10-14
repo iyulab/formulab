@@ -79,10 +79,8 @@ describe('paretoAnalysis', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty items array', () => {
-      const result = paretoAnalysis({ items: [] });
-      expect(result.items).toHaveLength(0);
-      expect(result.totalValue).toBe(0);
+    it('throws for an empty items array', () => {
+      expect(() => paretoAnalysis({ items: [] })).toThrow(RangeError);
     });
 
     it('should handle single item', () => {

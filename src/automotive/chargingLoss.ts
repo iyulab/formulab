@@ -40,6 +40,20 @@ export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
   const chargerEfficiency = input.chargerEfficiency ?? DEFAULT_CHARGER_EFFICIENCY[chargerType] ?? 0.90;
   const targetSoc = input.targetSoc ?? (chargerType === 'dc_fast' ? 80 : 100);
 
+  if (!Number.isFinite(batteryCapacity) || batteryCapacity <= 0) {
+    throw new RangeError('batteryCapacity must be a positive finite number');
+  }
+  if (!Number.isFinite(chargerPower) || chargerPower <= 0) {
+    throw new RangeError('chargerPower must be a positive finite number');
+  }
+  if (!(soc >= 0 && soc <= 100)) throw new RangeError('soc must be between 0 and 100');
+  if (!(targetSoc >= 0 && targetSoc <= 100)) throw new RangeError('targetSoc must be between 0 and 100');
+  if (targetSoc <= soc) {
+    throw new RangeError(`targetSoc (${targetSoc}) must be above soc (${soc}) — there is nothing to charge`);
+  }
+  if (!(chargerEfficiency > 0 && chargerEfficiency <= 1)) throw new RangeError('chargerEfficiency must be in (0, 1]');
+  if (!(batteryEfficiency > 0 && batteryEfficiency <= 1)) throw new RangeError('batteryEfficiency must be in (0, 1]');
+
   // Temperature derating
   let derating = 1.0;
   if (ambientTemp != null) {
@@ -59,7 +73,7 @@ export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
   // Energy calculations
   const energyDelivered = batteryCapacity * (targetSoc - soc) / 100;
   const overallEff = chargerEfficiency * batteryEfficiency;
-  const energyConsumed = overallEff > 0 ? energyDelivered / overallEff : 0;
+  const energyConsumed = energyDelivered / overallEff;
   const totalLoss = energyConsumed - energyDelivered;
 
   // Loss breakdown
@@ -67,7 +81,7 @@ export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
   const batteryLoss = (energyConsumed - chargerLoss) * (1 - batteryEfficiency);
 
   // Charging time
-  const chargingTime = effectivePower > 0 ? energyConsumed / effectivePower : 0;
+  const chargingTime = energyConsumed / effectivePower;
 
   return {
     energyDelivered: roundTo(energyDelivered, 2),

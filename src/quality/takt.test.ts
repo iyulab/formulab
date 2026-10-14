@@ -73,37 +73,10 @@ describe('taktTime', () => {
   });
 
   describe('edge cases', () => {
-    it('should return zeros for zero demand', () => {
-      const result = taktTime({
-        availableTime: 480,
-        demand: 0,
-        timeUnit: 'minutes',
-      });
-
-      expect(result.taktTime).toBe(0);
-      expect(result.maxRatePerHour).toBe(0);
-    });
-
-    it('should return zeros for zero available time', () => {
-      const result = taktTime({
-        availableTime: 0,
-        demand: 100,
-        timeUnit: 'minutes',
-      });
-
-      expect(result.taktTime).toBe(0);
-      expect(result.maxRatePerHour).toBe(0);
-    });
-
-    it('should return zeros for negative demand', () => {
-      const result = taktTime({
-        availableTime: 480,
-        demand: -10,
-        timeUnit: 'minutes',
-      });
-
-      expect(result.taktTime).toBe(0);
-      expect(result.maxRatePerHour).toBe(0);
+    it('throws when there is no demand or no available time (no pace to set)', () => {
+      expect(() => taktTime({ availableTime: 480, demand: 0, timeUnit: 'minutes' })).toThrow(RangeError);
+      expect(() => taktTime({ availableTime: 480, demand: -10, timeUnit: 'minutes' })).toThrow(RangeError);
+      expect(() => taktTime({ availableTime: 0, demand: 100, timeUnit: 'minutes' })).toThrow(RangeError);
     });
 
     it('should handle fractional takt times', () => {

@@ -15,6 +15,9 @@ import type { ParetoInput, ParetoResult, ParetoClassification } from './types.js
  */
 export function paretoAnalysis(input: ParetoInput): ParetoResult {
   const { items, thresholdA = 80, thresholdB = 95 } = input;
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new RangeError('items must contain at least one item');
+  }
 
   const totalValue = items.reduce((s, item) => s + item.value, 0);
 

@@ -118,4 +118,11 @@ describe('gaugeBlockStack', () => {
     expect(result.error).toBeLessThan(0.001);
     expect(result.blockCount).toBeGreaterThan(0);
   });
+
+  it('throws for a target that is not positive or above everything the set can stack', () => {
+    expect(() => gaugeBlockStack({ targetDimension: 0 })).toThrow(RangeError);
+    expect(() => gaugeBlockStack({ targetDimension: -1 })).toThrow(RangeError);
+    // 1000 mm used to return a 550 mm stack with error 450 as a result
+    expect(() => gaugeBlockStack({ targetDimension: 1000 })).toThrow(/above what the metric47 set can stack/);
+  });
 });

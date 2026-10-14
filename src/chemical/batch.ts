@@ -8,21 +8,17 @@ import type { BatchInput, BatchResult } from './types.js';
  *
  * @param input - Batch scaling input with original size, target size, and ingredients
  * @returns Batch result with scale factor and scaled ingredients
+ * @throws {RangeError} originalBatchSize not a positive finite number (nothing to scale from), or
+ *   targetBatchSize negative or non-finite.
  */
 export function batch(input: BatchInput): BatchResult {
   const { originalBatchSize, targetBatchSize, ingredients } = input;
 
-  // Handle edge case: original batch size is 0
-  if (originalBatchSize === 0) {
-    return {
-      scaleFactor: 0,
-      scaledIngredients: ingredients.map((ing) => ({
-        name: ing.name,
-        originalAmount: ing.amount,
-        scaledAmount: 0,
-        unit: ing.unit,
-      })),
-    };
+  if (!Number.isFinite(originalBatchSize) || originalBatchSize <= 0) {
+    throw new RangeError('originalBatchSize must be a positive finite number');
+  }
+  if (!Number.isFinite(targetBatchSize) || targetBatchSize < 0) {
+    throw new RangeError('targetBatchSize must be a non-negative finite number');
   }
 
   const scaleFactor = targetBatchSize / originalBatchSize;

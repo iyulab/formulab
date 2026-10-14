@@ -93,4 +93,11 @@ describe('truePosition', () => {
     expect(result.truePosition).toBe(0);
     expect(result.radialDeviation).toBe(0);
   });
+
+  it('throws on a non-finite coordinate or a negative tolerance/size, and accepts negative coordinates', () => {
+    expect(truePosition({ actualX: -10.05, actualY: -5.02, nominalX: -10, nominalY: -5 }).radialDeviation).toBeCloseTo(0.0539, 4);
+    expect(() => truePosition({ actualX: Number.NaN, actualY: 0, nominalX: 0, nominalY: 0 })).toThrow(RangeError);
+    expect(() => truePosition({ actualX: 1, actualY: 0, nominalX: 0, nominalY: 0, tolerance: -0.1 })).toThrow(RangeError);
+    expect(() => truePosition({ actualX: 1, actualY: 0, nominalX: 0, nominalY: 0, featureSize: -1, mmcSize: 5 })).toThrow(RangeError);
+  });
 });

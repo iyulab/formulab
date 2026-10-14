@@ -23,16 +23,17 @@ function toHours(time: number, unit: TimeUnit): number {
  *
  * @param input - Takt time input parameters
  * @returns Takt time result with time per unit and max rate per hour
+ * @throws {RangeError} availableTime or demand not a positive finite number — with no demand (or no
+ *   time) there is no pace to set, and 0 would read as "no time per unit".
  */
 export function taktTime(input: TaktTimeInput): TaktTimeResult {
   const { availableTime, demand, timeUnit } = input;
 
-  // Handle edge cases
-  if (demand <= 0 || availableTime <= 0) {
-    return {
-      taktTime: 0,
-      maxRatePerHour: 0,
-    };
+  if (!Number.isFinite(availableTime) || availableTime <= 0) {
+    throw new RangeError('availableTime must be a positive finite number');
+  }
+  if (!Number.isFinite(demand) || demand <= 0) {
+    throw new RangeError('demand must be a positive finite number');
   }
 
   // Takt Time = Available Time / Demand (in the same unit as input)

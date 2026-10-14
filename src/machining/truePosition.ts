@@ -16,9 +16,18 @@ import type { TruePositionInput, TruePositionResult } from './types.js';
  *
  * @param input - True position parameters
  * @returns TruePositionResult with TP value and optional tolerance evaluation
+ * @throws {RangeError} a coordinate that is not finite, or a negative or non-finite tolerance,
+ *   featureSize or mmcSize. Negative coordinates are valid — positions are measured from a datum.
  */
 export function truePosition(input: TruePositionInput): TruePositionResult {
   const { actualX, actualY, nominalX, nominalY, tolerance, featureSize, mmcSize } = input;
+
+  for (const [name, v] of [['actualX', actualX], ['actualY', actualY], ['nominalX', nominalX], ['nominalY', nominalY]] as const) {
+    if (!Number.isFinite(v)) throw new RangeError(`${name} must be a finite number`);
+  }
+  for (const [name, v] of [['tolerance', tolerance], ['featureSize', featureSize], ['mmcSize', mmcSize]] as const) {
+    if (v !== undefined && (!Number.isFinite(v) || v < 0)) throw new RangeError(`${name} must be a non-negative finite number`);
+  }
 
   const dx = actualX - nominalX;
   const dy = actualY - nominalY;

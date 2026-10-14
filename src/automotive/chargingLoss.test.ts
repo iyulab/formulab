@@ -130,15 +130,16 @@ describe('chargingLoss', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle soc = targetSoc (no charging needed)', () => {
-      const result = chargingLoss({
-        batteryCapacity: 75, chargerPower: 11, chargerType: 'ac_l2',
-        soc: 80, targetSoc: 80,
-      });
-
-      expect(result.energyDelivered).toBe(0);
-      expect(result.totalLoss).toBe(0);
-      expect(result.chargingTime).toBe(0);
+    it('throws when there is nothing to charge, and on inputs that describe no charge', () => {
+      const base = { batteryCapacity: 75, chargerPower: 11, chargerType: 'ac_l2' as const };
+      expect(() => chargingLoss({ ...base, soc: 80, targetSoc: 80 })).toThrow(RangeError);
+      // soc above the target gave negative energy and a negative charging time
+      expect(() => chargingLoss({ ...base, soc: 90, targetSoc: 50 })).toThrow(/nothing to charge/);
+      // a 0 kW charger gave a charging time of 0
+      expect(() => chargingLoss({ ...base, chargerPower: 0, soc: 20 })).toThrow(RangeError);
+      expect(() => chargingLoss({ ...base, batteryCapacity: 0, soc: 20 })).toThrow(RangeError);
+      expect(() => chargingLoss({ ...base, soc: -5 })).toThrow(RangeError);
+      expect(() => chargingLoss({ ...base, soc: 20, chargerEfficiency: 0 })).toThrow(RangeError);
     });
   });
 });
