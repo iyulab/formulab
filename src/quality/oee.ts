@@ -73,18 +73,22 @@ export function oee(input: OeeInput): OeeResult {
   ] as const);
   const oeeValue = cascade[cascade.length - 1].remaining / 100;
 
+  const factors = {
+    availability: roundTo(availability, 4),
+    performance: roundTo(performance, 4),
+    quality: roundTo(quality, 4),
+    oee: roundTo(oeeValue, 4),
+  };
+  // The factors × 100, so a percentage and its factor never disagree, and the OEE percentage
+  // matches where the cascade lands (81.25 %, not 81.3 %).
+  const percent = (f: number) => roundTo(f * 100, 2);
   return {
-    factors: {
-      availability: roundTo(availability, 4),
-      performance: roundTo(performance, 4),
-      quality: roundTo(quality, 4),
-      oee: roundTo(oeeValue, 4),
-    },
+    factors,
     percentages: {
-      availability: roundTo(availability * 100, 1),
-      performance: roundTo(performance * 100, 1),
-      quality: roundTo(quality * 100, 1),
-      oee: roundTo(oeeValue * 100, 1),
+      availability: percent(factors.availability),
+      performance: percent(factors.performance),
+      quality: percent(factors.quality),
+      oee: percent(factors.oee),
     },
     cascade,
   };

@@ -1,3 +1,5 @@
+import type { HistogramBin } from '../utility/types.js';
+
 /**
  * Logistics Domain Types
  */
@@ -73,6 +75,19 @@ export interface EoqResult {
   totalAnnualCost: number;     // $
 }
 
+export interface EoqCostCurveInput extends EoqInput {
+  minQuantity?: number;  // units per order (default 0.25 × EOQ)
+  maxQuantity?: number;  // units per order (default 2.5 × EOQ)
+  points?: number;       // default 25
+}
+
+export interface EoqCostPoint {
+  orderQuantity: number;  // units per order
+  orderingCost: number;   // $/year
+  holdingCost: number;    // $/year
+  totalCost: number;      // $/year
+}
+
 /**
  * Pallet Stack Calculation Types
  */
@@ -117,6 +132,25 @@ export interface SafetyStockResult {
   safetyStock: number;        // units
   reorderPoint: number;       // units
   demandDuringLeadTime: number; // units
+}
+
+export type DemandDistribution = 'normal' | 'poisson';
+
+export interface SafetyStockSimulationInput extends SafetyStockInput {
+  demandDistribution?: DemandDistribution;  // default 'normal'
+  iterations?: number;                      // trials, 100–100,000 (default 10,000)
+  seed?: number;                            // default 42 — same input, same result
+  bins?: number;                            // histogram bins (default 20)
+}
+
+export interface SafetyStockSimulationResult {
+  safetyStock: number;                 // units — reorder point minus mean DDLT
+  reorderPoint: number;                // units — the serviceLevel quantile of DDLT
+  meanDemandDuringLeadTime: number;    // units
+  stdDevDemandDuringLeadTime: number;  // units
+  achievedServiceLevel: number;        // 0–1, share of trials the reorder point covers
+  stockoutProbability: number;         // 0–1
+  histogram: HistogramBin[];           // distribution of demand during lead time
 }
 
 /**
@@ -299,6 +333,24 @@ export interface PickTimeResult {
   totalTime: number;          // total seconds per order
   totalTimeMinutes: number;   // total minutes per order
   ordersPerHour: number;      // theoretical orders per hour
+}
+
+/**
+ * Chargeable Weight Types
+ */
+export type FreightMode = 'air' | 'express' | 'ocean' | 'truck';
+
+export interface ChargeableWeightInput {
+  volume: number;        // m³ (CBM)
+  actualWeight: number;  // kg
+  mode: FreightMode;
+}
+
+export interface ChargeableWeightResult {
+  volumetricFactor: number;     // kg per m³ for the mode
+  volumetricWeight: number;     // kg
+  chargeableWeight: number;     // kg — max(actual, volumetric)
+  isVolumetricHigher: boolean;  // true when the volume, not the weight, sets the charge
 }
 
 /**

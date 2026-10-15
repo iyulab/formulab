@@ -246,13 +246,16 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `abcAnalysis()` | `throw` | empty items; an item's annualUsage or unitCost < 0; every item's annual value 0 (no share to classify by) |
 | `cbm()` | `throw` | length, width, height or quantity ≤ 0 |
+| `chargeableWeight()` | `throw` | volume ≤ 0, actualWeight < 0, unknown mode |
 | `containerFit()` | `throw` | cargo or container dimension ≤ 0. A box larger than the container in every orientation fits 0 times — a real answer, not a sentinel |
 | `eoq()` | `throw` | annualDemand, orderCost or holdingCost ≤ 0 (NaN included) |
+| `eoqCostCurve()` | `throw` | an `eoq()` input invalid, minQuantity ≤ 0, maxQuantity ≤ minQuantity, points not a whole number ≥ 2 |
 | `inventoryTurnover()` | `throw` | periodDays ≤ 0; cogs or averageInventory < 0. averageInventory 0 → turnoverRatio and gmroii null (0 days of supply); cogs 0 → daysOfSupply/weeksOfSupply null (the stock never runs out); gmroii null when grossMargin omitted |
 | `loadCapacity()` | `throw`/`null` | ratedCapacity, ratedLoadCenter or actualLoadCenter ≤ 0; attachmentWeightLoss or actualLoad < 0; utilization/isOverloaded/safetyMargin = null when actualLoad omitted |
 | `pallet3d()` | `throw` | box weight/length/width/height ≤ 0; given customLength/customWidth ≤ 0; maxStackHeight or maxPayload < 0 (0 = default); empty boxes |
 | `palletStack()` | `throw` | box dimension, pallet length or width, or maxHeight ≤ 0. A box exceeding the pallet or maxHeight in every orientation stacks 0 boxes — a real answer, not a sentinel |
 | `safetyStock()` | `throw` | serviceLevel ∉ (0, 1); avgLeadTime, avgDemand, demandStdDev or leadTimeStdDev < 0 |
+| `safetyStockSimulation()` | `throw` | serviceLevel ∉ (0, 1); avgDemand or avgLeadTime ≤ 0; a standard deviation < 0; iterations not a whole number in [100, 100000]; bins not a whole number ≥ 1; unknown demandDistribution |
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
 | `tsp()` | `throw` | Empty nodes (a single node returns a single-node result, does not throw) |
 | `dimWeight()` | `throw` | length/width/height ≤ 0, actualWeight < 0 |

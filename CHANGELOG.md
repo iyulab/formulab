@@ -9,16 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`logistics/chargeableWeight()`** and **`VOLUMETRIC_KG_PER_M3`** — the greater of actual and volumetric weight for a
+  freight mode, from one factor table (air 167, express 200, ocean 1000 — weight or measure —, truck 333 kg/m³).
+  `shipping()` now reads the same table.
+- **`logistics/safetyStockSimulation()`** — safety stock and reorder point by Monte Carlo simulation of demand during
+  lead time (normal or Poisson daily demand, seeded), with the service level the reorder point achieves among the
+  trials and the distribution as histogram bins. The empirical counterpart of `safetyStock()`'s normal theory. A
+  part-day of lead time draws a part-day of demand, so with no variability the result is exactly d × L.
+- **`logistics/eoqCostCurve()`** — annual ordering, holding and total cost across a range of order quantities (by
+  default 0.25× to 2.5× the EOQ), the U-curve whose minimum is the EOQ.
 - **`construction/getRebarSizes()`** — every size the KS D 3504 table knows (D4–D57), smallest first, so a size picker
   lists the table instead of keeping its own shorter list.
 
 ### Changed
 
+- **`quality/oee()` percentages are the factors × 100 at two decimals** (were one decimal of the unrounded ratio), so a
+  percentage never disagrees with its factor and the OEE percentage is where the loss cascade lands — 81.25 %, not 81.3 %.
 - **Two lookups that answered an unknown key with nothing now throw**, like `reflowProfile()` in 0.59.0:
   `food/haccp()` a category that is not one of `getHaccpCategories()` (it returned `null`; the return type is now
   `HaccpResult`), and `construction/getRebarUnitWeight()` a size not in the table (typed `number`, it returned
   `undefined` — or, for an inherited key such as `'toString'`, a function). `rebarWeight()` now refuses an inherited
   key too; it already refused an unknown size.
+
+### Fixed
+
+- **`shipping()` ocean modes counted a cubic metre as 166.67 kg** — the air factor (6000 cm³/kg). Ocean freight is
+  charged weight or measure: 1 m³ = 1 tonne, so `volumetricWeight` and `chargeableWeight` for 12 m³ are now 12,000 kg
+  (were 2,000). LCL is priced per revenue tonne — the greater of tonnes and m³ — at $50 (was $50 per m³ or $0.15 per
+  kg, whichever was higher, two rates for one charge basis), minimum $100.
 
 ## [0.59.0] - 2026-10-15
 

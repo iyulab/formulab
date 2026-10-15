@@ -62,6 +62,18 @@ describe('oee', () => {
     });
   });
 
+  describe('percentages', () => {
+    it('are the factors × 100 at two decimals, so they agree with the cascade', () => {
+      // 87.5 % × 92.86 % × 100 % = 81.25 % — one decimal would print 81.3 beside a cascade ending at 81.25.
+      const r = oee({ rawData: { plannedTime: 480, runTime: 420, totalCount: 975, goodCount: 975, idealCycleTime: 0.4 } });
+      expect(r.percentages.oee).toBe(81.25);
+      expect(r.cascade[r.cascade.length - 1].remaining).toBeCloseTo(81.25, 10);
+      for (const k of ['availability', 'performance', 'quality', 'oee'] as const) {
+        expect(r.percentages[k]).toBeCloseTo(r.factors[k] * 100, 10);
+      }
+    });
+  });
+
   describe('loss cascade', () => {
     const result = oee({
       rawData: { plannedTime: 480, runTime: 420, totalCount: 1000, goodCount: 950, idealCycleTime: 0.4 },
@@ -75,7 +87,7 @@ describe('oee', () => {
 
     it('lands on the OEE percentage', () => {
       const last = result.cascade[result.cascade.length - 1];
-      expect(last.remaining).toBeCloseTo(result.percentages.oee, 1);
+      expect(last.remaining).toBeCloseTo(result.percentages.oee, 2);
       expect(100 + result.cascade.reduce((sum, s) => sum + s.change, 0)).toBeCloseTo(last.remaining, 10);
     });
 

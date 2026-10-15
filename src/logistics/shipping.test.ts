@@ -34,8 +34,8 @@ describe('shipping', () => {
         volume: 12, // 12 CBM
       });
 
-      // Volumetric = (12 * 1000) / 6 = 2000
-      expect(result!.volumetricWeight).toBe(2000);
+      // W/M: 1 m³ counts as 1 tonne — 12 m³ = 12,000 kg (not the air factor's 2,000)
+      expect(result!.volumetricWeight).toBe(12000);
     });
   });
 
@@ -55,11 +55,18 @@ describe('shipping', () => {
     it('should charge by weight when higher', () => {
       const result = shipping({
         mode: 'ocean_lcl',
-        weight: 2000, // $300 by weight
-        volume: 2, // $100 by CBM
+        weight: 4000, // 4 revenue tonnes by weight
+        volume: 2, // 2 by measure
       });
 
-      expect(result!.estimatedCost).toBe(300); // 2000 * 0.15
+      expect(result!.estimatedCost).toBe(200); // W/M: 4 × $50
+    });
+
+    it('counts 1 m³ as 1 tonne (W/M), not the air factor', () => {
+      const result = shipping({ mode: 'ocean_lcl', weight: 500, volume: 2 });
+      expect(result!.volumetricWeight).toBe(2000);
+      expect(result!.chargeableWeight).toBe(2000);
+      expect(result!.estimatedCost).toBe(100); // 2 revenue tonnes × $50
     });
 
     it('should apply minimum charge', () => {
@@ -252,8 +259,8 @@ describe('shipping', () => {
         volume: 5,
       });
 
-      // Cost = 250, chargeable = max(1000, 833.33) = 1000
-      expect(result!.costPerKg).toBe(0.25);
+      // Cost = 5 revenue tonnes × $50 = 250, chargeable = max(1000, 5000) = 5000
+      expect(result!.costPerKg).toBe(0.05);
     });
   });
 

@@ -11,7 +11,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **207 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **210 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -30,7 +30,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 |--------|-----------|-------------|----------------|
 | Quality | 23 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-3, ISO 7870-5 |
 | Metal | 33 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
-| Logistics | 17 | cbm | Physical formula |
+| Logistics | 20 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
 | Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 11 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
@@ -151,10 +151,10 @@ const result = oee({
     runTime: 432,          // minutes (90% availability)
     totalCount: 1000,
     goodCount: 990,        // 99% quality
-    idealCycleTime: 0.456, // minutes per piece (95% performance)
+    idealCycleTime: 0.4104, // minutes per piece (95% performance)
   },
 });
-console.log(result.percentages.oee); // 84.6%
+console.log(result.percentages.oee); // 84.65 (%)
 
 // Calculate metal weight
 const weight = metalWeight({
@@ -340,7 +340,7 @@ import { batteryRuntime, evCharging, torque, brakingDistance, chargingLoss } fro
 | `power()` | Power conversion (HP, kW) |
 | `chargingLoss()` | EV charging loss/efficiency |
 
-### Logistics & Inventory (17 functions)
+### Logistics & Inventory (20 functions)
 
 ```typescript
 import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'formulab/logistics';
@@ -350,9 +350,11 @@ import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'f
 |----------|-------------|
 | `abcAnalysis()` | ABC inventory classification by annual value |
 | `cbm()` | Cubic meter calculation |
+| `chargeableWeight()` | Chargeable weight by freight mode (air · express · ocean W/M · truck) |
 | `containerFit()` | Container capacity estimation |
 | `dimWeight()` | Dimensional weight |
 | `eoq()` | Economic Order Quantity |
+| `eoqCostCurve()` | Annual ordering / holding / total cost across order quantities |
 | `fillRate()` | Fill rate calculation |
 | `freightClass()` | NMFC freight class |
 | `inventoryTurnover()` | Inventory turnover ratio & days of supply |
@@ -362,6 +364,7 @@ import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'f
 | `palletStack()` | Pallet stacking calculation |
 | `pickTime()` | Picking time estimation |
 | `safetyStock()` | Safety stock calculation |
+| `safetyStockSimulation()` | Safety stock by Monte Carlo simulation of demand during lead time |
 | `serviceLevel()` | Service level calculation |
 | `shipping()` | Shipping cost estimation |
 | `tsp()` | TSP heuristic (NN + 2-Opt; exact for n ≤ 10) |
@@ -548,8 +551,9 @@ const result = oee({
 
 console.log(result);
 // {
-//   factors: { availability: 0.875, performance: 0.952, quality: 0.99, oee: 0.825 },
-//   percentages: { availability: 87.5, performance: 95.2, quality: 99, oee: 82.5 }
+//   factors: { availability: 0.875, performance: 0.9524, quality: 0.99, oee: 0.825 },
+//   percentages: { availability: 87.5, performance: 95.24, quality: 99, oee: 82.5 },
+//   cascade: [ … ]
 // }
 ```
 

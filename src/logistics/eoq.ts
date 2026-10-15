@@ -1,5 +1,5 @@
 import { roundTo, requireFinite } from '../utils.js';
-import type { EoqInput, EoqResult } from './types.js';
+import type { EoqInput, EoqResult, EoqCostCurveInput, EoqCostPoint } from './types.js';
 
 /**
  * Calculate Economic Order Quantity (EOQ)
@@ -61,4 +61,41 @@ export function eoq(input: EoqInput): EoqResult {
     annualHoldingCost: roundTo(annualHoldingCost, 4),
     totalAnnualCost: roundTo(totalAnnualCost, 4),
   };
+}
+
+/**
+ * The annual cost of ordering Q units at a time, across a range of Q — the U-shaped curve whose
+ * minimum is the EOQ: ordering cost (D/Q)·S falls, holding cost (Q/2)·H rises.
+ *
+ * @formula ordering = (D / Q) × S; holding = (Q / 2) × H; total = ordering + holding
+ *
+ * @param input - `eoq()`'s input, plus the Q range (default 0.25× to 2.5× the EOQ) and point count
+ *   (default 25)
+ * @returns Evenly spaced points from `minQuantity` to `maxQuantity`
+ * @throws {RangeError} an `eoq()` input is invalid, minQuantity is not greater than 0, maxQuantity is
+ *   not greater than minQuantity, or points is not a whole number of at least 2
+ */
+export function eoqCostCurve(input: EoqCostCurveInput): EoqCostPoint[] {
+  requireFinite('eoqCostCurve', input);
+  const { annualDemand, orderCost, holdingCost, points = 25 } = input;
+  const optimum = eoq({ annualDemand, orderCost, holdingCost }).eoq;
+  const minQuantity = input.minQuantity ?? optimum * 0.25;
+  const maxQuantity = input.maxQuantity ?? optimum * 2.5;
+  if (!(minQuantity > 0)) throw new RangeError('minQuantity must be greater than 0');
+  if (!(maxQuantity > minQuantity)) throw new RangeError('maxQuantity must be greater than minQuantity');
+  if (!Number.isInteger(points) || points < 2) throw new RangeError('points must be a whole number of at least 2');
+
+  const out: EoqCostPoint[] = [];
+  for (let i = 0; i < points; i++) {
+    const q = minQuantity + ((maxQuantity - minQuantity) * i) / (points - 1);
+    const orderingCost = (annualDemand / q) * orderCost;
+    const holdingCostPerYear = (q / 2) * holdingCost;
+    out.push({
+      orderQuantity: roundTo(q, 4),
+      orderingCost: roundTo(orderingCost, 4),
+      holdingCost: roundTo(holdingCostPerYear, 4),
+      totalCost: roundTo(orderingCost + holdingCostPerYear, 4),
+    });
+  }
+  return out;
 }

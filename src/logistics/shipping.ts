@@ -1,12 +1,13 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ShippingInput, ShippingResult } from './types.js';
+import { VOLUMETRIC_KG_PER_M3 } from './chargeableWeight.js';
 
 /**
  * Calculate shipping cost estimate for different modes
  *
  * Supports multiple shipping modes:
  * - Ocean FCL (Full Container Load): Fixed container rate
- * - Ocean LCL (Less than Container Load): Per CBM or weight
+ * - Ocean LCL (Less than Container Load): Per revenue tonne (weight or measure)
  * - Air Freight: Volumetric weight factor
  * - Express Courier: Premium volumetric rates
  * - Truck: Distance + weight based
@@ -34,7 +35,7 @@ export function shipping(input: ShippingInput): ShippingResult {
 
   switch (mode) {
     case 'ocean_fcl': {
-      volumetricWeight = roundTo((volume * 1000) / 6, 2);
+      volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.ocean, 2);
       const base = 1500;
       const extra = weight > 10000 ? (weight - 10000) * 0.5 : 0;
       estimatedCost = roundTo(base + extra, 2);
@@ -43,16 +44,16 @@ export function shipping(input: ShippingInput): ShippingResult {
       break;
     }
     case 'ocean_lcl': {
-      volumetricWeight = roundTo((volume * 1000) / 6, 2);
-      const byCbm = volume * 50;
-      const byWeight = weight * 0.15;
-      estimatedCost = roundTo(Math.max(byCbm, byWeight, 100), 2);
+      volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.ocean, 2);
+      // Weight or measure: the greater of tonnes and m³ is the revenue tonne count.
+      const revenueTons = Math.max(weight / 1000, volume);
+      estimatedCost = roundTo(Math.max(revenueTons * 50, 100), 2);
       transitDays = '25-45 days';
-      notes = 'Charged per CBM or per kg, whichever is higher. Minimum charge $100.';
+      notes = 'Charged per revenue tonne (W/M: the greater of tonnes or m³) at $50. Minimum charge $100.';
       break;
     }
     case 'air': {
-      volumetricWeight = roundTo(volume * 167, 2);
+      volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.air, 2);
       const chargeableWt = Math.max(weight, volumetricWeight);
       estimatedCost = roundTo(chargeableWt * 3.5, 2);
       transitDays = '3-7 days';
@@ -69,7 +70,7 @@ export function shipping(input: ShippingInput): ShippingResult {
       return result;
     }
     case 'express': {
-      volumetricWeight = roundTo(volume * 200, 2);
+      volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.express, 2);
       const chargeableWt = Math.max(weight, volumetricWeight);
       estimatedCost = roundTo(Math.max(chargeableWt * 8, 50), 2);
       transitDays = '2-5 days';
@@ -89,7 +90,7 @@ export function shipping(input: ShippingInput): ShippingResult {
       if (distance == null || distance <= 0) {
         throw new RangeError('distance must be greater than 0 for truck mode');
       }
-      volumetricWeight = roundTo(volume * 333, 2);
+      volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.truck, 2);
       const chargeableWt = Math.max(weight, volumetricWeight);
       estimatedCost = roundTo(distance * 1.5 + weight * 0.02, 2);
       const transitDaysNum = Math.max(1, Math.ceil(distance / 500));

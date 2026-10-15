@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eoq } from './eoq.js';
+import { eoq, eoqCostCurve } from './eoq.js';
 
 describe('eoq', () => {
   describe('basic EOQ calculation', () => {
@@ -161,5 +161,35 @@ describe('eoq', () => {
 
       expect(result.eoq).toBeCloseTo(282.84, 1);
     });
+  });
+});
+
+describe('eoqCostCurve', () => {
+  const input = { annualDemand: 10000, orderCost: 50, holdingCost: 2 };
+
+  it('spans 0.25× to 2.5× the EOQ by default and its total is lowest at the EOQ', () => {
+    const curve = eoqCostCurve({ ...input, points: 91 });
+    expect(curve).toHaveLength(91);
+    expect(curve[0].orderQuantity).toBeCloseTo(707.1068 * 0.25, 2);
+    expect(curve[90].orderQuantity).toBeCloseTo(707.1068 * 2.5, 2);
+    // Q = EOQ is the 31st point (0.25 + 30 × 0.025 = 1.0); there ordering = holding = $707.11.
+    const atEoq = curve[30];
+    expect(atEoq.orderingCost).toBeCloseTo(707.1068, 3);
+    expect(atEoq.holdingCost).toBeCloseTo(707.1068, 3);
+    expect(Math.min(...curve.map((p) => p.totalCost))).toBe(atEoq.totalCost);
+  });
+
+  it('computes each component at a given Q', () => {
+    const [p] = eoqCostCurve({ annualDemand: 10000, orderCost: 50, holdingCost: 2, minQuantity: 500, maxQuantity: 1000, points: 2 });
+    expect(p).toEqual({ orderQuantity: 500, orderingCost: 1000, holdingCost: 500, totalCost: 1500 });
+  });
+
+  it.each([
+    ['minQuantity 0', { minQuantity: 0 }],
+    ['maxQuantity below minQuantity', { minQuantity: 800, maxQuantity: 700 }],
+    ['1 point', { points: 1 }],
+    ['an invalid eoq input', { holdingCost: 0 }],
+  ])('throws RangeError for %s', (_label, override) => {
+    expect(() => eoqCostCurve({ ...input, ...override })).toThrow(RangeError);
   });
 });
