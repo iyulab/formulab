@@ -86,7 +86,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `metalWeight()` | `throw` | Unknown materialName or shape (an unknown material returned an empty weight before 0.58.0), non-positive dimensions, innerDiameter < 0, outerDiameter ≤ innerDiameter, angle thickness > width or height |
 | `bendAllowance()` | `throw` | unknown material with no kFactor (reported as a kFactor out of range before 0.58.0); thickness ≤ 0; insideRadius < 0; bendAngle not in (0, 180]; kFactor outside [0, 1]. At a closed hem (180°) `outsideSetback` and `bendDeduction` are `null` (the setback diverges; the bend allowance is defined). A radius below the minimum and an angle above 170° still return with `warnings` |
-| `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87, ISSUE-20260714) |
+| `springback()` | `throw` | thickness ≤ 0, bendRadius ≤ 0, bendAngle outside (0, 180); material `'custom'` with missing/non-positive yieldStrength or elasticModulus; x = Y·R_i/(E·T) ≥ 0.5 (fully elastic bend — no permanent set; the unguarded cubic returned Infinity at x = 0.5 and negative springback past x ≈ 0.87) |
 | `flatPattern()` | `throw` | shapeType not lShape/uShape (an unknown one was bent as a U before 0.58.0); unknown material with no kFactor; the `bendAllowance()` bend domain; flangeA or flangeB ≤ 0; flangeC ≤ 0 for a U-shape; resulting flatLength ≤ 0 (flanges shorter than the bend setbacks) |
 | `kFactorReverse()` | `throw` | thickness ≤ 0; bendAngle not in (0, 180); insideRadius < 0; measurements that imply a K-factor outside [0, 1] (the flat length does not belong to this bend) |
 | `pressTonnage()` | `throw` | thickness, dieOpening, strengths, safetyFactor, frictionCoefficient, dieRadius ≤ 0; blankHolderPressure/blankDiameter < 0; drawRatio given and ≤ 0; blanking/bending/drawing without its positive perimeter/bendLength/punchDiameter (combined: < 0); blank diameter ≤ punch diameter; combined without operations |
@@ -313,6 +313,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `scope1Emissions()` | `throw` | quantity < 0 |
 | `scope2Emissions()` | `throw` | electricityKwh < 0; a given customFactor/supplierFactor/residualMixFactor < 0; region 'custom' without customFactor; market-based requested with contractedKwh negative; contractedKwh>0 and no supplierFactor; contractedKwh > electricityKwh; uncontracted remainder > 0 with no residualMixFactor |
+| `getGridEmissionFactor()` | `throw` | region not in the grid table (incl. `'custom'`) |
 | `scope3Emissions()` | `throw` | spendUsd < 0 |
 | `gwpCalculator()` | `throw` | quantityKg < 0 |
 | `esgSummary()` | `throw` | baselineCo2Tonnes ≤ 0; currentCo2Tonnes or targetCo2Tonnes < 0; baselineYear, currentYear or targetYear ≤ 0; currentYear before baselineYear. currentYear = baselineYear → annualRatePercent/projectedCo2Tonnes null; target year reached → requiredAnnualRate null (projection null once past it); onTrack null when the target is unmet and there is no trend |

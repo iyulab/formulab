@@ -31,7 +31,7 @@ export type {
 
 // Functions
 export { scope1Emissions } from './scope1Emissions.js';
-export { scope2Emissions } from './scope2Emissions.js';
+export { scope2Emissions, getGridEmissionFactor, getGridRegions } from './scope2Emissions.js';
 export { scope3Emissions } from './scope3Emissions.js';
 export { vocEmissions } from './vocEmissions.js';
 export { productCarbonFootprint } from './productCarbonFootprint.js';

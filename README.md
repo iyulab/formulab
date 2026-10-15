@@ -488,6 +488,7 @@ import { scope1Emissions, scope2Emissions, gwpCalculator, esgSummary } from 'for
 |----------|-------------|
 | `scope1Emissions()` | Fuel combustion direct emissions (6 fuels) |
 | `scope2Emissions()` | Purchased electricity emissions (12 regions, location-based always + optional market-based dual reporting) |
+| `getGridEmissionFactor()` | The grid factor `scope2Emissions()` uses for a region (gCO2/kWh); `getGridRegions()` lists them |
 | `scope3Emissions()` | Supply chain spend-based emissions (8 categories) |
 | `vocEmissions()` | VOC emissions with capture/destruction |
 | `productCarbonFootprint()` | Product lifecycle carbon footprint |

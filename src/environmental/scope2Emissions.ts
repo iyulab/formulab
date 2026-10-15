@@ -8,11 +8,10 @@ import type { GridRegion, Scope2EmissionsInput, Scope2EmissionsResult } from './
  *   Electricity Data; 2025 figures, accessed 2026-09-02. Cross-checked against Umweltbundesamt
  *   (German Federal Environment Agency) national statistics for Germany (2025: ~328 gCO2/kWh,
  *   within 1% of the Ember-sourced 330 used here).
- * @remarks Replaces the previous "IEA 2023 Emission Factors" table (docket
- *   `iyulab/formulab` #173 / `iyulab/online-tools` ISSUE-formulab-20260902 — the prior figures
- *   could not be reproduced against any accessible source, IEA's own Emissions Factors data
- *   product requires a paid license). Update annually against the same Our World in Data series
- *   when a new calendar year of data lands (structural drift, not a one-off fix).
+ * @remarks Replaces the previous "IEA 2023 Emission Factors" table, whose figures could not be
+ *   reproduced against any accessible source (IEA's own Emissions Factors data product requires a
+ *   paid license). Update annually against the same Our World in Data series when a new calendar
+ *   year of data lands (structural drift, not a one-off fix).
  */
 const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
   US_average: 384,
@@ -28,6 +27,24 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
   Australia: 525,
   Canada: 191,
 };
+
+/**
+ * The location-based grid emission factor (gCO2/kWh) `scope2Emissions()` uses for a region — so a tool
+ * that offers grid presets reads the same table instead of keeping its own.
+ *
+ * @throws {RangeError} the region is not in the table (`'custom'` has no factor)
+ */
+export function getGridEmissionFactor(region: Exclude<GridRegion, 'custom'>): number {
+  if (!Object.hasOwn(GRID_EMISSION_FACTORS, region)) {
+    throw new RangeError(`unknown grid region: ${String(region)}`);
+  }
+  return GRID_EMISSION_FACTORS[region];
+}
+
+/** Every region the grid table knows, in table order. */
+export function getGridRegions(): Exclude<GridRegion, 'custom'>[] {
+  return Object.keys(GRID_EMISSION_FACTORS) as Exclude<GridRegion, 'custom'>[];
+}
 
 /**
  * Calculate Scope 2 (indirect) CO2 emissions from purchased electricity — location-based always,

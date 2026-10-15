@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { scope2Emissions } from './scope2Emissions.js';
+import { scope2Emissions, getGridEmissionFactor, getGridRegions } from './scope2Emissions.js';
 
 describe('scope2Emissions', () => {
   it('should calculate US average: 10000 kWh × 384 gCO2/kWh = 3840 kgCO2', () => {
@@ -55,7 +55,7 @@ describe('scope2Emissions', () => {
     expect(australia.co2Kg).toBeGreaterThan(france.co2Kg * 10);
   });
 
-  // docket iyulab/formulab#133: GHG Protocol Scope 2 Guidance (2015) requires dual reporting
+  // GHG Protocol Scope 2 Guidance (2015) requires dual reporting
   // (location-based + market-based). market-based inputs are additive/optional and never embed a
   // region-keyed residual-mix table — callers supply residualMixFactor from their own disclosure
   // source (see @reference).
@@ -141,5 +141,21 @@ describe('scope2Emissions', () => {
         supplierFactor: 50,
       })).toThrow();
     });
+  });
+});
+
+describe('grid emission factor lookup', () => {
+  it('returns the factor scope2Emissions uses, for every region', () => {
+    for (const region of getGridRegions()) {
+      const viaScope2 = scope2Emissions({ electricityKwh: 1000, region }).gridFactor;
+      expect(getGridEmissionFactor(region)).toBe(viaScope2);
+    }
+    expect(getGridEmissionFactor('Germany')).toBe(330);
+    expect(getGridRegions()).not.toContain('custom');
+  });
+
+  it('refuses a region the table does not have', () => {
+    expect(() => getGridEmissionFactor('Atlantis' as never)).toThrow(RangeError);
+    expect(() => getGridEmissionFactor('toString' as never)).toThrow(RangeError);
   });
 });
