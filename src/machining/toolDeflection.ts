@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ToolDeflectionInput, ToolDeflectionResult, ToolMaterial } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Young's modulus for common tool materials (GPa)
@@ -29,24 +29,24 @@ export function toolDeflection(input: ToolDeflectionInput): ToolDeflectionResult
   const { toolDiameter, stickout, cuttingForce, material = 'carbide' } = input;
 
   if (toolDiameter <= 0) {
-    throw new InputRangeError('toolDiameter must be positive', {
+    throw inputRangeError('toolDiameter must be positive', {
       code: 'parameter_out_of_range', parameter: 'toolDiameter', exclusive_min: 0, got: toolDiameter,
     });
   }
   if (stickout <= 0) {
-    throw new InputRangeError('stickout must be positive', {
+    throw inputRangeError('stickout must be positive', {
       code: 'parameter_out_of_range', parameter: 'stickout', exclusive_min: 0, got: stickout,
     });
   }
   if (cuttingForce < 0) {
-    throw new InputRangeError('cuttingForce must be non-negative', {
+    throw inputRangeError('cuttingForce must be non-negative', {
       code: 'parameter_out_of_range', parameter: 'cuttingForce', min: 0, got: cuttingForce,
     });
   }
 
   const E = input.youngsModulus ?? TOOL_MODULUS[material];
   if (!(E > 0)) {
-    throw new InputRangeError('youngsModulus must be positive', {
+    throw inputRangeError('youngsModulus must be positive', {
       code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: E,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PressFitInput, PressFitResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate press-fit (interference fit) parameters.
@@ -51,32 +51,32 @@ export function pressFit(input: PressFitInput): PressFitResult {
 
   // Validate inputs
   if (!(shaftDiameter > 0)) {
-    throw new InputRangeError('shaftDiameter must be greater than 0', {
+    throw inputRangeError('shaftDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'shaftDiameter', exclusive_min: 0, got: shaftDiameter,
     });
   }
   if (!(holeDiameter > 0)) {
-    throw new InputRangeError('holeDiameter must be greater than 0', {
+    throw inputRangeError('holeDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'holeDiameter', exclusive_min: 0, got: holeDiameter,
     });
   }
   if (!(hubOuterDiameter > 0)) {
-    throw new InputRangeError('hubOuterDiameter must be greater than 0', {
+    throw inputRangeError('hubOuterDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'hubOuterDiameter', exclusive_min: 0, got: hubOuterDiameter,
     });
   }
   if (!(contactLength > 0)) {
-    throw new InputRangeError('contactLength must be greater than 0', {
+    throw inputRangeError('contactLength must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'contactLength', exclusive_min: 0, got: contactLength,
     });
   }
   if (!(youngsModulus > 0)) {
-    throw new InputRangeError('youngsModulus must be greater than 0', {
+    throw inputRangeError('youngsModulus must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: youngsModulus,
     });
   }
   if (!(frictionCoefficient > 0)) {
-    throw new InputRangeError('frictionCoefficient must be greater than 0', {
+    throw inputRangeError('frictionCoefficient must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'frictionCoefficient', exclusive_min: 0, got: frictionCoefficient,
     });
   }

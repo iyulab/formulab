@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ShelfLifeInput, ShelfLifeResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Estimate shelf life at different storage temperatures using Q10 rule.
@@ -21,13 +21,13 @@ export function shelfLife(input: ShelfLifeInput): ShelfLifeResult {
 
   // A negative reference shelf life scales to a negative one at any temperature.
   if (!(shelfLifeAtRef > 0)) {
-    throw new InputRangeError('shelfLifeAtRef must be greater than 0', {
+    throw inputRangeError('shelfLifeAtRef must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'shelfLifeAtRef', exclusive_min: 0, got: shelfLifeAtRef,
     });
   }
   // Q10 is raised to a possibly negative or fractional power.
   if (!(q10 > 0)) {
-    throw new InputRangeError('q10 must be greater than 0', {
+    throw inputRangeError('q10 must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'q10', exclusive_min: 0, got: q10,
     });
   }

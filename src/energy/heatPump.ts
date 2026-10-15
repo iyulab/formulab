@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { HeatPumpInput, HeatPumpResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Heat Pump COP Calculator
@@ -27,38 +27,38 @@ export function heatPump(input: HeatPumpInput): HeatPumpResult {
   // The COP is the heat delivered per unit of electrical input, so a pump with no compressor
   // input has no COP to report; a negative capacity, power, duration or price flips its sign.
   if (!(compressorPower > 0)) {
-    throw new InputRangeError('compressorPower must be greater than 0', {
+    throw inputRangeError('compressorPower must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'compressorPower', exclusive_min: 0, got: compressorPower,
     });
   }
   if (!(heatingCapacity >= 0)) {
-    throw new InputRangeError('heatingCapacity must not be negative', {
+    throw inputRangeError('heatingCapacity must not be negative', {
       code: 'parameter_out_of_range', parameter: 'heatingCapacity', min: 0, got: heatingCapacity,
     });
   }
   if (!(auxiliaryPower >= 0)) {
-    throw new InputRangeError('auxiliaryPower must not be negative', {
+    throw inputRangeError('auxiliaryPower must not be negative', {
       code: 'parameter_out_of_range', parameter: 'auxiliaryPower', min: 0, got: auxiliaryPower,
     });
   }
   if (operatingHours != null && !(operatingHours >= 0)) {
-    throw new InputRangeError('operatingHours must not be negative', {
+    throw inputRangeError('operatingHours must not be negative', {
       code: 'parameter_out_of_range', parameter: 'operatingHours', min: 0, got: operatingHours,
     });
   }
   if (electricityRate != null && !(electricityRate >= 0)) {
-    throw new InputRangeError('electricityRate must not be negative', {
+    throw inputRangeError('electricityRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'electricityRate', min: 0, got: electricityRate,
     });
   }
   if (fuelCost != null && !(fuelCost >= 0)) {
-    throw new InputRangeError('fuelCost must not be negative', {
+    throw inputRangeError('fuelCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'fuelCost', min: 0, got: fuelCost,
     });
   }
   // The boiler comparison divides the delivered heat by the boiler efficiency.
   if (boilerEfficiency != null && (!(boilerEfficiency > 0) || boilerEfficiency > 1)) {
-    throw new InputRangeError('boilerEfficiency must be greater than 0 and at most 1', {
+    throw inputRangeError('boilerEfficiency must be greater than 0 and at most 1', {
       code: 'parameter_out_of_range', parameter: 'boilerEfficiency', exclusive_min: 0, max: 1, got: boilerEfficiency,
     });
   }

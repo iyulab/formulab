@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FlowControlInput, FlowControlResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Control Valve Cv Calculator
@@ -28,31 +28,31 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
 
   // A valve is sized for a flow; with none every coefficient is 0 (and a negative one is negative).
   if (!(flowRate > 0)) {
-    throw new InputRangeError('flowRate must be greater than 0', {
+    throw inputRangeError('flowRate must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'flowRate', exclusive_min: 0, got: flowRate,
     });
   }
   // The pressure ratio divides by the inlet pressure and the sizing coefficient takes the
   // square root of the specific gravity, so neither may be zero or negative.
   if (!(inletPressure > 0)) {
-    throw new InputRangeError('inletPressure must be greater than 0', {
+    throw inputRangeError('inletPressure must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'inletPressure', exclusive_min: 0, got: inletPressure,
     });
   }
   if (!(fluidDensity > 0)) {
-    throw new InputRangeError('fluidDensity must be greater than 0', {
+    throw inputRangeError('fluidDensity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'fluidDensity', exclusive_min: 0, got: fluidDensity,
     });
   }
   // Gas sizing takes the square root of MW × absolute temperature.
   if (fluidType !== 'liquid') {
     if (molecularWeight !== undefined && !(molecularWeight > 0)) {
-      throw new InputRangeError('molecularWeight must be greater than 0', {
+      throw inputRangeError('molecularWeight must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'molecularWeight', exclusive_min: 0, got: molecularWeight,
       });
     }
     if (!(temperature > -273.15)) {
-      throw new InputRangeError('temperature must be above absolute zero (-273.15 °C)', {
+      throw inputRangeError('temperature must be above absolute zero (-273.15 °C)', {
         code: 'parameter_out_of_range', parameter: 'temperature', exclusive_min: -273.15, got: temperature,
       });
     }
@@ -60,7 +60,7 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
 
   // The pressure ratio ΔP/P1 is taken on absolute pressures; below vacuum there is no pressure.
   if (!(outletPressure >= 0)) {
-    throw new InputRangeError('outletPressure must not be negative (absolute pressure)', {
+    throw inputRangeError('outletPressure must not be negative (absolute pressure)', {
       code: 'parameter_out_of_range', parameter: 'outletPressure', min: 0, got: outletPressure,
     });
   }

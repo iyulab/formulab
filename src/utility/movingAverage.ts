@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MovingAverageInput, MovingAverageResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate moving average (simple or exponential) over a data series
@@ -17,12 +17,12 @@ export function movingAverage(input: MovingAverageInput): MovingAverageResult {
     throw new RangeError('data must contain at least one value');
   }
   if (window < 1) {
-    throw new InputRangeError(`window must be >= 1, got ${window}`, {
+    throw inputRangeError(`window must be >= 1, got ${window}`, {
       code: 'parameter_out_of_range', parameter: 'window', min: 1, got: window,
     });
   }
   if (window > data.length) {
-    throw new InputRangeError(`window must be <= data length (${data.length}), got ${window}`, {
+    throw inputRangeError(`window must be <= data length (${data.length}), got ${window}`, {
       code: 'parameter_out_of_range', parameter: 'window', max: data.length, got: window,
     });
   }

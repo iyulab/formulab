@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { DimWeightInput, DimWeightResult, CarrierType } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 // DIM factors (cubic inches per pound, converted to cubic cm per kg)
 // Standard industry factors:
@@ -28,22 +28,22 @@ export function dimWeight(input: DimWeightInput): DimWeightResult {
   const { length, width, height, actualWeight, carrier } = input;
 
   if (length <= 0) {
-    throw new InputRangeError('length must be greater than 0', {
+    throw inputRangeError('length must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
     });
   }
   if (width <= 0) {
-    throw new InputRangeError('width must be greater than 0', {
+    throw inputRangeError('width must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
     });
   }
   if (height <= 0) {
-    throw new InputRangeError('height must be greater than 0', {
+    throw inputRangeError('height must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
     });
   }
   if (actualWeight < 0) {
-    throw new InputRangeError('actualWeight must not be negative', {
+    throw inputRangeError('actualWeight must not be negative', {
       code: 'parameter_out_of_range', parameter: 'actualWeight', min: 0, got: actualWeight,
     });
   }

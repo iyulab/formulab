@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PickTimeInput, PickTimeResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate warehouse pick time per order
@@ -32,33 +32,33 @@ export function pickTime(input: PickTimeInput): PickTimeResult {
   } = input;
 
   if (!(speed > 0)) {
-    throw new InputRangeError('speed must be greater than 0', {
+    throw inputRangeError('speed must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'speed', exclusive_min: 0, got: speed,
     });
   }
   if (!(itemsPerOrder > 0)) {
-    throw new InputRangeError('itemsPerOrder must be greater than 0', {
+    throw inputRangeError('itemsPerOrder must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'itemsPerOrder', exclusive_min: 0, got: itemsPerOrder,
     });
   }
   // A negative distance or time subtracts from the order's total and inflates orders per hour.
   if (!(distance >= 0)) {
-    throw new InputRangeError('distance must not be negative', {
+    throw inputRangeError('distance must not be negative', {
       code: 'parameter_out_of_range', parameter: 'distance', min: 0, got: distance,
     });
   }
   if (!(searchTimePerItem >= 0)) {
-    throw new InputRangeError('searchTimePerItem must not be negative', {
+    throw inputRangeError('searchTimePerItem must not be negative', {
       code: 'parameter_out_of_range', parameter: 'searchTimePerItem', min: 0, got: searchTimePerItem,
     });
   }
   if (!(pickTimePerItem >= 0)) {
-    throw new InputRangeError('pickTimePerItem must not be negative', {
+    throw inputRangeError('pickTimePerItem must not be negative', {
       code: 'parameter_out_of_range', parameter: 'pickTimePerItem', min: 0, got: pickTimePerItem,
     });
   }
   if (!(documentationTime >= 0)) {
-    throw new InputRangeError('documentationTime must not be negative', {
+    throw inputRangeError('documentationTime must not be negative', {
       code: 'parameter_out_of_range', parameter: 'documentationTime', min: 0, got: documentationTime,
     });
   }

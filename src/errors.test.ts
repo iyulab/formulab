@@ -1,18 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { InputRangeError } from './errors.js';
+import { inputRangeError, type InputRangeError } from './errors.js';
 import { bendAllowance } from './metal/bendAllowance.js';
 import { bolt } from './metal/bolt.js';
 import { controlChart } from './quality/controlChart.js';
 import { weibull } from './quality/weibull.js';
-import { InputRangeError as RootExport } from './index.js';
 
 /** What a refusal says as data — the properties a consumer reads instead of the message. */
 function refusal(fn: () => unknown): Record<string, unknown> {
   try {
     fn();
   } catch (e) {
-    expect(e).toBeInstanceOf(RangeError);
-    expect(e).toBeInstanceOf(InputRangeError);
+    expect(Object.getPrototypeOf(e)).toBe(RangeError.prototype);
     const { code, parameter, min, max, exclusive_min, exclusive_max, got } = e as InputRangeError;
     return Object.fromEntries(
       Object.entries({ code, parameter, min, max, exclusive_min, exclusive_max, got }).filter(([, v]) => v !== undefined),
@@ -21,22 +19,27 @@ function refusal(fn: () => unknown): Record<string, unknown> {
   throw new Error('expected a refusal');
 }
 
-describe('InputRangeError', () => {
-  it('is a RangeError named RangeError, so existing checks keep holding', () => {
-    const e = new InputRangeError('x must be greater than 0', { code: 'parameter_out_of_range', parameter: 'x', exclusive_min: 0, got: -1 });
-    expect(e).toBeInstanceOf(RangeError);
+describe('inputRangeError()', () => {
+  it('is a plain RangeError with the message unchanged', () => {
+    const e = inputRangeError('x must be greater than 0', { code: 'parameter_out_of_range', parameter: 'x', exclusive_min: 0, got: -1 });
+    expect(Object.getPrototypeOf(e)).toBe(RangeError.prototype);
     expect(e.name).toBe('RangeError');
     expect(e.message).toBe('x must be greater than 0');
   });
 
-  it('sets only the facts that apply', () => {
-    const e = new InputRangeError('data must not be empty', { code: 'empty_input', parameter: 'data' });
-    expect(Object.keys(e)).not.toContain('min');
-    expect(Object.keys(e)).not.toContain('got');
+  it('compares as the error it replaced — the facts are non-enumerable, like message', () => {
+    const e = inputRangeError('x must be greater than 0', { code: 'parameter_out_of_range', parameter: 'x', exclusive_min: 0, got: -1 });
+    expect(Object.keys(e)).toEqual([]);
+    expect(() => { throw e; }).toThrow(new RangeError('x must be greater than 0'));
+    expect(e.code).toBe('parameter_out_of_range');
+    expect(e.got).toBe(-1);
   });
 
-  it('is exported from the package root', () => {
-    expect(RootExport).toBe(InputRangeError);
+  it('sets only the facts that apply', () => {
+    const e = inputRangeError('data must not be empty', { code: 'empty_input', parameter: 'data' });
+    expect(Object.getOwnPropertyNames(e)).toContain('parameter');
+    expect(Object.getOwnPropertyNames(e)).not.toContain('min');
+    expect(Object.getOwnPropertyNames(e)).not.toContain('got');
   });
 });
 

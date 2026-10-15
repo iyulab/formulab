@@ -2,7 +2,7 @@ import { validatePrecedence } from '../precedence.js';
 import type { PertInput, PertResult, PertTaskResult, PertTask } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF } from '../math.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Detect cycle in task dependencies using DFS
@@ -92,7 +92,7 @@ export function pert(input: PertInput): PertResult {
   requireFinite('pert', input);
   const { tasks, deadline } = input;
   if (tasks.length === 0) {
-    throw new InputRangeError('tasks must not be empty', { code: 'empty_input', parameter: 'tasks' });
+    throw inputRangeError('tasks must not be empty', { code: 'empty_input', parameter: 'tasks' });
   }
   for (const t of tasks) {
     for (const field of ['optimistic', 'mostLikely', 'pessimistic'] as const) {
@@ -105,7 +105,7 @@ export function pert(input: PertInput): PertResult {
     }
   }
   if (deadline !== undefined && !(deadline >= 0)) {
-    throw new InputRangeError('deadline must not be negative', {
+    throw inputRangeError('deadline must not be negative', {
       code: 'parameter_out_of_range', parameter: 'deadline', min: 0, got: deadline,
     });
   }

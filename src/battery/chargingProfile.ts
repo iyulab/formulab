@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingProfileInput, ChargingProfileResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /** Samples of the CV taper in `currentCurve` (the CC phase is flat and needs only its two ends). */
 const CV_CURVE_SAMPLES = 24;
@@ -32,29 +32,29 @@ export function chargingProfile(input: ChargingProfileInput): ChargingProfileRes
   } = input;
 
   if (!(capacityAh > 0)) {
-    throw new InputRangeError('capacityAh must be greater than 0', {
+    throw inputRangeError('capacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'capacityAh', exclusive_min: 0, got: capacityAh,
     });
   }
   if (!(chargingCurrentA > 0)) {
-    throw new InputRangeError('chargingCurrentA must be greater than 0', {
+    throw inputRangeError('chargingCurrentA must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'chargingCurrentA', exclusive_min: 0, got: chargingCurrentA,
     });
   }
   // The CV taper ends when the current falls to the cutoff: a cutoff of zero is never reached, and one at
   // or above the charging current leaves no taper to carry the CV charge.
   if (!(cutoffCurrentA > 0)) {
-    throw new InputRangeError('cutoffCurrentA must be greater than 0', {
+    throw inputRangeError('cutoffCurrentA must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cutoffCurrentA', exclusive_min: 0, got: cutoffCurrentA,
     });
   }
   if (!(cutoffCurrentA < chargingCurrentA)) {
-    throw new InputRangeError('cutoffCurrentA must be less than chargingCurrentA', {
+    throw inputRangeError('cutoffCurrentA must be less than chargingCurrentA', {
       code: 'parameter_out_of_range', parameter: 'cutoffCurrentA', exclusive_max: chargingCurrentA, got: cutoffCurrentA,
     });
   }
   if (!(ccEndSocPercent > 0) || ccEndSocPercent >= 100) {
-    throw new InputRangeError('ccEndSocPercent must be greater than 0 and less than 100', {
+    throw inputRangeError('ccEndSocPercent must be greater than 0 and less than 100', {
       code: 'parameter_out_of_range', parameter: 'ccEndSocPercent', exclusive_min: 0, exclusive_max: 100, got: ccEndSocPercent,
     });
   }

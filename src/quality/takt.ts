@@ -1,6 +1,6 @@
 import type { TaktTimeInput, TaktTimeResult, TimeUnit } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Convert time to hours based on unit
@@ -33,12 +33,12 @@ export function taktTime(input: TaktTimeInput): TaktTimeResult {
   const { availableTime, demand, timeUnit } = input;
 
   if (!Number.isFinite(availableTime) || availableTime <= 0) {
-    throw new InputRangeError('availableTime must be a positive finite number', {
+    throw inputRangeError('availableTime must be a positive finite number', {
       code: 'parameter_out_of_range', parameter: 'availableTime', exclusive_min: 0, got: availableTime,
     });
   }
   if (!Number.isFinite(demand) || demand <= 0) {
-    throw new InputRangeError('demand must be a positive finite number', {
+    throw inputRangeError('demand must be a positive finite number', {
       code: 'parameter_out_of_range', parameter: 'demand', exclusive_min: 0, got: demand,
     });
   }

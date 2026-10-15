@@ -5,7 +5,7 @@ import type {
   ApRatingBand,
 } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * AIAG-VDA 2019 Action Priority (AP) Matrix
@@ -37,17 +37,17 @@ export function actionPriority(input: ActionPriorityInput): ActionPriorityResult
   const { severity, occurrence, detection } = input;
 
   if (!Number.isFinite(severity) || severity < 1 || severity > 10) {
-    throw new InputRangeError('Severity must be between 1 and 10', {
+    throw inputRangeError('Severity must be between 1 and 10', {
       code: 'parameter_out_of_range', parameter: 'severity', min: 1, max: 10, got: severity,
     });
   }
   if (!Number.isFinite(occurrence) || occurrence < 1 || occurrence > 10) {
-    throw new InputRangeError('Occurrence must be between 1 and 10', {
+    throw inputRangeError('Occurrence must be between 1 and 10', {
       code: 'parameter_out_of_range', parameter: 'occurrence', min: 1, max: 10, got: occurrence,
     });
   }
   if (!Number.isFinite(detection) || detection < 1 || detection > 10) {
-    throw new InputRangeError('Detection must be between 1 and 10', {
+    throw inputRangeError('Detection must be between 1 and 10', {
       code: 'parameter_out_of_range', parameter: 'detection', min: 1, max: 10, got: detection,
     });
   }

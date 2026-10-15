@@ -52,10 +52,7 @@ export async function loadLibraryAndFixtures() {
   }
 
   const lib = await import(pathToFileURL(path.join(DIST, 'index.js')).href);
-  // Calculations only: an exported class (`InputRangeError`) is a function to `typeof`, not a formula.
-  const exported = Object.keys(lib)
-    .filter((k) => typeof lib[k] === 'function' && !/^class\b/.test(Function.prototype.toString.call(lib[k])))
-    .sort();
+  const exported = Object.keys(lib).filter((k) => typeof lib[k] === 'function').sort();
   const exportedSet = new Set(exported);
 
 

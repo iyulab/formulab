@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { NpvInput, NpvResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate net present value (NPV), IRR, and profitability index
@@ -14,7 +14,7 @@ export function npv(input: NpvInput): NpvResult {
   requireFinite('npv', input);
   const { initialInvestment, cashFlows, discountRate } = input;
   if (initialInvestment < 0) {
-    throw new InputRangeError(`initialInvestment must be >= 0, got ${initialInvestment}`, {
+    throw inputRangeError(`initialInvestment must be >= 0, got ${initialInvestment}`, {
       code: 'parameter_out_of_range', parameter: 'initialInvestment', min: 0, got: initialInvestment,
     });
   }
@@ -22,7 +22,7 @@ export function npv(input: NpvInput): NpvResult {
     throw new RangeError('cashFlows must contain at least one value');
   }
   if (discountRate < 0 || discountRate >= 1) {
-    throw new InputRangeError(`discountRate must be in [0, 1), got ${discountRate}`, {
+    throw inputRangeError(`discountRate must be in [0, 1), got ${discountRate}`, {
       code: 'parameter_out_of_range', parameter: 'discountRate', min: 0, exclusive_max: 1, got: discountRate,
     });
   }

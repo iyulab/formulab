@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WeibullInput, WeibullResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Weibull Reliability Analysis — Median Rank Regression
@@ -24,7 +24,7 @@ export function weibull(input: WeibullInput): WeibullResult {
   // Median rank regression fits a line through (ln t, ln ln(1/(1−F))): it needs at least two
   // distinct positive times, or the log is undefined and the slope divides by zero.
   if (failureTimes.length < 2) {
-    throw new InputRangeError('At least 2 failure times are required', {
+    throw inputRangeError('At least 2 failure times are required', {
       code: 'insufficient_data', parameter: 'failureTimes', min: 2, got: failureTimes.length,
     });
   }
@@ -36,7 +36,7 @@ export function weibull(input: WeibullInput): WeibullResult {
   }
   // R(t) raises t/η to a fractional power.
   if (missionTime != null && !(missionTime >= 0)) {
-    throw new InputRangeError('missionTime must not be negative', {
+    throw inputRangeError('missionTime must not be negative', {
       code: 'parameter_out_of_range', parameter: 'missionTime', min: 0, got: missionTime,
     });
   }

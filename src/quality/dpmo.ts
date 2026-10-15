@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { DpmoInput, DpmoResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Convert DPMO to Sigma level using normal distribution
@@ -34,17 +34,17 @@ export function dpmo(input: DpmoInput): DpmoResult {
 
   // Validate inputs
   if (!(defects >= 0)) {
-    throw new InputRangeError('defects must not be negative', {
+    throw inputRangeError('defects must not be negative', {
       code: 'parameter_out_of_range', parameter: 'defects', min: 0, got: defects,
     });
   }
   if (!(units > 0)) {
-    throw new InputRangeError('units must be greater than 0', {
+    throw inputRangeError('units must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'units', exclusive_min: 0, got: units,
     });
   }
   if (!(opportunities > 0)) {
-    throw new InputRangeError('opportunities must be greater than 0', {
+    throw inputRangeError('opportunities must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'opportunities', exclusive_min: 0, got: opportunities,
     });
   }
@@ -52,7 +52,7 @@ export function dpmo(input: DpmoInput): DpmoResult {
   // Calculate total opportunities
   const totalOpportunities = units * opportunities;
   if (defects > totalOpportunities) {
-    throw new InputRangeError('defects must not exceed units × opportunities', {
+    throw inputRangeError('defects must not exceed units × opportunities', {
       code: 'parameter_out_of_range', parameter: 'defects', max: totalOpportunities, got: defects,
     });
   }

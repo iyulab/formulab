@@ -1,6 +1,6 @@
 import type { PalletStackInput, PalletStackResult, BoxOrientation } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Generate floor placement orientations for a box
@@ -43,7 +43,7 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
     throw new RangeError('pallet length and width must be greater than 0');
   }
   if (!(maxHeight > 0)) {
-    throw new InputRangeError('maxHeight must be greater than 0', {
+    throw inputRangeError('maxHeight must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'maxHeight', exclusive_min: 0, got: maxHeight,
     });
   }

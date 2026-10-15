@@ -1,6 +1,6 @@
 import type { CpkToOccurrenceInput, CpkToOccurrenceResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Map Cpk (Process Capability Index) to FMEA Occurrence rating
@@ -17,7 +17,7 @@ export function cpkToOccurrence(input: CpkToOccurrenceInput): CpkToOccurrenceRes
   const { cpk } = input;
 
   if (!Number.isFinite(cpk) || cpk < 0) {
-    throw new InputRangeError('Cpk must be a non-negative number', {
+    throw inputRangeError('Cpk must be a non-negative number', {
       code: 'parameter_out_of_range', parameter: 'cpk', min: 0, got: cpk,
     });
   }

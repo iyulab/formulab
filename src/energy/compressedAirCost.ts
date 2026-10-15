@@ -1,6 +1,6 @@
 import type { CompressedAirCostInput, CompressedAirCostResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 // Conversion factor: 1 m³ = 35.3147 ft³ (cubic feet)
 const M3_TO_FT3 = 35.3147;
@@ -22,27 +22,27 @@ export function compressedAirCost(input: CompressedAirCostInput): CompressedAirC
   const { compressorPower, runningHours, electricityRate, airOutput, maintenanceCost } = input;
 
   if (compressorPower <= 0) {
-    throw new InputRangeError('compressorPower must be greater than 0', {
+    throw inputRangeError('compressorPower must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'compressorPower', exclusive_min: 0, got: compressorPower,
     });
   }
   if (runningHours <= 0) {
-    throw new InputRangeError('runningHours must be greater than 0', {
+    throw inputRangeError('runningHours must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'runningHours', exclusive_min: 0, got: runningHours,
     });
   }
   if (airOutput <= 0) {
-    throw new InputRangeError('airOutput must be greater than 0', {
+    throw inputRangeError('airOutput must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'airOutput', exclusive_min: 0, got: airOutput,
     });
   }
   if (electricityRate < 0) {
-    throw new InputRangeError('electricityRate must not be negative', {
+    throw inputRangeError('electricityRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'electricityRate', min: 0, got: electricityRate,
     });
   }
   if (maintenanceCost < 0) {
-    throw new InputRangeError('maintenanceCost must not be negative', {
+    throw inputRangeError('maintenanceCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'maintenanceCost', min: 0, got: maintenanceCost,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { InventoryTurnoverInput, InventoryTurnoverResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate inventory turnover metrics.
@@ -26,18 +26,18 @@ export function inventoryTurnover(input: InventoryTurnoverInput): InventoryTurno
 
   // Days of supply is the period divided by the turnover; a negative period flips its sign.
   if (!(periodDays > 0)) {
-    throw new InputRangeError('periodDays must be greater than 0', {
+    throw inputRangeError('periodDays must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'periodDays', exclusive_min: 0, got: periodDays,
     });
   }
   // A cost of goods sold and a stock level are amounts; a negative one flips every ratio.
   if (!(cogs >= 0)) {
-    throw new InputRangeError('cogs must not be negative', {
+    throw inputRangeError('cogs must not be negative', {
       code: 'parameter_out_of_range', parameter: 'cogs', min: 0, got: cogs,
     });
   }
   if (!(averageInventory >= 0)) {
-    throw new InputRangeError('averageInventory must not be negative', {
+    throw inputRangeError('averageInventory must not be negative', {
       code: 'parameter_out_of_range', parameter: 'averageInventory', min: 0, got: averageInventory,
     });
   }

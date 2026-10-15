@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryPackConfigInput, BatteryPackConfigResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate battery pack series/parallel cell configuration
@@ -14,22 +14,22 @@ export function batteryPackConfig(input: BatteryPackConfigInput): BatteryPackCon
   const { cellVoltage, cellCapacityAh, targetVoltage, targetCapacityAh } = input;
 
   if (!(cellVoltage > 0)) {
-    throw new InputRangeError('cellVoltage must be greater than 0', {
+    throw inputRangeError('cellVoltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cellVoltage', exclusive_min: 0, got: cellVoltage,
     });
   }
   if (!(cellCapacityAh > 0)) {
-    throw new InputRangeError('cellCapacityAh must be greater than 0', {
+    throw inputRangeError('cellCapacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cellCapacityAh', exclusive_min: 0, got: cellCapacityAh,
     });
   }
   if (!(targetVoltage > 0)) {
-    throw new InputRangeError('targetVoltage must be greater than 0', {
+    throw inputRangeError('targetVoltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'targetVoltage', exclusive_min: 0, got: targetVoltage,
     });
   }
   if (!(targetCapacityAh > 0)) {
-    throw new InputRangeError('targetCapacityAh must be greater than 0', {
+    throw inputRangeError('targetCapacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'targetCapacityAh', exclusive_min: 0, got: targetCapacityAh,
     });
   }

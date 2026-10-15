@@ -1,6 +1,6 @@
 import type { BatchInput, BatchResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate batch scaling for recipe ingredients.
@@ -18,12 +18,12 @@ export function batch(input: BatchInput): BatchResult {
   const { originalBatchSize, targetBatchSize, ingredients } = input;
 
   if (!Number.isFinite(originalBatchSize) || originalBatchSize <= 0) {
-    throw new InputRangeError('originalBatchSize must be a positive finite number', {
+    throw inputRangeError('originalBatchSize must be a positive finite number', {
       code: 'parameter_out_of_range', parameter: 'originalBatchSize', exclusive_min: 0, got: originalBatchSize,
     });
   }
   if (!Number.isFinite(targetBatchSize) || targetBatchSize < 0) {
-    throw new InputRangeError('targetBatchSize must be a non-negative finite number', {
+    throw inputRangeError('targetBatchSize must be a non-negative finite number', {
       code: 'parameter_out_of_range', parameter: 'targetBatchSize', min: 0, got: targetBatchSize,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ExpiryInput, ExpiryResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 function daysBetween(a: string, b: string): number {
   const msPerDay = 86400000;
@@ -34,7 +34,7 @@ export function expiry(input: ExpiryInput): ExpiryResult {
   if (mode === 'calculateExpiry') {
     // A negative shelf life puts the expiry date before production.
     if (!(shelfLifeDays >= 0)) {
-      throw new InputRangeError('shelfLifeDays must not be negative', {
+      throw inputRangeError('shelfLifeDays must not be negative', {
         code: 'parameter_out_of_range', parameter: 'shelfLifeDays', min: 0, got: shelfLifeDays,
       });
     }

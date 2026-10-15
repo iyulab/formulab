@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryInput, BatteryResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate battery runtime based on capacity, voltage, and load
@@ -20,23 +20,23 @@ export function batteryRuntime(input: BatteryInput): BatteryResult {
   const { capacityAh, voltageV, loadW, efficiency } = input;
 
   if (!(capacityAh > 0)) {
-    throw new InputRangeError('capacityAh must be greater than 0', {
+    throw inputRangeError('capacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'capacityAh', exclusive_min: 0, got: capacityAh,
     });
   }
   if (!(voltageV > 0)) {
-    throw new InputRangeError('voltageV must be greater than 0', {
+    throw inputRangeError('voltageV must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'voltageV', exclusive_min: 0, got: voltageV,
     });
   }
   if (!(loadW > 0)) {
-    throw new InputRangeError('loadW must be greater than 0', {
+    throw inputRangeError('loadW must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'loadW', exclusive_min: 0, got: loadW,
     });
   }
   // A negative efficiency returns a negative runtime, and one above 1 creates energy.
   if (!(efficiency > 0 && efficiency <= 1)) {
-    throw new InputRangeError('efficiency must be greater than 0 and at most 1', {
+    throw inputRangeError('efficiency must be greater than 0 and at most 1', {
       code: 'parameter_out_of_range', parameter: 'efficiency', exclusive_min: 0, max: 1, got: efficiency,
     });
   }

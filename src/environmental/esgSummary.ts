@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { EsgSummaryInput, EsgSummaryResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate ESG reporting summary (emissions reduction tracking)
@@ -30,34 +30,34 @@ export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
   // The reduction is expressed as a share of the baseline, so a zero baseline has no
   // percentage to report rather than an infinite one.
   if (!(baselineCo2Tonnes > 0)) {
-    throw new InputRangeError('baselineCo2Tonnes must be greater than 0', {
+    throw inputRangeError('baselineCo2Tonnes must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'baselineCo2Tonnes', exclusive_min: 0, got: baselineCo2Tonnes,
     });
   }
   // Negative emissions (net removals) are outside this tracking model, and the years are
   // calendar years.
   if (!(currentCo2Tonnes >= 0)) {
-    throw new InputRangeError('currentCo2Tonnes must not be negative', {
+    throw inputRangeError('currentCo2Tonnes must not be negative', {
       code: 'parameter_out_of_range', parameter: 'currentCo2Tonnes', min: 0, got: currentCo2Tonnes,
     });
   }
   if (!(targetCo2Tonnes >= 0)) {
-    throw new InputRangeError('targetCo2Tonnes must not be negative', {
+    throw inputRangeError('targetCo2Tonnes must not be negative', {
       code: 'parameter_out_of_range', parameter: 'targetCo2Tonnes', min: 0, got: targetCo2Tonnes,
     });
   }
   if (!(baselineYear > 0)) {
-    throw new InputRangeError('baselineYear must be greater than 0', {
+    throw inputRangeError('baselineYear must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'baselineYear', exclusive_min: 0, got: baselineYear,
     });
   }
   if (!(currentYear > 0)) {
-    throw new InputRangeError('currentYear must be greater than 0', {
+    throw inputRangeError('currentYear must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'currentYear', exclusive_min: 0, got: currentYear,
     });
   }
   if (!(targetYear > 0)) {
-    throw new InputRangeError('targetYear must be greater than 0', {
+    throw inputRangeError('targetYear must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'targetYear', exclusive_min: 0, got: targetYear,
     });
   }

@@ -1,6 +1,6 @@
 import type { ReactorInput, ReactorResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate reactor vessel dimensions and volumes.
@@ -26,14 +26,14 @@ export function reactor(input: ReactorInput): ReactorResult {
 
   // A zero diameter gives zero volume over zero surface area, which is not a ratio.
   if (!(diameter > 0)) {
-    throw new InputRangeError('diameter must be greater than 0', {
+    throw inputRangeError('diameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'diameter', exclusive_min: 0, got: diameter,
     });
   }
   // A fill ratio is a fraction of the vessel: a negative one gives a negative working volume,
   // and one above 1 overfills it.
   if (!(fillRatio > 0 && fillRatio <= 1)) {
-    throw new InputRangeError('fillRatio must be greater than 0 and at most 1', {
+    throw inputRangeError('fillRatio must be greater than 0 and at most 1', {
       code: 'parameter_out_of_range', parameter: 'fillRatio', exclusive_min: 0, max: 1, got: fillRatio,
     });
   }
@@ -46,7 +46,7 @@ export function reactor(input: ReactorInput): ReactorResult {
     const h = input.height;
     // A negative height can cancel the end caps and leave zero surface area to divide by.
     if (!(h > 0)) {
-      throw new InputRangeError('height must be greater than 0', {
+      throw inputRangeError('height must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: h,
       });
     }

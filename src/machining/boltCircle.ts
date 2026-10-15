@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BoltCircleInput, BoltCircleResult, BoltHole } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate bolt hole circle pattern coordinates.
@@ -20,7 +20,7 @@ export function boltCircle(input: BoltCircleInput): BoltCircleResult {
   const { boltCircleDiameter, numberOfHoles, startAngle = 0 } = input;
 
   if (!(boltCircleDiameter > 0)) {
-    throw new InputRangeError('boltCircleDiameter must be greater than 0', {
+    throw inputRangeError('boltCircleDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'boltCircleDiameter', exclusive_min: 0, got: boltCircleDiameter,
     });
   }

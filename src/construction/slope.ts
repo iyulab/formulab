@@ -1,6 +1,6 @@
 import type { SlopeInput, SlopeResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Convert slope between different units
@@ -27,12 +27,12 @@ export function slope(input: SlopeInput): SlopeResult {
     throw new RangeError('value must be a finite number');
   }
   if (fromUnit === 'ratio' && value <= 0) {
-    throw new InputRangeError('ratio value must be greater than 0', {
+    throw inputRangeError('ratio value must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'value', exclusive_min: 0, got: value,
     });
   }
   if (fromUnit === 'degrees' && !(value > -90 && value < 90)) {
-    throw new InputRangeError('degrees must be between -90 and 90 (exclusive)', {
+    throw inputRangeError('degrees must be between -90 and 90 (exclusive)', {
       code: 'parameter_out_of_range', parameter: 'degrees', exclusive_min: -90, exclusive_max: 90, got: value,
     });
   }

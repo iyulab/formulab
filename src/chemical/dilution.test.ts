@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { dilution } from './dilution.js';
-import { InputRangeError } from '../errors.js';
 
 describe('dilution', () => {
   describe('solve for c2 (final concentration)', () => {
@@ -40,9 +39,7 @@ describe('dilution', () => {
           v1: 100,
           v2: 0,
         })
-      ).toThrow(
-        new InputRangeError('v2 must be greater than 0', { code: 'parameter_out_of_range', parameter: 'v2', exclusive_min: 0, got: 0 })
-      );
+      ).toThrow(new RangeError('v2 must be greater than 0'));
     });
   });
 
@@ -69,9 +66,7 @@ describe('dilution', () => {
           v1: 200,
           c2: 0,
         })
-      ).toThrow(
-        new InputRangeError('c2 must be greater than 0', { code: 'parameter_out_of_range', parameter: 'c2', exclusive_min: 0, got: 0 })
-      );
+      ).toThrow(new RangeError('c2 must be greater than 0'));
     });
   });
 
@@ -97,9 +92,7 @@ describe('dilution', () => {
           c2: 5,
           v2: 400,
         })
-      ).toThrow(
-        new InputRangeError('v1 must be greater than 0', { code: 'parameter_out_of_range', parameter: 'v1', exclusive_min: 0, got: 0 })
-      );
+      ).toThrow(new RangeError('v1 must be greater than 0'));
     });
   });
 
@@ -125,9 +118,7 @@ describe('dilution', () => {
           c2: 6,
           v2: 500,
         })
-      ).toThrow(
-        new InputRangeError('c1 must be greater than 0', { code: 'parameter_out_of_range', parameter: 'c1', exclusive_min: 0, got: 0 })
-      );
+      ).toThrow(new RangeError('c1 must be greater than 0'));
     });
   });
 

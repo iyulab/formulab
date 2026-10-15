@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CuspHeightInput, CuspHeightResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate the scallop (cusp) height for ball end mill surface finishing.
@@ -22,12 +22,12 @@ export function cuspHeight(input: CuspHeightInput): CuspHeightResult {
   const { toolRadius, stepover } = input;
 
   if (!(toolRadius > 0)) {
-    throw new InputRangeError('toolRadius must be greater than 0', {
+    throw inputRangeError('toolRadius must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'toolRadius', exclusive_min: 0, got: toolRadius,
     });
   }
   if (!(stepover > 0)) {
-    throw new InputRangeError('stepover must be greater than 0', {
+    throw inputRangeError('stepover must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'stepover', exclusive_min: 0, got: stepover,
     });
   }

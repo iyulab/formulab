@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { VocEmissionsInput, VocEmissionsResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate VOC (Volatile Organic Compound) emissions after capture/destruction
@@ -17,17 +17,17 @@ export function vocEmissions(input: VocEmissionsInput): VocEmissionsResult {
   const { totalVocKg, captureEfficiency, destructionEfficiency } = input;
 
   if (totalVocKg < 0) {
-    throw new InputRangeError('totalVocKg must not be negative', {
+    throw inputRangeError('totalVocKg must not be negative', {
       code: 'parameter_out_of_range', parameter: 'totalVocKg', min: 0, got: totalVocKg,
     });
   }
   if (captureEfficiency < 0 || captureEfficiency > 1) {
-    throw new InputRangeError('captureEfficiency must be between 0 and 1', {
+    throw inputRangeError('captureEfficiency must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'captureEfficiency', min: 0, max: 1, got: captureEfficiency,
     });
   }
   if (destructionEfficiency < 0 || destructionEfficiency > 1) {
-    throw new InputRangeError('destructionEfficiency must be between 0 and 1', {
+    throw inputRangeError('destructionEfficiency must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'destructionEfficiency', min: 0, max: 1, got: destructionEfficiency,
     });
   }

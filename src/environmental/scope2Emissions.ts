@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { GridRegion, Scope2EmissionsInput, Scope2EmissionsResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Grid emission factors (gCO2/kWh), most recent full calendar year.
@@ -77,22 +77,22 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
   // A negative consumption or emission factor would report a negative emission; offsets and
   // removals are outside this model.
   if (!(electricityKwh >= 0)) {
-    throw new InputRangeError('electricityKwh must not be negative', {
+    throw inputRangeError('electricityKwh must not be negative', {
       code: 'parameter_out_of_range', parameter: 'electricityKwh', min: 0, got: electricityKwh,
     });
   }
   if (customFactor != null && !(customFactor >= 0)) {
-    throw new InputRangeError('customFactor must not be negative', {
+    throw inputRangeError('customFactor must not be negative', {
       code: 'parameter_out_of_range', parameter: 'customFactor', min: 0, got: customFactor,
     });
   }
   if (supplierFactor != null && !(supplierFactor >= 0)) {
-    throw new InputRangeError('supplierFactor must not be negative', {
+    throw inputRangeError('supplierFactor must not be negative', {
       code: 'parameter_out_of_range', parameter: 'supplierFactor', min: 0, got: supplierFactor,
     });
   }
   if (residualMixFactor != null && !(residualMixFactor >= 0)) {
-    throw new InputRangeError('residualMixFactor must not be negative', {
+    throw inputRangeError('residualMixFactor must not be negative', {
       code: 'parameter_out_of_range', parameter: 'residualMixFactor', min: 0, got: residualMixFactor,
     });
   }
@@ -117,7 +117,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
   if (marketBasedRequested) {
     const effectiveContractedKwh = contractedKwh ?? 0;
     if (effectiveContractedKwh < 0) {
-      throw new InputRangeError('contractedKwh cannot be negative', {
+      throw inputRangeError('contractedKwh cannot be negative', {
         code: 'parameter_out_of_range', parameter: 'effectiveContractedKwh', min: 0, got: effectiveContractedKwh,
       });
     }
@@ -125,7 +125,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
       throw new RangeError('supplierFactor is required when contractedKwh > 0');
     }
     if (effectiveContractedKwh > electricityKwh) {
-      throw new InputRangeError('contractedKwh cannot exceed electricityKwh', {
+      throw inputRangeError('contractedKwh cannot exceed electricityKwh', {
         code: 'parameter_out_of_range', parameter: 'effectiveContractedKwh', max: electricityKwh, got: effectiveContractedKwh,
       });
     }

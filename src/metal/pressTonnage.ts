@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PressTonnageInput, PressTonnageResult, BendType } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Bend force coefficient by bend type
@@ -203,12 +203,12 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   // Bending divides by the die opening, and the drawing bend factor divides by a die radius
   // that defaults to 5 × thickness.
   if (!(thickness > 0)) {
-    throw new InputRangeError('thickness must be greater than 0', {
+    throw inputRangeError('thickness must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
     });
   }
   if (!(dieOpening > 0)) {
-    throw new InputRangeError('dieOpening must be greater than 0', {
+    throw inputRangeError('dieOpening must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'dieOpening', exclusive_min: 0, got: dieOpening,
     });
   }
@@ -225,19 +225,19 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     }
   }
   if (input.drawRatio !== undefined && !(input.drawRatio > 0)) {
-    throw new InputRangeError('drawRatio must be greater than 0', {
+    throw inputRangeError('drawRatio must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'drawRatio', exclusive_min: 0, got: input.drawRatio,
     });
   }
   // A single operation is meaningless without its own dimension; in a combined operation a 0
   // dimension means that step is not part of the job.
   if (operation === 'blanking' && !(cuttingPerimeter > 0)) {
-    throw new InputRangeError('cuttingPerimeter must be greater than 0', {
+    throw inputRangeError('cuttingPerimeter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cuttingPerimeter', exclusive_min: 0, got: cuttingPerimeter,
     });
   }
   if (operation === 'bending' && !(bendLength > 0)) {
-    throw new InputRangeError('bendLength must be greater than 0', {
+    throw inputRangeError('bendLength must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'bendLength', exclusive_min: 0, got: bendLength,
     });
   }
@@ -245,7 +245,7 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   if (drawing) {
     // The draw ratio divides by the punch diameter and the Siebel term takes ln(D / d).
     if (!(punchDiameter > 0)) {
-      throw new InputRangeError('punchDiameter must be greater than 0 for drawing', {
+      throw inputRangeError('punchDiameter must be greater than 0 for drawing', {
         code: 'parameter_out_of_range', parameter: 'punchDiameter', exclusive_min: 0, got: punchDiameter,
       });
     }

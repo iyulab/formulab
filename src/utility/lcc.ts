@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LccInput, LccResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate life cycle cost (LCC) with present-value discounting
@@ -14,17 +14,17 @@ export function lcc(input: LccInput): LccResult {
   requireFinite('lcc', input);
   const { initialCost, annualOperatingCost, annualMaintenanceCost, disposalCost, lifespan, discountRate } = input;
   if (initialCost < 0) {
-    throw new InputRangeError(`initialCost must be >= 0, got ${initialCost}`, {
+    throw inputRangeError(`initialCost must be >= 0, got ${initialCost}`, {
       code: 'parameter_out_of_range', parameter: 'initialCost', min: 0, got: initialCost,
     });
   }
   if (lifespan <= 0) {
-    throw new InputRangeError(`lifespan must be > 0, got ${lifespan}`, {
+    throw inputRangeError(`lifespan must be > 0, got ${lifespan}`, {
       code: 'parameter_out_of_range', parameter: 'lifespan', exclusive_min: 0, got: lifespan,
     });
   }
   if (discountRate < 0 || discountRate >= 1) {
-    throw new InputRangeError(`discountRate must be in [0, 1), got ${discountRate}`, {
+    throw inputRangeError(`discountRate must be in [0, 1), got ${discountRate}`, {
       code: 'parameter_out_of_range', parameter: 'discountRate', min: 0, exclusive_max: 1, got: discountRate,
     });
   }

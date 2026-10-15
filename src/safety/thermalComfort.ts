@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ThermalComfortInput, ThermalComfortResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * PMV/PPD Thermal Comfort — ISO 7730 / Fanger's Model
@@ -23,22 +23,22 @@ export function thermalComfort(input: ThermalComfortInput): ThermalComfortResult
   const { airTemp, radiantTemp, airVelocity, relativeHumidity, metabolicRate, clothingInsulation } = input;
 
   if (relativeHumidity < 0 || relativeHumidity > 100) {
-    throw new InputRangeError('relativeHumidity must be between 0 and 100', {
+    throw inputRangeError('relativeHumidity must be between 0 and 100', {
       code: 'parameter_out_of_range', parameter: 'relativeHumidity', min: 0, max: 100, got: relativeHumidity,
     });
   }
   if (metabolicRate <= 0) {
-    throw new InputRangeError('metabolicRate must be greater than 0', {
+    throw inputRangeError('metabolicRate must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'metabolicRate', exclusive_min: 0, got: metabolicRate,
     });
   }
   if (clothingInsulation < 0) {
-    throw new InputRangeError('clothingInsulation must not be negative', {
+    throw inputRangeError('clothingInsulation must not be negative', {
       code: 'parameter_out_of_range', parameter: 'clothingInsulation', min: 0, got: clothingInsulation,
     });
   }
   if (airVelocity < 0) {
-    throw new InputRangeError('airVelocity must not be negative', {
+    throw inputRangeError('airVelocity must not be negative', {
       code: 'parameter_out_of_range', parameter: 'airVelocity', min: 0, got: airVelocity,
     });
   }

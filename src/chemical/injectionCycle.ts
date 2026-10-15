@@ -1,6 +1,6 @@
 import type { InjectionCycleInput, InjectionCycleResult, InjectionCyclePhase, ResinType } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Resin properties for cooling time calculation
@@ -111,24 +111,24 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
   // Cooling time goes with the square of the thickness, which would hide a negative one; a part
   // with no wall has nothing to cool.
   if (!(wallThickness > 0)) {
-    throw new InputRangeError('wallThickness must be greater than 0', {
+    throw inputRangeError('wallThickness must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'wallThickness', exclusive_min: 0, got: wallThickness,
     });
   }
   // A shot with no material fills nothing — a cycle rate for it is a rate for no parts. A negative
   // weight or phase time subtracts from the cycle it is meant to add to.
   if (!(shotWeight > 0)) {
-    throw new InputRangeError('shotWeight must be greater than 0', {
+    throw inputRangeError('shotWeight must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'shotWeight', exclusive_min: 0, got: shotWeight,
     });
   }
   if (!(moldOpenCloseTime >= 0)) {
-    throw new InputRangeError('moldOpenCloseTime must not be negative', {
+    throw inputRangeError('moldOpenCloseTime must not be negative', {
       code: 'parameter_out_of_range', parameter: 'moldOpenCloseTime', min: 0, got: moldOpenCloseTime,
     });
   }
   if (!(ejectionTime >= 0)) {
-    throw new InputRangeError('ejectionTime must not be negative', {
+    throw inputRangeError('ejectionTime must not be negative', {
       code: 'parameter_out_of_range', parameter: 'ejectionTime', min: 0, got: ejectionTime,
     });
   }
@@ -152,7 +152,7 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
     throw new RangeError('density must be greater than 0');
   }
   if (injectionRate !== undefined && !(injectionRate > 0)) {
-    throw new InputRangeError('injectionRate must be greater than 0', {
+    throw inputRangeError('injectionRate must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'injectionRate', exclusive_min: 0, got: injectionRate,
     });
   }

@@ -1,6 +1,6 @@
 import type { ConfinedSpaceInput, ConfinedSpaceResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Confined Space Atmospheric Assessment — OSHA 29 CFR 1910.146
@@ -24,22 +24,22 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
   const { oxygenPercent, lelPercent, h2sPpm, coPpm, customGas } = input;
 
   if (oxygenPercent < 0 || oxygenPercent > 100) {
-    throw new InputRangeError('oxygenPercent must be between 0 and 100', {
+    throw inputRangeError('oxygenPercent must be between 0 and 100', {
       code: 'parameter_out_of_range', parameter: 'oxygenPercent', min: 0, max: 100, got: oxygenPercent,
     });
   }
   if (lelPercent < 0) {
-    throw new InputRangeError('lelPercent must not be negative', {
+    throw inputRangeError('lelPercent must not be negative', {
       code: 'parameter_out_of_range', parameter: 'lelPercent', min: 0, got: lelPercent,
     });
   }
   if (h2sPpm != null && h2sPpm < 0) {
-    throw new InputRangeError('h2sPpm must not be negative', {
+    throw inputRangeError('h2sPpm must not be negative', {
       code: 'parameter_out_of_range', parameter: 'h2sPpm', min: 0, got: h2sPpm,
     });
   }
   if (coPpm != null && coPpm < 0) {
-    throw new InputRangeError('coPpm must not be negative', {
+    throw inputRangeError('coPpm must not be negative', {
       code: 'parameter_out_of_range', parameter: 'coPpm', min: 0, got: coPpm,
     });
   }

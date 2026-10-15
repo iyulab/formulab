@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LedRoiInput, LedRoiResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate LED lighting retrofit ROI.
@@ -31,45 +31,45 @@ export function ledRoi(input: LedRoiInput): LedRoiResult {
   // A retrofit of no fixtures, or of fixtures that never run, has no saving to report; a negative
   // wattage, rate, cost or emission factor flips the sign of a saving.
   if (!(fixtureCount > 0)) {
-    throw new InputRangeError('fixtureCount must be greater than 0', {
+    throw inputRangeError('fixtureCount must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'fixtureCount', exclusive_min: 0, got: fixtureCount,
     });
   }
   if (!(operatingHours > 0)) {
-    throw new InputRangeError('operatingHours must be greater than 0', {
+    throw inputRangeError('operatingHours must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'operatingHours', exclusive_min: 0, got: operatingHours,
     });
   }
   // A fixture drawing nothing has no energy to save: the reduction is undefined and every newWatts
   // reads as added use.
   if (!(oldWatts > 0)) {
-    throw new InputRangeError('oldWatts must be greater than 0', {
+    throw inputRangeError('oldWatts must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'oldWatts', exclusive_min: 0, got: oldWatts,
     });
   }
   // A replacement drawing nothing is not a light — it reads as a 100 % saving.
   if (!(newWatts > 0)) {
-    throw new InputRangeError('newWatts must be greater than 0', {
+    throw inputRangeError('newWatts must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'newWatts', exclusive_min: 0, got: newWatts,
     });
   }
   if (!(electricityRate >= 0)) {
-    throw new InputRangeError('electricityRate must not be negative', {
+    throw inputRangeError('electricityRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'electricityRate', min: 0, got: electricityRate,
     });
   }
   if (!(fixtureCost >= 0)) {
-    throw new InputRangeError('fixtureCost must not be negative', {
+    throw inputRangeError('fixtureCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'fixtureCost', min: 0, got: fixtureCost,
     });
   }
   if (!(installationCost >= 0)) {
-    throw new InputRangeError('installationCost must not be negative', {
+    throw inputRangeError('installationCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'installationCost', min: 0, got: installationCost,
     });
   }
   if (!(co2Factor >= 0)) {
-    throw new InputRangeError('co2Factor must not be negative', {
+    throw inputRangeError('co2Factor must not be negative', {
       code: 'parameter_out_of_range', parameter: 'co2Factor', min: 0, got: co2Factor,
     });
   }

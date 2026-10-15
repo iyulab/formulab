@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { fCDF } from '../math.js';
 import type { GageRRInput, GageRRResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 // AIAG MSA 4th Ed. — 5.15σ spans the middle 99% of a normal distribution; both methods share
 // this scale so EV/AV/PV/GRR/TV (and %Tolerance) are comparable across method choice.
@@ -209,17 +209,17 @@ function gageRRAnova(input: GageRRInput): GageRRResult {
   const numTrials = measurements[0][0].length;
 
   if (numParts < 2) {
-    throw new InputRangeError('ANOVA method requires at least 2 parts', {
+    throw inputRangeError('ANOVA method requires at least 2 parts', {
       code: 'parameter_out_of_range', parameter: 'numParts', min: 2, got: numParts,
     });
   }
   if (numOperators < 2) {
-    throw new InputRangeError('ANOVA method requires at least 2 operators', {
+    throw inputRangeError('ANOVA method requires at least 2 operators', {
       code: 'parameter_out_of_range', parameter: 'numOperators', min: 2, got: numOperators,
     });
   }
   if (numTrials < 2) {
-    throw new InputRangeError('ANOVA method requires at least 2 trials per part-operator combination', {
+    throw inputRangeError('ANOVA method requires at least 2 trials per part-operator combination', {
       code: 'parameter_out_of_range', parameter: 'numTrials', min: 2, got: numTrials,
     });
   }
@@ -353,7 +353,7 @@ export function gageRR(input: GageRRInput): GageRRResult {
   validateStudyShape(input.measurements);
   // A tolerance ≤ 0 used to be read as «no tolerance» — %GRR-of-tolerance quietly null for a value given.
   if (input.tolerance !== undefined && !(input.tolerance > 0)) {
-    throw new InputRangeError('tolerance must be greater than 0 when given', {
+    throw inputRangeError('tolerance must be greater than 0 when given', {
       code: 'parameter_out_of_range', parameter: 'tolerance', exclusive_min: 0, got: input.tolerance,
     });
   }

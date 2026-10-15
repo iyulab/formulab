@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LoadCapacityInput, LoadCapacityResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate forklift effective load capacity with load center derating.
@@ -35,27 +35,27 @@ export function loadCapacity(input: LoadCapacityInput): LoadCapacityResult {
   // The derating is a ratio of the two load centres and a share of the rated capacity, so none
   // of the three may be zero; a negative one flips the sign of the capacity.
   if (!(ratedCapacity > 0)) {
-    throw new InputRangeError('ratedCapacity must be greater than 0', {
+    throw inputRangeError('ratedCapacity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'ratedCapacity', exclusive_min: 0, got: ratedCapacity,
     });
   }
   if (!(ratedLoadCenter > 0)) {
-    throw new InputRangeError('ratedLoadCenter must be greater than 0', {
+    throw inputRangeError('ratedLoadCenter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'ratedLoadCenter', exclusive_min: 0, got: ratedLoadCenter,
     });
   }
   if (!(actualLoadCenter > 0)) {
-    throw new InputRangeError('actualLoadCenter must be greater than 0', {
+    throw inputRangeError('actualLoadCenter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'actualLoadCenter', exclusive_min: 0, got: actualLoadCenter,
     });
   }
   if (!(attachmentWeightLoss >= 0)) {
-    throw new InputRangeError('attachmentWeightLoss must not be negative', {
+    throw inputRangeError('attachmentWeightLoss must not be negative', {
       code: 'parameter_out_of_range', parameter: 'attachmentWeightLoss', min: 0, got: attachmentWeightLoss,
     });
   }
   if (actualLoad !== undefined && !(actualLoad >= 0)) {
-    throw new InputRangeError('actualLoad must not be negative', {
+    throw inputRangeError('actualLoad must not be negative', {
       code: 'parameter_out_of_range', parameter: 'actualLoad', min: 0, got: actualLoad,
     });
   }

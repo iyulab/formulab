@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CbmInput, CbmResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Convert length to meters based on unit
@@ -35,22 +35,22 @@ export function cbm(input: CbmInput): CbmResult {
 
   // A negative dimension or quantity flips the sign of the volume; a zero one is no cargo.
   if (!(length > 0)) {
-    throw new InputRangeError('length must be greater than 0', {
+    throw inputRangeError('length must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
     });
   }
   if (!(width > 0)) {
-    throw new InputRangeError('width must be greater than 0', {
+    throw inputRangeError('width must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
     });
   }
   if (!(height > 0)) {
-    throw new InputRangeError('height must be greater than 0', {
+    throw inputRangeError('height must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
     });
   }
   if (!(quantity > 0)) {
-    throw new InputRangeError('quantity must be greater than 0', {
+    throw inputRangeError('quantity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'quantity', exclusive_min: 0, got: quantity,
     });
   }

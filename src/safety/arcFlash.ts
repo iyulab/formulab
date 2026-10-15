@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ArcFlashInput, ArcFlashResult, ArcFlashEquipment } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /** IEEE 1584-2002 model range (clause 4) — the empirical equations were fitted only inside it. */
 const VOLTAGE_RANGE = { min: 208, max: 15000 } as const; // V
@@ -62,42 +62,42 @@ export function arcFlash(input: ArcFlashInput): ArcFlashResult {
   const { voltage, boltedFaultCurrent, workingDistance, faultClearingTime, gapBetweenConductors, equipment, grounding } = input;
 
   if (voltage <= 0) {
-    throw new InputRangeError('voltage must be greater than 0', {
+    throw inputRangeError('voltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'voltage', exclusive_min: 0, got: voltage,
     });
   }
   if (boltedFaultCurrent <= 0) {
-    throw new InputRangeError('boltedFaultCurrent must be greater than 0', {
+    throw inputRangeError('boltedFaultCurrent must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'boltedFaultCurrent', exclusive_min: 0, got: boltedFaultCurrent,
     });
   }
   if (workingDistance <= 0) {
-    throw new InputRangeError('workingDistance must be greater than 0', {
+    throw inputRangeError('workingDistance must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'workingDistance', exclusive_min: 0, got: workingDistance,
     });
   }
   if (faultClearingTime <= 0) {
-    throw new InputRangeError('faultClearingTime must be greater than 0', {
+    throw inputRangeError('faultClearingTime must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'faultClearingTime', exclusive_min: 0, got: faultClearingTime,
     });
   }
   if (gapBetweenConductors <= 0) {
-    throw new InputRangeError('gapBetweenConductors must be greater than 0', {
+    throw inputRangeError('gapBetweenConductors must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'gapBetweenConductors', exclusive_min: 0, got: gapBetweenConductors,
     });
   }
   if (voltage < VOLTAGE_RANGE.min || voltage > VOLTAGE_RANGE.max) {
-    throw new InputRangeError(`voltage must be within ${VOLTAGE_RANGE.min}–${VOLTAGE_RANGE.max} V (IEEE 1584-2002 model range)`, {
+    throw inputRangeError(`voltage must be within ${VOLTAGE_RANGE.min}–${VOLTAGE_RANGE.max} V (IEEE 1584-2002 model range)`, {
       code: 'parameter_out_of_range', parameter: 'voltage', min: VOLTAGE_RANGE.min, max: VOLTAGE_RANGE.max, got: voltage,
     });
   }
   if (boltedFaultCurrent < BOLTED_FAULT_RANGE.min || boltedFaultCurrent > BOLTED_FAULT_RANGE.max) {
-    throw new InputRangeError(`boltedFaultCurrent must be within ${BOLTED_FAULT_RANGE.min}–${BOLTED_FAULT_RANGE.max} kA (IEEE 1584-2002 model range)`, {
+    throw inputRangeError(`boltedFaultCurrent must be within ${BOLTED_FAULT_RANGE.min}–${BOLTED_FAULT_RANGE.max} kA (IEEE 1584-2002 model range)`, {
       code: 'parameter_out_of_range', parameter: 'boltedFaultCurrent', min: BOLTED_FAULT_RANGE.min, max: BOLTED_FAULT_RANGE.max, got: boltedFaultCurrent,
     });
   }
   if (gapBetweenConductors < GAP_RANGE.min || gapBetweenConductors > GAP_RANGE.max) {
-    throw new InputRangeError(`gapBetweenConductors must be within ${GAP_RANGE.min}–${GAP_RANGE.max} mm (IEEE 1584-2002 model range)`, {
+    throw inputRangeError(`gapBetweenConductors must be within ${GAP_RANGE.min}–${GAP_RANGE.max} mm (IEEE 1584-2002 model range)`, {
       code: 'parameter_out_of_range', parameter: 'gapBetweenConductors', min: GAP_RANGE.min, max: GAP_RANGE.max, got: gapBetweenConductors,
     });
   }

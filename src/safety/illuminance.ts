@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { IlluminanceInput, IlluminanceResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Simple CU lookup by room index (linear interpolation).
@@ -66,7 +66,7 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   }
 
   if (!(mf > 0)) {
-    throw new InputRangeError('mf (maintenance factor) must be greater than 0', {
+    throw inputRangeError('mf (maintenance factor) must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'mf', exclusive_min: 0, got: mf,
     });
   }
@@ -75,7 +75,7 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   // Heights are above the floor; a workplane below it moves the luminaire's mounting height into the
   // ground and every index computed from it with it.
   if (!(workplaneHeight >= 0)) {
-    throw new InputRangeError('workplaneHeight must not be negative (height above the floor)', {
+    throw inputRangeError('workplaneHeight must not be negative (height above the floor)', {
       code: 'parameter_out_of_range', parameter: 'workplaneHeight', min: 0, got: workplaneHeight,
     });
   }
@@ -99,7 +99,7 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   // The luminaire count divides by CU x MF; a zero coefficient of utilization means no
   // light reaches the workplane, which is not a fixture count.
   if (!(cu > 0)) {
-    throw new InputRangeError('cu (coefficient of utilization) must be greater than 0', {
+    throw inputRangeError('cu (coefficient of utilization) must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cu', exclusive_min: 0, got: cu,
     });
   }

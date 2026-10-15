@@ -1,6 +1,6 @@
 import type { NelsonRulesInput, NelsonRulesResult, NelsonViolation } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Nelson Rules for SPC Control Chart Analysis
@@ -23,7 +23,7 @@ export function nelsonRules(input: NelsonRulesInput): NelsonRulesResult {
     throw new RangeError('Values array must have at least 1 element');
   }
   if (!Number.isFinite(sigma) || sigma <= 0) {
-    throw new InputRangeError('Sigma must be a positive number', {
+    throw inputRangeError('Sigma must be a positive number', {
       code: 'parameter_out_of_range', parameter: 'sigma', exclusive_min: 0, got: sigma,
     });
   }

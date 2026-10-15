@@ -1,6 +1,6 @@
 import type { EarthworkInput, EarthworkResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate earthwork volumes
@@ -19,27 +19,27 @@ export function earthwork(input: EarthworkInput): EarthworkResult {
   const { length, width, depth, swellFactor, shrinkFactor } = input;
 
   if (length <= 0) {
-    throw new InputRangeError('length must be greater than 0', {
+    throw inputRangeError('length must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
     });
   }
   if (width <= 0) {
-    throw new InputRangeError('width must be greater than 0', {
+    throw inputRangeError('width must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
     });
   }
   if (depth <= 0) {
-    throw new InputRangeError('depth must be greater than 0', {
+    throw inputRangeError('depth must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'depth', exclusive_min: 0, got: depth,
     });
   }
   if (swellFactor <= 0) {
-    throw new InputRangeError('swellFactor must be greater than 0', {
+    throw inputRangeError('swellFactor must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'swellFactor', exclusive_min: 0, got: swellFactor,
     });
   }
   if (shrinkFactor <= 0) {
-    throw new InputRangeError('shrinkFactor must be greater than 0', {
+    throw inputRangeError('shrinkFactor must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'shrinkFactor', exclusive_min: 0, got: shrinkFactor,
     });
   }

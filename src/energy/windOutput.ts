@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WindOutputInput, WindOutputResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Wind Power Output Calculator
@@ -38,50 +38,50 @@ export function windOutput(input: WindOutputInput): WindOutputResult {
   // The Hellmann power law raises the height ratio to a fractional exponent, so a negative
   // hub height gives a complex wind speed and every downstream figure becomes NaN.
   if (!(hubHeight > 0)) {
-    throw new InputRangeError('hubHeight must be greater than 0', {
+    throw inputRangeError('hubHeight must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'hubHeight', exclusive_min: 0, got: hubHeight,
     });
   }
   if (!(referenceHeight > 0)) {
-    throw new InputRangeError('referenceHeight must be greater than 0', {
+    throw inputRangeError('referenceHeight must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'referenceHeight', exclusive_min: 0, got: referenceHeight,
     });
   }
   // The cubic power-curve region divides the wind speed by the rated speed.
   if (!(ratedSpeed > 0)) {
-    throw new InputRangeError('ratedSpeed must be greater than 0', {
+    throw inputRangeError('ratedSpeed must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'ratedSpeed', exclusive_min: 0, got: ratedSpeed,
     });
   }
   // A negative rating, wind speed or cut-in/cut-out speed flips the sign of an output or of the
   // integration range; a negative roughness exponent inverts the wind shear.
   if (!(ratedPower >= 0)) {
-    throw new InputRangeError('ratedPower must not be negative', {
+    throw inputRangeError('ratedPower must not be negative', {
       code: 'parameter_out_of_range', parameter: 'ratedPower', min: 0, got: ratedPower,
     });
   }
   if (!(averageWindSpeed >= 0)) {
-    throw new InputRangeError('averageWindSpeed must not be negative', {
+    throw inputRangeError('averageWindSpeed must not be negative', {
       code: 'parameter_out_of_range', parameter: 'averageWindSpeed', min: 0, got: averageWindSpeed,
     });
   }
   if (!(cutInSpeed >= 0)) {
-    throw new InputRangeError('cutInSpeed must not be negative', {
+    throw inputRangeError('cutInSpeed must not be negative', {
       code: 'parameter_out_of_range', parameter: 'cutInSpeed', min: 0, got: cutInSpeed,
     });
   }
   if (!(cutOutSpeed >= 0)) {
-    throw new InputRangeError('cutOutSpeed must not be negative', {
+    throw inputRangeError('cutOutSpeed must not be negative', {
       code: 'parameter_out_of_range', parameter: 'cutOutSpeed', min: 0, got: cutOutSpeed,
     });
   }
   if (rotorDiameter != null && !(rotorDiameter >= 0)) {
-    throw new InputRangeError('rotorDiameter must not be negative', {
+    throw inputRangeError('rotorDiameter must not be negative', {
       code: 'parameter_out_of_range', parameter: 'rotorDiameter', min: 0, got: rotorDiameter,
     });
   }
   if (!(terrainRoughness >= 0)) {
-    throw new InputRangeError('terrainRoughness must not be negative', {
+    throw inputRangeError('terrainRoughness must not be negative', {
       code: 'parameter_out_of_range', parameter: 'terrainRoughness', min: 0, got: terrainRoughness,
     });
   }

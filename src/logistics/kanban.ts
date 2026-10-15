@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { KanbanInput, KanbanResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate the number of kanban cards required
@@ -25,23 +25,23 @@ export function kanban(input: KanbanInput): KanbanResult {
   const { dailyDemand, leadTime, safetyFactor, containerQuantity } = input;
 
   if (!(dailyDemand > 0)) {
-    throw new InputRangeError('dailyDemand must be greater than 0', {
+    throw inputRangeError('dailyDemand must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'dailyDemand', exclusive_min: 0, got: dailyDemand,
     });
   }
   if (!(leadTime > 0)) {
-    throw new InputRangeError('leadTime must be greater than 0', {
+    throw inputRangeError('leadTime must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'leadTime', exclusive_min: 0, got: leadTime,
     });
   }
   if (!(containerQuantity > 0)) {
-    throw new InputRangeError('containerQuantity must be greater than 0', {
+    throw inputRangeError('containerQuantity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'containerQuantity', exclusive_min: 0, got: containerQuantity,
     });
   }
   // A negative safety factor removes stock below the lead-time demand; it was answered with zero cards.
   if (!(safetyFactor >= 0)) {
-    throw new InputRangeError('safetyFactor must not be negative', {
+    throw inputRangeError('safetyFactor must not be negative', {
       code: 'parameter_out_of_range', parameter: 'safetyFactor', min: 0, got: safetyFactor,
     });
   }

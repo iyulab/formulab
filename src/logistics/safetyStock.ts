@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { SafetyStockInput, SafetyStockResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate Safety Stock and Reorder Point
@@ -33,7 +33,7 @@ export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   // The z-score is the inverse normal CDF of the service level, which diverges at both
   // ends: a level of 0 or 1 has no finite z and the whole result follows it to infinity.
   if (!(serviceLevel > 0) || serviceLevel >= 1) {
-    throw new InputRangeError('serviceLevel must be greater than 0 and less than 1', {
+    throw inputRangeError('serviceLevel must be greater than 0 and less than 1', {
       code: 'parameter_out_of_range', parameter: 'serviceLevel', exclusive_min: 0, exclusive_max: 1, got: serviceLevel,
     });
   }
@@ -41,24 +41,24 @@ export function safetyStock(input: SafetyStockInput): SafetyStockResult {
   // Calculate z-score for the desired service level
   // Lead-time demand variance scales with the lead time and is square-rooted.
   if (!(avgLeadTime >= 0)) {
-    throw new InputRangeError('avgLeadTime must not be negative', {
+    throw inputRangeError('avgLeadTime must not be negative', {
       code: 'parameter_out_of_range', parameter: 'avgLeadTime', min: 0, got: avgLeadTime,
     });
   }
   // A negative demand flips the sign of the lead-time demand and the reorder point; a standard
   // deviation cannot be negative (it is squared, so the sign would be silently dropped).
   if (!(avgDemand >= 0)) {
-    throw new InputRangeError('avgDemand must not be negative', {
+    throw inputRangeError('avgDemand must not be negative', {
       code: 'parameter_out_of_range', parameter: 'avgDemand', min: 0, got: avgDemand,
     });
   }
   if (!(demandStdDev >= 0)) {
-    throw new InputRangeError('demandStdDev must not be negative', {
+    throw inputRangeError('demandStdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'demandStdDev', min: 0, got: demandStdDev,
     });
   }
   if (!(leadTimeStdDev >= 0)) {
-    throw new InputRangeError('leadTimeStdDev must not be negative', {
+    throw inputRangeError('leadTimeStdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'leadTimeStdDev', min: 0, got: leadTimeStdDev,
     });
   }

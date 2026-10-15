@@ -4,11 +4,14 @@
  * Every formulab function refuses invalid input with a `RangeError` whose `message` is an English
  * sentence for developers. A consumer with a non-English UI cannot show that sentence, and must not
  * parse it: the facts in it — which input, which bound, what was given — are facts formulab already
- * holds when it throws. `InputRangeError` carries them as properties beside the unchanged message,
- * named and spelled like the refusals of the @iyulab calculation engines (`code`, `parameter`,
- * `min`, `max`, `exclusive_min`, `exclusive_max`, `got`), so one reader serves both.
+ * holds when it throws. `inputRangeError()` attaches them to the `RangeError` as properties beside the
+ * unchanged message, named and spelled like the refusals of the @iyulab calculation engines (`code`,
+ * `parameter`, `min`, `max`, `exclusive_min`, `exclusive_max`, `got`), so one reader serves both.
  *
- * It is a `RangeError`, so `instanceof RangeError` and every existing message check still hold.
+ * The error stays a plain `RangeError` — same prototype, same message — and the facts are own,
+ * read-only and non-enumerable, like `message` and `cause`. So it compares, prints and serializes as the
+ * error it replaced: a consumer that expects `new RangeError(message)` is unaffected, and one that wants
+ * the facts reads `error.code`.
  */
 
 /**
@@ -39,27 +42,17 @@ export interface InputErrorDetail {
   got?: number;
 }
 
-/** A refused input, with the facts behind the refusal as properties. */
-export class InputRangeError extends RangeError {
-  readonly code: InputErrorCode;
-  declare readonly parameter?: string;
-  declare readonly min?: number;
-  declare readonly max?: number;
-  declare readonly exclusive_min?: number;
-  declare readonly exclusive_max?: number;
-  declare readonly got?: number;
+/** A `RangeError` carrying the facts behind the refusal (what `inputRangeError()` returns). */
+export type InputRangeError = RangeError & Readonly<InputErrorDetail>;
 
-  constructor(message: string, detail: InputErrorDetail) {
-    super(message);
-    this.name = 'RangeError';
-    this.code = detail.code;
-    // Only the facts that apply become properties (hence `declare` above: a class field would define
-    // every one, as undefined), so a consumer can tell «no upper bound» from «max: undefined».
-    if (detail.parameter !== undefined) this.parameter = detail.parameter;
-    if (detail.min !== undefined) this.min = detail.min;
-    if (detail.max !== undefined) this.max = detail.max;
-    if (detail.exclusive_min !== undefined) this.exclusive_min = detail.exclusive_min;
-    if (detail.exclusive_max !== undefined) this.exclusive_max = detail.exclusive_max;
-    if (detail.got !== undefined) this.got = detail.got;
+/**
+ * A `RangeError` with `message`, carrying `detail` as non-enumerable properties. Only the facts that
+ * apply are set, so a consumer can tell «no upper bound» from «max: undefined».
+ */
+export function inputRangeError(message: string, detail: InputErrorDetail): InputRangeError {
+  const error = new RangeError(message);
+  for (const [key, value] of Object.entries(detail)) {
+    if (value !== undefined) Object.defineProperty(error, key, { value, enumerable: false });
   }
+  return error as InputRangeError;
 }

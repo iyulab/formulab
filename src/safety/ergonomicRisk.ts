@@ -1,6 +1,6 @@
 import type { RebaInput, RebaResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 // REBA Table A: Trunk × Neck × Legs (1-indexed)
 // Values per the published REBA worksheet (Hignett & McAtamney 2000)
@@ -86,7 +86,7 @@ function clampIdx(val: number, min: number, max: number): number {
 export function ergonomicRisk(input: RebaInput): RebaResult {
   requireFinite('ergonomicRisk', input);
   if (input.load < 0) {
-    throw new InputRangeError('load must not be negative', {
+    throw inputRangeError('load must not be negative', {
       code: 'parameter_out_of_range', parameter: 'load', min: 0, got: input.load,
     });
   }

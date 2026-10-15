@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF } from '../math.js';
 import type { HistogramInput, HistogramResult, HistogramBin } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Histogram binning with optional explicit bin count (Sturges' rule by default) and range.
@@ -25,7 +25,7 @@ export function histogram(input: HistogramInput): HistogramResult {
   // Sturges' rule for default bin count
   const numBins = input.bins ?? Math.max(1, Math.ceil(Math.log2(n) + 1));
   if (numBins < 1) {
-    throw new InputRangeError(`bins must be >= 1, got ${numBins}`, {
+    throw inputRangeError(`bins must be >= 1, got ${numBins}`, {
       code: 'parameter_out_of_range', parameter: 'bins', min: 1, got: numBins,
     });
   }

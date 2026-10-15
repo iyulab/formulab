@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { StabilityStudyInput, StabilityStudyResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 const R = 8.314e-3; // Gas constant in kJ/(mol·K)
 
@@ -28,12 +28,12 @@ export function stabilityStudy(input: StabilityStudyInput): StabilityStudyResult
   // The shelf life is the time to reach the criterion; a criterion ≤ 0 is reached at once, and a
   // temperature at or below absolute zero has no 1/T.
   if (!(shelfLifeCriterion > 0)) {
-    throw new InputRangeError('shelfLifeCriterion must be greater than 0', {
+    throw inputRangeError('shelfLifeCriterion must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'shelfLifeCriterion', exclusive_min: 0, got: shelfLifeCriterion,
     });
   }
   if (!(storageTemp > -273.15)) {
-    throw new InputRangeError('storageTemp must be above absolute zero (-273.15 °C)', {
+    throw inputRangeError('storageTemp must be above absolute zero (-273.15 °C)', {
       code: 'parameter_out_of_range', parameter: 'storageTemp', exclusive_min: -273.15, got: storageTemp,
     });
   }

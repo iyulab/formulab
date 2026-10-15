@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { VaAnalysisInput, VaAnalysisResult, CategorySummary } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Value-Added / Non-Value-Added Analysis
@@ -24,7 +24,7 @@ export function vaAnalysis(input: VaAnalysisInput): VaAnalysisResult {
 
   for (let i = 0; i < activities.length; i++) {
     if (!Number.isFinite(activities[i].duration) || activities[i].duration < 0) {
-      throw new InputRangeError('All activity durations must be non-negative', {
+      throw inputRangeError('All activity durations must be non-negative', {
         code: 'parameter_out_of_range', parameter: 'activities[i].duration', min: 0, got: activities[i].duration,
       });
     }

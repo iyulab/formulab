@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PowerCostInput, PowerCostResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate power cost including energy, demand, power factor penalty, and fixed charges
@@ -32,42 +32,42 @@ export function powerCost(input: PowerCostInput): PowerCostResult {
   // A power factor is a fraction; a negative consumption, peak, rate or charge flips the sign
   // of a cost line.
   if (!(powerFactor >= 0) || powerFactor > 1) {
-    throw new InputRangeError('powerFactor must be between 0 and 1', {
+    throw inputRangeError('powerFactor must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'powerFactor', min: 0, max: 1, got: powerFactor,
     });
   }
   if (!(pfPenaltyThreshold >= 0) || pfPenaltyThreshold > 1) {
-    throw new InputRangeError('pfPenaltyThreshold must be between 0 and 1', {
+    throw inputRangeError('pfPenaltyThreshold must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'pfPenaltyThreshold', min: 0, max: 1, got: pfPenaltyThreshold,
     });
   }
   if (!(energyConsumption >= 0)) {
-    throw new InputRangeError('energyConsumption must not be negative', {
+    throw inputRangeError('energyConsumption must not be negative', {
       code: 'parameter_out_of_range', parameter: 'energyConsumption', min: 0, got: energyConsumption,
     });
   }
   if (!(energyRate >= 0)) {
-    throw new InputRangeError('energyRate must not be negative', {
+    throw inputRangeError('energyRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'energyRate', min: 0, got: energyRate,
     });
   }
   if (!(demandPeak >= 0)) {
-    throw new InputRangeError('demandPeak must not be negative', {
+    throw inputRangeError('demandPeak must not be negative', {
       code: 'parameter_out_of_range', parameter: 'demandPeak', min: 0, got: demandPeak,
     });
   }
   if (!(demandRate >= 0)) {
-    throw new InputRangeError('demandRate must not be negative', {
+    throw inputRangeError('demandRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'demandRate', min: 0, got: demandRate,
     });
   }
   if (!(pfPenaltyRate >= 0)) {
-    throw new InputRangeError('pfPenaltyRate must not be negative', {
+    throw inputRangeError('pfPenaltyRate must not be negative', {
       code: 'parameter_out_of_range', parameter: 'pfPenaltyRate', min: 0, got: pfPenaltyRate,
     });
   }
   if (!(fixedCharges >= 0)) {
-    throw new InputRangeError('fixedCharges must not be negative', {
+    throw inputRangeError('fixedCharges must not be negative', {
       code: 'parameter_out_of_range', parameter: 'fixedCharges', min: 0, got: fixedCharges,
     });
   }

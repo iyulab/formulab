@@ -1,6 +1,6 @@
 import type { ViaInput, ViaResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Round to specified decimal places
@@ -36,22 +36,22 @@ export function viaCurrent(input: ViaInput): ViaResult {
 
   // Validate inputs
   if (holeDiameter <= 0) {
-    throw new InputRangeError('holeDiameter must be greater than 0', {
+    throw inputRangeError('holeDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'holeDiameter', exclusive_min: 0, got: holeDiameter,
     });
   }
   if (platingThickness <= 0) {
-    throw new InputRangeError('platingThickness must be greater than 0', {
+    throw inputRangeError('platingThickness must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'platingThickness', exclusive_min: 0, got: platingThickness,
     });
   }
   if (viaLength <= 0) {
-    throw new InputRangeError('viaLength must be greater than 0', {
+    throw inputRangeError('viaLength must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'viaLength', exclusive_min: 0, got: viaLength,
     });
   }
   if (tempRise <= 0) {
-    throw new InputRangeError('tempRise must be greater than 0', {
+    throw inputRangeError('tempRise must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'tempRise', exclusive_min: 0, got: tempRise,
     });
   }

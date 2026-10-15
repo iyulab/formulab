@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { Scope3Category, Scope3EmissionsInput, Scope3EmissionsResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Spend-based EEIO emission factors (kgCO2eq per USD)
@@ -32,7 +32,7 @@ export function scope3Emissions(input: Scope3EmissionsInput): Scope3EmissionsRes
 
   // A negative spend (a refund) would report a negative emission; offsets are outside this model.
   if (!(spendUsd >= 0)) {
-    throw new InputRangeError('spendUsd must not be negative', {
+    throw inputRangeError('spendUsd must not be negative', {
       code: 'parameter_out_of_range', parameter: 'spendUsd', min: 0, got: spendUsd,
     });
   }

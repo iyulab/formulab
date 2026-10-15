@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BoltInput, BoltResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate bolt torque and preload relationship.
@@ -29,22 +29,22 @@ export function bolt(input: BoltInput): BoltResult {
 
   // Validate inputs
   if (diameter <= 0) {
-    throw new InputRangeError('diameter must be greater than 0', {
+    throw inputRangeError('diameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'diameter', exclusive_min: 0, got: diameter,
     });
   }
   if (pitch <= 0) {
-    throw new InputRangeError('pitch must be greater than 0', {
+    throw inputRangeError('pitch must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'pitch', exclusive_min: 0, got: pitch,
     });
   }
   if (kFactor <= 0) {
-    throw new InputRangeError('kFactor must be greater than 0', {
+    throw inputRangeError('kFactor must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'kFactor', exclusive_min: 0, got: kFactor,
     });
   }
   if (tensileStrength <= 0) {
-    throw new InputRangeError('tensileStrength must be greater than 0', {
+    throw inputRangeError('tensileStrength must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'tensileStrength', exclusive_min: 0, got: tensileStrength,
     });
   }
@@ -69,7 +69,7 @@ export function bolt(input: BoltInput): BoltResult {
     // Given preload, calculate torque
     const preloadKN = input.preload;
     if (preloadKN == null || preloadKN <= 0) {
-      throw new InputRangeError('preload must be greater than 0', {
+      throw inputRangeError('preload must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'preload', exclusive_min: 0, got: preloadKN ?? undefined,
       });
     }

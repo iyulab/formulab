@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { histogram } from '../utility/histogram.js';
 import type { SafetyStockSimulationInput, SafetyStockSimulationResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /** Mulberry32 — a small seeded generator, so the same input gives the same simulation. */
 function mulberry32(seed: number): () => number {
@@ -62,27 +62,27 @@ export function safetyStockSimulation(input: SafetyStockSimulationInput): Safety
   } = input;
 
   if (!(serviceLevel > 0) || serviceLevel >= 1) {
-    throw new InputRangeError('serviceLevel must be greater than 0 and less than 1', {
+    throw inputRangeError('serviceLevel must be greater than 0 and less than 1', {
       code: 'parameter_out_of_range', parameter: 'serviceLevel', exclusive_min: 0, exclusive_max: 1, got: serviceLevel,
     });
   }
   if (!(avgDemand > 0)) {
-    throw new InputRangeError('avgDemand must be greater than 0', {
+    throw inputRangeError('avgDemand must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'avgDemand', exclusive_min: 0, got: avgDemand,
     });
   }
   if (!(avgLeadTime > 0)) {
-    throw new InputRangeError('avgLeadTime must be greater than 0', {
+    throw inputRangeError('avgLeadTime must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'avgLeadTime', exclusive_min: 0, got: avgLeadTime,
     });
   }
   if (!(demandStdDev >= 0)) {
-    throw new InputRangeError('demandStdDev must not be negative', {
+    throw inputRangeError('demandStdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'demandStdDev', min: 0, got: demandStdDev,
     });
   }
   if (!(leadTimeStdDev >= 0)) {
-    throw new InputRangeError('leadTimeStdDev must not be negative', {
+    throw inputRangeError('leadTimeStdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'leadTimeStdDev', min: 0, got: leadTimeStdDev,
     });
   }

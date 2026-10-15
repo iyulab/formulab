@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TapInput, TapResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate tap drill size and thread dimensions.
@@ -28,17 +28,17 @@ export function tap(input: TapInput): TapResult {
 
   // Validate inputs
   if (majorDiameter <= 0) {
-    throw new InputRangeError('majorDiameter must be greater than 0', {
+    throw inputRangeError('majorDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'majorDiameter', exclusive_min: 0, got: majorDiameter,
     });
   }
   if (inputPitch <= 0) {
-    throw new InputRangeError('pitch must be greater than 0', {
+    throw inputRangeError('pitch must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'pitch', exclusive_min: 0, got: inputPitch,
     });
   }
   if (!(threadPercentage > 0 && threadPercentage <= 100)) {
-    throw new InputRangeError('threadPercentage must be greater than 0 and at most 100', {
+    throw inputRangeError('threadPercentage must be greater than 0 and at most 100', {
       code: 'parameter_out_of_range', parameter: 'threadPercentage', exclusive_min: 0, max: 100, got: threadPercentage,
     });
   }

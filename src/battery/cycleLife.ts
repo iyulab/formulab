@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BatteryChemistry, CycleLifeInput, CycleLifeResult, DodCurve } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Base cycle life by battery chemistry (at ~80% DOD, 25°C)
@@ -87,7 +87,7 @@ export function cycleLife(input: CycleLifeInput): CycleLifeResult {
   const { chemistry, depthOfDischarge, temperatureC } = input;
 
   if (!Number.isFinite(depthOfDischarge) || depthOfDischarge <= 0 || depthOfDischarge > 100) {
-    throw new InputRangeError('depthOfDischarge must be greater than 0 and at most 100 (%)', {
+    throw inputRangeError('depthOfDischarge must be greater than 0 and at most 100 (%)', {
       code: 'parameter_out_of_range', parameter: 'depthOfDischarge', exclusive_min: 0, max: 100, got: depthOfDischarge,
     });
   }

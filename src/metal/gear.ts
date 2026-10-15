@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { GearInput, GearResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 // Standard pressure angle for spur gears (degrees)
 const PRESSURE_ANGLE_DEG = 20;
@@ -34,17 +34,17 @@ export function gear(input: GearInput): GearResult {
   // former all-zero result read as a 0 mm gear.
   if (mode === 'fromModule') {
     if (!(input.module !== undefined && input.module > 0)) {
-      throw new InputRangeError('module must be greater than 0', {
+      throw inputRangeError('module must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'module', exclusive_min: 0, got: input.module,
       });
     }
     if (!(input.teethGear1 !== undefined && input.teethGear1 > 0)) {
-      throw new InputRangeError('teethGear1 must be greater than 0', {
+      throw inputRangeError('teethGear1 must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'teethGear1', exclusive_min: 0, got: input.teethGear1,
       });
     }
     if (input.teethGear2 !== undefined && !(input.teethGear2 > 0)) {
-      throw new InputRangeError('teethGear2 must be greater than 0 when given', {
+      throw inputRangeError('teethGear2 must be greater than 0 when given', {
         code: 'parameter_out_of_range', parameter: 'teethGear2', exclusive_min: 0, got: input.teethGear2,
       });
     }
@@ -53,12 +53,12 @@ export function gear(input: GearInput): GearResult {
     z2 = input.teethGear2;
   } else {
     if (!(input.pitchDiameter !== undefined && input.pitchDiameter > 0)) {
-      throw new InputRangeError('pitchDiameter must be greater than 0', {
+      throw inputRangeError('pitchDiameter must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'pitchDiameter', exclusive_min: 0, got: input.pitchDiameter,
       });
     }
     if (!(input.numberOfTeeth !== undefined && input.numberOfTeeth > 0)) {
-      throw new InputRangeError('numberOfTeeth must be greater than 0', {
+      throw inputRangeError('numberOfTeeth must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'numberOfTeeth', exclusive_min: 0, got: input.numberOfTeeth,
       });
     }

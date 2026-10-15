@@ -1,6 +1,6 @@
 import type { RespiratorInput, RespiratorResult, RespiratorType } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * OSHA Assigned Protection Factors (APFs)
@@ -78,12 +78,12 @@ export function respiratorCalculate(input: RespiratorInput): RespiratorResult {
   const { concentration, oel, respiratorType } = input;
 
   if (oel <= 0) {
-    throw new InputRangeError('oel (occupational exposure limit) must be greater than 0', {
+    throw inputRangeError('oel (occupational exposure limit) must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'oel', exclusive_min: 0, got: oel,
     });
   }
   if (concentration < 0) {
-    throw new InputRangeError('concentration must not be negative', {
+    throw inputRangeError('concentration must not be negative', {
       code: 'parameter_out_of_range', parameter: 'concentration', min: 0, got: concentration,
     });
   }

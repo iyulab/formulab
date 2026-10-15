@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FreightMode, ChargeableWeightInput, ChargeableWeightResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Volumetric weight per cubic metre of cargo, by freight mode (kg/m³) — the reciprocal of the
@@ -35,12 +35,12 @@ export function chargeableWeight(input: ChargeableWeightInput): ChargeableWeight
   const { volume, actualWeight, mode } = input;
 
   if (!(volume > 0)) {
-    throw new InputRangeError('volume must be greater than 0', {
+    throw inputRangeError('volume must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'volume', exclusive_min: 0, got: volume,
     });
   }
   if (actualWeight < 0) {
-    throw new InputRangeError('actualWeight must not be negative', {
+    throw inputRangeError('actualWeight must not be negative', {
       code: 'parameter_out_of_range', parameter: 'actualWeight', min: 0, got: actualWeight,
     });
   }

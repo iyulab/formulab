@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { VentilationRateInput, VentilationRateResult, SpaceType } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Recommended ACH by space type
@@ -36,7 +36,7 @@ export function ventilationRate(input: VentilationRateInput): VentilationRateRes
     throw new RangeError('Room dimensions must be positive');
   }
   if (occupants <= 0) {
-    throw new InputRangeError('Occupants must be positive', {
+    throw inputRangeError('Occupants must be positive', {
       code: 'parameter_out_of_range', parameter: 'occupants', exclusive_min: 0, got: occupants,
     });
   }
@@ -47,7 +47,7 @@ export function ventilationRate(input: VentilationRateInput): VentilationRateRes
   let baseAch: number;
   if (spaceType === 'custom') {
     if (customAch == null || customAch <= 0) {
-      throw new InputRangeError('Custom ACH must be provided and positive for custom space type', {
+      throw inputRangeError('Custom ACH must be provided and positive for custom space type', {
         code: 'parameter_out_of_range', parameter: 'customAch', exclusive_min: 0, got: customAch ?? undefined,
       });
     }

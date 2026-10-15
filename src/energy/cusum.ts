@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CusumInput, CusumResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * CUSUM (Cumulative Sum) Control Chart — Page's Algorithm
@@ -37,12 +37,12 @@ export function cusum(input: CusumInput): CusumResult {
   // A negative allowance widens nothing — it makes C⁺ and C⁻ grow on target data; a decision
   // interval ≤ 0 signals on the first reading.
   if (input.allowance != null && !(input.allowance >= 0)) {
-    throw new InputRangeError('allowance must not be negative', {
+    throw inputRangeError('allowance must not be negative', {
       code: 'parameter_out_of_range', parameter: 'allowance', min: 0, got: input.allowance,
     });
   }
   if (input.decisionInterval != null && !(input.decisionInterval > 0)) {
-    throw new InputRangeError('decisionInterval must be greater than 0', {
+    throw inputRangeError('decisionInterval must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'decisionInterval', exclusive_min: 0, got: input.decisionInterval,
     });
   }
@@ -58,12 +58,12 @@ export function cusum(input: CusumInput): CusumResult {
       const mean = values.reduce((s, v) => s + v, 0) / n;
       sigma = n > 1 ? Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1)) : 0;
       if (!(sigma > 0) || !Number.isFinite(sigma)) {
-        throw new InputRangeError('stdDev cannot be estimated from these values (fewer than 2, or all equal) — give stdDev, or both allowance and decisionInterval', {
+        throw inputRangeError('stdDev cannot be estimated from these values (fewer than 2, or all equal) — give stdDev, or both allowance and decisionInterval', {
           code: 'parameter_out_of_range', parameter: 'sigma', exclusive_min: 0, got: sigma,
         });
       }
     } else if (!(sigma > 0) || !Number.isFinite(sigma)) {
-      throw new InputRangeError('stdDev must be greater than 0', {
+      throw inputRangeError('stdDev must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'stdDev', exclusive_min: 0, got: sigma,
       });
     }

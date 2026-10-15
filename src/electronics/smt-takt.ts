@@ -1,6 +1,6 @@
 import type { SmtTaktInput, SmtTaktResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate SMT line takt time and throughput
@@ -26,27 +26,27 @@ export function smtTakt(input: SmtTaktInput): SmtTaktResult {
 
   // Guard against invalid inputs
   if (placementRate <= 0) {
-    throw new InputRangeError('placementRate must be greater than 0', {
+    throw inputRangeError('placementRate must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'placementRate', exclusive_min: 0, got: placementRate,
     });
   }
   if (componentsPerBoard <= 0) {
-    throw new InputRangeError('componentsPerBoard must be greater than 0', {
+    throw inputRangeError('componentsPerBoard must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'componentsPerBoard', exclusive_min: 0, got: componentsPerBoard,
     });
   }
   if (setupTimeSec < 0) {
-    throw new InputRangeError('setupTimeSec must not be negative', {
+    throw inputRangeError('setupTimeSec must not be negative', {
       code: 'parameter_out_of_range', parameter: 'setupTimeSec', min: 0, got: setupTimeSec,
     });
   }
   if (availableTimeMin < 0) {
-    throw new InputRangeError('availableTimeMin must not be negative', {
+    throw inputRangeError('availableTimeMin must not be negative', {
       code: 'parameter_out_of_range', parameter: 'availableTimeMin', min: 0, got: availableTimeMin,
     });
   }
   if (boardsPerPanel <= 0) {
-    throw new InputRangeError('boardsPerPanel must be greater than 0', {
+    throw inputRangeError('boardsPerPanel must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'boardsPerPanel', exclusive_min: 0, got: boardsPerPanel,
     });
   }

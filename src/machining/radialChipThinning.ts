@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { RadialChipThinningInput, RadialChipThinningResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate adjusted feed per tooth to compensate for radial chip thinning.
@@ -27,17 +27,17 @@ export function radialChipThinning(input: RadialChipThinningInput): RadialChipTh
   // is zero or negative, which is a cut the geometry does not describe rather than an
   // infinitely thinned chip.
   if (!(toolDiameter > 0)) {
-    throw new InputRangeError('toolDiameter must be greater than 0', {
+    throw inputRangeError('toolDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'toolDiameter', exclusive_min: 0, got: toolDiameter,
     });
   }
   if (!(radialDepthOfCut > 0) || radialDepthOfCut >= toolDiameter) {
-    throw new InputRangeError('radialDepthOfCut must be greater than 0 and less than toolDiameter', {
+    throw inputRangeError('radialDepthOfCut must be greater than 0 and less than toolDiameter', {
       code: 'parameter_out_of_range', parameter: 'radialDepthOfCut', exclusive_min: 0, exclusive_max: toolDiameter, got: radialDepthOfCut,
     });
   }
   if (!(chipLoadTarget > 0)) {
-    throw new InputRangeError('chipLoadTarget must be greater than 0', {
+    throw inputRangeError('chipLoadTarget must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'chipLoadTarget', exclusive_min: 0, got: chipLoadTarget,
     });
   }

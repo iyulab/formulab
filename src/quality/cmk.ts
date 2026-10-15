@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { capabilityIndices } from './capability.js';
 import type { CmkInput, CmkResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate Cmk (Machine Capability Index)
@@ -27,7 +27,7 @@ export function cmk(input: CmkInput): CmkResult {
 
   // A sample standard deviation needs two readings; with fewer there is no study to report.
   if (n < 2) {
-    throw new InputRangeError('measurements must contain at least 2 values', {
+    throw inputRangeError('measurements must contain at least 2 values', {
       code: 'parameter_out_of_range', parameter: 'measurements', min: 2, got: n,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FuelType, Scope1EmissionsInput, Scope1EmissionsResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Combustion emission factors (kgCO2 per unit)
@@ -30,7 +30,7 @@ export function scope1Emissions(input: Scope1EmissionsInput): Scope1EmissionsRes
 
   // A negative fuel quantity would report a negative emission; offsets are outside this model.
   if (!(quantity >= 0)) {
-    throw new InputRangeError('quantity must not be negative', {
+    throw inputRangeError('quantity must not be negative', {
       code: 'parameter_out_of_range', parameter: 'quantity', min: 0, got: quantity,
     });
   }

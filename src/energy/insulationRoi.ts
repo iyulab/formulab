@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate insulation ROI for pipes, vessels, or surfaces.
@@ -31,47 +31,47 @@ export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
   } = input;
 
   if (!(surfaceArea > 0)) {
-    throw new InputRangeError('surfaceArea must be greater than 0', {
+    throw inputRangeError('surfaceArea must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'surfaceArea', exclusive_min: 0, got: surfaceArea,
     });
   }
   if (!(tempDifference > 0)) {
-    throw new InputRangeError('tempDifference must be greater than 0', {
+    throw inputRangeError('tempDifference must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'tempDifference', exclusive_min: 0, got: tempDifference,
     });
   }
   if (!(insulationK > 0)) {
-    throw new InputRangeError('insulationK must be greater than 0', {
+    throw inputRangeError('insulationK must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'insulationK', exclusive_min: 0, got: insulationK,
     });
   }
   if (!(insulationThickness > 0)) {
-    throw new InputRangeError('insulationThickness must be greater than 0', {
+    throw inputRangeError('insulationThickness must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'insulationThickness', exclusive_min: 0, got: insulationThickness,
     });
   }
   if (!(surfaceCoefficient > 0)) {
-    throw new InputRangeError('surfaceCoefficient must be greater than 0', {
+    throw inputRangeError('surfaceCoefficient must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'surfaceCoefficient', exclusive_min: 0, got: surfaceCoefficient,
     });
   }
   if (!(boilerEfficiency > 0) || boilerEfficiency > 1) {
-    throw new InputRangeError('boilerEfficiency must be greater than 0 and at most 1', {
+    throw inputRangeError('boilerEfficiency must be greater than 0 and at most 1', {
       code: 'parameter_out_of_range', parameter: 'boilerEfficiency', exclusive_min: 0, max: 1, got: boilerEfficiency,
     });
   }
   if (!(operatingHours >= 0)) {
-    throw new InputRangeError('operatingHours must not be negative', {
+    throw inputRangeError('operatingHours must not be negative', {
       code: 'parameter_out_of_range', parameter: 'operatingHours', min: 0, got: operatingHours,
     });
   }
   if (!(energyCost >= 0)) {
-    throw new InputRangeError('energyCost must not be negative', {
+    throw inputRangeError('energyCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'energyCost', min: 0, got: energyCost,
     });
   }
   if (installationCost !== undefined && !(installationCost >= 0)) {
-    throw new InputRangeError('installationCost must not be negative', {
+    throw inputRangeError('installationCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'installationCost', min: 0, got: installationCost,
     });
   }

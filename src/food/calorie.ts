@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CalorieInput, CalorieResult, ActivityLevel } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
   sedentary: 1.2,
@@ -26,17 +26,17 @@ export function calorie(input: CalorieInput): CalorieResult {
   const { gender, age, weightKg, heightCm, activityLevel } = input;
 
   if (!(weightKg > 0)) {
-    throw new InputRangeError('weightKg must be greater than 0', {
+    throw inputRangeError('weightKg must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'weightKg', exclusive_min: 0, got: weightKg,
     });
   }
   if (!(heightCm > 0)) {
-    throw new InputRangeError('heightCm must be greater than 0', {
+    throw inputRangeError('heightCm must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'heightCm', exclusive_min: 0, got: heightCm,
     });
   }
   if (!(age > 0)) {
-    throw new InputRangeError('age must be greater than 0', {
+    throw inputRangeError('age must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'age', exclusive_min: 0, got: age,
     });
   }

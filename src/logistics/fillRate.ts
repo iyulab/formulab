@@ -6,7 +6,7 @@ import type {
   ServiceLevelInput,
   ServiceLevelResult
 } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate Fill Rate
@@ -22,7 +22,7 @@ export function fillRate(input: FillRateInput): FillRateResult {
   const { totalOrders, filledComplete } = input;
 
   if (totalOrders <= 0) {
-    throw new InputRangeError('totalOrders must be greater than 0', {
+    throw inputRangeError('totalOrders must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'totalOrders', exclusive_min: 0, got: totalOrders,
     });
   }
@@ -60,12 +60,12 @@ export function serviceLevel(input: ServiceLevelInput): ServiceLevelResult {
   // A negative safety stock is a shortfall, not a buffer, and a standard deviation cannot be
   // negative; either one flips the sign of the z-score.
   if (!(safetyStock >= 0)) {
-    throw new InputRangeError('safetyStock must not be negative', {
+    throw inputRangeError('safetyStock must not be negative', {
       code: 'parameter_out_of_range', parameter: 'safetyStock', min: 0, got: safetyStock,
     });
   }
   if (!(demandStdDev >= 0)) {
-    throw new InputRangeError('demandStdDev must not be negative', {
+    throw inputRangeError('demandStdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'demandStdDev', min: 0, got: demandStdDev,
     });
   }

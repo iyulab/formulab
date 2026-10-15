@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalCDF, normalInvCDF } from '../math.js';
 import type { PpmInput, PpmResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Convert sigma level to defect rate (with 1.5 sigma shift)
@@ -38,7 +38,7 @@ export function ppm(input: PpmInput): PpmResult {
   switch (input.convertFrom) {
     case 'defectRate':
       if (!(input.value >= 0 && input.value <= 100)) {
-        throw new InputRangeError('defectRate must be between 0 and 100', {
+        throw inputRangeError('defectRate must be between 0 and 100', {
           code: 'parameter_out_of_range', parameter: 'defectRate', min: 0, max: 100, got: input.value,
         });
       }
@@ -46,7 +46,7 @@ export function ppm(input: PpmInput): PpmResult {
       break;
     case 'ppm':
       if (!(input.value >= 0 && input.value <= 1_000_000)) {
-        throw new InputRangeError('ppm must be between 0 and 1,000,000', {
+        throw inputRangeError('ppm must be between 0 and 1,000,000', {
           code: 'parameter_out_of_range', parameter: 'ppm', min: 0, max: 1_000_000, got: input.value,
         });
       }
@@ -54,7 +54,7 @@ export function ppm(input: PpmInput): PpmResult {
       break;
     case 'sigma':
       if (!(input.value >= 0 && input.value <= 6)) {
-        throw new InputRangeError('sigma must be between 0 and 6', {
+        throw inputRangeError('sigma must be between 0 and 6', {
           code: 'parameter_out_of_range', parameter: 'sigma', min: 0, max: 6, got: input.value,
         });
       }

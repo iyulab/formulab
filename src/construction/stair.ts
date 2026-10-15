@@ -1,6 +1,6 @@
 import type { StairInput, StairResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Riser heights used when the caller asks for auto-calculation, in millimetres.
@@ -39,19 +39,19 @@ export function stair(input: StairInput): StairResult {
   const { totalRise, totalRun, riserHeight } = input;
 
   if (totalRise <= 0) {
-    throw new InputRangeError('totalRise must be greater than 0', {
+    throw inputRangeError('totalRise must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'totalRise', exclusive_min: 0, got: totalRise,
     });
   }
   // A flight with no horizontal run has no treads to size (it came back as 0 mm treads at 90°).
   if (!(totalRun > 0)) {
-    throw new InputRangeError('totalRun must be greater than 0', {
+    throw inputRangeError('totalRun must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'totalRun', exclusive_min: 0, got: totalRun,
     });
   }
   if (riserHeight !== undefined && riserHeight < 0) {
     // riserHeight 0 is the established "auto-calculate" sentinel; negative is invalid
-    throw new InputRangeError('riserHeight must not be negative', {
+    throw inputRangeError('riserHeight must not be negative', {
       code: 'parameter_out_of_range', parameter: 'riserHeight', min: 0, got: riserHeight,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { SpringbackInput, SpringbackResult, BendingMaterial } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Yield strength (MPa) and Young's modulus (GPa) presets, matched to the material
@@ -68,17 +68,17 @@ export function springback(input: SpringbackInput): SpringbackResult {
   const { thickness, bendRadius, bendAngle, material = 'mildSteel' } = input;
 
   if (!(thickness > 0)) {
-    throw new InputRangeError('thickness must be greater than 0', {
+    throw inputRangeError('thickness must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
     });
   }
   if (!(bendRadius > 0)) {
-    throw new InputRangeError('bendRadius must be greater than 0', {
+    throw inputRangeError('bendRadius must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'bendRadius', exclusive_min: 0, got: bendRadius,
     });
   }
   if (!(bendAngle > 0) || bendAngle >= 180) {
-    throw new InputRangeError('bendAngle must be between 0 and 180 degrees', {
+    throw inputRangeError('bendAngle must be between 0 and 180 degrees', {
       code: 'parameter_out_of_range', parameter: 'bendAngle', exclusive_min: 0, exclusive_max: 180, got: bendAngle,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { SelfDischargeInput, SelfDischargeResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate battery self-discharge rate
@@ -16,22 +16,22 @@ export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
 
   // A negative voltage reading is not a resting cell and flips the sign of the drop.
   if (!(initialVoltage > 0)) {
-    throw new InputRangeError('initialVoltage must be greater than 0', {
+    throw inputRangeError('initialVoltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'initialVoltage', exclusive_min: 0, got: initialVoltage,
     });
   }
   if (!(finalVoltage > 0)) {
-    throw new InputRangeError('finalVoltage must be greater than 0', {
+    throw inputRangeError('finalVoltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'finalVoltage', exclusive_min: 0, got: finalVoltage,
     });
   }
   if (!(days > 0)) {
-    throw new InputRangeError('days must be greater than 0', {
+    throw inputRangeError('days must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'days', exclusive_min: 0, got: days,
     });
   }
   if (!(nominalVoltage > 0)) {
-    throw new InputRangeError('nominalVoltage must be greater than 0', {
+    throw inputRangeError('nominalVoltage must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'nominalVoltage', exclusive_min: 0, got: nominalVoltage,
     });
   }
@@ -39,7 +39,7 @@ export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
   // Self-discharge only lowers the resting voltage; a higher final reading is a measurement taken
   // before the cell settled (or after a charge), and would report a negative discharge rate.
   if (finalVoltage > initialVoltage) {
-    throw new InputRangeError('finalVoltage must not exceed initialVoltage', {
+    throw inputRangeError('finalVoltage must not exceed initialVoltage', {
       code: 'parameter_out_of_range', parameter: 'finalVoltage', max: initialVoltage, got: finalVoltage,
     });
   }

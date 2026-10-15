@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { EoqInput, EoqResult, EoqCostCurveInput, EoqCostPoint } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate Economic Order Quantity (EOQ)
@@ -25,17 +25,17 @@ export function eoq(input: EoqInput): EoqResult {
   // EOQ = √(2DS/H) needs all three positive: a zero demand or order cost gives no orders to
   // cycle, a zero holding cost an unbounded lot. An all-zero result would read as «order 0».
   if (!(annualDemand > 0)) {
-    throw new InputRangeError('annualDemand must be greater than 0', {
+    throw inputRangeError('annualDemand must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'annualDemand', exclusive_min: 0, got: annualDemand,
     });
   }
   if (!(orderCost > 0)) {
-    throw new InputRangeError('orderCost must be greater than 0', {
+    throw inputRangeError('orderCost must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'orderCost', exclusive_min: 0, got: orderCost,
     });
   }
   if (!(holdingCost > 0)) {
-    throw new InputRangeError('holdingCost must be greater than 0', {
+    throw inputRangeError('holdingCost must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'holdingCost', exclusive_min: 0, got: holdingCost,
     });
   }
@@ -89,12 +89,12 @@ export function eoqCostCurve(input: EoqCostCurveInput): EoqCostPoint[] {
   const minQuantity = input.minQuantity ?? optimum * 0.25;
   const maxQuantity = input.maxQuantity ?? optimum * 2.5;
   if (!(minQuantity > 0)) {
-    throw new InputRangeError('minQuantity must be greater than 0', {
+    throw inputRangeError('minQuantity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'minQuantity', exclusive_min: 0, got: minQuantity,
     });
   }
   if (!(maxQuantity > minQuantity)) {
-    throw new InputRangeError('maxQuantity must be greater than minQuantity', {
+    throw inputRangeError('maxQuantity must be greater than minQuantity', {
       code: 'parameter_out_of_range', parameter: 'maxQuantity', exclusive_min: minQuantity, got: maxQuantity,
     });
   }

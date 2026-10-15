@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { WorkSamplingInput, WorkSamplingResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Work Sampling Analysis
@@ -24,22 +24,22 @@ export function workSampling(input: WorkSamplingInput): WorkSamplingResult {
   const { totalObservations, activityObservations, confidence, accuracy } = input;
 
   if (!Number.isFinite(totalObservations) || totalObservations <= 0) {
-    throw new InputRangeError('Total observations must be a positive integer', {
+    throw inputRangeError('Total observations must be a positive integer', {
       code: 'parameter_out_of_range', parameter: 'totalObservations', exclusive_min: 0, got: totalObservations,
     });
   }
   if (!Number.isFinite(activityObservations) || activityObservations < 0 || activityObservations > totalObservations) {
-    throw new InputRangeError('Activity observations must be between 0 and total observations', {
+    throw inputRangeError('Activity observations must be between 0 and total observations', {
       code: 'parameter_out_of_range', parameter: 'activityObservations', min: 0, max: totalObservations, got: activityObservations,
     });
   }
   if (!Number.isFinite(confidence) || confidence <= 0 || confidence >= 1) {
-    throw new InputRangeError('Confidence must be between 0 and 1 (exclusive)', {
+    throw inputRangeError('Confidence must be between 0 and 1 (exclusive)', {
       code: 'parameter_out_of_range', parameter: 'confidence', exclusive_min: 0, exclusive_max: 1, got: confidence,
     });
   }
   if (!Number.isFinite(accuracy) || accuracy <= 0) {
-    throw new InputRangeError('Accuracy must be a positive number', {
+    throw inputRangeError('Accuracy must be a positive number', {
       code: 'parameter_out_of_range', parameter: 'accuracy', exclusive_min: 0, got: accuracy,
     });
   }

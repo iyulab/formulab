@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MetalWeightInput, MetalWeightResult, MaterialName } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Material densities in g/cm³
@@ -40,7 +40,7 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   const { shape, length, materialName } = input;
 
   if (!(length > 0)) {
-    throw new InputRangeError('length must be positive', {
+    throw inputRangeError('length must be positive', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
     });
   }
@@ -56,12 +56,12 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   switch (shape) {
     case 'plate': {
       if (!(input.width > 0)) {
-        throw new InputRangeError('width must be positive', {
+        throw inputRangeError('width must be positive', {
           code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: input.width,
         });
       }
       if (!(input.thickness > 0)) {
-        throw new InputRangeError('thickness must be positive', {
+        throw inputRangeError('thickness must be positive', {
           code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: input.thickness,
         });
       }
@@ -70,7 +70,7 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
     }
     case 'round': {
       if (!(input.diameter > 0)) {
-        throw new InputRangeError('diameter must be positive', {
+        throw inputRangeError('diameter must be positive', {
           code: 'parameter_out_of_range', parameter: 'diameter', exclusive_min: 0, got: input.diameter,
         });
       }
@@ -80,17 +80,17 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
     }
     case 'pipe': {
       if (!(input.outerDiameter > 0)) {
-        throw new InputRangeError('outerDiameter must be positive', {
+        throw inputRangeError('outerDiameter must be positive', {
           code: 'parameter_out_of_range', parameter: 'outerDiameter', exclusive_min: 0, got: input.outerDiameter,
         });
       }
       if (!(input.innerDiameter >= 0)) {
-        throw new InputRangeError('innerDiameter must be non-negative', {
+        throw inputRangeError('innerDiameter must be non-negative', {
           code: 'parameter_out_of_range', parameter: 'innerDiameter', min: 0, got: input.innerDiameter,
         });
       }
       if (input.outerDiameter <= input.innerDiameter) {
-        throw new InputRangeError('outerDiameter must be greater than innerDiameter', {
+        throw inputRangeError('outerDiameter must be greater than innerDiameter', {
           code: 'parameter_out_of_range', parameter: 'outerDiameter', exclusive_min: input.innerDiameter, got: input.outerDiameter,
         });
       }
@@ -101,17 +101,17 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
     }
     case 'angle': {
       if (!(input.width > 0)) {
-        throw new InputRangeError('width must be positive', {
+        throw inputRangeError('width must be positive', {
           code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: input.width,
         });
       }
       if (!(input.height > 0)) {
-        throw new InputRangeError('height must be positive', {
+        throw inputRangeError('height must be positive', {
           code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: input.height,
         });
       }
       if (!(input.thickness > 0)) {
-        throw new InputRangeError('thickness must be positive', {
+        throw inputRangeError('thickness must be positive', {
           code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: input.thickness,
         });
       }

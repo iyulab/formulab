@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { SineBarHeightInput, SineBarHeightResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate the gauge block height for a sine bar setup.
@@ -24,17 +24,17 @@ export function sineBarHeight(input: SineBarHeightInput): SineBarHeightResult {
 
   // The actual angle is recovered as asin(roundedHeight / sineBarLength).
   if (!(sineBarLength > 0)) {
-    throw new InputRangeError('sineBarLength must be greater than 0', {
+    throw inputRangeError('sineBarLength must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'sineBarLength', exclusive_min: 0, got: sineBarLength,
     });
   }
   if (!(angle >= 0 && angle <= 90)) {
-    throw new InputRangeError('angle must be between 0 and 90 degrees', {
+    throw inputRangeError('angle must be between 0 and 90 degrees', {
       code: 'parameter_out_of_range', parameter: 'angle', min: 0, max: 90, got: angle,
     });
   }
   if (roundToBlock !== undefined && !(roundToBlock > 0)) {
-    throw new InputRangeError('roundToBlock must be greater than 0', {
+    throw inputRangeError('roundToBlock must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'roundToBlock', exclusive_min: 0, got: roundToBlock,
     });
   }

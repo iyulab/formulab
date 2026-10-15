@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BmsBalancingInput, BmsBalancingResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate BMS cell balancing time
@@ -27,12 +27,12 @@ export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
     throw new RangeError('every cell voltage must be greater than 0');
   }
   if (!(balancingCurrentMA > 0)) {
-    throw new InputRangeError('balancingCurrentMA must be greater than 0', {
+    throw inputRangeError('balancingCurrentMA must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'balancingCurrentMA', exclusive_min: 0, got: balancingCurrentMA,
     });
   }
   if (!(cellCapacityAh > 0)) {
-    throw new InputRangeError('cellCapacityAh must be greater than 0', {
+    throw inputRangeError('cellCapacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cellCapacityAh', exclusive_min: 0, got: cellCapacityAh,
     });
   }

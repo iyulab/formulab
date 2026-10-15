@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { EffectiveDiameterInput, EffectiveDiameterResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate the effective cutting diameter of a ball end mill at a given depth of cut.
@@ -30,22 +30,22 @@ export function effectiveDiameter(input: EffectiveDiameterInput): EffectiveDiame
   const { toolDiameter, axialDepthOfCut, cuttingSpeed } = input;
 
   if (toolDiameter <= 0) {
-    throw new InputRangeError(`toolDiameter must be > 0, got ${toolDiameter}`, {
+    throw inputRangeError(`toolDiameter must be > 0, got ${toolDiameter}`, {
       code: 'parameter_out_of_range', parameter: 'toolDiameter', exclusive_min: 0, got: toolDiameter,
     });
   }
   if (axialDepthOfCut <= 0) {
-    throw new InputRangeError(`axialDepthOfCut must be > 0, got ${axialDepthOfCut}`, {
+    throw inputRangeError(`axialDepthOfCut must be > 0, got ${axialDepthOfCut}`, {
       code: 'parameter_out_of_range', parameter: 'axialDepthOfCut', exclusive_min: 0, got: axialDepthOfCut,
     });
   }
   if (axialDepthOfCut > toolDiameter) {
-    throw new InputRangeError(`axialDepthOfCut must not exceed toolDiameter (${axialDepthOfCut} > ${toolDiameter})`, {
+    throw inputRangeError(`axialDepthOfCut must not exceed toolDiameter (${axialDepthOfCut} > ${toolDiameter})`, {
       code: 'parameter_out_of_range', parameter: 'axialDepthOfCut', max: toolDiameter, got: axialDepthOfCut,
     });
   }
   if (cuttingSpeed !== undefined && cuttingSpeed <= 0) {
-    throw new InputRangeError(`cuttingSpeed must be > 0 when provided, got ${cuttingSpeed}`, {
+    throw inputRangeError(`cuttingSpeed must be > 0 when provided, got ${cuttingSpeed}`, {
       code: 'parameter_out_of_range', parameter: 'cuttingSpeed', exclusive_min: 0, got: cuttingSpeed,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { VibrationInput, VibrationResult, VibrationMaterial, FrequencyMode } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 interface MaterialVibrationProps {
   E: number;    // GPa (Young's modulus)
@@ -79,12 +79,12 @@ export function vibration(input: VibrationInput): VibrationResult {
     const k = input.springConstant ?? 0;
     const m = input.mass ?? 0;
     if (k <= 0) {
-      throw new InputRangeError('springConstant must be greater than 0', {
+      throw inputRangeError('springConstant must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'springConstant', exclusive_min: 0, got: k,
       });
     }
     if (m <= 0) {
-      throw new InputRangeError('mass must be greater than 0', {
+      throw inputRangeError('mass must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'mass', exclusive_min: 0, got: m,
       });
     }
@@ -106,7 +106,7 @@ export function vibration(input: VibrationInput): VibrationResult {
   // Beam systems need geometry
   const L = input.length ?? 0; // mm
   if (L <= 0) {
-    throw new InputRangeError('length must be greater than 0', {
+    throw inputRangeError('length must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: L,
     });
   }
@@ -123,12 +123,12 @@ export function vibration(input: VibrationInput): VibrationResult {
       const w = input.width ?? 0;
       const h = input.height ?? 0;
       if (w <= 0) {
-        throw new InputRangeError('width must be greater than 0', {
+        throw inputRangeError('width must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: w,
         });
       }
       if (h <= 0) {
-        throw new InputRangeError('height must be greater than 0', {
+        throw inputRangeError('height must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: h,
         });
       }
@@ -143,7 +143,7 @@ export function vibration(input: VibrationInput): VibrationResult {
     case 'circular': {
       const d = input.diameter ?? 0;
       if (d <= 0) {
-        throw new InputRangeError('diameter must be greater than 0', {
+        throw inputRangeError('diameter must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'diameter', exclusive_min: 0, got: d,
         });
       }
@@ -156,17 +156,17 @@ export function vibration(input: VibrationInput): VibrationResult {
       const Do = input.outerDiameter ?? 0;
       const Di = input.innerDiameter ?? 0;
       if (Do <= 0) {
-        throw new InputRangeError('outerDiameter must be greater than 0', {
+        throw inputRangeError('outerDiameter must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'outerDiameter', exclusive_min: 0, got: Do,
         });
       }
       if (Di <= 0) {
-        throw new InputRangeError('innerDiameter must be greater than 0', {
+        throw inputRangeError('innerDiameter must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'innerDiameter', exclusive_min: 0, got: Di,
         });
       }
       if (Di >= Do) {
-        throw new InputRangeError('Di must be less than Do', {
+        throw inputRangeError('Di must be less than Do', {
           code: 'parameter_out_of_range', parameter: 'Di', exclusive_max: Do, got: Di,
         });
       }
@@ -195,7 +195,7 @@ export function vibration(input: VibrationInput): VibrationResult {
     const diskMass = input.diskMass ?? 0;
     const diskRadius = (input.diskRadius ?? 0) / 1000; // mm -> m
     if (diskMass <= 0) {
-      throw new InputRangeError('diskMass must be greater than 0', {
+      throw inputRangeError('diskMass must be greater than 0', {
         code: 'parameter_out_of_range', parameter: 'diskMass', exclusive_min: 0, got: diskMass,
       });
     }

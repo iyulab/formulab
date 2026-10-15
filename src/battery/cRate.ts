@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CRateInput, CRateResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate C-rate ↔ current/time conversion
@@ -12,7 +12,7 @@ import { InputRangeError } from '../errors.js';
 export function cRate(input: CRateInput): CRateResult {
   requireFinite('cRate', input);
   if (input.capacityAh <= 0) {
-    throw new InputRangeError('capacityAh must be positive', {
+    throw inputRangeError('capacityAh must be positive', {
       code: 'parameter_out_of_range', parameter: 'capacityAh', exclusive_min: 0, got: input.capacityAh,
     });
   }
@@ -22,7 +22,7 @@ export function cRate(input: CRateInput): CRateResult {
 
   if (input.mode === 'currentToRate') {
     if (input.currentA <= 0) {
-      throw new InputRangeError('currentA must be positive', {
+      throw inputRangeError('currentA must be positive', {
         code: 'parameter_out_of_range', parameter: 'currentA', exclusive_min: 0, got: input.currentA,
       });
     }
@@ -30,7 +30,7 @@ export function cRate(input: CRateInput): CRateResult {
     cRateValue = currentA / input.capacityAh;
   } else {
     if (input.cRate <= 0) {
-      throw new InputRangeError('cRate must be positive', {
+      throw inputRangeError('cRate must be positive', {
         code: 'parameter_out_of_range', parameter: 'cRate', exclusive_min: 0, got: input.cRate,
       });
     }

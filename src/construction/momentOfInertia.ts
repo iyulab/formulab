@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Moment of Inertia (Section Properties) Calculator
@@ -80,7 +80,7 @@ function calcRectangle(b: number, h: number): MomentOfInertiaResult {
 /** Solid Circle: I = πd⁴/64 */
 function calcCircle(d: number): MomentOfInertiaResult {
   if (d <= 0) {
-    throw new InputRangeError('Diameter must be positive', {
+    throw inputRangeError('Diameter must be positive', {
       code: 'parameter_out_of_range', parameter: 'd', exclusive_min: 0, got: d,
     });
   }
@@ -116,7 +116,7 @@ function calcHollowRectangle(B: number, H: number, b: number, h: number): Moment
 function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
   if (D <= 0 || d <= 0) throw new RangeError('Diameters must be positive');
   if (d >= D) {
-    throw new InputRangeError('Inner diameter must be smaller than outer', {
+    throw inputRangeError('Inner diameter must be smaller than outer', {
       code: 'parameter_out_of_range', parameter: 'd', exclusive_max: D, got: d,
     });
   }
@@ -135,7 +135,7 @@ function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
 function calcIBeam(B: number, H: number, tw: number, tf: number): MomentOfInertiaResult {
   if (B <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new RangeError('Dimensions must be positive');
   if (tw >= B) {
-    throw new InputRangeError('Web thickness must be less than flange width', {
+    throw inputRangeError('Web thickness must be less than flange width', {
       code: 'parameter_out_of_range', parameter: 'tw', exclusive_max: B, got: tw,
     });
   }

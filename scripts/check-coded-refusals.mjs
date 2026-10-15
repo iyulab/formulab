@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Refusals carry their facts as data: new guards throw `InputRangeError`, not a bare `RangeError`.
+ * Refusals carry their facts as data: new guards throw `inputRangeError(…)`, not a bare `new RangeError(…)`.
  *
  * A bare `RangeError` has only an English sentence, which a consumer with a non-English UI can neither
- * show nor parse. `InputRangeError` carries the same sentence plus `code`, `parameter`, the bound and
+ * show nor parse. `inputRangeError()` attaches `code`, `parameter`, the bound and
  * the value given. The guards whose condition reads as «one input against its bounds» were converted;
  * the rest (unknown table keys, conditions over several inputs, per-item checks inside loops) still throw
  * a bare `RangeError` and are counted here. The count may only go down: a new bare throw fails, and a
@@ -38,7 +38,7 @@ for (const file of walk(join(ROOT, 'src'))) {
 
 if (sites.length > BASELINE) {
   console.error(`check:coded-refusals — ${sites.length} bare RangeError throws, baseline ${BASELINE}.`);
-  console.error('A new guard should throw InputRangeError (src/errors.ts) with code, parameter, bound and got.');
+  console.error('A new guard should throw inputRangeError() (src/errors.ts) with code, parameter, bound and got.');
   console.error('Sites (the new one is among them):');
   for (const s of sites) console.error(`  ${s}`);
   process.exit(1);

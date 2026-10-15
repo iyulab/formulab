@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { EnergyIntensityInput, EnergyIntensityResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate energy intensity (energy per unit of production or revenue)
@@ -16,12 +16,12 @@ export function energyIntensity(input: EnergyIntensityInput): EnergyIntensityRes
   const { totalEnergyMJ, productionUnits, revenueUsd } = input;
 
   if (totalEnergyMJ < 0) {
-    throw new InputRangeError('totalEnergyMJ must not be negative', {
+    throw inputRangeError('totalEnergyMJ must not be negative', {
       code: 'parameter_out_of_range', parameter: 'totalEnergyMJ', min: 0, got: totalEnergyMJ,
     });
   }
   if (productionUnits <= 0) {
-    throw new InputRangeError('productionUnits must be greater than 0', {
+    throw inputRangeError('productionUnits must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'productionUnits', exclusive_min: 0, got: productionUnits,
     });
   }

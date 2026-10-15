@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CuttingInput, CuttingResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate cutting parameters for machining operations.
@@ -19,12 +19,12 @@ export function cutting(input: CuttingInput): CuttingResult {
   const { operation, cuttingSpeed, toolDiameter } = input;
 
   if (!(cuttingSpeed > 0)) {
-    throw new InputRangeError('cuttingSpeed must be greater than 0', {
+    throw inputRangeError('cuttingSpeed must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'cuttingSpeed', exclusive_min: 0, got: cuttingSpeed,
     });
   }
   if (!(toolDiameter > 0)) {
-    throw new InputRangeError('toolDiameter must be greater than 0', {
+    throw inputRangeError('toolDiameter must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'toolDiameter', exclusive_min: 0, got: toolDiameter,
     });
   }

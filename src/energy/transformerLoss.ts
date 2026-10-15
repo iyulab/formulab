@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TransformerLossInput, TransformerLossResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate transformer losses and efficiency.
@@ -29,37 +29,37 @@ export function transformerLoss(input: TransformerLossInput): TransformerLossRes
   // A transformer with no rating carries nothing; a negative loss, duration or price flips the
   // sign of a loss or cost, and the load share and power factor are fractions.
   if (!(ratedCapacity > 0)) {
-    throw new InputRangeError('ratedCapacity must be greater than 0', {
+    throw inputRangeError('ratedCapacity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'ratedCapacity', exclusive_min: 0, got: ratedCapacity,
     });
   }
   if (!(coreLoss >= 0)) {
-    throw new InputRangeError('coreLoss must not be negative', {
+    throw inputRangeError('coreLoss must not be negative', {
       code: 'parameter_out_of_range', parameter: 'coreLoss', min: 0, got: coreLoss,
     });
   }
   if (!(copperLoss >= 0)) {
-    throw new InputRangeError('copperLoss must not be negative', {
+    throw inputRangeError('copperLoss must not be negative', {
       code: 'parameter_out_of_range', parameter: 'copperLoss', min: 0, got: copperLoss,
     });
   }
   if (!(loadFraction >= 0) || loadFraction > 1) {
-    throw new InputRangeError('loadFraction must be between 0 and 1', {
+    throw inputRangeError('loadFraction must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'loadFraction', min: 0, max: 1, got: loadFraction,
     });
   }
   if (!(powerFactor >= 0) || powerFactor > 1) {
-    throw new InputRangeError('powerFactor must be between 0 and 1', {
+    throw inputRangeError('powerFactor must be between 0 and 1', {
       code: 'parameter_out_of_range', parameter: 'powerFactor', min: 0, max: 1, got: powerFactor,
     });
   }
   if (operatingHours !== undefined && !(operatingHours >= 0)) {
-    throw new InputRangeError('operatingHours must not be negative', {
+    throw inputRangeError('operatingHours must not be negative', {
       code: 'parameter_out_of_range', parameter: 'operatingHours', min: 0, got: operatingHours,
     });
   }
   if (energyCost !== undefined && !(energyCost >= 0)) {
-    throw new InputRangeError('energyCost must not be negative', {
+    throw inputRangeError('energyCost must not be negative', {
       code: 'parameter_out_of_range', parameter: 'energyCost', min: 0, got: energyCost,
     });
   }

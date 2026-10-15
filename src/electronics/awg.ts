@@ -1,6 +1,6 @@
 import type { AwgInput, AwgResult, AwgMaterial } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Round to specified decimal places
@@ -40,7 +40,7 @@ export function awgProperties(input: AwgInput): AwgResult {
   const { awg, material, tempC } = input;
 
   if (awg < 0 || awg > 40) {
-    throw new InputRangeError('AWG must be between 0 and 40', {
+    throw inputRangeError('AWG must be between 0 and 40', {
       code: 'parameter_out_of_range', parameter: 'awg', min: 0, max: 40, got: awg,
     });
   }

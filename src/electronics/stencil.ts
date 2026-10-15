@@ -1,6 +1,6 @@
 import type { StencilInput, StencilResult, ComponentType } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Round to specified decimal places
@@ -32,7 +32,7 @@ export function stencilAperture(input: StencilInput): StencilResult {
     throw new RangeError('Aperture width and stencil thickness must be positive');
   }
   if (shape === 'rectangle' && apertureLength <= 0) {
-    throw new InputRangeError('Aperture length must be positive for rectangular apertures', {
+    throw inputRangeError('Aperture length must be positive for rectangular apertures', {
       code: 'parameter_out_of_range', parameter: 'apertureLength', exclusive_min: 0, got: apertureLength,
     });
   }

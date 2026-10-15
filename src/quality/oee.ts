@@ -1,7 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
 import type { OeeInput, OeeResult } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate OEE (Overall Equipment Effectiveness)
@@ -31,37 +31,37 @@ export function oee(input: OeeInput): OeeResult {
   const { plannedTime, runTime, totalCount, goodCount, idealCycleTime } = rawData;
 
   if (!(plannedTime > 0)) {
-    throw new InputRangeError(`Invalid input: plannedTime (${plannedTime}) must be positive`, {
+    throw inputRangeError(`Invalid input: plannedTime (${plannedTime}) must be positive`, {
       code: 'parameter_out_of_range', parameter: 'plannedTime', exclusive_min: 0, got: plannedTime,
     });
   }
   if (!(runTime > 0)) {
-    throw new InputRangeError(`Invalid input: runTime (${runTime}) must be positive`, {
+    throw inputRangeError(`Invalid input: runTime (${runTime}) must be positive`, {
       code: 'parameter_out_of_range', parameter: 'runTime', exclusive_min: 0, got: runTime,
     });
   }
   if (runTime > plannedTime) {
-    throw new InputRangeError(`Invalid input: runTime (${runTime}) cannot exceed plannedTime (${plannedTime})`, {
+    throw inputRangeError(`Invalid input: runTime (${runTime}) cannot exceed plannedTime (${plannedTime})`, {
       code: 'parameter_out_of_range', parameter: 'runTime', max: plannedTime, got: runTime,
     });
   }
   if (!(idealCycleTime > 0)) {
-    throw new InputRangeError(`Invalid input: idealCycleTime (${idealCycleTime}) must be positive`, {
+    throw inputRangeError(`Invalid input: idealCycleTime (${idealCycleTime}) must be positive`, {
       code: 'parameter_out_of_range', parameter: 'idealCycleTime', exclusive_min: 0, got: idealCycleTime,
     });
   }
   if (!(totalCount > 0)) {
-    throw new InputRangeError(`Invalid input: totalCount (${totalCount}) must be positive`, {
+    throw inputRangeError(`Invalid input: totalCount (${totalCount}) must be positive`, {
       code: 'parameter_out_of_range', parameter: 'totalCount', exclusive_min: 0, got: totalCount,
     });
   }
   if (!(goodCount >= 0)) {
-    throw new InputRangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`, {
+    throw inputRangeError(`Invalid input: goodCount (${goodCount}) cannot be negative`, {
       code: 'parameter_out_of_range', parameter: 'goodCount', min: 0, got: goodCount,
     });
   }
   if (goodCount > totalCount) {
-    throw new InputRangeError(`Invalid input: goodCount (${goodCount}) cannot exceed totalCount (${totalCount})`, {
+    throw inputRangeError(`Invalid input: goodCount (${goodCount}) cannot exceed totalCount (${totalCount})`, {
       code: 'parameter_out_of_range', parameter: 'goodCount', max: totalCount, got: goodCount,
     });
   }

@@ -1,6 +1,6 @@
 import type { ElementType, FormworkInput, FormworkResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Standard plywood sheet area (4' x 8' = 1.22m x 2.44m = 2.9768 m²)
@@ -61,7 +61,7 @@ function validateDimensions(
   height: number
 ): void {
   if (length <= 0) {
-    throw new InputRangeError('length must be greater than 0', {
+    throw inputRangeError('length must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
     });
   }
@@ -70,26 +70,26 @@ function validateDimensions(
     case 'beam':
     case 'footing':
       if (width <= 0) {
-        throw new InputRangeError('width must be greater than 0', {
+        throw inputRangeError('width must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
         });
       }
       if (height <= 0) {
-        throw new InputRangeError('height must be greater than 0', {
+        throw inputRangeError('height must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
         });
       }
       break;
     case 'slab':
       if (width <= 0) {
-        throw new InputRangeError('width must be greater than 0', {
+        throw inputRangeError('width must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
         });
       }
       break;
     case 'wall':
       if (height <= 0) {
-        throw new InputRangeError('height must be greater than 0', {
+        throw inputRangeError('height must be greater than 0', {
           code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
         });
       }
@@ -113,7 +113,7 @@ export function formwork(input: FormworkInput): FormworkResult {
   validateDimensions(elementType, length, width, height);
 
   if (quantity <= 0) {
-    throw new InputRangeError('quantity must be greater than 0', {
+    throw inputRangeError('quantity must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'quantity', exclusive_min: 0, got: quantity,
     });
   }

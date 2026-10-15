@@ -1,6 +1,6 @@
 import type { DilutionInput, DilutionResult } from './types.js';
 import { requireFinite } from '../utils.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate dilution using C1V1 = C2V2 equation.
@@ -65,7 +65,7 @@ export function dilution(input: DilutionInput): DilutionResult {
 
 function requirePositive(value: number, name: string): number {
   if (!(value > 0)) {
-    throw new InputRangeError(`${name} must be greater than 0`, {
+    throw inputRangeError(`${name} must be greater than 0`, {
       code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, got: value,
     });
   }

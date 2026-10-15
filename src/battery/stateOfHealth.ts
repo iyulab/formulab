@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { StateOfHealthInput, StateOfHealthResult, SohStatus } from './types.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate battery State of Health (SOH)
@@ -16,12 +16,12 @@ export function stateOfHealth(input: StateOfHealthInput): StateOfHealthResult {
   const { measuredCapacityAh, ratedCapacityAh } = input;
 
   if (!(ratedCapacityAh > 0)) {
-    throw new InputRangeError('ratedCapacityAh must be greater than 0', {
+    throw inputRangeError('ratedCapacityAh must be greater than 0', {
       code: 'parameter_out_of_range', parameter: 'ratedCapacityAh', exclusive_min: 0, got: ratedCapacityAh,
     });
   }
   if (!(measuredCapacityAh >= 0)) {
-    throw new InputRangeError('measuredCapacityAh must not be negative', {
+    throw inputRangeError('measuredCapacityAh must not be negative', {
       code: 'parameter_out_of_range', parameter: 'measuredCapacityAh', min: 0, got: measuredCapacityAh,
     });
   }

@@ -1,6 +1,6 @@
 import { roundTo } from '../utils.js';
 import { normalCDF } from '../math.js';
-import { InputRangeError } from '../errors.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * The capability-index arithmetic shared by `cpk()` (short-term σ), `ppk()` (long-term σ) and
@@ -31,7 +31,7 @@ export function capabilityIndices(usl: number, lsl: number, mean: number, stdDev
   }
   // A capability is the room between two limits; with the limits crossed every index is negative.
   if (!(usl > lsl)) {
-    throw new InputRangeError('usl must be greater than lsl', {
+    throw inputRangeError('usl must be greater than lsl', {
       code: 'parameter_out_of_range', parameter: 'usl', exclusive_min: lsl, got: usl,
     });
   }
@@ -39,7 +39,7 @@ export function capabilityIndices(usl: number, lsl: number, mean: number, stdDev
     throw new RangeError('mean must be finite');
   }
   if (!(stdDev >= 0) || !Number.isFinite(stdDev)) {
-    throw new InputRangeError('stdDev must not be negative', {
+    throw inputRangeError('stdDev must not be negative', {
       code: 'parameter_out_of_range', parameter: 'stdDev', min: 0, got: stdDev,
     });
   }
