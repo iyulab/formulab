@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.60.1] - 2026-10-16
+
 ### Fixed
 
 - **`electronics/capacitorDecode()` read a third digit of 8 or 9 as ×10⁸ / ×10⁹** — in the three-digit code (EIA-198 /
