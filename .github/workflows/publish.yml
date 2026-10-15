@@ -23,8 +23,21 @@ jobs:
           node-version-file: package.json
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm publish --no-git-checks --access public
+      # package.json also changes for scripts and dependencies; publish only a version npm does not have yet.
+      - id: version
+        run: |
+          v=$(node -p "require('./package.json').version")
+          if npm view "formulab@$v" version >/dev/null 2>&1; then
+            echo "formulab@$v is already published — nothing to do"
+            echo "unpublished=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "unpublished=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.unpublished == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.version.outputs.unpublished == 'true'
+        run: pnpm build
+      - if: steps.version.outputs.unpublished == 'true'
+        run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

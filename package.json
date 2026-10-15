@@ -106,6 +106,7 @@
     "check:dependency-drift": "node scripts/check-dependency-drift.mjs",
     "check:function-counts": "node scripts/count-functions.mjs",
     "check:documented-throws": "node scripts/check-documented-throws.mjs",
+    "check:readme-examples": "node scripts/check-readme-examples.mjs",
     "check:nonfinite-outputs": "node scripts/check-nonfinite-outputs.mjs",
     "check:nonfinite-inputs": "node scripts/check-nonfinite-inputs.mjs",
     "audit:sign-flips": "node scripts/audit-sign-flips.mjs",

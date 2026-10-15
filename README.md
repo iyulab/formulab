@@ -588,18 +588,20 @@ console.log(result);
 import { dimWeight } from 'formulab/logistics';
 
 const result = dimWeight({
-  length: 60,
-  width: 40,
-  height: 30,
-  unit: 'cm',
-  carrier: 'international',
+  length: 60,       // cm
+  width: 40,        // cm
+  height: 30,       // cm
+  actualWeight: 8,  // kg
+  carrier: 'international_air', // 6000 cm³/kg
 });
 
 console.log(result);
 // {
-//   dimWeight: 14.4,
-//   actualVolume: 0.072,
-//   cbm: 0.072,
+//   dimensionalWeight: 12,
+//   actualWeight: 8,
+//   billableWeight: 12,
+//   dimFactor: 6000,
+//   isDimWeightHigher: true,
 // }
 ```
 

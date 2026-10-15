@@ -27,4 +27,6 @@ jobs:
       - run: pnpm check:nonfinite-inputs
       # Every function ERRORS.md documents as `throw` has a test that sees it throw.
       - run: pnpm check:documented-throws
+      # README examples type-check against dist/ and print what their comments say.
+      - run: pnpm check:readme-examples
       - run: pnpm test:coverage

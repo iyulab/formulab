@@ -84,4 +84,5 @@ Each function file follows the pattern in `src/quality/cpk.ts`:
 ## CI & publishing
 
 - CI (`.github/workflows/ci.yml`) runs on push/PR to `main` over Node 24 & 26: `pnpm install --frozen-lockfile` → `pnpm build` → `pnpm test:coverage`. Coverage thresholds (lines 90 / functions 95 / branches 85 / statements 90, in `vitest.config.ts`) are enforced — dropping below fails CI.
-- Publishing is automated: the publish workflow triggers on manual dispatch **or any push to `main` that changes `package.json`**. To release, bump `version` in `package.json` (and update `CHANGELOG.md`); merging that to `main` runs CI then `pnpm publish`.
+- Publishing is automated: the publish workflow triggers on manual dispatch **or any push to `main` that changes `package.json`**, and publishes only a version npm does not have yet (a scripts or dependency change is a no-op). To release, bump `version` in `package.json` (and update `CHANGELOG.md`); merging that to `main` runs CI then `pnpm publish`.
+- README examples are checked by execution (`pnpm check:readme-examples`, CI after build): every block that imports formulab type-checks against `dist/`, and each `console.log(…)` must print exactly what the comment after it says.
