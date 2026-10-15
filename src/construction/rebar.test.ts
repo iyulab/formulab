@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { rebarWeight, getRebarUnitWeight } from './rebar.js';
+import { rebarWeight, getRebarUnitWeight, getRebarSizes } from './rebar.js';
 
 describe('rebarWeight', () => {
   describe('unit weights', () => {
@@ -305,5 +305,13 @@ describe('unknown rebar sizes', () => {
     expect(() => getRebarUnitWeight('D99' as never)).toThrow(/unknown rebar size/);
     expect(() => getRebarUnitWeight('toString' as never)).toThrow(/unknown rebar size/);
     expect(() => rebarWeight({ size: 'toString' as never, length: 6, quantity: 1 })).toThrow(/unknown rebar size/);
+  });
+});
+
+describe('getRebarSizes', () => {
+  it('lists every size the table knows, smallest first, each with a unit weight', () => {
+    const sizes = getRebarSizes();
+    expect(sizes).toEqual(['D4', 'D5', 'D6', 'D7', 'D8', 'D10', 'D13', 'D16', 'D19', 'D22', 'D25', 'D29', 'D32', 'D35', 'D38', 'D41', 'D43', 'D51', 'D57']);
+    for (const s of sizes) expect(getRebarUnitWeight(s)).toBeGreaterThan(0);
   });
 });

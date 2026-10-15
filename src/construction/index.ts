@@ -60,7 +60,7 @@ export { beamLoad } from './beamLoad.js';
 export { concreteMix } from './concreteMix.js';
 export { earthwork } from './earthwork.js';
 export { formwork } from './formwork.js';
-export { rebarWeight, getRebarUnitWeight } from './rebar.js';
+export { rebarWeight, getRebarUnitWeight, getRebarSizes } from './rebar.js';
 export { slope } from './slope.js';
 export { aggregate, aggregateCoverage, getAggregateDensity, AGGREGATE_DENSITIES } from './aggregate.js';
 export { brick, BRICK_SIZES } from './brick.js';

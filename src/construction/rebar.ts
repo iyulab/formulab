@@ -61,6 +61,14 @@ export function getRebarUnitWeight(size: RebarSize): number {
   return unitWeightOf(size);
 }
 
+/**
+ * Every rebar size the table knows, smallest first — for a size picker, so a consumer does not keep
+ * its own (and shorter) list.
+ */
+export function getRebarSizes(): RebarSize[] {
+  return (Object.keys(REBAR_UNIT_WEIGHTS) as RebarSize[]).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+}
+
 /** The table's own entry — an inherited key such as `'toString'` is no rebar size. */
 function unitWeightOf(size: RebarSize): number {
   if (!Object.hasOwn(REBAR_UNIT_WEIGHTS, size)) {

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`construction/getRebarSizes()`** — every size the KS D 3504 table knows (D4–D57), smallest first, so a size picker
+  lists the table instead of keeping its own shorter list.
+
 ### Changed
 
 - **Two lookups that answered an unknown key with nothing now throw**, like `reflowProfile()` in 0.59.0:
