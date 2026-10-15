@@ -14,11 +14,12 @@ const PRESSURE_ANGLE_RAD = (PRESSURE_ANGLE_DEG * Math.PI) / 180;
  * Dedendum: hf = 1.25 x m
  * Circular pitch: p = pi x m
  * Base circle diameter: db = d x cos(pressure angle)
+ * Tip diameter: da = d + 2ha · Root diameter: df = d - 2hf = m x (z - 2.5)
  *
  * @reference ISO 21771 — Gears — Cylindrical involute gears and gear pairs — Concepts and geometry
  * @throws {RangeError} fromModule: module or teethGear1 missing or not greater than 0, or a given
  *   teethGear2 not greater than 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or not
- *   greater than 0
+ *   greater than 0; a tooth count of 2.5 or less (no root circle: df = m x (z - 2.5) <= 0)
  */
 export function gear(input: GearInput): GearResult {
   requireFinite('gear', input);
@@ -55,6 +56,12 @@ export function gear(input: GearInput): GearResult {
     z2 = undefined;
   }
 
+  // A gear's root circle is m x (z - 2.5); at 2.5 teeth or fewer it does not exist, so there is no
+  // gear with that tooth count to describe.
+  for (const [name, z] of [[mode === 'fromModule' ? 'teethGear1' : 'numberOfTeeth', z1], ['teethGear2', z2]] as const) {
+    if (z !== undefined && !(z > 2.5)) throw new RangeError(`${name} must be greater than 2.5 (no root circle otherwise)`);
+  }
+
   // Pitch diameters
   const d1 = module * z1;
   const d2 = z2 !== undefined ? module * z2 : undefined;
@@ -77,10 +84,15 @@ export function gear(input: GearInput): GearResult {
     dedendum: roundTo(dedendum, 3),
     circularPitch: roundTo(circularPitch, 3),
     baseCircleDiameter1: roundTo(baseCircleDiameter1, 3),
+    tipDiameter1: roundTo(d1 + 2 * addendum, 3),
+    rootDiameter1: roundTo(d1 - 2 * dedendum, 3),
   };
 
   if (d2 !== undefined) {
     result.pitchDiameter2 = roundTo(d2, 3);
+    result.baseCircleDiameter2 = roundTo(d2 * Math.cos(PRESSURE_ANGLE_RAD), 3);
+    result.tipDiameter2 = roundTo(d2 + 2 * addendum, 3);
+    result.rootDiameter2 = roundTo(d2 - 2 * dedendum, 3);
   }
 
   if (centerDistance !== undefined) {

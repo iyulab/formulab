@@ -97,6 +97,38 @@ describe('gear', () => {
 
       expect(result.pitchDiameter2).toBeUndefined();
       expect(result.centerDistance).toBeUndefined();
+      expect(result.tipDiameter2).toBeUndefined();
+      expect(result.rootDiameter2).toBeUndefined();
+      expect(result.baseCircleDiameter2).toBeUndefined();
+    });
+
+    it.each([
+      [{ mode: 'fromModule', module: 2, teethGear1: 2.5 }, /teethGear1 must be greater than 2.5/],
+      [{ mode: 'fromModule', module: 2, teethGear1: 20, teethGear2: 2 }, /teethGear2 must be greater than 2.5/],
+      [{ mode: 'fromPitchDiameter', pitchDiameter: 4, numberOfTeeth: 2 }, /numberOfTeeth must be greater than 2.5/],
+    ] as const)('rejects %o — the root circle m(z - 2.5) would not exist', (input, message) => {
+      expect(() => gear(input)).toThrow(message);
+    });
+  });
+
+  describe('tip and root circles', () => {
+    // ISO 21771 standard basic rack: ha = m, hf = 1.25 m → da = m(z + 2), df = m(z - 2.5).
+    it('gives both gears of a pair their tip, root and base circles', () => {
+      const r = gear({ mode: 'fromModule', module: 2, teethGear1: 20, teethGear2: 40 });
+      expect(r.tipDiameter1).toBe(44);
+      expect(r.rootDiameter1).toBe(35);
+      expect(r.tipDiameter2).toBe(84);
+      expect(r.rootDiameter2).toBe(75);
+      expect(r.baseCircleDiameter2).toBeCloseTo(80 * Math.cos((20 * Math.PI) / 180), 3);
+    });
+
+    it('orders root < base < pitch < tip for a normal tooth count', () => {
+      const r = gear({ mode: 'fromPitchDiameter', pitchDiameter: 51, numberOfTeeth: 17 });
+      expect(r.rootDiameter1).toBeLessThan(r.baseCircleDiameter1);
+      expect(r.baseCircleDiameter1).toBeLessThan(r.pitchDiameter1);
+      expect(r.pitchDiameter1).toBeLessThan(r.tipDiameter1);
+      expect(r.tipDiameter1).toBe(57);
+      expect(r.rootDiameter1).toBe(43.5);
     });
   });
 

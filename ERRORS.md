@@ -94,7 +94,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `bolt()` | `throw` | diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 (torqueToPreload) or preload ≤ 0 (preloadToTorque) |
 | `cutting()` | `throw` | cuttingSpeed or toolDiameter ≤ 0; a feed/depth/width/teeth field the operation reads given and ≤ 0 |
 | `cuttingStock()` | `throw` | stockLength ≤ 0, kerf < 0, empty pieces, piece length ≤ 0, a piece quantity that is not a whole number > 0 (0 and negatives were dropped and 2.5 cut as 3 before 0.58.0), piece length > stockLength |
-| `gear()` | `throw` | fromModule: module or teethGear1 missing or ≤ 0, a given teethGear2 ≤ 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or ≤ 0 |
+| `gear()` | `throw` | fromModule: module or teethGear1 missing or ≤ 0, a given teethGear2 ≤ 0; fromPitchDiameter: pitchDiameter or numberOfTeeth missing or ≤ 0; any tooth count ≤ 2.5 (no root circle) |
 | `hardness()` | `safe` | Out-of-range value clamps to the boundary table row, disclosed via `outOfTableRange: true` |
 | `material()` | `throw` | Unknown grade |
 | `pressFit()` | `throw` | shaftDiameter/holeDiameter/hubOuterDiameter/contactLength/youngsModulus/frictionCoefficient ≤ 0; hubOuterDiameter ≤ max(shaftDiameter, holeDiameter) (no hub wall). Clearance fit (shaft ≤ hole) → interference ≤ 0 with zero pressure/forces |
@@ -141,7 +141,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `ohmsLaw()` | `throw` | Negative values |
-| `reflowProfile()` | `null` | Unknown paste type → returns `undefined` (whole result) |
+| `reflowProfile()` | `throw` | A paste type that is not one of `getPasteTypes()` |
 | `getPasteTypes()` | `safe` | — (returns paste-type list) |
 | `resistorDecode()` | `throw` | Unknown color in any band position, gold/silver as a digit, bandCount not 4/5/6, missing bands |
 | `smtTakt()` | `throw` | placementRate ≤ 0, componentsPerBoard ≤ 0, boardsPerPanel ≤ 0, setupTimeSec < 0, availableTimeMin < 0 |

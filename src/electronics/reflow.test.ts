@@ -126,10 +126,8 @@ describe('reflowProfile', () => {
   });
 
   describe('invalid paste type', () => {
-    it('should return undefined for invalid paste type', () => {
-      const result = reflowProfile('invalid' as never);
-
-      expect(result).toBeUndefined();
+    it('throws for a paste type it has no profile for', () => {
+      expect(() => reflowProfile('invalid' as never)).toThrow(/pasteType must be one of/);
     });
   });
 

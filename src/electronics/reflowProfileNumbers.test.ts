@@ -31,8 +31,8 @@ describe('reflowProfile numeric profile', () => {
     expect(p.peakTempC.min).toBeGreaterThan(r.meltingPoint);
   });
 
-  it('still returns undefined for an unknown paste type, including an inherited key', () => {
-    expect(reflowProfile('unknown' as never)).toBeUndefined();
-    expect(reflowProfile('toString' as never)).toBeUndefined();
+  it('refuses an unknown paste type, including an inherited key', () => {
+    expect(() => reflowProfile('unknown' as never)).toThrow(RangeError);
+    expect(() => reflowProfile('toString' as never)).toThrow(RangeError);
   });
 });

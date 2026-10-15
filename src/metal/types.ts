@@ -319,6 +319,11 @@ export interface GearResult {
   dedendum: number;         // hf = 1.25 x m, mm
   circularPitch: number;    // p = pi x m, mm
   baseCircleDiameter1: number; // db1, mm
+  baseCircleDiameter2?: number; // db2, mm
+  tipDiameter1: number;     // da1 = d1 + 2ha, mm
+  tipDiameter2?: number;    // da2 = d2 + 2ha, mm
+  rootDiameter1: number;    // df1 = d1 - 2hf, mm
+  rootDiameter2?: number;   // df2 = d2 - 2hf, mm
 }
 
 /**

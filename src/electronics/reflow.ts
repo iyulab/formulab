@@ -63,14 +63,15 @@ export function getPasteTypes(): PasteType[] {
 /**
  * Get reflow profile for a specific solder paste type
  * @param pasteType - The type of solder paste
- * @returns Reflow profile or undefined if paste type is invalid. The range strings are for
- *   display; `profile` carries the same windows as numbers (°C, s, °C/s) for a time-axis plot.
+ * @returns Reflow profile. The range strings are for display; `profile` carries the same windows
+ *   as numbers (°C, s, °C/s) for a time-axis plot.
+ * @throws {RangeError} a paste type that is not one of `getPasteTypes()`
  */
-export function reflowProfile(pasteType: PasteType): ReflowResult | undefined {
+export function reflowProfile(pasteType: PasteType): ReflowResult {
   requireFinite('reflowProfile', pasteType);
   const w = Object.hasOwn(REFLOW_WINDOWS, pasteType) ? REFLOW_WINDOWS[pasteType] : undefined;
   if (!w) {
-    return undefined;
+    throw new RangeError(`pasteType must be one of ${PASTE_TYPES.join(', ')}`);
   }
   const profile: ReflowProfileNumbers = {
     preheatRateCPerS: span(w.preheatRate),

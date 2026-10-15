@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parsing «150-200». The table is now numeric and the existing range strings are printed from it — unchanged
   character for character (pinned by test). An inherited key such as `'toString'` now returns `undefined` like
   any other unknown paste type.
+- **`metal/gear()` returns the tip and root circles** — `tipDiameter1` (d + 2ha) and `rootDiameter1` (d − 2hf), and for a
+  pair `tipDiameter2`, `rootDiameter2` and `baseCircleDiameter2`, so a drawing of the mesh gets every circle from the
+  calculation instead of re-deriving them from the addendum and dedendum.
 
 ### Changed
 
@@ -22,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read as «no tolerance» and `percentTolerance` came back null); `energy/ledRoi()` a `newWatts` of 0 (a replacement
   that draws nothing read as a 100 % saving); `chemical/reliefValve()` a temperature at or below absolute zero for a
   liquid too (liquid sizing does not read it, but no fluid is below absolute zero).
+- **`electronics/reflowProfile()` throws for an unknown paste type** (`RangeError` naming the known ones) instead of
+  returning `undefined`; the return type is `ReflowResult`. Invalid input throws everywhere else since 0.56.0.
+- **`metal/gear()` refuses a tooth count of 2.5 or less**: the root circle m(z − 2.5) would be zero or negative —
+  there is no such gear to describe (it was accepted, and its geometry described a gear that cannot exist).
 
 ## [0.58.0] - 2026-10-15
 
