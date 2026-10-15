@@ -72,8 +72,7 @@ const TOLERANCES: Record<string, number> = {
  * reference (industrial.panasonic.com/ww/ds/ss/technical/b27) and Wikipedia's "IEC 60062 color
  * code" article (which cites IEC 60062:2016 directly) both give the full nine-color table and
  * agree with every value already in this object, including the six that were previously
- * unconfirmed — see claudedocs/issues history (formulab repo) for the full corroboration record
- * and why this still isn't the purchased primary IEC text itself.
+ * unconfirmed. This is still not the purchased primary IEC text itself.
  */
 const TEMP_COEFFICIENTS: Record<string, number> = {
   black: 250,

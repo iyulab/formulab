@@ -17,7 +17,7 @@ import { roundTo, requireFinite } from '../utils.js';
  *   transcription slip.
  *
  * D10-D32 resolved a previously-open provenance gap (2026-08-11/2026-08-19 secondary-source
- * checks were inconclusive, see claudedocs/issues in this repo's history) and corrected six of
+ * checks were inconclusive) and corrected six of
  * the eight entries, which turned out to differ from the primary standard by 1-10% (the generic
  * d² x 0.00617 formula this table previously used as a fallback was itself never a cited source —
  * D16 and D25 happened to already carry the correct KS figure from an earlier fix, D10/D13/D19/

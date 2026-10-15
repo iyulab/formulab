@@ -80,8 +80,7 @@ describe('표 불변식 — 나사 규격', () => {
   // 🔴 **알려진 이상치 1건 — 허용오차를 늘려 흡수하지 않는다.** 나머지 10행은 전부 ±0.078 mm 안인데
   // `5/8-11` 만 −0.176 mm 로 다음 큰 편차의 2배가 넘는다. ASME B1.1 원문을 확보하지 못해
   // **추측해 고치지 않았고**(formulab CLAUDE.md §6(a) — 표준 없이 «그럴듯한» 값을 재구성하지 말 것),
-  // 대신 이 자리에 못 박아 **더 흔들리면 깨지게** 했다. 정본:
-  // `claudedocs/issues/ISSUE-formulab-20260922-unified-thread-tap-drill-outlier.md`
+  // 대신 이 자리에 못 박아 **더 흔들리면 깨지게** 했다.
   const UNIFIED_TAP_DRILL_OUTLIERS: Record<string, number> = { '5/8-11': -0.176 };
 
   it('미국계 나사: 탭드릴 ≈ 외경 − 25.4/tpi (pitch 필드는 TPI 다)', () => {

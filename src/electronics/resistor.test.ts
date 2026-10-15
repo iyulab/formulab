@@ -139,7 +139,7 @@ describe('resistorDecode', () => {
     // Golden: IEC 60062:2016 TCR color table, cross-checked 2026-08-19 against Panasonic's
     // industrial TCR reference table (industrial.panasonic.com/ww/ds/ss/technical/b27) and
     // Wikipedia's "IEC 60062 color code" article (both cite IEC 60062:2016 and agree on all
-    // nine colors) — see claudedocs/issues history for the full corroboration record.
+    // nine colors).
     it('should decode black temperature coefficient (250ppm/°C)', () => {
       const result = resistorDecode({
         bandCount: 6,

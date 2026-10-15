@@ -75,7 +75,7 @@ describe('gageRR', () => {
   });
 
   describe('status = worse(byPercentGRR, byPercentTolerance)', () => {
-    // ISSUE-20260705-formulab-gagerr-status-ignores-tolerance: good %GRR but a tight tolerance
+    // Good %GRR but a tight tolerance
     // (large part variation relative to a narrow spec) must not read "acceptable".
     it('downgrades to unacceptable when %GRR is good but %Tolerance is not (reported case)', () => {
       const rows: number[][] = [
@@ -121,7 +121,7 @@ describe('gageRR', () => {
       expect(result.status).toBe('marginal');
     });
 
-    // ISSUE(docket iyulab/formulab#132): percentTolerance previously carried an unexplained x6
+    // percentTolerance previously carried an unexplained x6
     // on top of the already-5.15sigma-scaled grr, inflating it 6x versus percentGRR's identical
     // scale. This pins the invariant the code's own comment already claims: %GRR-of-tolerance and
     // %GRR-of-TV share one scale, so when tolerance == tv the two percentages must be identical.

@@ -291,7 +291,7 @@ describe('weldHeat', () => {
     });
   });
 
-  describe('clamp disclosure (ISSUE-20260713 silent clamp)', () => {
+  describe('clamp disclosure (silent clamp)', () => {
     // Regression pins from the issue's execution evidence.
     it('flags the 700 HV ceiling for stainless (GMAW 6 mm, 26V/220A/350 mm/min → raw ≈ 1153 HV)', () => {
       const result = weldHeat({

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`environmental/getGridEmissionFactor()` and `getGridRegions()`** — the location-based grid factors `scope2Emissions()`
+  uses, so a tool offering grid presets reads the same table instead of keeping its own (whose values drift apart).
+
 ## [0.60.1] - 2026-10-16
 
 ### Fixed
@@ -817,7 +822,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`environmental/scope2Emissions()` grid emission factors were stale and unreproducible.**
   `GRID_EMISSION_FACTORS` carried an "IEA 2023 Emission Factors" citation whose values could not
   be reproduced against any accessible source — IEA's own Emissions Factors data product requires
-  a paid license, and the specific figures previously cited (attempted in docket `#173`) did not
+  a paid license, and the specific figures previously cited did not
   match any independently verifiable dataset. Replaced with Our World in Data's "Carbon intensity
   of electricity generation" series (sourced from Ember's Yearly Electricity Data, 2025 figures —
   a freely reproducible, actively maintained global dataset), cross-checked against Umweltbundesamt
@@ -1123,8 +1128,7 @@ Construction, Machining, Electronics), including one real behavior fix found alo
 - **`construction/rebar`'s D16/D25 unit-weight overrides remain unconfirmed against a named
   standard.** Two secondary sources checked were inconclusive (one mislabeled a
   cross-sectional-area column as unit weight; the other was a different national standard family
-  than this table's Korean/JIS D-series). No value changed — see
-  `claudedocs/issues/ISSUE-formulab-20260811-rebar-unit-weight-standard-unconfirmed.md`.
+  than this table's Korean/JIS D-series). No value changed.
 - **`electronics/resistor`'s 6-band temperature-coefficient table** — brown/red/blue entries are
   corroborated by every source checked; the rest of the table could not be cross-verified the
   same way (a different published TCR scheme uses unrelated figures for the same colors, and it
@@ -1529,7 +1533,7 @@ Construction, Machining, Electronics), including one real behavior fix found alo
 > **0.20.0**. Consumers needing the springback fix must install `formulab@>=0.20.0` —
 > `0.19.0` does not exist on the registry.
 
-Resolution of ISSUE-20260714 (springback model singularity), execution-verified in triage.
+Resolves the springback model singularity, execution-verified.
 
 ### Changed
 
@@ -1594,7 +1598,7 @@ Owner-approved follow-ups to the 0.17.0 silent-clamp audit.
 
 ## [0.17.0] - 2026-07-13
 
-### Added — clamp/snap disclosure (ISSUE-20260713 audit)
+### Added — clamp/snap disclosure
 
 An execution-based audit confirmed five silent-clamp defects across four functions: realistic
 inputs land outside a model/table boundary, the output is clamped to the boundary, and nothing
@@ -1714,8 +1718,7 @@ contract was not implemented — degenerate inputs produced `NaN`/`Infinity` or 
   `NaN` — the same "valid-but-degenerate → finite sentinel" policy as the capability-index
   family. This behavior was already covered by tests but was undocumented in `ERRORS.md`,
   which implied all migrated utility functions throw on invalid input. `ERRORS.md` and the
-  `correlation()` JSDoc now document the exception. No behavior change. Surfaced during an
-  error-handling characterization audit (online-tools NT-66 갈래①).
+  `correlation()` JSDoc now document the exception. No behavior change.
 
 ## [0.14.1] - 2026-07-06
 
@@ -1728,7 +1731,7 @@ contract was not implemented — degenerate inputs produced `NaN`/`Infinity` or 
   `percentTolerance` (the product-acceptance criterion) sat well above 30%. `status` is now
   `worse(byPercentGRR, byPercentTolerance)` — AIAG MSA 4th Ed.'s ≤10/≤30 bands applied to
   both criteria — falling back to `byPercentGRR` alone when no tolerance is given (unchanged
-  behavior). Reported via dogfooding (online-tools `quality/gage-rr`, ISSUE-20260705).
+  behavior).
 
 ## [0.14.0] - 2026-07-05
 
@@ -1816,20 +1819,20 @@ published standard**, and every fix ships with cell-level golden tests.
 
 ### Fixed
 
-- **`formulab/metal`: re-export the weld-heat code types referenced by `WeldHeatResult`** — addresses online-tools ISSUE-20260621-formulab-weld-type-exports. The 0.13.7 i18n additions surfaced `preheatTemp.sourceCode: WeldPreheatSourceCode` and `recommendationCodes: WeldRecommendation[]` on the exported `WeldHeatResult`, but the supporting type aliases `WeldPreheatSourceCode`, `WeldRecommendationCode`, and `WeldRecommendation` were defined in `types.ts` yet missing from the `metal/index.ts` barrel — so consumers could not name them (`TS2305: Module 'formulab/metal' has no exported member 'WeldRecommendation'`). All three are now re-exported alongside `WeldHeatInput`/`WeldHeatResult`. Type-only change; no runtime or behavioral impact.
+- **`formulab/metal`: re-export the weld-heat code types referenced by `WeldHeatResult`** — the 0.13.7 i18n additions surfaced `preheatTemp.sourceCode: WeldPreheatSourceCode` and `recommendationCodes: WeldRecommendation[]` on the exported `WeldHeatResult`, but the supporting type aliases `WeldPreheatSourceCode`, `WeldRecommendationCode`, and `WeldRecommendation` were defined in `types.ts` yet missing from the `metal/index.ts` barrel — so consumers could not name them (`TS2305: Module 'formulab/metal' has no exported member 'WeldRecommendation'`). All three are now re-exported alongside `WeldHeatInput`/`WeldHeatResult`. Type-only change; no runtime or behavioral impact.
 
 ## [0.13.7] - 2026-06-21
 
 ### Changed (breaking within 0.x)
 
-- **Safety domain: clamp/`Infinity`/0-guard validation migrated to the standard error policy (12 functions)** — the v0.13.5/0.13.6 zero-fill sweep was return-pattern-driven and missed the safety domain, where invalid inputs were masked by `Math.max/min` clamping, `Infinity`, or 0-guards rather than `throw` (reported by online-tools: ISSUE-20260621-formulab-validation-gaps-pid-safety-domain — gap 2). For an accuracy-critical domain this left no defense-in-depth for non-page consumers. The following now **throw `RangeError`** with a per-constraint message:
+- **Safety domain: clamp/`Infinity`/0-guard validation migrated to the standard error policy (12 functions)** — the v0.13.5/0.13.6 zero-fill sweep was return-pattern-driven and missed the safety domain, where invalid inputs were masked by `Math.max/min` clamping, `Infinity`, or 0-guards rather than `throw`. For an accuracy-critical domain this left no defense-in-depth for non-page consumers. The following now **throw `RangeError`** with a per-constraint message:
   - `arcFlash()` (voltage/boltedFaultCurrent/workingDistance/faultClearingTime/gapBetweenConductors ≤ 0), `illuminance()` (roomLength/roomWidth/lumensPerLuminaire/targetLux ≤ 0, or luminaireHeight ≤ workplaneHeight — **return-type behavior change**: previously returned an all-zero result), `lel()` (gas with negative concentration or non-positive LEL), `respiratorCalculate()` (oel ≤ 0 — **was a tested `Infinity` return**; concentration < 0), `confinedSpace()` (oxygenPercent outside 0–100, or any negative gas reading; customGas pel/idlh ≤ 0), `thermalComfort()` (relativeHumidity outside 0–100, metabolicRate ≤ 0, clothingInsulation < 0, airVelocity < 0), `nioshLifting()` (negative distance/angle/frequency/loadWeight), `ladderAngle()` (negative height/baseDistance; ladderLength ≤ 0 when used as a given), `fallClearance()` (workerHeight ≤ 0, or negative distances), `havsCalculate()` (negative tool vibrationMagnitude/exposureTime), `noiseExposure()` (negative exposure duration), `ergonomicRisk()` (load < 0).
   - **Boundaries deliberately preserved** (valid degenerate domain answers, not invalid input): `confinedSpace()` accepts a reading of `0` (a valid, possibly catastrophic measurement); `fallClearance()` keeps anchorHeight ≤ 0 → `isAdequate=false` + warning; `thermalComfort()`/`wbgtCalculate()` accept negative °C temperatures; `ergonomicRisk()` accepts negative joint angles (flexion/extension); empty tool/exposure/gas lists report no-exposure. **Intentional `Infinity` sentinels kept** (and now documented in `ERRORS.md`): `respiratorCalculate().safetyMargin = Infinity` when concentration = 0 (no hazard), `nioshLifting().liftingIndex = Infinity` when RWL = 0 (no acceptable weight) — both from valid inputs, analogous to the `cpk`/`ppk`/`cmk` degenerate-spread exception. `wbgtCalculate()` remains `safe` (no invalid-input class).
-- **`lel()` status thresholds conservatized (NT-14)** — the mixed-gas `%LEL` status used `safe < 25 / caution 25–50 / danger > 50`, more permissive than the industry `%LEL` convention used everywhere else in the library (`confinedSpace()` and all locale docs: `safe < 10 / caution 10–25 / danger > 25`, evacuate above 25% LEL). `lel()` now follows the same `10 / 25` convention. **Behavior change**: the `status` field returns `caution`/`danger` at lower `%LEL` than before (e.g. 20% LEL: `safe` → `caution`; 40% LEL: `caution` → `danger`). Numeric outputs (`mixtureLel`, `percentOfLel`, `safetyMargin`) are unchanged.
+- **`lel()` status thresholds conservatized** — the mixed-gas `%LEL` status used `safe < 25 / caution 25–50 / danger > 50`, more permissive than the industry `%LEL` convention used everywhere else in the library (`confinedSpace()` and all locale docs: `safe < 10 / caution 10–25 / danger > 25`, evacuate above 25% LEL). `lel()` now follows the same `10 / 25` convention. **Behavior change**: the `status` field returns `caution`/`danger` at lower `%LEL` than before (e.g. 20% LEL: `safe` → `caution`; 40% LEL: `caution` → `danger`). Numeric outputs (`mixtureLel`, `percentOfLel`, `safetyMargin`) are unchanged.
 
 ### Added
 
-- **`weldHeat()`: machine-readable i18n codes (additive, backward-compatible)** — addresses online-tools ISSUE-20260621-formulab-weldheat-recommendations-no-code, where consumers could only render the English `recommendations` prose and `preheatTemp.source` string (i18n required brittle reverse-mapping or re-implementing the branch logic — both layer-violating anti-patterns). The result now also carries:
+- **`weldHeat()`: machine-readable i18n codes (additive, backward-compatible)** — consumers could only render the English `recommendations` prose and `preheatTemp.source` string (i18n required brittle reverse-mapping or re-implementing the branch logic — both layer-violating anti-patterns). The result now also carries:
   - `preheatTemp.sourceCode: 'awsTable' | 'awsJudgment' | 'engineeringJudgment'` alongside the unchanged `source` string.
   - `recommendationCodes: { code, params }[]` parallel (index-aligned) to `recommendations`, with stable codes (`preheat`, `fastCooling`, `pwht`, `stainlessInterpass`, …) and interpolation params (e.g. `{ min, max, source }`, `{ t85 }`, `{ hazHardnessMax }`). Consumers map `code` → a localized template and interpolate `params`. The existing `recommendations`/`source` strings are untouched.
 
@@ -1837,7 +1840,7 @@ published standard**, and every fix ships with cell-level golden tests.
 
 ### Changed (breaking within 0.x)
 
-- **Invalid-input zero-fill results migrated to the standard error policy — tail of the v0.13.5 sweep** — the v0.13.5 sweep missed a set of public functions that still returned an all-zero/sentinel result object on must-be-positive invalid input instead of throwing (reported by online-tools: ISSUE-20260621-formulab-zerofill-invalid-guards, which independently reproduced user-facing zero-fills the prior full-audit had marked drained). `ERRORS.md` already documented several of these as `throw` (aspirational); the code now conforms. All of the following now **throw `RangeError`** with a per-constraint message, consistent with the rest of the library — consumers branch on the boundary, not on a zero result:
+- **Invalid-input zero-fill results migrated to the standard error policy — tail of the v0.13.5 sweep** — the v0.13.5 sweep missed a set of public functions that still returned an all-zero/sentinel result object on must-be-positive invalid input instead of throwing, including user-facing zero-fills the prior full audit had marked drained. `ERRORS.md` already documented several of these as `throw` (aspirational); the code now conforms. All of the following now **throw `RangeError`** with a per-constraint message, consistent with the rest of the library — consumers branch on the boundary, not on a zero result:
   - **metal**: `bolt()` (diameter/pitch/kFactor/tensileStrength ≤ 0; torque ≤ 0 in `torqueToPreload`, preload ≤ 0 in `preloadToTorque` — all six former zero-fill paths), `pressFit()` (shaftDiameter/holeDiameter/hubOuterDiameter/contactLength ≤ 0 — the clearance-fit `interference ≤ 0` and `hubOuterDiameter ≤ shaftDiameter` results are legitimate physical states and **kept**), `spring()` (wireDiameter/meanCoilDiameter/activeCoils ≤ 0), `tap()` (majorDiameter/pitch ≤ 0), `welding()` (thickness ≤ 0 — previously returned empty recommendations + zero rod diameter).
   - **logistics**: `dimWeight()` (length/width/height ≤ 0; actualWeight < 0 — zero actual weight stays legit, billing falls back to dimensional weight), `fillRate()` (totalOrders ≤ 0), `freightClass()` (weight/length/width/height ≤ 0), `kanban()` (dailyDemand/leadTime/containerQuantity ≤ 0), `pickTime()` (speed/itemsPerOrder ≤ 0).
   - **electronics**: `smtTakt()` (placementRate/componentsPerBoard ≤ 0), `solderPaste()` (padCount/stencilThickness ≤ 0).
@@ -1852,7 +1855,7 @@ published standard**, and every fix ships with cell-level golden tests.
 
 ### Changed (breaking within 0.x)
 
-- **Invalid-input `return null` / zero-fill results migrated to the standard error policy across 8 domains** — a systematic sweep (reported by online-tools: ISSUE-20260612-formulab-null-returns-full-audit) found ~25 public functions that returned `null` or an all-zero/sentinel result object on invalid input instead of throwing, contradicting `ERRORS.md`. `ERRORS.md` itself was found to be aspirational for several of these (it claimed `throw` where the code 0-filled) and has been corrected to match the code. All of the following now **throw `RangeError`** with a per-constraint message:
+- **Invalid-input `return null` / zero-fill results migrated to the standard error policy across 8 domains** — a systematic sweep found ~25 public functions that returned `null` or an all-zero/sentinel result object on invalid input instead of throwing, contradicting `ERRORS.md`. `ERRORS.md` itself was found to be aspirational for several of these (it claimed `throw` where the code 0-filled) and has been corrected to match the code. All of the following now **throw `RangeError`** with a per-constraint message:
   - **automotive**: `fuelEconomy()` (value ≤ 0), `evCharging()` (socEndPercent ≤ socStartPercent, chargerPowerKw ≤ 0), `batteryRuntime()` (voltageV ≤ 0, loadW ≤ 0), `gearRatio()` (drivingTeeth ≤ 0).
   - **energy**: `insulationRoi()` (surfaceArea/tempDifference/insulationK/insulationThickness ≤ 0), `degreeDay()` (empty `dailyTemps`).
   - **food**: `calorie()` (weightKg/heightCm/age ≤ 0).
@@ -1872,40 +1875,40 @@ published standard**, and every fix ships with cell-level golden tests.
   - `earthwork()`: non-positive `length`/`width`/`depth`, or non-positive `swellFactor`/`shrinkFactor` (a zero factor silently produced a zero loose/compacted volume).
   - `formwork()`: non-positive dimension **consumed by the element type's area formula** (column/beam/footing → length, width, height; slab → length, width; wall → length, height) or non-positive `quantity`. Dimensions a given element type ignores (slab height, wall width) are left unvalidated, so a formula-irrelevant zero is still accepted. `reuses ≤ 0 → 1` remains intentional lenient behavior.
 
-  Reported by online-tools: ISSUE-20260618-formulab-earthwork-formwork-zerofill (NT-9). `ERRORS.md` condition text updated from "Negative dimensions" to the precise non-positive constraints.
+  `ERRORS.md` condition text updated from "Negative dimensions" to the precise non-positive constraints.
 
 ## [0.13.3] - 2026-06-12
 
 ### Changed (breaking within 0.x)
 
-- **`compressedAirCost()` (energy): `costPerCfm` renamed to `costPerFt3`** — the value is total cost divided by delivered volume in cubic feet ($/ft³); "CFM" is a flow rate (ft³/min), so the old name was dimensionally wrong (the conversion comment also incorrectly read "1 m3 = 35.3147 CFM"). Reported by online-tools: ISSUE-20260612-formulab-compressedaircost-cfm-dimension-zerofill.
-- **`compressedAirCost()`: zero-filled result on invalid input migrated to the standard error policy** — non-positive `compressorPower`/`runningHours`/`airOutput` now **throws `RangeError`** with a per-constraint message instead of returning an all-zero result. Note: zero-fill returns are not caught by `return null` scans — the null-returns audit (ISSUE-20260612-formulab-null-returns-full-audit) should also cover this pattern.
+- **`compressedAirCost()` (energy): `costPerCfm` renamed to `costPerFt3`** — the value is total cost divided by delivered volume in cubic feet ($/ft³); "CFM" is a flow rate (ft³/min), so the old name was dimensionally wrong (the conversion comment also incorrectly read "1 m3 = 35.3147 CFM").
+- **`compressedAirCost()`: zero-filled result on invalid input migrated to the standard error policy** — non-positive `compressorPower`/`runningHours`/`airOutput` now **throws `RangeError`** with a per-constraint message instead of returning an all-zero result. Note: zero-fill returns are not caught by `return null` scans — a null-returns audit should also cover this pattern.
 
 ## [0.13.2] - 2026-06-12
 
 ### Changed (breaking within 0.x)
 
-- **`beamLoad()` (construction): `LoadResult | null` migrated to the standard error policy** — now **throws `RangeError`** with a per-constraint message (non-positive span, missing `uniformLoad`/`pointLoad` for the selected load type) instead of returning `null`, matching ERRORS.md and the 0.13.0 utility migration. Also adds a new guard: `pointPosition` outside `[0, span]` now throws (previously produced physically meaningless negative moments). Return type is non-nullable. Reported by online-tools: ISSUE-20260612-formulab-beamload-null-returns.
+- **`beamLoad()` (construction): `LoadResult | null` migrated to the standard error policy** — now **throws `RangeError`** with a per-constraint message (non-positive span, missing `uniformLoad`/`pointLoad` for the selected load type) instead of returning `null`, matching ERRORS.md and the 0.13.0 utility migration. Also adds a new guard: `pointPosition` outside `[0, span]` now throws (previously produced physically meaningless negative moments). Return type is non-nullable.
 
 ## [0.13.1] - 2026-06-12
 
 ### Added
 
-- **`statistics()` gains `sampleVariance` / `sampleStdDev`** — sample statistics with Bessel's correction (divisor n−1), `undefined` when the data set has fewer than 2 values. The existing `variance`/`stdDev` remain population statistics (divisor n) and are now explicitly documented as such in JSDoc and `StatisticsResult`. Additive and non-breaking. Practitioner-facing calculators typically need the sample variant for measured data (reported by online-tools: ISSUE-20260612-formulab-statistics-population-vs-sample).
+- **`statistics()` gains `sampleVariance` / `sampleStdDev`** — sample statistics with Bessel's correction (divisor n−1), `undefined` when the data set has fewer than 2 values. The existing `variance`/`stdDev` remain population statistics (divisor n) and are now explicitly documented as such in JSDoc and `StatisticsResult`. Additive and non-breaking. Practitioner-facing calculators typically need the sample variant for measured data.
 
 ## [0.13.0] - 2026-06-11
 
 ### Changed (breaking within 0.x)
 
-- **`utility` domain: `Result | null` signatures migrated to the standard error policy** — 16 functions (`assignment`, `bilinearInterpolation`, `correlation`, `depreciation`, `histogram`, `lcc`, `linearInterpolation`, `movingAverage`, `normalize`, `npv`, `percentile`, `regression`, `roi`, `statistics`, `unit`, `weightedScore`) now **throw `RangeError`** with a descriptive, per-constraint message instead of returning `null` on invalid input, matching every other domain and ERRORS.md. Return types are now non-nullable. `NpvResult.irr: number | null` is intentionally kept — IRR non-convergence is a domain answer, not invalid input. Consumers that branched on `null` should catch `RangeError` instead (reported by online-tools: ISSUE-20260610-formulab-utility-null-returns).
-- **`effectiveDiameter()` (machining): placeholder `effectiveRpm: 0` removed** — the result no longer hard-codes a zero RPM (reported by online-tools: ISSUE-20260610-formulab-effectivediameter-rpm-placeholder). The function now returns:
+- **`utility` domain: `Result | null` signatures migrated to the standard error policy** — 16 functions (`assignment`, `bilinearInterpolation`, `correlation`, `depreciation`, `histogram`, `lcc`, `linearInterpolation`, `movingAverage`, `normalize`, `npv`, `percentile`, `regression`, `roi`, `statistics`, `unit`, `weightedScore`) now **throw `RangeError`** with a descriptive, per-constraint message instead of returning `null` on invalid input, matching every other domain and ERRORS.md. Return types are now non-nullable. `NpvResult.irr: number | null` is intentionally kept — IRR non-convergence is a domain answer, not invalid input. Consumers that branched on `null` should catch `RangeError` instead.
+- **`effectiveDiameter()` (machining): placeholder `effectiveRpm: 0` removed** — the result no longer hard-codes a zero RPM. The function now returns:
   - `rpmCorrectionFactor` (= D / Deff, always present) — multiply nominal RPM by this to keep the programmed surface speed at depth;
   - `effectiveRpm?` — computed as `(Vc × 1000) / (π × Deff)` only when the new optional `cuttingSpeed` (m/min) input is provided; omitted otherwise (never 0-filled).
   Also adds input validation (`RangeError` on non-positive D/ap, ap > D, non-positive Vc) and clamps `Deff = D` beyond the equator (ap > D/2) where the previous formula incorrectly decreased.
 
 ### Fixed
 
-- **`lineBalancing()` (quality): successors can now share a station with their predecessors** — the RPW assignment marked a task "completed" only when its station closed, which forced every successor into a later station and inflated the station count to the precedence-chain depth (e.g. a 5-task chain with a generous cycle time produced 4 stations and 5% line efficiency instead of 1 station / 20%). Standard RPW (Helgeson & Birnie) allows same-station placement because the within-station sequence preserves precedence. Reported by online-tools: ISSUE-20260611-formulab-linebalancing-same-station-precedence.
+- **`lineBalancing()` (quality): successors can now share a station with their predecessors** — the RPW assignment marked a task "completed" only when its station closed, which forced every successor into a later station and inflated the station count to the precedence-chain depth (e.g. a 5-task chain with a generous cycle time produced 4 stations and 5% line efficiency instead of 1 station / 20%). Standard RPW (Helgeson & Birnie) allows same-station placement because the within-station sequence preserves precedence.
 
 ## [0.12.1] - 2026-06-09
 

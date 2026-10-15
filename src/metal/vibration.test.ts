@@ -212,7 +212,7 @@ describe('vibration', () => {
       expect(result.frequencies[0].frequency).toBeGreaterThan(0);
     });
 
-    // ISSUE(docket iyulab/formulab#127): the torsional frequency above is driven by the polar
+    // The torsional frequency above is driven by the polar
     // moment J, not the bending moment I that momentOfInertia reports — J was computed
     // internally but never exposed. Golden: J = pi*d^4/32 for a solid circular shaft (d=25mm).
     it('exposes the polar moment of inertia (J) actually used by the torsional frequency', () => {

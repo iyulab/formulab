@@ -37,7 +37,7 @@ const MATERIAL_PROPS: Record<Exclude<BendingMaterial, 'custom'>, { yieldStrength
  *            sheet never yields and springs back completely (no permanent set).
  *            Past the root the polynomial climbs again (x = 1 → Ks = 2, i.e. negative
  *            springback), which is a mathematical artifact with no physical meaning,
- *            so inputs with x ≥ 0.5 are rejected rather than evaluated (ISSUE-20260714:
+ *            so inputs with x ≥ 0.5 are rejected rather than evaluated (previously
  *            the unguarded cubic returned Infinity at x = 0.5 and shrinking radii beyond).
  * @units thickness/bendRadius mm · bendAngle degrees · yieldStrength MPa · elasticModulus GPa
  * @validation thickness > 0, bendRadius > 0, 0 < bendAngle < 180; for material

@@ -117,7 +117,7 @@ describe('roughness', () => {
     });
   });
 
-  describe('out-of-table disclosure (ISSUE-20260713 silent clamp)', () => {
+  describe('out-of-table disclosure (silent clamp)', () => {
     // Regression pins from the issue's execution evidence.
     it('flags lapped/superfinished Ra 0.006 µm snapped 4× up to N1 (0.025)', () => {
       const result = roughness({ fromScale: 'Ra', value: 0.006 });

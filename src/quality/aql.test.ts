@@ -166,7 +166,7 @@ describe('aql', () => {
     });
   });
 
-  describe('AQL substitution disclosure (ISSUE-20260713 silent clamp)', () => {
+  describe('AQL substitution disclosure (silent clamp)', () => {
     it('no longer adjusts AQL 10 — it is a real table column since the 10/15/25 extension', () => {
       const result = aql({ lotSize: 1000, aqlLevel: 10, inspectionLevel: 'II' });
 

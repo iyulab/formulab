@@ -162,7 +162,7 @@ describe('tireCompare', () => {
     });
   });
 
-  // docket iyulab/online-tools ISSUE-formulab (NT-157): EV load-index / HL support.
+  // EV load-index / HL support.
   // Golden values cross-verified against ISO 4000-1 (via en.wikipedia.org/wiki/Tire_code, cell
   // extraction 2026-09-02), the UK MOT Inspection Manual Appendix B (÷2, different reference
   // pressure class but consistent ratio), and published XL/HL comparison figures.

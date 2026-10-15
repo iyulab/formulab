@@ -130,7 +130,7 @@ describe('springback', () => {
       expect(r.overbendExceeds180).toBe(true);
     });
 
-    it('true for the issue reproductions (ISSUE-20260714 sweep cases)', () => {
+    it('true for the reproduction sweep cases', () => {
       const a = springback({ material: 'mildSteel', thickness: 0.5, bendRadius: 10, bendAngle: 175 });
       expect(a.overbendAngle).toBe(189.18);
       expect(a.overbendExceeds180).toBe(true);
@@ -192,7 +192,7 @@ describe('springback', () => {
     // Ks = 4x³−3x+1 = (x+1)(2x−1)² has a double root at x = 0.5, which is exactly the
     // fully-elastic condition (max bending strain T/2R ≤ yield strain Y/E). At the root the
     // implementation used to return Infinity; past it, Ks climbs again and turns negative
-    // springback out of thin air (x = 1 → Ks = 2). ISSUE-20260714.
+    // springback out of thin air (x = 1 → Ks = 2).
 
     it('throws at exactly x = 0.5 (mild steel, t=0.5, R=200 → formerly Infinity)', () => {
       // x = 250·200 / (200000·0.5) = 0.5 exactly

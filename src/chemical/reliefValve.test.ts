@@ -104,7 +104,7 @@ describe('reliefValve', () => {
     });
   });
 
-  describe('orifice exceeds max (ISSUE-20260713 silent clamp)', () => {
+  describe('orifice exceeds max (silent clamp)', () => {
     // Regression pins from the issue's execution evidence: realistic large reliefs
     // exceed the largest API 526 orifice ('T', 16,774 mm²) and must be flagged.
     it('flags gas relief beyond T (200,000 kg/h @ 1,000 kPa(g), 100°C, M=29)', () => {
