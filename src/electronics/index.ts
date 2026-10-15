@@ -10,6 +10,8 @@ export type {
   ReflowResult,
   ReflowProfileNumbers,
   ReflowSpan,
+  ReflowCurvePoint,
+  ReflowNominalCurve,
   // Resistor types
   BandCount,
   ColorName,
@@ -51,6 +53,7 @@ export { isOhmsLawInput } from './guards.js';
 // Functions
 export { ohmsLaw } from './ohmsLaw.js';
 export { reflowProfile, getPasteTypes } from './reflow.js';
+export { reflowNominalCurve } from './reflowNominalCurve.js';
 export { resistorDecode } from './resistor.js';
 export { smtTakt } from './smt-takt.js';
 export { solderPaste } from './solder.js';

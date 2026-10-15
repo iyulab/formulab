@@ -37,6 +37,43 @@ export interface ReflowProfileNumbers {
   totalProfileTimeS: ReflowSpan;
 }
 
+/** One point of a reflow curve: seconds from the start, °C. */
+export interface ReflowCurvePoint {
+  timeS: number;
+  tempC: number;
+}
+
+/**
+ * A nominal time–temperature curve built from a paste's own windows. Every choice the windows leave
+ * open is in `assumptions`, so a reader sees what was chosen rather than mistaking it for a measured
+ * or datasheet profile.
+ */
+export interface ReflowNominalCurve {
+  pasteType: string;
+  /** Start, end of ramp, end of soak, peak reached, end of peak dwell, back at ambient — in time order. */
+  points: ReflowCurvePoint[];
+  liquidusC: number;
+  /** When the curve rises through and falls back through the liquidus (the time-above-liquidus span). */
+  liquidusUpS: number;
+  liquidusDownS: number;
+  assumptions: {
+    /** Start and end temperature. */
+    ambientC: number;
+    /** Ramp from ambient to the soak start, and from the soak end to the peak: the middle of the preheat-rate window. */
+    rampRateCPerS: number;
+    /** The soak runs linearly from the bottom to the top of the soak-temperature window over this time. */
+    soakTimeS: number;
+    /** The middle of the peak window; the peak is held flat (`peakDwellS`) rather than rounded. */
+    peakC: number;
+    peakDwellS: number;
+    /** Three quarters of the maximum cooling rate. */
+    coolingRateCPerS: number;
+    timeAboveLiquidusS: number;
+    /** Read as the whole curve, ambient to ambient. */
+    totalTimeS: number;
+  };
+}
+
 // Resistor decoder types
 export type BandCount = 4 | 5 | 6;
 

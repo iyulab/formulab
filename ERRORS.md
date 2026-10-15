@@ -142,6 +142,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 |----------|---------------|------------|
 | `ohmsLaw()` | `throw` | Negative values |
 | `reflowProfile()` | `throw` | A paste type that is not one of `getPasteTypes()` |
+| `reflowNominalCurve()` | `throw` | A paste type that is not one of `getPasteTypes()` (RangeError); windows that admit no curve of this shape (Error — a table defect) |
 | `getPasteTypes()` | `safe` | — (returns paste-type list) |
 | `resistorDecode()` | `throw` | Unknown color in any band position, gold/silver as a digit, bandCount not 4/5/6, missing bands |
 | `smtTakt()` | `throw` | placementRate ≤ 0, componentsPerBoard ≤ 0, boardsPerPanel ≤ 0, setupTimeSec < 0, availableTimeMin < 0 |

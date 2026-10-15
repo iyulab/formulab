@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`electronics/reflowNominalCurve()`** — a time–temperature curve (ramp, soak, spike, cool) built from a paste's
+  `reflowProfile()` windows, for plotting the profile on a time axis. The choices the windows leave open — ambient start,
+  mid-window ramp rate and peak, a flat peak dwell, cooling at three quarters of the maximum rate, soak time and time
+  above liquidus as near mid-window as the total time allows — are returned as `assumptions`, and the curve is checked
+  against every window before it is returned.
 - **`environmental/getGridEmissionFactor()` and `getGridRegions()`** — the location-based grid factors `scope2Emissions()`
   uses, so a tool offering grid presets reads the same table instead of keeping its own (whose values drift apart).
 
