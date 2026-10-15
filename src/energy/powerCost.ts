@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PowerCostInput, PowerCostResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate power cost including energy, demand, power factor penalty, and fixed charges
@@ -31,28 +32,44 @@ export function powerCost(input: PowerCostInput): PowerCostResult {
   // A power factor is a fraction; a negative consumption, peak, rate or charge flips the sign
   // of a cost line.
   if (!(powerFactor >= 0) || powerFactor > 1) {
-    throw new RangeError('powerFactor must be between 0 and 1');
+    throw new InputRangeError('powerFactor must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'powerFactor', min: 0, max: 1, got: powerFactor,
+    });
   }
   if (!(pfPenaltyThreshold >= 0) || pfPenaltyThreshold > 1) {
-    throw new RangeError('pfPenaltyThreshold must be between 0 and 1');
+    throw new InputRangeError('pfPenaltyThreshold must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'pfPenaltyThreshold', min: 0, max: 1, got: pfPenaltyThreshold,
+    });
   }
   if (!(energyConsumption >= 0)) {
-    throw new RangeError('energyConsumption must not be negative');
+    throw new InputRangeError('energyConsumption must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'energyConsumption', min: 0, got: energyConsumption,
+    });
   }
   if (!(energyRate >= 0)) {
-    throw new RangeError('energyRate must not be negative');
+    throw new InputRangeError('energyRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'energyRate', min: 0, got: energyRate,
+    });
   }
   if (!(demandPeak >= 0)) {
-    throw new RangeError('demandPeak must not be negative');
+    throw new InputRangeError('demandPeak must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'demandPeak', min: 0, got: demandPeak,
+    });
   }
   if (!(demandRate >= 0)) {
-    throw new RangeError('demandRate must not be negative');
+    throw new InputRangeError('demandRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'demandRate', min: 0, got: demandRate,
+    });
   }
   if (!(pfPenaltyRate >= 0)) {
-    throw new RangeError('pfPenaltyRate must not be negative');
+    throw new InputRangeError('pfPenaltyRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'pfPenaltyRate', min: 0, got: pfPenaltyRate,
+    });
   }
   if (!(fixedCharges >= 0)) {
-    throw new RangeError('fixedCharges must not be negative');
+    throw new InputRangeError('fixedCharges must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'fixedCharges', min: 0, got: fixedCharges,
+    });
   }
 
   // Calculate energy cost

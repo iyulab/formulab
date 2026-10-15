@@ -1,3 +1,5 @@
+import { InputRangeError } from '../errors.js';
+
 /**
  * The domain of the sheet-metal bend formulas shared by `bendAllowance()` and `flatPattern()`.
  *
@@ -15,12 +17,30 @@ export function assertBendDomain(input: {
   kFactor: number;
 }, options: { allowClosedHem?: boolean } = {}): void {
   const { thickness, bendAngle, insideRadius, kFactor } = input;
-  if (!(thickness > 0)) throw new RangeError('thickness must be greater than 0');
-  if (!(insideRadius >= 0)) throw new RangeError('insideRadius must not be negative');
-  if (options.allowClosedHem) {
-    if (!(bendAngle > 0 && bendAngle <= 180)) throw new RangeError('bendAngle must be greater than 0 and at most 180 degrees');
-  } else if (!(bendAngle > 0 && bendAngle < 180)) {
-    throw new RangeError('bendAngle must be between 0 and 180 degrees (exclusive) — a closed hem has no mold-line setback');
+  if (!(thickness > 0)) {
+    throw new InputRangeError('thickness must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
+    });
   }
-  if (!(kFactor >= 0 && kFactor <= 1)) throw new RangeError('kFactor must be between 0 and 1');
+  if (!(insideRadius >= 0)) {
+    throw new InputRangeError('insideRadius must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'insideRadius', min: 0, got: insideRadius,
+    });
+  }
+  if (options.allowClosedHem) {
+    if (!(bendAngle > 0 && bendAngle <= 180)) {
+      throw new InputRangeError('bendAngle must be greater than 0 and at most 180 degrees', {
+        code: 'parameter_out_of_range', parameter: 'bendAngle', exclusive_min: 0, max: 180, got: bendAngle,
+      });
+    }
+  } else if (!(bendAngle > 0 && bendAngle < 180)) {
+    throw new InputRangeError('bendAngle must be between 0 and 180 degrees (exclusive) — a closed hem has no mold-line setback', {
+      code: 'parameter_out_of_range', parameter: 'bendAngle', exclusive_min: 0, exclusive_max: 180, got: bendAngle,
+    });
+  }
+  if (!(kFactor >= 0 && kFactor <= 1)) {
+    throw new InputRangeError('kFactor must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'kFactor', min: 0, max: 1, got: kFactor,
+    });
+  }
 }

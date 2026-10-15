@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /*
  * OSHA 29 CFR 1926.502(d)(16) states each limit in both units — "6 feet (1.8 m)", "3.5 feet
@@ -54,7 +55,11 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     obstacleHeight = 0,
   } = input;
 
-  if (!(HD > 0)) throw new RangeError('dRingHeight must be greater than 0');
+  if (!(HD > 0)) {
+    throw new InputRangeError('dRingHeight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'dRingHeight', exclusive_min: 0, got: HD,
+    });
+  }
   for (const [name, value] of [
     ['lanyardLength', L],
     ['decelerationDistance', DD],
@@ -65,7 +70,9 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     if (!(value >= 0)) throw new RangeError(`${name} must not be negative`);
   }
   if (workingHeight !== undefined && !(workingHeight >= 0)) {
-    throw new RangeError('workingHeight must not be negative');
+    throw new InputRangeError('workingHeight must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'workingHeight', min: 0, got: workingHeight,
+    });
   }
 
   const clearanceBelowAnchor = L + DD + HS + HD + SF;

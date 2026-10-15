@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { EmissionsIntensityInput, EmissionsIntensityResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate emissions intensity across multiple metrics
@@ -18,16 +19,24 @@ export function emissionsIntensity(input: EmissionsIntensityInput): EmissionsInt
   // Negative emissions (offsets, removals) are outside this intensity model, and a negative
   // denominator would flip the sign of an intensity instead of leaving it unreported.
   if (!(totalCo2Kg >= 0)) {
-    throw new RangeError('totalCo2Kg must not be negative');
+    throw new InputRangeError('totalCo2Kg must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'totalCo2Kg', min: 0, got: totalCo2Kg,
+    });
   }
   if (productionUnits != null && !(productionUnits >= 0)) {
-    throw new RangeError('productionUnits must not be negative');
+    throw new InputRangeError('productionUnits must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'productionUnits', min: 0, got: productionUnits,
+    });
   }
   if (revenueUsd != null && !(revenueUsd >= 0)) {
-    throw new RangeError('revenueUsd must not be negative');
+    throw new InputRangeError('revenueUsd must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'revenueUsd', min: 0, got: revenueUsd,
+    });
   }
   if (employees != null && !(employees >= 0)) {
-    throw new RangeError('employees must not be negative');
+    throw new InputRangeError('employees must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'employees', min: 0, got: employees,
+    });
   }
 
   const kgPerUnit = productionUnits != null && productionUnits > 0

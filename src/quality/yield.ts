@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
 import type { YieldInput, YieldResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate First Pass Yield (FPY) and Rolled Throughput Yield (RTY)
@@ -22,10 +23,14 @@ export function yieldCalc(input: YieldInput): YieldResult {
   }
   steps.forEach((step, i) => {
     if (!(step.total > 0)) {
-      throw new RangeError(`step ${i + 1}: total (${step.total}) must be positive`);
+      throw new InputRangeError(`step ${i + 1}: total (${step.total}) must be positive`, {
+        code: 'parameter_out_of_range', parameter: 'step.total', exclusive_min: 0, got: step.total,
+      });
     }
     if (!(step.good >= 0 && step.good <= step.total)) {
-      throw new RangeError(`step ${i + 1}: good (${step.good}) must be between 0 and total (${step.total})`);
+      throw new InputRangeError(`step ${i + 1}: good (${step.good}) must be between 0 and total (${step.total})`, {
+        code: 'parameter_out_of_range', parameter: 'step.good', min: 0, max: step.total, got: step.good,
+      });
     }
   });
 

@@ -5,6 +5,7 @@ import type {
   AcceptanceControlChartResult,
   AcceptanceControlLimit,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /** Upper-tail standard normal deviate exceeded by proportion p: P(Z > z) = p. */
 function zUpperTail(p: number): number {
@@ -90,13 +91,17 @@ export function acceptanceControlChart(input: AcceptanceControlChartInput): Acce
     throw new RangeError('At least one of upperSpecLimit or lowerSpecLimit is required');
   }
   if (!(sigma > 0)) {
-    throw new RangeError('sigma must be positive');
+    throw new InputRangeError('sigma must be positive', {
+      code: 'parameter_out_of_range', parameter: 'sigma', exclusive_min: 0, got: sigma,
+    });
   }
   if (p0 <= 0 || p0 >= 1 || p1 <= 0 || p1 >= 1) {
     throw new RangeError('acceptableProportion and rejectableProportion must be between 0 and 1');
   }
   if (p1 <= p0) {
-    throw new RangeError('rejectableProportion must exceed acceptableProportion');
+    throw new InputRangeError('rejectableProportion must exceed acceptableProportion', {
+      code: 'parameter_out_of_range', parameter: 'rejectableProportion', exclusive_min: p0, got: p1,
+    });
   }
   if (alpha <= 0 || alpha >= 1 || beta <= 0 || beta >= 1) {
     throw new RangeError('alpha and beta must be between 0 and 1');

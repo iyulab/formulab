@@ -1,5 +1,6 @@
 import type { RoofInput, RoofResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Get pitch description based on rise per 12 units
@@ -32,16 +33,24 @@ export function roof(input: RoofInput): RoofResult {
 
   // Validate inputs
   if (!(run > 0)) {
-    throw new RangeError('Run must be greater than zero');
+    throw new InputRangeError('Run must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'run', exclusive_min: 0, got: run,
+    });
   }
   if (!(rise >= 0)) {
-    throw new RangeError('Rise must be non-negative');
+    throw new InputRangeError('Rise must be non-negative', {
+      code: 'parameter_out_of_range', parameter: 'rise', min: 0, got: rise,
+    });
   }
   if (!(footprintLength > 0)) {
-    throw new RangeError('footprintLength must be greater than 0');
+    throw new InputRangeError('footprintLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'footprintLength', exclusive_min: 0, got: footprintLength,
+    });
   }
   if (!(footprintWidth > 0)) {
-    throw new RangeError('footprintWidth must be greater than 0');
+    throw new InputRangeError('footprintWidth must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'footprintWidth', exclusive_min: 0, got: footprintWidth,
+    });
   }
 
   // Calculate slope ratio (normalized to 12-unit run for pitch notation)

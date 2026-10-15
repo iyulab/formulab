@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TireInput, TireResult, TireData, TireSpec } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Conversion constants
 const INCHES_TO_MM = 25.4;
@@ -68,13 +69,19 @@ function calculateTireData(spec: TireSpec, label: string): TireData {
 
   // A negative dimension shrinks the diameter, down to a negative revs-per-km.
   if (!(width > 0)) {
-    throw new RangeError(`${label}.width must be greater than 0`);
+    throw new InputRangeError(`${label}.width must be greater than 0`, {
+      code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
+    });
   }
   if (!(aspect > 0)) {
-    throw new RangeError(`${label}.aspect must be greater than 0`);
+    throw new InputRangeError(`${label}.aspect must be greater than 0`, {
+      code: 'parameter_out_of_range', parameter: 'aspect', exclusive_min: 0, got: aspect,
+    });
   }
   if (!(rim > 0)) {
-    throw new RangeError(`${label}.rim must be greater than 0`);
+    throw new InputRangeError(`${label}.rim must be greater than 0`, {
+      code: 'parameter_out_of_range', parameter: 'rim', exclusive_min: 0, got: rim,
+    });
   }
 
   const sidewallHeight = width * (aspect / 100);

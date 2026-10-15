@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { RegressionInput, RegressionResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Simple linear regression (least squares)
@@ -19,7 +20,9 @@ export function regression(input: RegressionInput): RegressionResult {
     throw new RangeError(`x and y must have the same length, got ${x.length} and ${y.length}`);
   }
   if (x.length < 2) {
-    throw new RangeError(`at least 2 data points are required, got ${x.length}`);
+    throw new InputRangeError(`at least 2 data points are required, got ${x.length}`, {
+      code: 'insufficient_data', parameter: 'x', min: 2, got: x.length,
+    });
   }
 
   const n = x.length;

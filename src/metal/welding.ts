@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WeldingInput, WeldingResult, WeldingRod, WeldingBaseMetal } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Electrode recommendation database by base metal, covering the SMAW (stick) process only.
@@ -66,7 +67,11 @@ export function welding(input: WeldingInput): WeldingResult {
   requireFinite('welding', input);
   const { baseMetal, position, thickness } = input;
 
-  if (thickness <= 0) throw new RangeError('thickness must be greater than 0');
+  if (thickness <= 0) {
+    throw new InputRangeError('thickness must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
+    });
+  }
 
   const allRods = ELECTRODES[baseMetal] || [];
 

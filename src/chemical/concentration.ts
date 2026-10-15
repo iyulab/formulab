@@ -1,5 +1,6 @@
 import type { ConcentrationInput, ConcentrationResult } from './types.js';
 import { requireFinite, roundTo } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Convert concentration between mol/L, wt%, and ppm.
@@ -22,15 +23,21 @@ export function concentration(input: ConcentrationInput): ConcentrationResult {
 
   // A concentration is an amount of solute; a negative one converts to negative values in every unit.
   if (!(value >= 0)) {
-    throw new RangeError('value must not be negative');
+    throw new InputRangeError('value must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'value', min: 0, got: value,
+    });
   }
   // Every conversion below divides by one or both of these, so a non-positive value
   // returns an infinite concentration rather than describing a solution.
   if (!(molecularWeight > 0)) {
-    throw new RangeError('molecularWeight must be greater than 0');
+    throw new InputRangeError('molecularWeight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'molecularWeight', exclusive_min: 0, got: molecularWeight,
+    });
   }
   if (!(solutionDensity > 0)) {
-    throw new RangeError('solutionDensity must be greater than 0');
+    throw new InputRangeError('solutionDensity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'solutionDensity', exclusive_min: 0, got: solutionDensity,
+    });
   }
 
   let molPerL: number;

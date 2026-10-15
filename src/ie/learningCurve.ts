@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LearningCurveInput, LearningCurveResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Learning Curve (Wright's Law)
@@ -22,10 +23,14 @@ export function learningCurve(input: LearningCurveInput): LearningCurveResult {
   const { firstUnitTime, learningRate, unitNumber, model = 'unit' } = input;
 
   if (!Number.isFinite(firstUnitTime) || firstUnitTime <= 0) {
-    throw new RangeError('First unit time must be a positive number');
+    throw new InputRangeError('First unit time must be a positive number', {
+      code: 'parameter_out_of_range', parameter: 'firstUnitTime', exclusive_min: 0, got: firstUnitTime,
+    });
   }
   if (!Number.isFinite(learningRate) || learningRate <= 0 || learningRate >= 1) {
-    throw new RangeError('Learning rate must be between 0 and 1 (exclusive)');
+    throw new InputRangeError('Learning rate must be between 0 and 1 (exclusive)', {
+      code: 'parameter_out_of_range', parameter: 'learningRate', exclusive_min: 0, exclusive_max: 1, got: learningRate,
+    });
   }
   if (!Number.isFinite(unitNumber) || unitNumber < 1 || !Number.isInteger(unitNumber)) {
     throw new RangeError('Unit number must be a positive integer');

@@ -4,6 +4,7 @@ import type {
   WeldStrengthInput,
   WeldStrengthResult,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Minimum tensile strength of deposited weld metal (FEXX), in MPa.
@@ -68,16 +69,24 @@ export function weldStrength(input: WeldStrengthInput): WeldStrengthResult {
 
   // Validation
   if (legSize <= 0) {
-    throw new RangeError('legSize must be greater than 0');
+    throw new InputRangeError('legSize must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'legSize', exclusive_min: 0, got: legSize,
+    });
   }
   if (weldLength <= 0) {
-    throw new RangeError('weldLength must be greater than 0');
+    throw new InputRangeError('weldLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'weldLength', exclusive_min: 0, got: weldLength,
+    });
   }
   if (weldCount < 1) {
-    throw new RangeError('weldCount must be at least 1');
+    throw new InputRangeError('weldCount must be at least 1', {
+      code: 'parameter_out_of_range', parameter: 'weldCount', min: 1, got: weldCount,
+    });
   }
   if (appliedLoad < 0) {
-    throw new RangeError('appliedLoad must not be negative');
+    throw new InputRangeError('appliedLoad must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'appliedLoad', min: 0, got: appliedLoad,
+    });
   }
 
   const fexx = FEXX_MPA[electrode];

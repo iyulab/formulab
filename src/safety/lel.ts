@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LelInput, LelResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * LEL (Lower Explosive Limit) for Mixed Gases — Le Chatelier's Rule
@@ -35,7 +36,7 @@ export function lel(input: LelInput): LelResult {
   // No gases → nothing to assess. No concentration → the atmosphere is at 0 % LEL and safe, but the
   // mixture has no composition, so its LEL and the margin to it have no value (both were 0).
   if (gases.length === 0) {
-    throw new RangeError('gases must not be empty');
+    throw new InputRangeError('gases must not be empty', { code: 'empty_input', parameter: 'gases' });
   }
   if (totalConcentration === 0) {
     return {

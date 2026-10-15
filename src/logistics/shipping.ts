@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ShippingInput, ShippingResult } from './types.js';
 import { VOLUMETRIC_KG_PER_M3 } from './chargeableWeight.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate shipping cost estimate for different modes
@@ -22,10 +23,14 @@ export function shipping(input: ShippingInput): ShippingResult {
   const { mode, weight, volume, distance } = input;
 
   if (weight <= 0) {
-    throw new RangeError('weight must be greater than 0');
+    throw new InputRangeError('weight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'weight', exclusive_min: 0, got: weight,
+    });
   }
   if (volume <= 0) {
-    throw new RangeError('volume must be greater than 0');
+    throw new InputRangeError('volume must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'volume', exclusive_min: 0, got: volume,
+    });
   }
 
   let volumetricWeight: number;
@@ -88,7 +93,9 @@ export function shipping(input: ShippingInput): ShippingResult {
     }
     case 'truck': {
       if (distance == null || distance <= 0) {
-        throw new RangeError('distance must be greater than 0 for truck mode');
+        throw new InputRangeError('distance must be greater than 0 for truck mode', {
+          code: 'parameter_out_of_range', parameter: 'distance', exclusive_min: 0, got: distance ?? undefined,
+        });
       }
       volumetricWeight = roundTo(volume * VOLUMETRIC_KG_PER_M3.truck, 2);
       const chargeableWt = Math.max(weight, volumetricWeight);

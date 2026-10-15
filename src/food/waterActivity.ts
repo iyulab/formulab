@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WaterActivityInput, WaterActivityResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Water Activity Microbial Safety Assessment — HACCP
@@ -22,7 +23,9 @@ export function waterActivity(input: WaterActivityInput): WaterActivityResult {
 
   // Water activity is a ratio of vapour pressures, from 0 (bone dry) to 1 (pure water).
   if (!(aw >= 0 && aw <= 1)) {
-    throw new RangeError('aw must be between 0 and 1');
+    throw new InputRangeError('aw must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'aw', min: 0, max: 1, got: aw,
+    });
   }
   const warnings: string[] = [];
 

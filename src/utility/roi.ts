@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { RoiInput, RoiResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Return on investment (ROI) calculation
@@ -12,13 +13,19 @@ export function roi(input: RoiInput): RoiResult {
   requireFinite('roi', input);
   const { investment, annualReturn, years } = input;
   if (investment <= 0) {
-    throw new RangeError(`investment must be > 0, got ${investment}`);
+    throw new InputRangeError(`investment must be > 0, got ${investment}`, {
+      code: 'parameter_out_of_range', parameter: 'investment', exclusive_min: 0, got: investment,
+    });
   }
   if (annualReturn <= 0) {
-    throw new RangeError(`annualReturn must be > 0, got ${annualReturn}`);
+    throw new InputRangeError(`annualReturn must be > 0, got ${annualReturn}`, {
+      code: 'parameter_out_of_range', parameter: 'annualReturn', exclusive_min: 0, got: annualReturn,
+    });
   }
   if (years <= 0) {
-    throw new RangeError(`years must be > 0, got ${years}`);
+    throw new InputRangeError(`years must be > 0, got ${years}`, {
+      code: 'parameter_out_of_range', parameter: 'years', exclusive_min: 0, got: years,
+    });
   }
 
   const totalReturn = annualReturn * years;

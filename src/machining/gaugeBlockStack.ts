@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { GaugeBlockStackInput, GaugeBlockStackResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Metric 47-piece gauge block set (mm) — Mitutoyo Series 516-362 / equivalent Grade 0-2 catalog
@@ -103,11 +104,15 @@ export function gaugeBlockStack(input: GaugeBlockStackInput): GaugeBlockStackRes
 
   const setBlocks = SETS[availableSet];
   if (!Number.isFinite(targetDimension) || targetDimension <= 0) {
-    throw new RangeError('targetDimension must be a positive finite number');
+    throw new InputRangeError('targetDimension must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'targetDimension', exclusive_min: 0, got: targetDimension,
+    });
   }
   const setTotal = roundTo(setBlocks.reduce((sum, b) => sum + b, 0), 4);
   if (targetDimension > setTotal) {
-    throw new RangeError(`targetDimension ${targetDimension} is above what the ${availableSet} set can stack (${setTotal})`);
+    throw new InputRangeError(`targetDimension ${targetDimension} is above what the ${availableSet} set can stack (${setTotal})`, {
+      code: 'parameter_out_of_range', parameter: 'targetDimension', max: setTotal, got: targetDimension,
+    });
   }
   const used = new Set<number>();
   const blocks: number[] = [];

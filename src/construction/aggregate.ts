@@ -1,5 +1,6 @@
 import type { AggregateInput, AggregateResult, AggregateType, AggregateDensity } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Common aggregate densities (kg/m³)
@@ -77,7 +78,9 @@ export function aggregate(input: AggregateInput): AggregateResult {
   let density: number;
   if (aggregateType === 'custom') {
     if (customDensity === undefined || customDensity <= 0) {
-      throw new RangeError('Custom density must be provided and greater than zero');
+      throw new InputRangeError('Custom density must be provided and greater than zero', {
+        code: 'parameter_out_of_range', parameter: 'customDensity', exclusive_min: 0, got: customDensity ?? undefined,
+      });
     }
     density = customDensity;
   } else {

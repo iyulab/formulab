@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { HeatTransferInput, HeatTransferResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Stefan-Boltzmann constant (W/(m²·K⁴))
@@ -36,9 +37,17 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
     case 'conduction': {
       const { conductivity, thickness, tempHot, tempCold } = input;
       area = input.area;
-      if (conductivity <= 0) throw new RangeError('Thermal conductivity must be positive');
+      if (conductivity <= 0) {
+        throw new InputRangeError('Thermal conductivity must be positive', {
+          code: 'parameter_out_of_range', parameter: 'conductivity', exclusive_min: 0, got: conductivity,
+        });
+      }
       if (area <= 0) throw new RangeError('Area must be positive');
-      if (thickness <= 0) throw new RangeError('Thickness must be positive');
+      if (thickness <= 0) {
+        throw new InputRangeError('Thickness must be positive', {
+          code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
+        });
+      }
       tempDifference = tempHot - tempCold;
       // Fourier's Law: Q = k × A × ΔT / L
       heatRate = (conductivity * area * tempDifference) / thickness;
@@ -49,7 +58,11 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
     case 'convection': {
       const { coefficient, tempSurface, tempFluid } = input;
       area = input.area;
-      if (coefficient <= 0) throw new RangeError('Convection coefficient must be positive');
+      if (coefficient <= 0) {
+        throw new InputRangeError('Convection coefficient must be positive', {
+          code: 'parameter_out_of_range', parameter: 'coefficient', exclusive_min: 0, got: coefficient,
+        });
+      }
       if (area <= 0) throw new RangeError('Area must be positive');
       tempDifference = tempSurface - tempFluid;
       // Newton's Law of Cooling: Q = h × A × ΔT
@@ -61,7 +74,11 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
     case 'radiation': {
       const { emissivity, tempHot, tempCold } = input;
       area = input.area;
-      if (emissivity <= 0 || emissivity > 1) throw new RangeError('Emissivity must be between 0 and 1');
+      if (emissivity <= 0 || emissivity > 1) {
+        throw new InputRangeError('Emissivity must be between 0 and 1', {
+          code: 'parameter_out_of_range', parameter: 'emissivity', exclusive_min: 0, max: 1, got: emissivity,
+        });
+      }
       if (area <= 0) throw new RangeError('Area must be positive');
       tempDifference = tempHot - tempCold;
       // Convert to Kelvin for Stefan-Boltzmann

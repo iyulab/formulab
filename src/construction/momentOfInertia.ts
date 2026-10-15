@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MomentOfInertiaInput, MomentOfInertiaResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Moment of Inertia (Section Properties) Calculator
@@ -78,7 +79,11 @@ function calcRectangle(b: number, h: number): MomentOfInertiaResult {
 
 /** Solid Circle: I = πd⁴/64 */
 function calcCircle(d: number): MomentOfInertiaResult {
-  if (d <= 0) throw new RangeError('Diameter must be positive');
+  if (d <= 0) {
+    throw new InputRangeError('Diameter must be positive', {
+      code: 'parameter_out_of_range', parameter: 'd', exclusive_min: 0, got: d,
+    });
+  }
   const area = (Math.PI * d * d) / 4;
   const I = (Math.PI * d * d * d * d) / 64;
   const S = (Math.PI * d * d * d) / 32;
@@ -110,7 +115,11 @@ function calcHollowRectangle(B: number, H: number, b: number, h: number): Moment
 /** Hollow Circle (Pipe): I = π(D⁴-d⁴)/64 */
 function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
   if (D <= 0 || d <= 0) throw new RangeError('Diameters must be positive');
-  if (d >= D) throw new RangeError('Inner diameter must be smaller than outer');
+  if (d >= D) {
+    throw new InputRangeError('Inner diameter must be smaller than outer', {
+      code: 'parameter_out_of_range', parameter: 'd', exclusive_max: D, got: d,
+    });
+  }
   const area = (Math.PI * (D * D - d * d)) / 4;
   const I = (Math.PI * (D * D * D * D - d * d * d * d)) / 64;
   const S = I / (D / 2);
@@ -125,7 +134,11 @@ function calcHollowCircle(D: number, d: number): MomentOfInertiaResult {
 /** I-Beam (symmetric): I_x = (B×H³ - (B-tw)×(H-2tf)³) / 12 */
 function calcIBeam(B: number, H: number, tw: number, tf: number): MomentOfInertiaResult {
   if (B <= 0 || H <= 0 || tw <= 0 || tf <= 0) throw new RangeError('Dimensions must be positive');
-  if (tw >= B) throw new RangeError('Web thickness must be less than flange width');
+  if (tw >= B) {
+    throw new InputRangeError('Web thickness must be less than flange width', {
+      code: 'parameter_out_of_range', parameter: 'tw', exclusive_max: B, got: tw,
+    });
+  }
   if (2 * tf >= H) throw new RangeError('2 × flange thickness must be less than total height');
 
   const hw = H - 2 * tf; // clear web height

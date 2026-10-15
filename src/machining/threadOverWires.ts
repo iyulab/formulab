@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ThreadAngle, ThreadOverWiresInput, ThreadOverWiresResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /** d₂ = d − k·P: the pitch-diameter factor k for each supported thread form. */
 const PITCH_DIAMETER_FACTOR: Readonly<Record<ThreadAngle, number>> = {
@@ -40,13 +41,19 @@ export function threadOverWires(input: ThreadOverWiresInput): ThreadOverWiresRes
   const { majorDiameter, pitch, threadAngle = 60 } = input;
 
   if (!Number.isFinite(majorDiameter) || majorDiameter <= 0) {
-    throw new RangeError('majorDiameter must be a positive finite number');
+    throw new InputRangeError('majorDiameter must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'majorDiameter', exclusive_min: 0, got: majorDiameter,
+    });
   }
   if (!Number.isFinite(pitch) || pitch <= 0) {
-    throw new RangeError('pitch must be a positive finite number');
+    throw new InputRangeError('pitch must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'pitch', exclusive_min: 0, got: pitch,
+    });
   }
   if (input.wireSize !== undefined && (!Number.isFinite(input.wireSize) || input.wireSize <= 0)) {
-    throw new RangeError('wireSize must be a positive finite number');
+    throw new InputRangeError('wireSize must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'wireSize', exclusive_min: 0, got: input.wireSize,
+    });
   }
   const depthFactor = PITCH_DIAMETER_FACTOR[threadAngle];
   if (depthFactor === undefined) {

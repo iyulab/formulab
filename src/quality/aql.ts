@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { AqlInput, AqlResult, InspectionLevel } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Sample size code letters — ISO 2859-1:1999 Table 1 / ANSI Z1.4 Table I
 const LOT_SIZE_RANGES: Array<{ max: number; codes: Record<InspectionLevel, string> }> = [
@@ -131,7 +132,9 @@ export function aql(input: AqlInput): AqlResult {
 
   // Guard against invalid lot size
   if (lotSize <= 0) {
-    throw new RangeError('lotSize must be greater than 0');
+    throw new InputRangeError('lotSize must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'lotSize', exclusive_min: 0, got: lotSize,
+    });
   }
 
   // Handle invalid AQL level

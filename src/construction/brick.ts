@@ -1,5 +1,6 @@
 import type { BrickInput, BrickResult, BrickSize, BrickDimensions } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Standard brick sizes in mm
@@ -27,13 +28,19 @@ export function brick(input: BrickInput): BrickResult {
   const { wallArea, brickSize, customLength, customHeight, mortarThickness, wasteFactor } = input;
 
   if (!(wallArea > 0)) {
-    throw new RangeError('wallArea must be greater than 0');
+    throw new InputRangeError('wallArea must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'wallArea', exclusive_min: 0, got: wallArea,
+    });
   }
   if (!(mortarThickness >= 0)) {
-    throw new RangeError('mortarThickness must not be negative');
+    throw new InputRangeError('mortarThickness must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'mortarThickness', min: 0, got: mortarThickness,
+    });
   }
   if (!(wasteFactor >= 0)) {
-    throw new RangeError('wasteFactor must not be negative');
+    throw new InputRangeError('wasteFactor must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'wasteFactor', min: 0, got: wasteFactor,
+    });
   }
 
   // Get brick dimensions

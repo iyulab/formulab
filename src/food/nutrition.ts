@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { NutritionInput, NutritionResult, NutritionFacts, DailyValuePercents, NutrientIngredient } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // FDA Daily Values (2020)
 const DAILY_VALUES = {
@@ -34,7 +35,9 @@ export function nutrition(input: NutritionInput): NutritionResult {
 
   // A serving of no food has no label to print, and a negative one flips every per-serving value.
   if (!(servingSize > 0)) {
-    throw new RangeError('servingSize must be greater than 0');
+    throw new InputRangeError('servingSize must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'servingSize', exclusive_min: 0, got: servingSize,
+    });
   }
   // A negative amount or nutrient subtracts from the recipe total it is meant to add to.
   for (const ing of ingredients) {

@@ -1,5 +1,6 @@
 import type { ConcreteGrade, ConcreteInput, ConcreteResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 interface MixDesign {
   cementPerM3: number;  // kg cement per m³
@@ -42,7 +43,9 @@ export function concreteMix(input: ConcreteInput): ConcreteResult {
     throw new RangeError(`unknown concrete grade: ${String(grade)}`);
   }
   if (volume <= 0) {
-    throw new RangeError('volume must be greater than 0');
+    throw new InputRangeError('volume must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'volume', exclusive_min: 0, got: volume,
+    });
   }
 
   const cement = roundTo(design.cementPerM3 * volume, 2);

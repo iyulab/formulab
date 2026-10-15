@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PercentileInput, PercentileResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate a percentile of a data series (linear interpolation between ranks)
@@ -15,7 +16,9 @@ export function percentile(input: PercentileInput): PercentileResult {
     throw new RangeError('data must contain at least one value');
   }
   if (p < 0 || p > 100) {
-    throw new RangeError(`percentile must be in [0, 100], got ${p}`);
+    throw new InputRangeError(`percentile must be in [0, 100], got ${p}`, {
+      code: 'parameter_out_of_range', parameter: 'percentile', min: 0, max: 100, got: p,
+    });
   }
 
   const sorted = [...data].sort((a, b) => a - b);

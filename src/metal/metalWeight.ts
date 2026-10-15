@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MetalWeightInput, MetalWeightResult, MaterialName } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Material densities in g/cm³
@@ -38,7 +39,11 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
   requireFinite('metalWeight', input);
   const { shape, length, materialName } = input;
 
-  if (!(length > 0)) throw new RangeError('length must be positive');
+  if (!(length > 0)) {
+    throw new InputRangeError('length must be positive', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
+  }
 
   // An unknown material has no density: the weight came back empty with no reason given.
   if (!Object.hasOwn(MATERIAL_DENSITIES, materialName)) {
@@ -50,30 +55,66 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
 
   switch (shape) {
     case 'plate': {
-      if (!(input.width > 0)) throw new RangeError('width must be positive');
-      if (!(input.thickness > 0)) throw new RangeError('thickness must be positive');
+      if (!(input.width > 0)) {
+        throw new InputRangeError('width must be positive', {
+          code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: input.width,
+        });
+      }
+      if (!(input.thickness > 0)) {
+        throw new InputRangeError('thickness must be positive', {
+          code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: input.thickness,
+        });
+      }
       crossSectionArea = input.width * input.thickness;
       break;
     }
     case 'round': {
-      if (!(input.diameter > 0)) throw new RangeError('diameter must be positive');
+      if (!(input.diameter > 0)) {
+        throw new InputRangeError('diameter must be positive', {
+          code: 'parameter_out_of_range', parameter: 'diameter', exclusive_min: 0, got: input.diameter,
+        });
+      }
       const radius = input.diameter / 2;
       crossSectionArea = Math.PI * radius * radius;
       break;
     }
     case 'pipe': {
-      if (!(input.outerDiameter > 0)) throw new RangeError('outerDiameter must be positive');
-      if (!(input.innerDiameter >= 0)) throw new RangeError('innerDiameter must be non-negative');
-      if (input.outerDiameter <= input.innerDiameter) throw new RangeError('outerDiameter must be greater than innerDiameter');
+      if (!(input.outerDiameter > 0)) {
+        throw new InputRangeError('outerDiameter must be positive', {
+          code: 'parameter_out_of_range', parameter: 'outerDiameter', exclusive_min: 0, got: input.outerDiameter,
+        });
+      }
+      if (!(input.innerDiameter >= 0)) {
+        throw new InputRangeError('innerDiameter must be non-negative', {
+          code: 'parameter_out_of_range', parameter: 'innerDiameter', min: 0, got: input.innerDiameter,
+        });
+      }
+      if (input.outerDiameter <= input.innerDiameter) {
+        throw new InputRangeError('outerDiameter must be greater than innerDiameter', {
+          code: 'parameter_out_of_range', parameter: 'outerDiameter', exclusive_min: input.innerDiameter, got: input.outerDiameter,
+        });
+      }
       const outerRadius = input.outerDiameter / 2;
       const innerRadius = input.innerDiameter / 2;
       crossSectionArea = Math.PI * (outerRadius * outerRadius - innerRadius * innerRadius);
       break;
     }
     case 'angle': {
-      if (!(input.width > 0)) throw new RangeError('width must be positive');
-      if (!(input.height > 0)) throw new RangeError('height must be positive');
-      if (!(input.thickness > 0)) throw new RangeError('thickness must be positive');
+      if (!(input.width > 0)) {
+        throw new InputRangeError('width must be positive', {
+          code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: input.width,
+        });
+      }
+      if (!(input.height > 0)) {
+        throw new InputRangeError('height must be positive', {
+          code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: input.height,
+        });
+      }
+      if (!(input.thickness > 0)) {
+        throw new InputRangeError('thickness must be positive', {
+          code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: input.thickness,
+        });
+      }
       // A leg cannot be thinner than the section is thick; past that the corner overlap exceeds the legs.
       if (input.thickness > Math.min(input.width, input.height)) {
         throw new RangeError('thickness must not exceed width or height');

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CarbonFootprintInput, CarbonFootprintResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Constants for environmental equivalents
 // Average tree absorbs ~21.76 kg CO2 per year (EPA estimate)
@@ -25,10 +26,14 @@ export function carbonFootprint(input: CarbonFootprintInput): CarbonFootprintRes
   // A negative usage or emission factor would report a negative emission, which this
   // electricity-only model does not represent (offsets and credits are outside it).
   if (!(electricityUsage >= 0)) {
-    throw new RangeError('electricityUsage must not be negative');
+    throw new InputRangeError('electricityUsage must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'electricityUsage', min: 0, got: electricityUsage,
+    });
   }
   if (!(emissionFactor >= 0)) {
-    throw new RangeError('emissionFactor must not be negative');
+    throw new InputRangeError('emissionFactor must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'emissionFactor', min: 0, got: emissionFactor,
+    });
   }
 
   // Calculate CO2 emissions

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FuelInput, FuelResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Conversion constants
 const KM_PER_MILE = 1.60934;
@@ -24,7 +25,9 @@ export function fuelEconomy(input: FuelInput): FuelResult {
   const { fromUnit, value } = input;
 
   if (value <= 0) {
-    throw new RangeError('value must be greater than 0');
+    throw new InputRangeError('value must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'value', exclusive_min: 0, got: value,
+    });
   }
 
   let kmPerL: number;

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ThermalRunawayInput, ThermalRunawayResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate thermal runaway safety margin
@@ -25,15 +26,21 @@ export function thermalRunaway(input: ThermalRunawayInput): ThermalRunawayResult
 
   // A negative resistance would absorb heat and report the cell cooler than ambient.
   if (!(internalResistanceOhm >= 0)) {
-    throw new RangeError('internalResistanceOhm must not be negative');
+    throw new InputRangeError('internalResistanceOhm must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'internalResistanceOhm', min: 0, got: internalResistanceOhm,
+    });
   }
   // The steady-state rise divides the generated heat by hA; a non-positive coefficient
   // or area describes a cell that cannot shed heat at all, which is not a temperature.
   if (!(heatTransferCoeff > 0)) {
-    throw new RangeError('heatTransferCoeff must be greater than 0');
+    throw new InputRangeError('heatTransferCoeff must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'heatTransferCoeff', exclusive_min: 0, got: heatTransferCoeff,
+    });
   }
   if (!(surfaceAreaM2 > 0)) {
-    throw new RangeError('surfaceAreaM2 must be greater than 0');
+    throw new InputRangeError('surfaceAreaM2 must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'surfaceAreaM2', exclusive_min: 0, got: surfaceAreaM2,
+    });
   }
 
   const heatGenerationW = roundTo(currentA * currentA * internalResistanceOhm, 4);

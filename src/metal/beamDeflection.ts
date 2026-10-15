@@ -5,6 +5,7 @@ import type {
   BeamDeflectionResult,
   BeamDeflectionCurvePoint,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Elastic deflected shape v(x) of a prismatic beam under a uniform load w (N/mm) and/or
@@ -110,16 +111,24 @@ export function beamDeflection(input: BeamDeflectionInput): BeamDeflectionResult
   const { support, span, youngsModulus, momentOfInertia, deflectionLimitRatio } = input;
 
   if (span <= 0) {
-    throw new RangeError('span must be greater than 0');
+    throw new InputRangeError('span must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'span', exclusive_min: 0, got: span,
+    });
   }
   if (youngsModulus <= 0) {
-    throw new RangeError('youngsModulus must be greater than 0');
+    throw new InputRangeError('youngsModulus must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: youngsModulus,
+    });
   }
   if (momentOfInertia <= 0) {
-    throw new RangeError('momentOfInertia must be greater than 0');
+    throw new InputRangeError('momentOfInertia must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'momentOfInertia', exclusive_min: 0, got: momentOfInertia,
+    });
   }
   if (deflectionLimitRatio <= 0) {
-    throw new RangeError('deflectionLimitRatio must be greater than 0');
+    throw new InputRangeError('deflectionLimitRatio must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'deflectionLimitRatio', exclusive_min: 0, got: deflectionLimitRatio,
+    });
   }
 
   const { w, P } = resolveLoads(input);
@@ -152,16 +161,24 @@ export function beamDeflectionCurve(input: BeamDeflectionInput, count = 41): Bea
   requireFinite('beamDeflectionCurve', input);
   requireFinite('beamDeflectionCurve', { count });
   if (input.span <= 0) {
-    throw new RangeError('span must be greater than 0');
+    throw new InputRangeError('span must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'span', exclusive_min: 0, got: input.span,
+    });
   }
   if (input.youngsModulus <= 0) {
-    throw new RangeError('youngsModulus must be greater than 0');
+    throw new InputRangeError('youngsModulus must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: input.youngsModulus,
+    });
   }
   if (input.momentOfInertia <= 0) {
-    throw new RangeError('momentOfInertia must be greater than 0');
+    throw new InputRangeError('momentOfInertia must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'momentOfInertia', exclusive_min: 0, got: input.momentOfInertia,
+    });
   }
   if (count < 2) {
-    throw new RangeError('count must be at least 2');
+    throw new InputRangeError('count must be at least 2', {
+      code: 'parameter_out_of_range', parameter: 'count', min: 2, got: count,
+    });
   }
 
   const { w, P } = resolveLoads(input);

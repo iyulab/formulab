@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CorrelationInput, CorrelationResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Pearson correlation coefficient between two equal-length samples.
@@ -18,7 +19,9 @@ export function correlation(input: CorrelationInput): CorrelationResult {
     throw new RangeError(`x and y must have the same length, got ${x?.length ?? 0} and ${y?.length ?? 0}`);
   }
   if (x.length < 2) {
-    throw new RangeError(`x and y must contain at least 2 points, got ${x.length}`);
+    throw new InputRangeError(`x and y must contain at least 2 points, got ${x.length}`, {
+      code: 'insufficient_data', parameter: 'x', min: 2, got: x.length,
+    });
   }
 
   const n = x.length;

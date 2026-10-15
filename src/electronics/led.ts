@@ -1,5 +1,6 @@
 import type { LedResistorInput, LedResistorResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Round to specified decimal places
@@ -54,10 +55,14 @@ export function ledResistor(input: LedResistorInput): LedResistorResult {
 
   // Validate inputs
   if (supplyVoltage <= forwardVoltage) {
-    throw new RangeError('Supply voltage must be greater than forward voltage');
+    throw new InputRangeError('Supply voltage must be greater than forward voltage', {
+      code: 'parameter_out_of_range', parameter: 'supplyVoltage', exclusive_min: forwardVoltage, got: supplyVoltage,
+    });
   }
   if (forwardCurrent <= 0) {
-    throw new RangeError('Forward current must be positive');
+    throw new InputRangeError('Forward current must be positive', {
+      code: 'parameter_out_of_range', parameter: 'forwardCurrent', exclusive_min: 0, got: forwardCurrent,
+    });
   }
 
   // R = (Vs - Vf) / If

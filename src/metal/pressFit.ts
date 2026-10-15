@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PressFitInput, PressFitResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate press-fit (interference fit) parameters.
@@ -49,12 +50,36 @@ export function pressFit(input: PressFitInput): PressFitResult {
   } = input;
 
   // Validate inputs
-  if (!(shaftDiameter > 0)) throw new RangeError('shaftDiameter must be greater than 0');
-  if (!(holeDiameter > 0)) throw new RangeError('holeDiameter must be greater than 0');
-  if (!(hubOuterDiameter > 0)) throw new RangeError('hubOuterDiameter must be greater than 0');
-  if (!(contactLength > 0)) throw new RangeError('contactLength must be greater than 0');
-  if (!(youngsModulus > 0)) throw new RangeError('youngsModulus must be greater than 0');
-  if (!(frictionCoefficient > 0)) throw new RangeError('frictionCoefficient must be greater than 0');
+  if (!(shaftDiameter > 0)) {
+    throw new InputRangeError('shaftDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'shaftDiameter', exclusive_min: 0, got: shaftDiameter,
+    });
+  }
+  if (!(holeDiameter > 0)) {
+    throw new InputRangeError('holeDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'holeDiameter', exclusive_min: 0, got: holeDiameter,
+    });
+  }
+  if (!(hubOuterDiameter > 0)) {
+    throw new InputRangeError('hubOuterDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'hubOuterDiameter', exclusive_min: 0, got: hubOuterDiameter,
+    });
+  }
+  if (!(contactLength > 0)) {
+    throw new InputRangeError('contactLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'contactLength', exclusive_min: 0, got: contactLength,
+    });
+  }
+  if (!(youngsModulus > 0)) {
+    throw new InputRangeError('youngsModulus must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: youngsModulus,
+    });
+  }
+  if (!(frictionCoefficient > 0)) {
+    throw new InputRangeError('frictionCoefficient must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'frictionCoefficient', exclusive_min: 0, got: frictionCoefficient,
+    });
+  }
   // A hub whose outside diameter does not clear the bore and the shaft has no wall to carry the fit.
   if (!(hubOuterDiameter > Math.max(shaftDiameter, holeDiameter))) {
     throw new RangeError('hubOuterDiameter must be greater than shaftDiameter and holeDiameter');

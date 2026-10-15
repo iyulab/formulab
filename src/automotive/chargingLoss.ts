@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingLossInput, ChargingLossResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Default charger efficiencies by type — typical real-world AC-DC conversion efficiency for
 // each charging level, not a value specified by SAE J1772/IEC 61851 themselves (those standards
@@ -42,18 +43,40 @@ export function chargingLoss(input: ChargingLossInput): ChargingLossResult {
   const targetSoc = input.targetSoc ?? (chargerType === 'dc_fast' ? 80 : 100);
 
   if (!Number.isFinite(batteryCapacity) || batteryCapacity <= 0) {
-    throw new RangeError('batteryCapacity must be a positive finite number');
+    throw new InputRangeError('batteryCapacity must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'batteryCapacity', exclusive_min: 0, got: batteryCapacity,
+    });
   }
   if (!Number.isFinite(chargerPower) || chargerPower <= 0) {
-    throw new RangeError('chargerPower must be a positive finite number');
+    throw new InputRangeError('chargerPower must be a positive finite number', {
+      code: 'parameter_out_of_range', parameter: 'chargerPower', exclusive_min: 0, got: chargerPower,
+    });
   }
-  if (!(soc >= 0 && soc <= 100)) throw new RangeError('soc must be between 0 and 100');
-  if (!(targetSoc >= 0 && targetSoc <= 100)) throw new RangeError('targetSoc must be between 0 and 100');
+  if (!(soc >= 0 && soc <= 100)) {
+    throw new InputRangeError('soc must be between 0 and 100', {
+      code: 'parameter_out_of_range', parameter: 'soc', min: 0, max: 100, got: soc,
+    });
+  }
+  if (!(targetSoc >= 0 && targetSoc <= 100)) {
+    throw new InputRangeError('targetSoc must be between 0 and 100', {
+      code: 'parameter_out_of_range', parameter: 'targetSoc', min: 0, max: 100, got: targetSoc,
+    });
+  }
   if (targetSoc <= soc) {
-    throw new RangeError(`targetSoc (${targetSoc}) must be above soc (${soc}) — there is nothing to charge`);
+    throw new InputRangeError(`targetSoc (${targetSoc}) must be above soc (${soc}) — there is nothing to charge`, {
+      code: 'parameter_out_of_range', parameter: 'targetSoc', exclusive_min: soc, got: targetSoc,
+    });
   }
-  if (!(chargerEfficiency > 0 && chargerEfficiency <= 1)) throw new RangeError('chargerEfficiency must be in (0, 1]');
-  if (!(batteryEfficiency > 0 && batteryEfficiency <= 1)) throw new RangeError('batteryEfficiency must be in (0, 1]');
+  if (!(chargerEfficiency > 0 && chargerEfficiency <= 1)) {
+    throw new InputRangeError('chargerEfficiency must be in (0, 1]', {
+      code: 'parameter_out_of_range', parameter: 'chargerEfficiency', exclusive_min: 0, max: 1, got: chargerEfficiency,
+    });
+  }
+  if (!(batteryEfficiency > 0 && batteryEfficiency <= 1)) {
+    throw new InputRangeError('batteryEfficiency must be in (0, 1]', {
+      code: 'parameter_out_of_range', parameter: 'batteryEfficiency', exclusive_min: 0, max: 1, got: batteryEfficiency,
+    });
+  }
 
   // Temperature derating
   let derating = 1.0;

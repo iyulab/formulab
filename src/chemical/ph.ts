@@ -1,5 +1,6 @@
 import type { PhInput, PhResult, BufferSystem } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * pKa values at 25C for common buffer systems
@@ -41,10 +42,14 @@ export function ph(input: PhInput): PhResult {
 
   // Guard against invalid concentrations
   if (!(acidConcentration > 0)) {
-    throw new RangeError('acidConcentration must be greater than 0');
+    throw new InputRangeError('acidConcentration must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'acidConcentration', exclusive_min: 0, got: acidConcentration,
+    });
   }
   if (!(baseConcentration > 0)) {
-    throw new RangeError('baseConcentration must be greater than 0');
+    throw new InputRangeError('baseConcentration must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'baseConcentration', exclusive_min: 0, got: baseConcentration,
+    });
   }
 
   // Get base pKa at 25C

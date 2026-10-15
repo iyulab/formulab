@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingProfileInput, ChargingProfileResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate CC-CV charging profile timing
@@ -19,18 +20,26 @@ export function chargingProfile(input: ChargingProfileInput): ChargingProfileRes
   } = input;
 
   if (!(capacityAh > 0)) {
-    throw new RangeError('capacityAh must be greater than 0');
+    throw new InputRangeError('capacityAh must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'capacityAh', exclusive_min: 0, got: capacityAh,
+    });
   }
   if (!(chargingCurrentA > 0)) {
-    throw new RangeError('chargingCurrentA must be greater than 0');
+    throw new InputRangeError('chargingCurrentA must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'chargingCurrentA', exclusive_min: 0, got: chargingCurrentA,
+    });
   }
   // The CV phase averages the charging and cutoff currents; a non-positive cutoff would
   // make that average zero or negative and the phase time infinite.
   if (!(cutoffCurrentA > 0)) {
-    throw new RangeError('cutoffCurrentA must be greater than 0');
+    throw new InputRangeError('cutoffCurrentA must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'cutoffCurrentA', exclusive_min: 0, got: cutoffCurrentA,
+    });
   }
   if (!(ccEndSocPercent > 0) || ccEndSocPercent >= 100) {
-    throw new RangeError('ccEndSocPercent must be greater than 0 and less than 100');
+    throw new InputRangeError('ccEndSocPercent must be greater than 0 and less than 100', {
+      code: 'parameter_out_of_range', parameter: 'ccEndSocPercent', exclusive_min: 0, exclusive_max: 100, got: ccEndSocPercent,
+    });
   }
 
   // Every output is rounded once, from the unrounded value. Deriving minutes from the rounded

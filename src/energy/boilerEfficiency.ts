@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BoilerEfficiencyInput, BoilerEfficiencyResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate boiler thermal efficiency using the direct (input-output) method.
@@ -29,32 +30,48 @@ export function boilerEfficiency(input: BoilerEfficiencyInput): BoilerEfficiency
   // The efficiency is a share of the fuel heat input, so a fuel side at or below zero has no
   // efficiency to report; a negative flow, enthalpy, duration or price flips the sign of a result.
   if (!(fuelRate > 0)) {
-    throw new RangeError('fuelRate must be greater than 0');
+    throw new InputRangeError('fuelRate must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'fuelRate', exclusive_min: 0, got: fuelRate,
+    });
   }
   if (!(fuelHeatValue > 0)) {
-    throw new RangeError('fuelHeatValue must be greater than 0');
+    throw new InputRangeError('fuelHeatValue must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'fuelHeatValue', exclusive_min: 0, got: fuelHeatValue,
+    });
   }
   if (!(steamOutput >= 0)) {
-    throw new RangeError('steamOutput must not be negative');
+    throw new InputRangeError('steamOutput must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'steamOutput', min: 0, got: steamOutput,
+    });
   }
   if (!(steamEnthalpy >= 0)) {
-    throw new RangeError('steamEnthalpy must not be negative');
+    throw new InputRangeError('steamEnthalpy must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'steamEnthalpy', min: 0, got: steamEnthalpy,
+    });
   }
   if (!(feedwaterEnthalpy >= 0)) {
-    throw new RangeError('feedwaterEnthalpy must not be negative');
+    throw new InputRangeError('feedwaterEnthalpy must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'feedwaterEnthalpy', min: 0, got: feedwaterEnthalpy,
+    });
   }
   if (operatingHours !== undefined && !(operatingHours >= 0)) {
-    throw new RangeError('operatingHours must not be negative');
+    throw new InputRangeError('operatingHours must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'operatingHours', min: 0, got: operatingHours,
+    });
   }
   if (fuelCost !== undefined && !(fuelCost >= 0)) {
-    throw new RangeError('fuelCost must not be negative');
+    throw new InputRangeError('fuelCost must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'fuelCost', min: 0, got: fuelCost,
+    });
   }
 
   // kJ/h → kW (÷ 3600)
   const heatInput = (fuelRate * fuelHeatValue) / 3600;
   const heatOutput = (steamOutput * (steamEnthalpy - feedwaterEnthalpy)) / 3600;
   if (steamEnthalpy < feedwaterEnthalpy) {
-    throw new RangeError('steamEnthalpy must not be lower than feedwaterEnthalpy');
+    throw new InputRangeError('steamEnthalpy must not be lower than feedwaterEnthalpy', {
+      code: 'parameter_out_of_range', parameter: 'steamEnthalpy', min: feedwaterEnthalpy, got: steamEnthalpy,
+    });
   }
   // The steam cannot carry more heat than the fuel supplied — that would be an efficiency above 100 %.
   if (heatOutput > heatInput) {

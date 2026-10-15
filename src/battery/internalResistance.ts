@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { InternalResistanceInput, InternalResistanceResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate battery internal resistance from OCV and load voltage
@@ -17,19 +18,27 @@ export function internalResistance(input: InternalResistanceInput): InternalResi
 
   // A terminal voltage below zero is not a cell under load; it flips the sign of the drop.
   if (!(openCircuitVoltage >= 0)) {
-    throw new RangeError('openCircuitVoltage must not be negative');
+    throw new InputRangeError('openCircuitVoltage must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'openCircuitVoltage', min: 0, got: openCircuitVoltage,
+    });
   }
   if (!(loadVoltage >= 0)) {
-    throw new RangeError('loadVoltage must not be negative');
+    throw new InputRangeError('loadVoltage must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'loadVoltage', min: 0, got: loadVoltage,
+    });
   }
   if (!(loadCurrentA > 0)) {
-    throw new RangeError('loadCurrentA must be greater than 0');
+    throw new InputRangeError('loadCurrentA must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'loadCurrentA', exclusive_min: 0, got: loadCurrentA,
+    });
   }
 
   // Under load the terminal voltage sags below the open-circuit voltage; a higher one would mean a
   // negative internal resistance — the two readings do not belong to one discharge.
   if (loadVoltage > openCircuitVoltage) {
-    throw new RangeError('loadVoltage must not exceed openCircuitVoltage');
+    throw new InputRangeError('loadVoltage must not exceed openCircuitVoltage', {
+      code: 'parameter_out_of_range', parameter: 'loadVoltage', max: openCircuitVoltage, got: loadVoltage,
+    });
   }
   const voltageDrop = roundTo(openCircuitVoltage - loadVoltage, 4);
   const resistanceOhm = roundTo(voltageDrop / loadCurrentA, 6);

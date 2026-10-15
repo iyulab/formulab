@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { SpringInput, SpringMaterial, SpringResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Shear modulus (G) in MPa for common spring materials
 const SHEAR_MODULUS: Record<SpringMaterial, number> = {
@@ -22,9 +23,21 @@ export function spring(input: SpringInput): SpringResult {
   const { wireDiameter, meanCoilDiameter, activeCoils, force, material } = input;
 
   // Validate inputs
-  if (wireDiameter <= 0) throw new RangeError('wireDiameter must be greater than 0');
-  if (meanCoilDiameter <= 0) throw new RangeError('meanCoilDiameter must be greater than 0');
-  if (activeCoils <= 0) throw new RangeError('activeCoils must be greater than 0');
+  if (wireDiameter <= 0) {
+    throw new InputRangeError('wireDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'wireDiameter', exclusive_min: 0, got: wireDiameter,
+    });
+  }
+  if (meanCoilDiameter <= 0) {
+    throw new InputRangeError('meanCoilDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'meanCoilDiameter', exclusive_min: 0, got: meanCoilDiameter,
+    });
+  }
+  if (activeCoils <= 0) {
+    throw new InputRangeError('activeCoils must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'activeCoils', exclusive_min: 0, got: activeCoils,
+    });
+  }
 
   const d = wireDiameter;
   const D = meanCoilDiameter;

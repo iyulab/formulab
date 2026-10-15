@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { MtbfInput, MtbfResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate MTBF (Mean Time Between Failures) and related reliability metrics
@@ -39,13 +40,19 @@ export function mtbf(input: MtbfInput): MtbfResult {
 
   // Validate inputs
   if (totalOperatingTime <= 0) {
-    throw new RangeError('totalOperatingTime must be greater than 0');
+    throw new InputRangeError('totalOperatingTime must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'totalOperatingTime', exclusive_min: 0, got: totalOperatingTime,
+    });
   }
   if (numberOfFailures <= 0) {
-    throw new RangeError('numberOfFailures must be greater than 0');
+    throw new InputRangeError('numberOfFailures must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'numberOfFailures', exclusive_min: 0, got: numberOfFailures,
+    });
   }
   if (totalRepairTime < 0) {
-    throw new RangeError('totalRepairTime must not be negative');
+    throw new InputRangeError('totalRepairTime must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'totalRepairTime', min: 0, got: totalRepairTime,
+    });
   }
 
   // Every derived figure below is computed from the raw times, never from the rounded

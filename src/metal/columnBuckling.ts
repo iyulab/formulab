@@ -4,6 +4,7 @@ import type {
   ColumnBucklingInput,
   ColumnBucklingResult,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Effective-length factor K for idealized end conditions (AISC theoretical values,
@@ -59,19 +60,29 @@ export function columnBuckling(input: ColumnBucklingInput): ColumnBucklingResult
   const { youngsModulus, momentOfInertia, area, length, endCondition, yieldStrength } = input;
 
   if (youngsModulus <= 0) {
-    throw new RangeError('youngsModulus must be greater than 0');
+    throw new InputRangeError('youngsModulus must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'youngsModulus', exclusive_min: 0, got: youngsModulus,
+    });
   }
   if (momentOfInertia <= 0) {
-    throw new RangeError('momentOfInertia must be greater than 0');
+    throw new InputRangeError('momentOfInertia must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'momentOfInertia', exclusive_min: 0, got: momentOfInertia,
+    });
   }
   if (area <= 0) {
-    throw new RangeError('area must be greater than 0');
+    throw new InputRangeError('area must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'area', exclusive_min: 0, got: area,
+    });
   }
   if (length <= 0) {
-    throw new RangeError('length must be greater than 0');
+    throw new InputRangeError('length must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
   }
   if (yieldStrength <= 0) {
-    throw new RangeError('yieldStrength must be greater than 0');
+    throw new InputRangeError('yieldStrength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'yieldStrength', exclusive_min: 0, got: yieldStrength,
+    });
   }
 
   const k = K_FACTOR[endCondition];

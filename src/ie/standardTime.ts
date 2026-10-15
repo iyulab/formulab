@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { StandardTimeInput, StandardTimeResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Standard Time Calculation
@@ -20,13 +21,19 @@ export function standardTime(input: StandardTimeInput): StandardTimeResult {
   const { observedTime, ratingFactor, allowancePercent } = input;
 
   if (!Number.isFinite(observedTime) || observedTime <= 0) {
-    throw new RangeError('Observed time must be a positive number');
+    throw new InputRangeError('Observed time must be a positive number', {
+      code: 'parameter_out_of_range', parameter: 'observedTime', exclusive_min: 0, got: observedTime,
+    });
   }
   if (!Number.isFinite(ratingFactor) || ratingFactor <= 0 || ratingFactor > 2) {
-    throw new RangeError('Rating factor must be between 0 (exclusive) and 2 (inclusive)');
+    throw new InputRangeError('Rating factor must be between 0 (exclusive) and 2 (inclusive)', {
+      code: 'parameter_out_of_range', parameter: 'ratingFactor', exclusive_min: 0, max: 2, got: ratingFactor,
+    });
   }
   if (!Number.isFinite(allowancePercent) || allowancePercent < 0 || allowancePercent > 100) {
-    throw new RangeError('Allowance percent must be between 0 and 100');
+    throw new InputRangeError('Allowance percent must be between 0 and 100', {
+      code: 'parameter_out_of_range', parameter: 'allowancePercent', min: 0, max: 100, got: allowancePercent,
+    });
   }
 
   const normalTime = observedTime * ratingFactor;

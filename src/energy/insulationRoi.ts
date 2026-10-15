@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { InsulationRoiInput, InsulationRoiResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate insulation ROI for pipes, vessels, or surfaces.
@@ -30,31 +31,49 @@ export function insulationRoi(input: InsulationRoiInput): InsulationRoiResult {
   } = input;
 
   if (!(surfaceArea > 0)) {
-    throw new RangeError('surfaceArea must be greater than 0');
+    throw new InputRangeError('surfaceArea must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'surfaceArea', exclusive_min: 0, got: surfaceArea,
+    });
   }
   if (!(tempDifference > 0)) {
-    throw new RangeError('tempDifference must be greater than 0');
+    throw new InputRangeError('tempDifference must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'tempDifference', exclusive_min: 0, got: tempDifference,
+    });
   }
   if (!(insulationK > 0)) {
-    throw new RangeError('insulationK must be greater than 0');
+    throw new InputRangeError('insulationK must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'insulationK', exclusive_min: 0, got: insulationK,
+    });
   }
   if (!(insulationThickness > 0)) {
-    throw new RangeError('insulationThickness must be greater than 0');
+    throw new InputRangeError('insulationThickness must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'insulationThickness', exclusive_min: 0, got: insulationThickness,
+    });
   }
   if (!(surfaceCoefficient > 0)) {
-    throw new RangeError('surfaceCoefficient must be greater than 0');
+    throw new InputRangeError('surfaceCoefficient must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'surfaceCoefficient', exclusive_min: 0, got: surfaceCoefficient,
+    });
   }
   if (!(boilerEfficiency > 0) || boilerEfficiency > 1) {
-    throw new RangeError('boilerEfficiency must be greater than 0 and at most 1');
+    throw new InputRangeError('boilerEfficiency must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'boilerEfficiency', exclusive_min: 0, max: 1, got: boilerEfficiency,
+    });
   }
   if (!(operatingHours >= 0)) {
-    throw new RangeError('operatingHours must not be negative');
+    throw new InputRangeError('operatingHours must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'operatingHours', min: 0, got: operatingHours,
+    });
   }
   if (!(energyCost >= 0)) {
-    throw new RangeError('energyCost must not be negative');
+    throw new InputRangeError('energyCost must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'energyCost', min: 0, got: energyCost,
+    });
   }
   if (installationCost !== undefined && !(installationCost >= 0)) {
-    throw new RangeError('installationCost must not be negative');
+    throw new InputRangeError('installationCost must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'installationCost', min: 0, got: installationCost,
+    });
   }
 
   // Bare surface heat loss: Q = h × A × ΔT (W)

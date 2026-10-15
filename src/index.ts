@@ -16,3 +16,5 @@ export * from './battery/index.js';
 export * from './environmental/index.js';
 export * from './machining/index.js';
 export * from './ie/index.js';
+export { InputRangeError } from './errors.js';
+export type { InputErrorCode, InputErrorDetail } from './errors.js';

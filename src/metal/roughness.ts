@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { RoughnessInput, RoughnessResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Roughness grade numbers with their Ra values in micrometres, and an Rz column.
@@ -63,7 +64,9 @@ export function roughness(input: RoughnessInput): RoughnessResult {
   const { fromScale, value } = input;
 
   if (value <= 0) {
-    throw new RangeError('value must be greater than 0');
+    throw new InputRangeError('value must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'value', exclusive_min: 0, got: value,
+    });
   }
 
   const first = ISO_1302_TABLE[0];

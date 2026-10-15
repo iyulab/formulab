@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CuttingStockInput, CuttingStockResult, CuttingPattern } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate optimal cutting layout for 1D cutting stock problem.
@@ -14,17 +15,21 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
   requireFinite('cuttingStock', input);
   const { stockLength, kerf, pieces, algorithm } = input;
   if (!(stockLength > 0)) {
-    throw new RangeError('stockLength must be greater than 0');
+    throw new InputRangeError('stockLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'stockLength', exclusive_min: 0, got: stockLength,
+    });
   }
   if (!(kerf >= 0)) {
-    throw new RangeError('kerf must not be negative');
+    throw new InputRangeError('kerf must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'kerf', min: 0, got: kerf,
+    });
   }
   if (pieces.length === 0) {
-    throw new RangeError('pieces must not be empty');
+    throw new InputRangeError('pieces must not be empty', { code: 'empty_input', parameter: 'pieces' });
   }
   pieces.forEach((p, i) => {
     if (!(p.length > 0)) {
-      throw new RangeError(`pieces[${i}].length must be greater than 0`);
+      throw new InputRangeError(`pieces[${i}].length must be greater than 0`, { code: 'empty_input', parameter: 'p' });
     }
     // A count of pieces: 0 or a negative one was silently dropped from the plan, 2.5 cut as 3.
     if (!(Number.isInteger(p.quantity) && p.quantity > 0)) {

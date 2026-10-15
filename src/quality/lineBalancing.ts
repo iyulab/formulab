@@ -1,6 +1,7 @@
 import { validatePrecedence } from '../precedence.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { LineBalancingInput, LineBalancingResult, WorkStation, PositionalWeight, BalancingTask } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 function detectCycle(tasks: BalancingTask[]): boolean {
   const taskMap = new Map(tasks.map(t => [t.id, t]));
@@ -119,10 +120,12 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
   const { tasks, cycleTime } = input;
 
   if (tasks.length === 0) {
-    throw new RangeError('tasks must not be empty');
+    throw new InputRangeError('tasks must not be empty', { code: 'empty_input', parameter: 'tasks' });
   }
   if (!(cycleTime > 0)) {
-    throw new RangeError('cycleTime must be greater than 0');
+    throw new InputRangeError('cycleTime must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'cycleTime', exclusive_min: 0, got: cycleTime,
+    });
   }
   for (const t of tasks) {
     if (!(t.time > 0)) {

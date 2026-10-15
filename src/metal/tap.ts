@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TapInput, TapResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate tap drill size and thread dimensions.
@@ -26,10 +27,20 @@ export function tap(input: TapInput): TapResult {
   const { standard, majorDiameter, pitch: inputPitch, threadPercentage = 75 } = input;
 
   // Validate inputs
-  if (majorDiameter <= 0) throw new RangeError('majorDiameter must be greater than 0');
-  if (inputPitch <= 0) throw new RangeError('pitch must be greater than 0');
+  if (majorDiameter <= 0) {
+    throw new InputRangeError('majorDiameter must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'majorDiameter', exclusive_min: 0, got: majorDiameter,
+    });
+  }
+  if (inputPitch <= 0) {
+    throw new InputRangeError('pitch must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'pitch', exclusive_min: 0, got: inputPitch,
+    });
+  }
   if (!(threadPercentage > 0 && threadPercentage <= 100)) {
-    throw new RangeError('threadPercentage must be greater than 0 and at most 100');
+    throw new InputRangeError('threadPercentage must be greater than 0 and at most 100', {
+      code: 'parameter_out_of_range', parameter: 'threadPercentage', exclusive_min: 0, max: 100, got: threadPercentage,
+    });
   }
 
   // Convert TPI to metric pitch for unified threads

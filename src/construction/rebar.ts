@@ -1,5 +1,6 @@
 import type { RebarSize, RebarInput, RebarResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Rebar unit weights in kg/m
@@ -91,10 +92,14 @@ export function rebarWeight(input: RebarInput): RebarResult {
 
   const unitWeight = unitWeightOf(size);
   if (!(length > 0)) {
-    throw new RangeError('length must be greater than 0');
+    throw new InputRangeError('length must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
   }
   if (!(quantity > 0)) {
-    throw new RangeError('quantity must be greater than 0');
+    throw new InputRangeError('quantity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'quantity', exclusive_min: 0, got: quantity,
+    });
   }
   const totalLength = roundTo(length * quantity, 2);
   const totalWeight = roundTo(unitWeight * totalLength, 2);

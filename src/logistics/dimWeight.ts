@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { DimWeightInput, DimWeightResult, CarrierType } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // DIM factors (cubic inches per pound, converted to cubic cm per kg)
 // Standard industry factors:
@@ -26,10 +27,26 @@ export function dimWeight(input: DimWeightInput): DimWeightResult {
   requireFinite('dimWeight', input);
   const { length, width, height, actualWeight, carrier } = input;
 
-  if (length <= 0) throw new RangeError('length must be greater than 0');
-  if (width <= 0) throw new RangeError('width must be greater than 0');
-  if (height <= 0) throw new RangeError('height must be greater than 0');
-  if (actualWeight < 0) throw new RangeError('actualWeight must not be negative');
+  if (length <= 0) {
+    throw new InputRangeError('length must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
+  }
+  if (width <= 0) {
+    throw new InputRangeError('width must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
+    });
+  }
+  if (height <= 0) {
+    throw new InputRangeError('height must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
+    });
+  }
+  if (actualWeight < 0) {
+    throw new InputRangeError('actualWeight must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'actualWeight', min: 0, got: actualWeight,
+    });
+  }
 
   const dimFactor = DIM_FACTORS[carrier];
 

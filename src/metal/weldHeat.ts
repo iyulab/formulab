@@ -8,6 +8,7 @@ import type {
   WeldPreheatSourceCode,
   WeldRecommendation,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /** Arc efficiency by welding process */
 const WELD_EFFICIENCY: Record<WeldProcess, number> = {
@@ -208,16 +209,24 @@ export function weldHeat(input: WeldHeatInput): WeldHeatResult {
 
   // Validation
   if (voltage <= 0) {
-    throw new RangeError('voltage must be greater than 0');
+    throw new InputRangeError('voltage must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'voltage', exclusive_min: 0, got: voltage,
+    });
   }
   if (current <= 0) {
-    throw new RangeError('current must be greater than 0');
+    throw new InputRangeError('current must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'current', exclusive_min: 0, got: current,
+    });
   }
   if (travelSpeed <= 0) {
-    throw new RangeError('travelSpeed must be greater than 0');
+    throw new InputRangeError('travelSpeed must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'travelSpeed', exclusive_min: 0, got: travelSpeed,
+    });
   }
   if (thickness <= 0) {
-    throw new RangeError('thickness must be greater than 0');
+    throw new InputRangeError('thickness must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
+    });
   }
 
   const efficiency = WELD_EFFICIENCY[process];

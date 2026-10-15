@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BearingInput, BearingResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate bearing L10 life.
@@ -25,13 +26,19 @@ export function bearing(input: BearingInput): BearingResult {
 
   // Validate inputs
   if (dynamicLoadRating <= 0) {
-    throw new RangeError('dynamicLoadRating must be greater than 0');
+    throw new InputRangeError('dynamicLoadRating must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'dynamicLoadRating', exclusive_min: 0, got: dynamicLoadRating,
+    });
   }
   if (equivalentLoad <= 0) {
-    throw new RangeError('equivalentLoad must be greater than 0');
+    throw new InputRangeError('equivalentLoad must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'equivalentLoad', exclusive_min: 0, got: equivalentLoad,
+    });
   }
   if (rpm <= 0) {
-    throw new RangeError('rpm must be greater than 0');
+    throw new InputRangeError('rpm must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'rpm', exclusive_min: 0, got: rpm,
+    });
   }
 
   // Life exponent: p = 3 for ball bearings, 10/3 for roller bearings

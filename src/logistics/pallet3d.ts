@@ -11,6 +11,7 @@ import type {
   PalletSpec,
 } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /** Standard pallet dimensions by region */
 const PALLET_SPECS: Record<Exclude<PalletStandard, 'custom'>, PalletSpec> = {
@@ -388,16 +389,24 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
     }
   }
   if (input.customLength != null && !(input.customLength > 0)) {
-    throw new RangeError('customLength must be greater than 0');
+    throw new InputRangeError('customLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'customLength', exclusive_min: 0, got: input.customLength,
+    });
   }
   if (input.customWidth != null && !(input.customWidth > 0)) {
-    throw new RangeError('customWidth must be greater than 0');
+    throw new InputRangeError('customWidth must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'customWidth', exclusive_min: 0, got: input.customWidth,
+    });
   }
   if (input.maxStackHeight != null && !(input.maxStackHeight >= 0)) {
-    throw new RangeError('maxStackHeight must not be negative');
+    throw new InputRangeError('maxStackHeight must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'maxStackHeight', min: 0, got: input.maxStackHeight,
+    });
   }
   if (input.maxPayload != null && !(input.maxPayload >= 0)) {
-    throw new RangeError('maxPayload must not be negative');
+    throw new InputRangeError('maxPayload must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'maxPayload', min: 0, got: input.maxPayload,
+    });
   }
 
   if (input.boxes.length > 5) {

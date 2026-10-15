@@ -1,5 +1,6 @@
 import type { PfCorrectionInput, PfCorrectionResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate power factor correction requirements and savings
@@ -32,29 +33,45 @@ export function pfCorrection(input: PfCorrectionInput): PfCorrectionResult {
   // Apparent power divides real power by the power factor; a factor at or below zero has
   // no apparent power to report, and one above 1 is not a power factor.
   if (!(currentPf > 0) || currentPf > 1) {
-    throw new RangeError('currentPf must be greater than 0 and at most 1');
+    throw new InputRangeError('currentPf must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'currentPf', exclusive_min: 0, max: 1, got: currentPf,
+    });
   }
   if (!(targetPf > 0) || targetPf > 1) {
-    throw new RangeError('targetPf must be greater than 0 and at most 1');
+    throw new InputRangeError('targetPf must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'targetPf', exclusive_min: 0, max: 1, got: targetPf,
+    });
   }
   if (!(pfPenaltyThreshold >= 0) || pfPenaltyThreshold > 1) {
-    throw new RangeError('pfPenaltyThreshold must be between 0 and 1');
+    throw new InputRangeError('pfPenaltyThreshold must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'pfPenaltyThreshold', min: 0, max: 1, got: pfPenaltyThreshold,
+    });
   }
   // A negative power, rate, duration or unit cost flips the sign of a kVAR, cost or penalty.
   if (!(kW >= 0)) {
-    throw new RangeError('kW must not be negative');
+    throw new InputRangeError('kW must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'kW', min: 0, got: kW,
+    });
   }
   if (!(electricityRate >= 0)) {
-    throw new RangeError('electricityRate must not be negative');
+    throw new InputRangeError('electricityRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'electricityRate', min: 0, got: electricityRate,
+    });
   }
   if (!(monthlyUsageHours >= 0)) {
-    throw new RangeError('monthlyUsageHours must not be negative');
+    throw new InputRangeError('monthlyUsageHours must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'monthlyUsageHours', min: 0, got: monthlyUsageHours,
+    });
   }
   if (!(pfPenaltyRate >= 0)) {
-    throw new RangeError('pfPenaltyRate must not be negative');
+    throw new InputRangeError('pfPenaltyRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'pfPenaltyRate', min: 0, got: pfPenaltyRate,
+    });
   }
   if (!(capacitorCostPerKvar >= 0)) {
-    throw new RangeError('capacitorCostPerKvar must not be negative');
+    throw new InputRangeError('capacitorCostPerKvar must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'capacitorCostPerKvar', min: 0, got: capacitorCostPerKvar,
+    });
   }
 
   // Calculate current and target apparent power (kVA)

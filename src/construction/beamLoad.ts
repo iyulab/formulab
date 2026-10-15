@@ -1,5 +1,6 @@
 import type { LoadInput, LoadResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate beam load analysis results
@@ -18,7 +19,9 @@ export function beamLoad(input: LoadInput): LoadResult {
 
   // Validate span
   if (span <= 0) {
-    throw new RangeError('span must be greater than 0');
+    throw new InputRangeError('span must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'span', exclusive_min: 0, got: span,
+    });
   }
 
   // Validate required inputs based on load type

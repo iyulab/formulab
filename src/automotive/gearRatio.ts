@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { GearRatioInput, GearRatioResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate gear ratio and output characteristics
@@ -20,17 +21,23 @@ export function gearRatio(input: GearRatioInput): GearRatioResult {
   const { drivingTeeth, drivenTeeth, inputSpeed, inputTorque, efficiency } = input;
 
   if (!(drivingTeeth > 0)) {
-    throw new RangeError('drivingTeeth must be greater than 0');
+    throw new InputRangeError('drivingTeeth must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'drivingTeeth', exclusive_min: 0, got: drivingTeeth,
+    });
   }
 
   // The output speed divides by the ratio, so a driven gear with no teeth spins infinitely
   // fast rather than describing a gear pair.
   if (!(drivenTeeth > 0)) {
-    throw new RangeError('drivenTeeth must be greater than 0');
+    throw new InputRangeError('drivenTeeth must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'drivenTeeth', exclusive_min: 0, got: drivenTeeth,
+    });
   }
   // A negative efficiency reverses the output torque, and one above 1 creates power.
   if (!(efficiency > 0 && efficiency <= 1)) {
-    throw new RangeError('efficiency must be greater than 0 and at most 1');
+    throw new InputRangeError('efficiency must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'efficiency', exclusive_min: 0, max: 1, got: efficiency,
+    });
   }
 
   const ratio = drivenTeeth / drivingTeeth;

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BoringBarDeflectionInput, BoringBarDeflectionResult, BoringBarMaterial } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Young's modulus for boring bar materials (GPa).
@@ -38,9 +39,21 @@ export function boringBarDeflection(input: BoringBarDeflectionInput): BoringBarD
   requireFinite('boringBarDeflection', input);
   const { barDiameter, overhang, cuttingForce, material = 'steel' } = input;
 
-  if (barDiameter <= 0) throw new RangeError('barDiameter must be positive');
-  if (overhang <= 0) throw new RangeError('overhang must be positive');
-  if (cuttingForce < 0) throw new RangeError('cuttingForce must be non-negative');
+  if (barDiameter <= 0) {
+    throw new InputRangeError('barDiameter must be positive', {
+      code: 'parameter_out_of_range', parameter: 'barDiameter', exclusive_min: 0, got: barDiameter,
+    });
+  }
+  if (overhang <= 0) {
+    throw new InputRangeError('overhang must be positive', {
+      code: 'parameter_out_of_range', parameter: 'overhang', exclusive_min: 0, got: overhang,
+    });
+  }
+  if (cuttingForce < 0) {
+    throw new InputRangeError('cuttingForce must be non-negative', {
+      code: 'parameter_out_of_range', parameter: 'cuttingForce', min: 0, got: cuttingForce,
+    });
+  }
 
   const E = input.youngsModulus ?? BAR_MODULUS[material];
   const E_MPa = E * 1000; // GPa → MPa

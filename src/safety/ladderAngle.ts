@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LadderAngleInput, LadderAngleResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
@@ -33,10 +34,14 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   const warnings: string[] = [];
 
   if (height !== undefined && height < 0) {
-    throw new RangeError('height must not be negative');
+    throw new InputRangeError('height must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'height', min: 0, got: height,
+    });
   }
   if (baseDistance !== undefined && baseDistance < 0) {
-    throw new RangeError('baseDistance must not be negative');
+    throw new InputRangeError('baseDistance must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'baseDistance', min: 0, got: baseDistance,
+    });
   }
   // When both height and baseDistance are given, ladderLength is recalculated and
   // its input value (often a 0 placeholder) is ignored. Otherwise it is a given.
@@ -52,7 +57,9 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   } else if (height !== undefined) {
     // height + ladderLength → baseDistance
     if (ladderLength < height) {
-      throw new RangeError('ladderLength must not be shorter than height');
+      throw new InputRangeError('ladderLength must not be shorter than height', {
+        code: 'parameter_out_of_range', parameter: 'ladderLength', min: height, got: ladderLength,
+      });
     }
     if (ladderLength === height) {
       baseDistance = 0;
@@ -63,7 +70,9 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   } else if (baseDistance !== undefined) {
     // baseDistance + ladderLength → height
     if (ladderLength < baseDistance) {
-      throw new RangeError('ladderLength must not be shorter than baseDistance');
+      throw new InputRangeError('ladderLength must not be shorter than baseDistance', {
+        code: 'parameter_out_of_range', parameter: 'ladderLength', min: baseDistance, got: ladderLength,
+      });
     }
     if (ladderLength === baseDistance) {
       height = 0;

@@ -1,5 +1,6 @@
 import type { MotorEfficiencyInput, MotorEfficiencyResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate motor efficiency upgrade economics
@@ -29,25 +30,39 @@ export function motorEfficiency(input: MotorEfficiencyInput): MotorEfficiencyRes
   // The annual energy divides the shaft energy by each efficiency, and an efficiency is a
   // fraction; a negative power, duration, load share or price flips the sign of a cost.
   if (!(currentEfficiency > 0) || currentEfficiency > 1) {
-    throw new RangeError('currentEfficiency must be greater than 0 and at most 1');
+    throw new InputRangeError('currentEfficiency must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'currentEfficiency', exclusive_min: 0, max: 1, got: currentEfficiency,
+    });
   }
   if (!(newEfficiency > 0) || newEfficiency > 1) {
-    throw new RangeError('newEfficiency must be greater than 0 and at most 1');
+    throw new InputRangeError('newEfficiency must be greater than 0 and at most 1', {
+      code: 'parameter_out_of_range', parameter: 'newEfficiency', exclusive_min: 0, max: 1, got: newEfficiency,
+    });
   }
   if (!(loadFactor >= 0) || loadFactor > 1) {
-    throw new RangeError('loadFactor must be between 0 and 1');
+    throw new InputRangeError('loadFactor must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'loadFactor', min: 0, max: 1, got: loadFactor,
+    });
   }
   if (!(motorPower >= 0)) {
-    throw new RangeError('motorPower must not be negative');
+    throw new InputRangeError('motorPower must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'motorPower', min: 0, got: motorPower,
+    });
   }
   if (!(runningHours >= 0)) {
-    throw new RangeError('runningHours must not be negative');
+    throw new InputRangeError('runningHours must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'runningHours', min: 0, got: runningHours,
+    });
   }
   if (!(electricityRate >= 0)) {
-    throw new RangeError('electricityRate must not be negative');
+    throw new InputRangeError('electricityRate must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'electricityRate', min: 0, got: electricityRate,
+    });
   }
   if (upgradeCost !== undefined && !(upgradeCost >= 0)) {
-    throw new RangeError('upgradeCost must not be negative');
+    throw new InputRangeError('upgradeCost must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'upgradeCost', min: 0, got: upgradeCost,
+    });
   }
 
   // Calculate annual energy consumption for each efficiency level

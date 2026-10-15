@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PipeFlowInput, PipeFlowResult, PipeMaterial } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Pipe roughness values in mm
@@ -56,17 +57,39 @@ export function pipeFlow(input: PipeFlowInput): PipeFlowResult {
   requireFinite('pipeFlow', input);
   const { flowRate, pipeDiameter, pipeLength, pipeMaterial, fluidDensity, fluidViscosity, customRoughness } = input;
 
-  if (flowRate <= 0) throw new RangeError('Flow rate must be positive');
-  if (pipeDiameter <= 0) throw new RangeError('Pipe diameter must be positive');
-  if (pipeLength <= 0) throw new RangeError('Pipe length must be positive');
-  if (fluidDensity <= 0) throw new RangeError('Fluid density must be positive');
-  if (fluidViscosity <= 0) throw new RangeError('Fluid viscosity must be positive');
+  if (flowRate <= 0) {
+    throw new InputRangeError('Flow rate must be positive', {
+      code: 'parameter_out_of_range', parameter: 'flowRate', exclusive_min: 0, got: flowRate,
+    });
+  }
+  if (pipeDiameter <= 0) {
+    throw new InputRangeError('Pipe diameter must be positive', {
+      code: 'parameter_out_of_range', parameter: 'pipeDiameter', exclusive_min: 0, got: pipeDiameter,
+    });
+  }
+  if (pipeLength <= 0) {
+    throw new InputRangeError('Pipe length must be positive', {
+      code: 'parameter_out_of_range', parameter: 'pipeLength', exclusive_min: 0, got: pipeLength,
+    });
+  }
+  if (fluidDensity <= 0) {
+    throw new InputRangeError('Fluid density must be positive', {
+      code: 'parameter_out_of_range', parameter: 'fluidDensity', exclusive_min: 0, got: fluidDensity,
+    });
+  }
+  if (fluidViscosity <= 0) {
+    throw new InputRangeError('Fluid viscosity must be positive', {
+      code: 'parameter_out_of_range', parameter: 'fluidViscosity', exclusive_min: 0, got: fluidViscosity,
+    });
+  }
 
   // Get pipe roughness
   let roughnessMm: number;
   if (pipeMaterial === 'custom') {
     if (customRoughness == null || customRoughness < 0) {
-      throw new RangeError('Custom roughness must be provided and non-negative');
+      throw new InputRangeError('Custom roughness must be provided and non-negative', {
+        code: 'parameter_out_of_range', parameter: 'customRoughness', min: 0, got: customRoughness ?? undefined,
+      });
     }
     roughnessMm = customRoughness;
   } else {

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LinearInterpolationInput, LinearInterpolationResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Linear interpolation (and extrapolation) over a tabulated x/y series
@@ -19,7 +20,9 @@ export function linearInterpolation(input: LinearInterpolationInput): LinearInte
     throw new RangeError(`x and y must have the same length, got x.length=${x.length}, y.length=${y.length}`);
   }
   if (x.length < 2) {
-    throw new RangeError(`x must contain at least 2 points, got ${x.length}`);
+    throw new InputRangeError(`x must contain at least 2 points, got ${x.length}`, {
+      code: 'insufficient_data', parameter: 'x', min: 2, got: x.length,
+    });
   }
 
   // Find bracketing interval

@@ -1,6 +1,7 @@
 import { propagate } from '../math.js';
 import type { KFactorReverseInput, KFactorReverseResult, KFactorReverseRangeResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Reverse calculate K-factor from measured flat length.
@@ -35,13 +36,19 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
   // The K-factor divides by the bend angle in radians and again by the thickness, so a
   // zero in either place yields an infinite K rather than a sheet that cannot be bent.
   if (!(thickness > 0)) {
-    throw new RangeError('thickness must be greater than 0');
+    throw new InputRangeError('thickness must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
+    });
   }
   if (!(bendAngle > 0) || bendAngle >= 180) {
-    throw new RangeError('bendAngle must be greater than 0 and less than 180');
+    throw new InputRangeError('bendAngle must be greater than 0 and less than 180', {
+      code: 'parameter_out_of_range', parameter: 'bendAngle', exclusive_min: 0, exclusive_max: 180, got: bendAngle,
+    });
   }
   if (!(insideRadius >= 0)) {
-    throw new RangeError('insideRadius must not be negative');
+    throw new InputRangeError('insideRadius must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'insideRadius', min: 0, got: insideRadius,
+    });
   }
 
   // Convert bend angle to radians

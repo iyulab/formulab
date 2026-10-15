@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WeightedScoreInput, WeightedScoreResult, WeightedScoreAlternative } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Weighted scoring of alternatives against criteria, with ranking
@@ -18,10 +19,12 @@ export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
     throw new RangeError('criteria, weights, alternatives and scores are required');
   }
   if (criteria.length === 0) {
-    throw new RangeError('criteria must contain at least 1 entry');
+    throw new InputRangeError('criteria must contain at least 1 entry', { code: 'empty_input', parameter: 'criteria' });
   }
   if (alternatives.length === 0) {
-    throw new RangeError('alternatives must contain at least 1 entry');
+    throw new InputRangeError('alternatives must contain at least 1 entry', {
+      code: 'empty_input', parameter: 'alternatives',
+    });
   }
   if (criteria.length !== weights.length) {
     throw new RangeError(`weights length must match criteria length ${criteria.length}, got ${weights.length}`);
@@ -38,7 +41,9 @@ export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
   // A negative weight turns a criterion into its opposite and can flip the ranking.
   weights.forEach((w, j) => {
     if (!(w >= 0)) {
-      throw new RangeError(`weights[${j}] must not be negative, got ${w}`);
+      throw new InputRangeError(`weights[${j}] must not be negative, got ${w}`, {
+        code: 'parameter_out_of_range', parameter: 'w', min: 0, got: w,
+      });
     }
   });
 

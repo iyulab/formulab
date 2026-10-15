@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ChargingInput, ChargingResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate EV charging time and energy requirements
@@ -24,17 +25,25 @@ export function evCharging(input: ChargingInput): ChargingResult {
 
   // A negative capacity returns a negative energy and charging time.
   if (!(batteryCapacityKwh > 0)) {
-    throw new RangeError('batteryCapacityKwh must be greater than 0');
+    throw new InputRangeError('batteryCapacityKwh must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'batteryCapacityKwh', exclusive_min: 0, got: batteryCapacityKwh,
+    });
   }
   if (socEndPercent <= socStartPercent) {
-    throw new RangeError('socEndPercent must be greater than socStartPercent');
+    throw new InputRangeError('socEndPercent must be greater than socStartPercent', {
+      code: 'parameter_out_of_range', parameter: 'socEndPercent', exclusive_min: socStartPercent, got: socEndPercent,
+    });
   }
   if (chargerPowerKw <= 0) {
-    throw new RangeError('chargerPowerKw must be greater than 0');
+    throw new InputRangeError('chargerPowerKw must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'chargerPowerKw', exclusive_min: 0, got: chargerPowerKw,
+    });
   }
 
   if (!(efficiency > 0)) {
-    throw new RangeError('efficiency must be greater than 0');
+    throw new InputRangeError('efficiency must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'efficiency', exclusive_min: 0, got: efficiency,
+    });
   }
 
   const socDiff = (socEndPercent - socStartPercent) / 100;

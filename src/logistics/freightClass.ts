@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FreightClassInput, FreightClassResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * NMFC Freight Class lookup based on density (simplified)
@@ -39,10 +40,26 @@ export function freightClass(input: FreightClassInput): FreightClassResult {
   requireFinite('freightClass', input);
   const { weight, length, width, height } = input;
 
-  if (weight <= 0) throw new RangeError('weight must be greater than 0');
-  if (length <= 0) throw new RangeError('length must be greater than 0');
-  if (width <= 0) throw new RangeError('width must be greater than 0');
-  if (height <= 0) throw new RangeError('height must be greater than 0');
+  if (weight <= 0) {
+    throw new InputRangeError('weight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'weight', exclusive_min: 0, got: weight,
+    });
+  }
+  if (length <= 0) {
+    throw new InputRangeError('length must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
+  }
+  if (width <= 0) {
+    throw new InputRangeError('width must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
+    });
+  }
+  if (height <= 0) {
+    throw new InputRangeError('height must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: height,
+    });
+  }
 
   // Calculate volume in cubic feet (input is in inches)
   const volumeCuIn = length * width * height;

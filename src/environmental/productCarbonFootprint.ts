@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ProductCarbonFootprintInput, ProductCarbonFootprintResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate product carbon footprint across lifecycle stages
@@ -21,7 +22,9 @@ export function productCarbonFootprint(input: ProductCarbonFootprintInput): Prod
     throw new RangeError('stages must contain at least one lifecycle stage');
   }
   if (!(productionQuantity > 0)) {
-    throw new RangeError('productionQuantity must be greater than 0');
+    throw new InputRangeError('productionQuantity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'productionQuantity', exclusive_min: 0, got: productionQuantity,
+    });
   }
 
   const totalCo2Kg = roundTo(

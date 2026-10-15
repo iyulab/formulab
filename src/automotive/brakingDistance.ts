@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { BrakingDistanceInput, BrakingDistanceResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Braking Distance Calculator (AASHTO method)
@@ -22,9 +23,21 @@ export function brakingDistance(input: BrakingDistanceInput): BrakingDistanceRes
   requireFinite('brakingDistance', input);
   const { speed, friction, reactionTime, grade } = input;
 
-  if (speed <= 0) throw new RangeError('Speed must be positive');
-  if (friction <= 0) throw new RangeError('Friction coefficient must be positive');
-  if (reactionTime < 0) throw new RangeError('Reaction time must be non-negative');
+  if (speed <= 0) {
+    throw new InputRangeError('Speed must be positive', {
+      code: 'parameter_out_of_range', parameter: 'speed', exclusive_min: 0, got: speed,
+    });
+  }
+  if (friction <= 0) {
+    throw new InputRangeError('Friction coefficient must be positive', {
+      code: 'parameter_out_of_range', parameter: 'friction', exclusive_min: 0, got: friction,
+    });
+  }
+  if (reactionTime < 0) {
+    throw new InputRangeError('Reaction time must be non-negative', {
+      code: 'parameter_out_of_range', parameter: 'reactionTime', min: 0, got: reactionTime,
+    });
+  }
 
   const g = 9.81; // m/s²
   const speedMps = speed / 3.6; // km/h → m/s

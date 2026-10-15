@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Refusals as data: `InputRangeError`.** 567 range guards now throw `InputRangeError` (a `RangeError`, message unchanged)
+  carrying `code`, `parameter`, the bound (`min` / `max` / `exclusive_min` / `exclusive_max`) and `got`, so a consumer can
+  translate a refusal and point at the input without parsing the English message. The non-finite input check carries
+  `code: 'value_not_finite'` and the path of the offending number. Codes: `parameter_out_of_range`, `value_not_finite`,
+  `empty_input`, `insufficient_data` — the vocabulary the @iyulab calculation engines already use. Exported from the
+  package root with its `InputErrorCode` and `InputErrorDetail` types. See ERRORS.md, principle 5.
 - **`utility/histogram()` takes an optional `normal: { mean, stdDev }`** and then gives each bin `expectedNormal` — the
   count that normal distribution puts in it, n × (Φ(upper) − Φ(lower)), the edge bins taking the tails — for overlaying
   a fitted curve on observed counts. A `stdDev` that is not greater than 0 is refused.

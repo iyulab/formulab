@@ -1,5 +1,6 @@
 import type { TraceInput, TraceResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Round to specified decimal places
@@ -44,13 +45,19 @@ export function traceWidth(input: TraceInput): TraceResult {
   const { current, tempRise, copperWeight, layer } = input;
 
   if (current <= 0) {
-    throw new RangeError('current must be greater than 0');
+    throw new InputRangeError('current must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'current', exclusive_min: 0, got: current,
+    });
   }
   if (tempRise <= 0) {
-    throw new RangeError('tempRise must be greater than 0');
+    throw new InputRangeError('tempRise must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'tempRise', exclusive_min: 0, got: tempRise,
+    });
   }
   if (copperWeight <= 0) {
-    throw new RangeError('copperWeight must be greater than 0');
+    throw new InputRangeError('copperWeight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'copperWeight', exclusive_min: 0, got: copperWeight,
+    });
   }
 
   // Get constants for the layer type

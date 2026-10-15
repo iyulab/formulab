@@ -23,6 +23,8 @@ jobs:
       # Comments, tests and docs describe behaviour, not the process around it: no issue-draft names,
       # planning paths, cycle numbers, tracker ids or local paths.
       - run: pnpm check:public-text
+      # Bare RangeError throws may only decrease: new guards throw InputRangeError with their facts.
+      - run: pnpm check:coded-refusals
       - run: pnpm build
       # Runs the built library on degenerate inputs harvested from the tests; any NaN/Infinity
       # output that ERRORS.md does not document as a sentinel fails the build.

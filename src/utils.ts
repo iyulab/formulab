@@ -1,3 +1,5 @@
+import { InputRangeError } from './errors.js';
+
 /**
  * Round a number to the specified number of decimal places
  *
@@ -30,12 +32,16 @@ export function roundTo(value: number, decimals: number = 2): number {
  *
  * @param fn - The public function's name, for the message
  * @param input - The function's argument (or an object of its arguments)
- * @throws {RangeError} When any number in `input` is NaN or ±Infinity
+ * @throws {InputRangeError} `value_not_finite` when any number in `input` is NaN or ±Infinity
  */
 export function requireFinite(fn: string, input: unknown): void {
   const bad = firstNonFinite(input, '');
   if (bad !== null) {
-    throw new RangeError(`${fn}: ${bad.path || 'input'} must be a finite number (got ${bad.value})`);
+    throw new InputRangeError(`${fn}: ${bad.path || 'input'} must be a finite number (got ${bad.value})`, {
+      code: 'value_not_finite',
+      parameter: bad.path || 'input',
+      got: bad.value,
+    });
   }
 }
 

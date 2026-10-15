@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PickTimeInput, PickTimeResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate warehouse pick time per order
@@ -30,13 +31,37 @@ export function pickTime(input: PickTimeInput): PickTimeResult {
     batchSize = 1,
   } = input;
 
-  if (!(speed > 0)) throw new RangeError('speed must be greater than 0');
-  if (!(itemsPerOrder > 0)) throw new RangeError('itemsPerOrder must be greater than 0');
+  if (!(speed > 0)) {
+    throw new InputRangeError('speed must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'speed', exclusive_min: 0, got: speed,
+    });
+  }
+  if (!(itemsPerOrder > 0)) {
+    throw new InputRangeError('itemsPerOrder must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'itemsPerOrder', exclusive_min: 0, got: itemsPerOrder,
+    });
+  }
   // A negative distance or time subtracts from the order's total and inflates orders per hour.
-  if (!(distance >= 0)) throw new RangeError('distance must not be negative');
-  if (!(searchTimePerItem >= 0)) throw new RangeError('searchTimePerItem must not be negative');
-  if (!(pickTimePerItem >= 0)) throw new RangeError('pickTimePerItem must not be negative');
-  if (!(documentationTime >= 0)) throw new RangeError('documentationTime must not be negative');
+  if (!(distance >= 0)) {
+    throw new InputRangeError('distance must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'distance', min: 0, got: distance,
+    });
+  }
+  if (!(searchTimePerItem >= 0)) {
+    throw new InputRangeError('searchTimePerItem must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'searchTimePerItem', min: 0, got: searchTimePerItem,
+    });
+  }
+  if (!(pickTimePerItem >= 0)) {
+    throw new InputRangeError('pickTimePerItem must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'pickTimePerItem', min: 0, got: pickTimePerItem,
+    });
+  }
+  if (!(documentationTime >= 0)) {
+    throw new InputRangeError('documentationTime must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'documentationTime', min: 0, got: documentationTime,
+    });
+  }
 
   // Calculate base times
   // Travel time = distance / speed, convert to seconds (speed is per minute)

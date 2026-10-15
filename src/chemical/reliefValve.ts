@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ReliefValveInput, ReliefValveResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // API 526 standard orifice designations (mm²)
 const API_ORIFICES: { letter: string; area: number }[] = [
@@ -68,34 +69,50 @@ export function reliefValve(input: ReliefValveInput): ReliefValveResult {
 
   // A negative relieving rate sizes a negative orifice area.
   if (!(requiredCapacity > 0)) {
-    throw new RangeError('requiredCapacity must be greater than 0');
+    throw new InputRangeError('requiredCapacity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'requiredCapacity', exclusive_min: 0, got: requiredCapacity,
+    });
   }
   // A relief valve set at 0 gauge opens at atmospheric pressure — there is nothing to protect.
   if (!(setPressure > 0)) {
-    throw new RangeError('setPressure must be greater than 0');
+    throw new InputRangeError('setPressure must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'setPressure', exclusive_min: 0, got: setPressure,
+    });
   }
   // The gas/steam sizing equation divides by sqrt(M) after taking its square root, so a
   // non-positive molecular weight gives an infinite or imaginary orifice area.
   if (!(molecularWeight > 0)) {
-    throw new RangeError('molecularWeight must be greater than 0');
+    throw new InputRangeError('molecularWeight must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'molecularWeight', exclusive_min: 0, got: molecularWeight,
+    });
   }
   if (!(specificGravity > 0)) {
-    throw new RangeError('specificGravity must be greater than 0');
+    throw new InputRangeError('specificGravity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'specificGravity', exclusive_min: 0, got: specificGravity,
+    });
   }
   if (!(specificHeatRatio > 1)) {
-    throw new RangeError('specificHeatRatio must be greater than 1');
+    throw new InputRangeError('specificHeatRatio must be greater than 1', {
+      code: 'parameter_out_of_range', parameter: 'specificHeatRatio', exclusive_min: 1, got: specificHeatRatio,
+    });
   }
   if (!(compressibility > 0)) {
-    throw new RangeError('compressibility must be greater than 0');
+    throw new InputRangeError('compressibility must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'compressibility', exclusive_min: 0, got: compressibility,
+    });
   }
 
   // Overpressure is the allowance above set pressure while relieving; a negative one relieves below set.
   if (!(overpressure >= 0)) {
-    throw new RangeError('overpressure must not be negative');
+    throw new InputRangeError('overpressure must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'overpressure', min: 0, got: overpressure,
+    });
   }
   // No fluid is below absolute zero; gas sizing also takes the square root of the absolute temperature.
   if (!(temperature > -273.15)) {
-    throw new RangeError('temperature must be above absolute zero (-273.15 °C)');
+    throw new InputRangeError('temperature must be above absolute zero (-273.15 °C)', {
+      code: 'parameter_out_of_range', parameter: 'temperature', exclusive_min: -273.15, got: temperature,
+    });
   }
 
   // Atmospheric pressure

@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { CycleTimeEstimatorInput, CycleTimeEstimatorResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 const DEFAULT_RAPID_RATE = 10000; // mm/min
 
@@ -27,20 +28,28 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
 
   // A cycle with no moves has no time to estimate — a 0 s cycle would read as an answer.
   if (operations.length === 0) {
-    throw new RangeError('operations must not be empty');
+    throw new InputRangeError('operations must not be empty', { code: 'empty_input', parameter: 'operations' });
   }
   if (!(setupTime >= 0)) {
-    throw new RangeError('setupTime must not be negative');
+    throw new InputRangeError('setupTime must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'setupTime', min: 0, got: setupTime,
+    });
   }
   if (!(partCount >= 0)) {
-    throw new RangeError('partCount must not be negative');
+    throw new InputRangeError('partCount must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'partCount', min: 0, got: partCount,
+    });
   }
   operations.forEach((op, i) => {
     if (op.distance !== undefined && !(op.distance >= 0)) {
-      throw new RangeError(`operations[${i}].distance must not be negative`);
+      throw new InputRangeError(`operations[${i}].distance must not be negative`, {
+        code: 'parameter_out_of_range', parameter: 'op.distance', min: 0, got: op.distance,
+      });
     }
     if (op.time !== undefined && !(op.time >= 0)) {
-      throw new RangeError(`operations[${i}].time must not be negative`);
+      throw new InputRangeError(`operations[${i}].time must not be negative`, {
+        code: 'parameter_out_of_range', parameter: 'op.time', min: 0, got: op.time,
+      });
     }
     // A cutting move with a distance but no positive feed has no duration to add; skipping it
     // silently would under-report the cycle.

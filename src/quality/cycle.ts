@@ -1,5 +1,6 @@
 import type { CycleTimeInput, CycleTimeResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Calculate Cycle Time statistics
@@ -16,13 +17,15 @@ export function cycleTime(input: CycleTimeInput): CycleTimeResult {
 
   measurements.forEach((m, i) => {
     if (!(m > 0)) {
-      throw new RangeError(`measurements[${i}] must be greater than 0`);
+      throw new InputRangeError(`measurements[${i}] must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: 'm', exclusive_min: 0, got: m,
+      });
     }
   });
 
   // No measurements → no statistics; a zero average would read as a measured cycle.
   if (measurements.length === 0) {
-    throw new RangeError('measurements must not be empty');
+    throw new InputRangeError('measurements must not be empty', { code: 'empty_input', parameter: 'measurements' });
   }
 
   const n = measurements.length;

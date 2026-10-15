@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { DepreciationInput, DepreciationResult, DepreciationYearEntry } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Depreciation schedule by straight-line or declining-balance method.
@@ -12,11 +13,25 @@ import type { DepreciationInput, DepreciationResult, DepreciationYearEntry } fro
 export function depreciation(input: DepreciationInput): DepreciationResult {
   requireFinite('depreciation', input);
   const { assetCost, salvageValue, usefulLife, method } = input;
-  if (assetCost <= 0) throw new RangeError(`assetCost must be > 0, got ${assetCost}`);
-  if (salvageValue < 0) throw new RangeError(`salvageValue must be >= 0, got ${salvageValue}`);
-  if (usefulLife <= 0) throw new RangeError(`usefulLife must be > 0, got ${usefulLife}`);
+  if (assetCost <= 0) {
+    throw new InputRangeError(`assetCost must be > 0, got ${assetCost}`, {
+      code: 'parameter_out_of_range', parameter: 'assetCost', exclusive_min: 0, got: assetCost,
+    });
+  }
+  if (salvageValue < 0) {
+    throw new InputRangeError(`salvageValue must be >= 0, got ${salvageValue}`, {
+      code: 'parameter_out_of_range', parameter: 'salvageValue', min: 0, got: salvageValue,
+    });
+  }
+  if (usefulLife <= 0) {
+    throw new InputRangeError(`usefulLife must be > 0, got ${usefulLife}`, {
+      code: 'parameter_out_of_range', parameter: 'usefulLife', exclusive_min: 0, got: usefulLife,
+    });
+  }
   if (salvageValue >= assetCost) {
-    throw new RangeError(`salvageValue must be less than assetCost, got salvageValue=${salvageValue}, assetCost=${assetCost}`);
+    throw new InputRangeError(`salvageValue must be less than assetCost, got salvageValue=${salvageValue}, assetCost=${assetCost}`, {
+      code: 'parameter_out_of_range', parameter: 'salvageValue', exclusive_max: assetCost, got: salvageValue,
+    });
   }
 
   if (method === 'straight-line') {

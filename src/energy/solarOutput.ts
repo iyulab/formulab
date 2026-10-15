@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { SolarOutputInput, SolarOutputResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 // Annual-average share of global horizontal irradiance that is diffuse (temperate climates).
 // Documented model assumption; the diffuse component is what keeps an away-facing array
@@ -108,12 +109,36 @@ export function solarOutput(input: SolarOutputInput): SolarOutputResult {
     systemEfficiency, tiltAngle, latitude, azimuthOffset,
   } = input;
 
-  if (panelWattage <= 0) throw new RangeError('Panel wattage must be positive');
-  if (panelCount <= 0) throw new RangeError('Panel count must be positive');
-  if (peakSunHours <= 0) throw new RangeError('Peak sun hours must be positive');
-  if (systemEfficiency <= 0 || systemEfficiency > 1) throw new RangeError('System efficiency must be between 0 and 1');
-  if (tiltAngle < 0 || tiltAngle > 90) throw new RangeError('tiltAngle must be between 0 and 90 degrees');
-  if (latitude < -90 || latitude > 90) throw new RangeError('latitude must be between -90 and 90 degrees');
+  if (panelWattage <= 0) {
+    throw new InputRangeError('Panel wattage must be positive', {
+      code: 'parameter_out_of_range', parameter: 'panelWattage', exclusive_min: 0, got: panelWattage,
+    });
+  }
+  if (panelCount <= 0) {
+    throw new InputRangeError('Panel count must be positive', {
+      code: 'parameter_out_of_range', parameter: 'panelCount', exclusive_min: 0, got: panelCount,
+    });
+  }
+  if (peakSunHours <= 0) {
+    throw new InputRangeError('Peak sun hours must be positive', {
+      code: 'parameter_out_of_range', parameter: 'peakSunHours', exclusive_min: 0, got: peakSunHours,
+    });
+  }
+  if (systemEfficiency <= 0 || systemEfficiency > 1) {
+    throw new InputRangeError('System efficiency must be between 0 and 1', {
+      code: 'parameter_out_of_range', parameter: 'systemEfficiency', exclusive_min: 0, max: 1, got: systemEfficiency,
+    });
+  }
+  if (tiltAngle < 0 || tiltAngle > 90) {
+    throw new InputRangeError('tiltAngle must be between 0 and 90 degrees', {
+      code: 'parameter_out_of_range', parameter: 'tiltAngle', min: 0, max: 90, got: tiltAngle,
+    });
+  }
+  if (latitude < -90 || latitude > 90) {
+    throw new InputRangeError('latitude must be between -90 and 90 degrees', {
+      code: 'parameter_out_of_range', parameter: 'latitude', min: -90, max: 90, got: latitude,
+    });
+  }
 
   // System size in kW
   const systemSizeKw = (panelWattage * panelCount) / 1000;

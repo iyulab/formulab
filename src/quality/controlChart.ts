@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ControlChartInput, ControlChartResult, ControlLimit, SubgroupStat } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * SPC Control Chart Constants.
@@ -139,7 +140,9 @@ export function controlChart(input: ControlChartInput): ControlChartResult {
   const { chartType, subgroups } = input;
 
   if (subgroups.length < 2) {
-    throw new RangeError('At least 2 subgroups are required');
+    throw new InputRangeError('At least 2 subgroups are required', {
+      code: 'insufficient_data', parameter: 'subgroups', min: 2, got: subgroups.length,
+    });
   }
 
   // I-MR: each subgroup is a single individual value (n=1)
@@ -149,7 +152,9 @@ export function controlChart(input: ControlChartInput): ControlChartResult {
 
   const n = subgroups[0].length;
   if (n < 2 || n > 25) {
-    throw new RangeError('Subgroup size must be between 2 and 25');
+    throw new InputRangeError('Subgroup size must be between 2 and 25', {
+      code: 'parameter_out_of_range', parameter: 'n', min: 2, max: 25, got: n,
+    });
   }
 
   // Validate consistent subgroup size

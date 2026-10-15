@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { normalInvCDF } from '../math.js';
 import type { TimeStudyInput, TimeStudyResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Time Study — Required Number of Observations
@@ -28,14 +29,20 @@ export function timeStudy(input: TimeStudyInput): TimeStudyResult {
   }
   for (let i = 0; i < observations.length; i++) {
     if (!Number.isFinite(observations[i]) || observations[i] <= 0) {
-      throw new RangeError('All observation values must be positive');
+      throw new InputRangeError('All observation values must be positive', {
+        code: 'parameter_out_of_range', parameter: 'observations[i]', exclusive_min: 0, got: observations[i],
+      });
     }
   }
   if (!Number.isFinite(confidence) || confidence <= 0 || confidence >= 1) {
-    throw new RangeError('Confidence must be between 0 and 1 (exclusive)');
+    throw new InputRangeError('Confidence must be between 0 and 1 (exclusive)', {
+      code: 'parameter_out_of_range', parameter: 'confidence', exclusive_min: 0, exclusive_max: 1, got: confidence,
+    });
   }
   if (!Number.isFinite(accuracy) || accuracy <= 0) {
-    throw new RangeError('Accuracy must be a positive number');
+    throw new InputRangeError('Accuracy must be a positive number', {
+      code: 'parameter_out_of_range', parameter: 'accuracy', exclusive_min: 0, got: accuracy,
+    });
   }
 
   const n = observations.length;

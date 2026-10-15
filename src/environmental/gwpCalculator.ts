@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { GhgGas, GwpTimeHorizon, GwpCalculatorInput, GwpCalculatorResult } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 /**
  * Global Warming Potential factors
@@ -36,7 +37,9 @@ export function gwpCalculator(input: GwpCalculatorInput): GwpCalculatorResult {
 
   // A negative release (a removal) is outside this conversion's model.
   if (!(quantityKg >= 0)) {
-    throw new RangeError('quantityKg must not be negative');
+    throw new InputRangeError('quantityKg must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'quantityKg', min: 0, got: quantityKg,
+    });
   }
 
   const gwpFactor = GWP_TABLE[gas][timeHorizon];

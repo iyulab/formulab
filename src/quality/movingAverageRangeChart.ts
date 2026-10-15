@@ -6,6 +6,7 @@ import type {
   MovingAverageRangeChartResult,
   MovingWindowStat,
 } from './types.js';
+import { InputRangeError } from '../errors.js';
 
 function mean(arr: number[]): number {
   return arr.reduce((s, v) => s + v, 0) / arr.length;
@@ -51,7 +52,9 @@ export function movingAverageRangeChart(
   const { values, windowSize: k } = input;
 
   if (k < 2 || k > 25) {
-    throw new RangeError('windowSize must be between 2 and 25');
+    throw new InputRangeError('windowSize must be between 2 and 25', {
+      code: 'parameter_out_of_range', parameter: 'windowSize', min: 2, max: 25, got: k,
+    });
   }
   if (values.length < k + 1) {
     throw new RangeError(`At least ${k + 1} values are required for windowSize ${k}`);
