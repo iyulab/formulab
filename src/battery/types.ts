@@ -195,4 +195,11 @@ export interface ChargingProfileResult {
   ccPhaseAh: number;          // Ah delivered in CC phase
   cvPhaseAh: number;          // Ah delivered in CV phase
   averageCRate: number;       // average C-rate over full charge
+  /** τ of the CV current's exponential taper, I(t) = Icc·e^(−t/τ), in hours: cvPhaseAh / (Icc − Icut). */
+  cvTimeConstantH: number;
+  /**
+   * The charging current over time the phase times assume — flat at Icc through the CC phase, then
+   * the exponential taper to the cutoff — sampled for plotting. Starts at t = 0 and ends at totalTimeH.
+   */
+  currentCurve: { timeH: number; currentA: number }[];
 }

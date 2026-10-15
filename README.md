@@ -477,7 +477,7 @@ import { energyDensity, cRate, stateOfHealth, cycleLife } from 'formulab/battery
 | `selfDischarge()` | Self-discharge rate calculation |
 | `thermalRunaway()` | Thermal safety margin analysis |
 | `bmsBalancing()` | BMS cell balancing time estimation |
-| `chargingProfile()` | CC-CV charging profile timing |
+| `chargingProfile()` | CC-CV charging profile timing (exponential CV taper) and the current curve |
 
 ### Environmental (10 functions)
 

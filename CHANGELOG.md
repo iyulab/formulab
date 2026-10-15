@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   count that normal distribution puts in it, n × (Φ(upper) − Φ(lower)), the edge bins taking the tails — for overlaying
   a fitted curve on observed counts. A `stdDev` that is not greater than 0 is refused.
 
+### Changed
+
+- **`battery/chargingProfile()` times the CV phase as an exponential taper**, I(t) = Icc·e^(−t/τ) with
+  τ = cvAh / (Icc − Icut), so t = τ·ln(Icc/Icut) — the CV phase runs at the logarithmic mean of the two currents.
+  It used their arithmetic mean (a straight-line taper), which understated the CV time: at Icc/Icut = 20 the CV
+  phase is about 1.65× the old figure (5 Ah, 2.5 A → 0.25 A: 43.6 → 61.4 min). Every CV and total time changes.
+  The result adds `cvTimeConstantH` (τ) and `currentCurve` (the current over time those times assume, for plotting).
+  A cutoff current at or above the charging current is now refused — no taper is left to carry the CV charge.
+
 ## [0.61.0] - 2026-10-16
 
 ### Added

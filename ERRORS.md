@@ -203,7 +203,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `selfDischarge()` | `throw` | initialVoltage/finalVoltage/nominalVoltage/days ≤ 0, finalVoltage > initialVoltage (a negative discharge rate) |
 | `thermalRunaway()` | `throw` | internalResistanceOhm < 0, heatTransferCoeff/surfaceAreaM2 ≤ 0. A negative currentA (charging) is valid — heat is I²R |
 | `bmsBalancing()` | `throw` | cellVoltages missing or fewer than 2 cells (nothing to balance; a missing list was a TypeError before 0.58.0), any cell voltage ≤ 0, balancingCurrentMA/cellCapacityAh ≤ 0 |
-| `chargingProfile()` | `throw` | capacity ≤ 0 |
+| `chargingProfile()` | `throw` | capacity, charging current or cutoff current ≤ 0; cutoff current ≥ charging current; CC end SOC outside (0, 100) |
 
 ### Machining (12 functions)
 
