@@ -75,4 +75,29 @@ describe('histogram', () => {
     expect(r).not.toBeNull();
     expect(r.bins[0].lower).toBeCloseTo(4, 6);
   });
+
+  describe('expected normal counts', () => {
+    const data = [-1.5, -0.5, -0.2, 0.1, 0.3, 0.6, 1.2, -1.1, 0.8, -0.4];
+
+    it('puts n × (Φ(upper) − Φ(lower)) in each bin, edge bins taking the tails (standard normal, ±1σ edges)', () => {
+      const r = histogram({ data, bins: 4, range: [-2, 2], normal: { mean: 0, stdDev: 1 } });
+      // Φ(−1) = 0.158655, Φ(0) − Φ(−1) = 0.341345 — the edge bins start at −∞ / end at +∞
+      expect(r.bins.map(b => b.expectedNormal)).toEqual([1.5866, 3.4134, 3.4134, 1.5866]);
+    });
+
+    it('sums to the data count, like the observed counts', () => {
+      const r = histogram({ data, normal: { mean: 0.1, stdDev: 0.9 } });
+      const sum = r.bins.reduce((a, b) => a + (b.expectedNormal ?? 0), 0);
+      expect(sum).toBeCloseTo(data.length, 3);
+    });
+
+    it('is absent without a distribution', () => {
+      expect(histogram({ data }).bins[0].expectedNormal).toBeUndefined();
+    });
+
+    it('refuses a distribution with no spread instead of drawing zeros', () => {
+      expect(() => histogram({ data, normal: { mean: 0, stdDev: 0 } })).toThrow(RangeError);
+      expect(() => histogram({ data, normal: { mean: 0, stdDev: -1 } })).toThrow(RangeError);
+    });
+  });
 });

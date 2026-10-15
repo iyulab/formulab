@@ -272,6 +272,8 @@ export interface HistogramInput {
   data: number[];
   bins?: number;
   range?: [number, number]; // explicit [min, max] binning range; defaults to data min/max
+  /** A normal distribution to compare the counts with: each bin then carries `expectedNormal`. */
+  normal?: { mean: number; stdDev: number };
 }
 
 export interface HistogramBin {
@@ -279,6 +281,12 @@ export interface HistogramBin {
   upper: number;
   count: number;
   frequency: number;
+  /**
+   * With `input.normal`: the count a normal distribution of that mean and standard deviation puts in
+   * this bin, n × (Φ(upper) − Φ(lower)). The first and last bins also take the tails below and above
+   * the range, as their counts take the values clamped into them.
+   */
+  expectedNormal?: number;
 }
 
 export interface HistogramResult {

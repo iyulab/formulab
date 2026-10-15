@@ -335,7 +335,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `getUnitsForCategory()` | `safe` | Unknown category returns [] |
 | `correlation()` | `throw` | Missing/mismatched x·y, fewer than 2 points; zero variance (constant x or y) → `r`/`r2` null |
 | `depreciation()` | `throw` | assetCost ≤ 0, salvageValue < 0 or ≥ assetCost, usefulLife ≤ 0, unknown method |
-| `histogram()` | `throw` | Empty data, resolved bins < 1 |
+| `histogram()` | `throw` | Empty data, resolved bins < 1, a `normal` distribution whose `stdDev` is not greater than 0 |
 | `lcc()` | `throw` | initialCost < 0, lifespan ≤ 0, discountRate outside [0, 1) |
 | `linearInterpolation()` | `throw` | Missing/mismatched x·y, fewer than 2 points |
 | `movingAverage()` | `throw` | Empty data, window < 1 or > data length, unknown method |

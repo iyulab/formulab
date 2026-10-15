@@ -456,7 +456,7 @@ import { solveAssignment, calculateUnit, statistics, regression, npv } from 'for
 | `depreciation()` | Asset depreciation (SL/DDB/SYD) |
 | `lcc()` | Life Cycle Cost analysis |
 | `normalize()` | Data normalization (min-max/z-score) |
-| `histogram()` | Frequency distribution histogram |
+| `histogram()` | Frequency distribution histogram, optionally with the counts a normal distribution expects per bin |
 | `weightedScore()` | Weighted scoring model |
 | `getUnitsForCategory()` | Unit definitions for a conversion category |
 

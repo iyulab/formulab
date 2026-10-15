@@ -1,12 +1,14 @@
 import { roundTo, requireFinite } from '../utils.js';
+import { normalCDF } from '../math.js';
 import type { HistogramInput, HistogramResult, HistogramBin } from './types.js';
 
 /**
  * Histogram binning with optional explicit bin count (Sturges' rule by default) and range.
  *
- * @param input - Data values, optional bin count, optional [min, max] range
- * @returns Bins with counts/frequencies, bin width, and total count
- * @throws RangeError if data is empty or bins < 1
+ * @param input - Data values, optional bin count, optional [min, max] range, optional normal distribution
+ * @returns Bins with counts/frequencies (and expected normal counts), bin width, and total count
+ * @formula expectedNormal = n × (Φ((upper − μ)/σ) − Φ((lower − μ)/σ)); the first bin from −∞, the last to +∞
+ * @throws RangeError if data is empty, bins < 1, or a normal distribution's stdDev is not greater than 0
  */
 export function histogram(input: HistogramInput): HistogramResult {
   requireFinite('histogram', input);
@@ -16,6 +18,9 @@ export function histogram(input: HistogramInput): HistogramResult {
   }
 
   const n = data.length;
+  if (input.normal && !(input.normal.stdDev > 0)) {
+    throw new RangeError(`normal.stdDev must be greater than 0, got ${input.normal.stdDev}`);
+  }
   // Sturges' rule for default bin count
   const numBins = input.bins ?? Math.max(1, Math.ceil(Math.log2(n) + 1));
   if (numBins < 1) {
@@ -58,6 +63,17 @@ export function histogram(input: HistogramInput): HistogramResult {
 
   for (const bin of bins) {
     bin.frequency = roundTo(bin.count / n, 6);
+  }
+
+  if (input.normal) {
+    const { mean, stdDev } = input.normal;
+    // Φ at each bin edge; the outer edges are −∞ and +∞, since the edge bins hold the values
+    // clamped into them.
+    const edge = (i: number): number =>
+      i === 0 ? 0 : i === numBins ? 1 : normalCDF((min + i * binWidth - mean) / stdDev);
+    bins.forEach((bin, i) => {
+      bin.expectedNormal = roundTo(n * (edge(i + 1) - edge(i)), 4);
+    });
   }
 
   return {

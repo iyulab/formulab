@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`utility/histogram()` takes an optional `normal: { mean, stdDev }`** and then gives each bin `expectedNormal` — the
+  count that normal distribution puts in it, n × (Φ(upper) − Φ(lower)), the edge bins taking the tails — for overlaying
+  a fitted curve on observed counts. A `stdDev` that is not greater than 0 is refused.
+
 ## [0.61.0] - 2026-10-16
 
 ### Added
