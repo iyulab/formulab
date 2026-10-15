@@ -163,7 +163,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `earthwork()` | `throw` | Non-positive length/width/depth or non-positive swell/shrink factor |
 | `formwork()` | `throw` | Non-positive used dimension (per element type) or non-positive quantity |
 | `rebarWeight()` | `throw` | Unknown size, length ≤ 0, quantity ≤ 0 |
-| `getRebarUnitWeight()` | `null` | Unknown size returns `undefined` (plain lookup) |
+| `getRebarUnitWeight()` | `throw` | A size not in the table (an inherited key such as `'toString'` included) |
 | `getAggregateDensity()` | `throw`/`null` | type not in the table; `'custom'` → null (no table density — the caller supplies it) |
 | `aggregateCoverage()` | `throw` | volumeM3 ≤ 0, depthCm ≤ 0 |
 | `slope()` | `throw` | value not finite; ratio ≤ 0 (vertical/undefined; percent/degrees 0 is legit flat and returns `ratio: null` — flat ground has no 1:N form); degrees not in (−90, 90) |
@@ -289,7 +289,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `calorie()` | `throw` | weightKg/heightCm/age ≤ 0 (NaN included) |
 | `expiry()` | `throw` | shelfLifeDays < 0 (calculateExpiry); expiryDate before productionDate (calculateRemaining). A 0-day shelf life is used up on production day → percentUsed 100; percentUsed is clamped to 0–100 (isExpired and remainingDays carry the overrun) |
 | `getCategories()` | `safe` | — (returns static category list) |
-| `haccp()` | `null` | Unknown category → null |
+| `haccp()` | `throw` | A category that is not one of `getHaccpCategories()` |
 | `nutrition()` | `throw` | servingSize ≤ 0; ingredient amountG or nutrient value < 0; ingredients adding up to 0 g (none, or all 0) |
 | `stabilityStudy()` | `throw` | shelfLifeCriterion ≤ 0; storageTemp or a data point temperature ≤ −273.15 °C; fewer than 2 temperatures with a rising degradation; an extrapolation that is not representable. Equal rates at every temperature → Ea 0 and r2 null |
 | `waterActivity()` | `throw` | aw outside [0, 1] |

@@ -54,9 +54,18 @@ const REBAR_UNIT_WEIGHTS: Record<RebarSize, number> = {
  *
  * @param size - Rebar size designation (D10, D13, etc.)
  * @returns Unit weight in kg/m
+ * @throws {RangeError} a size that is not in the KS D 3504 table
  */
 export function getRebarUnitWeight(size: RebarSize): number {
   requireFinite('getRebarUnitWeight', size);
+  return unitWeightOf(size);
+}
+
+/** The table's own entry — an inherited key such as `'toString'` is no rebar size. */
+function unitWeightOf(size: RebarSize): number {
+  if (!Object.hasOwn(REBAR_UNIT_WEIGHTS, size)) {
+    throw new RangeError(`unknown rebar size: ${String(size)}`);
+  }
   return REBAR_UNIT_WEIGHTS[size];
 }
 
@@ -72,10 +81,7 @@ export function rebarWeight(input: RebarInput): RebarResult {
   requireFinite('rebarWeight', input);
   const { size, length, quantity } = input;
 
-  const unitWeight = REBAR_UNIT_WEIGHTS[size];
-  if (unitWeight === undefined) {
-    throw new RangeError(`unknown rebar size: ${String(size)}`);
-  }
+  const unitWeight = unitWeightOf(size);
   if (!(length > 0)) {
     throw new RangeError('length must be greater than 0');
   }

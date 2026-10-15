@@ -299,3 +299,11 @@ describe('rebarWeight contract restoration (2026-07 audit)', () => {
     expect(() => rebarWeight({ size: 'D99' as never, length: 10, quantity: 5 })).toThrow(RangeError);
   });
 });
+
+describe('unknown rebar sizes', () => {
+  it('are refused by the lookup and by rebarWeight, including an inherited key', () => {
+    expect(() => getRebarUnitWeight('D99' as never)).toThrow(/unknown rebar size/);
+    expect(() => getRebarUnitWeight('toString' as never)).toThrow(/unknown rebar size/);
+    expect(() => rebarWeight({ size: 'toString' as never, length: 6, quantity: 1 })).toThrow(/unknown rebar size/);
+  });
+});

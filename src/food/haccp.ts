@@ -62,12 +62,15 @@ export function getCategories(): HaccpCategory[] {
  * and critical control point indicators.
  *
  * @param input - HACCP input with category selection
- * @returns HACCP result with checklist items, or null for invalid category
+ * @returns HACCP result with checklist items
+ * @throws {RangeError} a category that is not one of `getHaccpCategories()`
  */
-export function haccp(input: HaccpInput): HaccpResult | null {
+export function haccp(input: HaccpInput): HaccpResult {
   requireFinite('haccp', input);
+  if (!Object.hasOwn(CHECKLIST_DATA, input.category)) {
+    throw new RangeError(`category must be one of ${Object.keys(CHECKLIST_DATA).join(', ')}`);
+  }
   const items = CHECKLIST_DATA[input.category];
-  if (!items) return null;
 
   return {
     category: input.category,

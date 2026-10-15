@@ -166,11 +166,11 @@ describe('haccp', () => {
   });
 
   describe('edge cases', () => {
-    it('should return null for invalid category', () => {
+    it('throws for a category it has no checklist for, including an inherited key', () => {
       // @ts-expect-error testing invalid input
-      const result = haccp({ category: 'invalid' });
-
-      expect(result).toBeNull();
+      expect(() => haccp({ category: 'invalid' })).toThrow(/category must be one of/);
+      // @ts-expect-error testing invalid input
+      expect(() => haccp({ category: 'toString' })).toThrow(RangeError);
     });
   });
 });

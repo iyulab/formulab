@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Two lookups that answered an unknown key with nothing now throw**, like `reflowProfile()` in 0.59.0:
+  `food/haccp()` a category that is not one of `getHaccpCategories()` (it returned `null`; the return type is now
+  `HaccpResult`), and `construction/getRebarUnitWeight()` a size not in the table (typed `number`, it returned
+  `undefined` — or, for an inherited key such as `'toString'`, a function). `rebarWeight()` now refuses an inherited
+  key too; it already refused an unknown size.
+
 ## [0.59.0] - 2026-10-15
 
 ### Added
