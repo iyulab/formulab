@@ -8,6 +8,8 @@ export type {
   PasteType,
   ReflowInput,
   ReflowResult,
+  ReflowProfileNumbers,
+  ReflowSpan,
   // Resistor types
   BandCount,
   ColorName,

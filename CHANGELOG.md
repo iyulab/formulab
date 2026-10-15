@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`electronics/reflowProfile()` returns its windows as numbers too** — `profile` (`ReflowProfileNumbers`:
+  `preheatTempC`, `soakTimeS`, `peakTempC`, `timeAboveLiquidusS`, … as `{ min, max }`, and
+  `coolingRateMaxCPerS`), so a consumer can plot the time-temperature profile or check a measured one without
+  parsing «150-200». The table is now numeric and the existing range strings are printed from it — unchanged
+  character for character (pinned by test). An inherited key such as `'toString'` now returns `undefined` like
+  any other unknown paste type.
+
 ### Changed
 
 - **Three inputs that were accepted silently now throw**: `quality/gageRR()` a `tolerance` given as 0 or less (it was

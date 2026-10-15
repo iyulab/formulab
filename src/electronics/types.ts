@@ -17,6 +17,24 @@ export interface ReflowResult {
   timeAboveLiquidus: string;  // seconds range
   coolingRate: string;        // C/s max
   totalProfileTime: string;   // seconds range
+  /** The same windows as numbers — for a time-axis plot or a check against a measured profile. */
+  profile: ReflowProfileNumbers;
+}
+
+/** A reflow window: lower and upper bound. */
+export interface ReflowSpan { min: number; max: number }
+
+/** Numeric reflow windows (°C, s, °C/s), printed as the range strings of `ReflowResult`. */
+export interface ReflowProfileNumbers {
+  preheatRateCPerS: ReflowSpan;
+  preheatTempC: ReflowSpan;
+  preheatTimeS: ReflowSpan;
+  soakTempC: ReflowSpan;
+  soakTimeS: ReflowSpan;
+  peakTempC: ReflowSpan;
+  timeAboveLiquidusS: ReflowSpan;
+  coolingRateMaxCPerS: number;
+  totalProfileTimeS: ReflowSpan;
 }
 
 // Resistor decoder types
