@@ -168,11 +168,10 @@ describe('capacitorDecode', () => {
       expect(result.picofarads).toBe(1);
     });
 
-    it('should handle 999 (99 × 10^9 pF)', () => {
+    it('should handle 999 (99 × 0.1 pF — 9 is the ×0.1 multiplier)', () => {
       const result = capacitorDecode({ code: '999' });
 
-      // 99 × 10^9 = 99,000,000,000 pF = 99,000 µF
-      expect(result.picofarads).toBe(99000000000);
+      expect(result.picofarads).toBe(9.9);
     });
   });
 
@@ -202,5 +201,17 @@ describe('capacitorDecode', () => {
       // 47 × 10^2 = 4700 pF = 4.7 nF
       expect(result.nanofarads).toBe(4.7);
     });
+  });
+});
+
+describe('capacitorDecode fractional multipliers (EIA-198 / IEC 60062)', () => {
+  it('reads a third digit of 8 as ×0.01 and 9 as ×0.1 — values below 10 pF', () => {
+    expect(capacitorDecode({ code: '158' })).toMatchObject({ picofarads: 0.15, multiplier: 0.01, formatted: '0.15pF' });
+    expect(capacitorDecode({ code: '159' })).toMatchObject({ picofarads: 1.5, multiplier: 0.1, formatted: '1.5pF' });
+    expect(capacitorDecode({ code: '479' }).picofarads).toBe(4.7);
+  });
+
+  it('refuses the unassigned multiplier digit 7', () => {
+    expect(() => capacitorDecode({ code: '107' })).toThrow(RangeError);
   });
 });

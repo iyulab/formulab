@@ -148,7 +148,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `solderPaste()` | `throw` | any input ≤ 0 |
 | `traceWidth()` | `throw` | current ≤ 0, tempRise ≤ 0, copperWeight ≤ 0 |
 | `awgProperties()` | `throw` | AWG not between 0 and 40 |
-| `capacitorDecode()` | `throw` | Invalid code format |
+| `capacitorDecode()` | `throw` | Invalid code format, multiplier digit 7 (unassigned) |
 | `ledResistor()` | `throw` | forwardVoltage ≥ supplyVoltage |
 | `stencilAperture()` | `throw` | Dimensions ≤ 0 |
 | `viaCurrent()` | `throw` | Dimensions ≤ 0 |

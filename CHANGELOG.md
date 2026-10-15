@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`electronics/capacitorDecode()` read a third digit of 8 or 9 as ×10⁸ / ×10⁹** — in the three-digit code (EIA-198 /
+  IEC 60062) they are the fractional multipliers ×0.01 and ×0.1 for values below 10 pF, so "158" is 0.15 pF and "159"
+  1.5 pF (they decoded as 1,500 µF and 15,000 µF). The unassigned digit 7 is now refused.
+
 ## [0.60.0] - 2026-10-15
 
 ### Added

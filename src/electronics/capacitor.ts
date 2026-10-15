@@ -2,14 +2,15 @@ import type { CapacitorCodeInput, CapacitorCodeResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
 
 /**
- * Round to specified decimal places
- */
-
-/**
  * Decode a 3-digit capacitor code to capacitance values
+ *
+ * @formula C (pF) = (first two digits) × multiplier; the third digit n gives 10ⁿ for 0–6, and the
+ *   fractional multipliers ×0.01 for 8 and ×0.1 for 9 (so "159" is 1.5 pF); 7 is not assigned.
+ * @reference EIA-198 / IEC 60062 three-digit capacitance code.
+ *
  * @param input - The 3-digit capacitor code (e.g., "104")
  * @returns Capacitance in pF, nF, and µF with formatted output
- * @throws Error if code is invalid
+ * @throws {RangeError} the code is not three digits, or its multiplier digit is 7
  */
 export function capacitorDecode(input: CapacitorCodeInput): CapacitorCodeResult {
   requireFinite('capacitorDecode', input);
@@ -27,11 +28,14 @@ export function capacitorDecode(input: CapacitorCodeInput): CapacitorCodeResult 
   // Significant figures from first two digits
   const significantFigures = digit1 * 10 + digit2;
 
-  // Multiplier is 10^n picofarads
-  const multiplier = Math.pow(10, multiplierDigit);
+  // 0–6 are powers of ten; 8 and 9 are the fractional multipliers for values below 10 pF.
+  if (multiplierDigit === 7) {
+    throw new RangeError('Invalid capacitor code: multiplier digit 7 is not assigned');
+  }
+  const multiplier = multiplierDigit === 8 ? 0.01 : multiplierDigit === 9 ? 0.1 : Math.pow(10, multiplierDigit);
 
   // Value in picofarads
-  const picofarads = significantFigures * multiplier;
+  const picofarads = roundTo(significantFigures * multiplier, 6);
   const nanofarads = roundTo(picofarads / 1000, 6);
   const microfarads = roundTo(picofarads / 1000000, 6);
 
