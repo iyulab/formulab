@@ -1,3 +1,4 @@
+import type { Diagnostic } from '../diagnostics.js';
 import type { HistogramBin } from '../utility/types.js';
 
 /**
@@ -301,6 +302,8 @@ export interface Pallet3DResult {
     height: number;
   };
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 export interface PalletSpec {

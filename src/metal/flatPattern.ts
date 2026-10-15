@@ -1,6 +1,7 @@
 import type { FlatPatternInput, FlatPatternResult, BendingMaterial } from './types.js';
-import { assertBendDomain } from './bendDomain.js';
+import { assertBendDomain, EXTREME_BEND_ANGLE } from './bendDomain.js';
 import { requireFinite } from '../utils.js';
+import { Notes } from '../diagnostics.js';
 
 /**
  * Default K-factor values by material
@@ -83,10 +84,19 @@ export function flatPattern(input: FlatPatternInput): FlatPatternResult {
     throw new RangeError('flatLength must be greater than 0: the flanges are shorter than the bend deductions');
   }
 
+  const notes = new Notes();
+  if (bendAngle > EXTREME_BEND_ANGLE) {
+    notes.add(`Extreme bend angle (${bendAngle}) may cause springback issues`, {
+      code: 'bend_angle_extreme', parameter: 'bendAngle', got: bendAngle, max: EXTREME_BEND_ANGLE,
+    });
+  }
+
   return {
     flatLength,
     bendAllowance: ba,
     bendDeduction: bd,
     kFactor,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

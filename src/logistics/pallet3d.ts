@@ -12,6 +12,7 @@ import type {
 } from './types.js';
 import { requireFinite } from '../utils.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 /** Standard pallet dimensions by region */
 const PALLET_SPECS: Record<Exclude<PalletStandard, 'custom'>, PalletSpec> = {
@@ -365,7 +366,7 @@ function calculateFloorCoverage(placedBoxes: PlacedBox3D[]): number {
  */
 export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   requireFinite('pallet3d', input);
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   // No boxes → no load plan. An empty plan with a 0 × 0 × 0 pallet would read as a result.
   if (!input.boxes || input.boxes.length === 0) {
@@ -410,7 +411,9 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   }
 
   if (input.boxes.length > 5) {
-    warnings.push('Maximum 5 box types supported, extra types ignored');
+    notes.add('Maximum 5 box types supported, extra types ignored', {
+      code: 'box_types_truncated', parameter: 'boxes', got: input.boxes.length, max: 5,
+    });
   }
 
   // Get pallet dimensions
@@ -511,13 +514,15 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   // Add warnings
   if (unplaced.length > 0) {
     const totalUnplaced = unplaced.reduce((sum, u) => sum + u.count, 0);
-    warnings.push(`${totalUnplaced} boxes could not be placed`);
+    notes.add(`${totalUnplaced} boxes could not be placed`, { code: 'boxes_unplaced', count: totalUnplaced });
   }
   if (!cg.isBalanced) {
-    warnings.push('Center of gravity is off-center, load may be unstable');
+    notes.add('Center of gravity is off-center, load may be unstable', { code: 'center_of_gravity_off_center' });
   }
   if (totalWeight > maxPayload * 0.9) {
-    warnings.push('Load is near maximum payload capacity');
+    notes.add('Load is near maximum payload capacity', {
+      code: 'payload_near_maximum', got: totalWeight, max: maxPayload,
+    });
   }
 
   return {
@@ -541,6 +546,7 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
       width: palletWidth,
       height: maxHeight,
     },
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

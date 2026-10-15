@@ -1,3 +1,4 @@
+import type { Diagnostic } from '../diagnostics.js';
 import type { CascadeStep } from '../math.js';
 
 export type { CascadeStep };
@@ -24,6 +25,8 @@ export interface FallClearanceResult {
   clearanceAboveObstacle: number | null;
   isAdequate: boolean | null;
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 // NIOSH Lifting Types
@@ -190,6 +193,8 @@ export interface LadderAngleResult {
   reachHeight: number;        // m (height + ~1m)
   isCompliant: boolean;       // 70°–80°
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 /**
@@ -338,6 +343,8 @@ export interface ConfinedSpaceResult {
   overallStatus: 'safe' | 'caution' | 'danger' | 'idlh';
   entryPermitted: boolean;
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 /**

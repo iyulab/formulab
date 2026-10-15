@@ -17,3 +17,4 @@ export * from './environmental/index.js';
 export * from './machining/index.js';
 export * from './ie/index.js';
 export type { InputRangeError, InputErrorCode, InputErrorDetail } from './errors.js';
+export type { Diagnostic, DiagnosticCode } from './diagnostics.js';

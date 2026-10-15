@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WaterActivityInput, WaterActivityResult } from './types.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 /**
  * Water Activity Microbial Safety Assessment — HACCP
@@ -27,7 +28,7 @@ export function waterActivity(input: WaterActivityInput): WaterActivityResult {
       code: 'parameter_out_of_range', parameter: 'aw', min: 0, max: 1, got: aw,
     });
   }
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   // Growth risk thresholds
   const bacteria = aw > 0.91;
@@ -50,19 +51,29 @@ export function waterActivity(input: WaterActivityInput): WaterActivityResult {
 
   // Temperature warnings
   if (temperature > 35 && aw > 0.85) {
-    warnings.push('Elevated temperature increases microbial growth rate');
+    notes.add('Elevated temperature increases microbial growth rate', {
+      code: 'temperature_elevated', parameter: 'temperature', got: temperature, max: 35,
+    });
   }
   if (bacteria) {
-    warnings.push('Pathogenic bacteria can grow (aw > 0.91)');
+    notes.add('Pathogenic bacteria can grow (aw > 0.91)', {
+      code: 'pathogen_growth_possible', parameter: 'aw', got: aw, min: 0.91,
+    });
   }
   if (yeast && !bacteria) {
-    warnings.push('Yeast and mold growth possible (aw > 0.88)');
+    notes.add('Yeast and mold growth possible (aw > 0.88)', {
+      code: 'yeast_mold_growth_possible', parameter: 'aw', got: aw, min: 0.88,
+    });
   }
   if (mold && !yeast) {
-    warnings.push('Mold growth possible (aw > 0.80)');
+    notes.add('Mold growth possible (aw > 0.80)', {
+      code: 'mold_growth_possible', parameter: 'aw', got: aw, min: 0.80,
+    });
   }
   if (xerophilic && !mold) {
-    warnings.push('Xerophilic fungi may grow (aw > 0.65)');
+    notes.add('Xerophilic fungi may grow (aw > 0.65)', {
+      code: 'xerophilic_growth_possible', parameter: 'aw', got: aw, min: 0.65,
+    });
   }
 
   return {
@@ -70,6 +81,7 @@ export function waterActivity(input: WaterActivityInput): WaterActivityResult {
     isStable,
     riskLevel,
     growthRisk: { bacteria, yeast, mold, xerophilic },
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

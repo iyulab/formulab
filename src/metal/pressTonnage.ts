@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PressTonnageInput, PressTonnageResult, BendType } from './types.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 /**
  * Bend force coefficient by bend type
@@ -270,7 +271,7 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   let actualDrawRatio = 0;
   let numberOfDraws = 1;
   const breakdown: { operation: string; force: number }[] = [];
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   // Calculate blanking force
   if (operation === 'blanking' || (operation === 'combined' && cuttingPerimeter > 0)) {
@@ -330,23 +331,35 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
 
       // Generate warnings
       if (actualDrawRatio < DRAW_CONSTANTS.MIN_DRAW_RATIO) {
-        warnings.push(`Draw ratio ${roundTo(actualDrawRatio, 3)} is below safe limit (${DRAW_CONSTANTS.MIN_DRAW_RATIO}). Risk of fracture.`);
+        notes.add(`Draw ratio ${roundTo(actualDrawRatio, 3)} is below safe limit (${DRAW_CONSTANTS.MIN_DRAW_RATIO}). Risk of fracture.`, {
+          code: 'draw_ratio_below_limit', parameter: 'drawRatio', got: roundTo(actualDrawRatio, 3), min: DRAW_CONSTANTS.MIN_DRAW_RATIO,
+        });
       } else if (actualDrawRatio < DRAW_CONSTANTS.SAFE_FIRST_DRAW_RATIO) {
-        warnings.push(`Draw ratio ${roundTo(actualDrawRatio, 3)} requires careful process control. Consider annealing between draws.`);
+        notes.add(`Draw ratio ${roundTo(actualDrawRatio, 3)} requires careful process control. Consider annealing between draws.`, {
+          code: 'draw_ratio_marginal', parameter: 'drawRatio', got: roundTo(actualDrawRatio, 3), min: DRAW_CONSTANTS.SAFE_FIRST_DRAW_RATIO,
+        });
       }
 
       if (numberOfDraws > 1) {
-        warnings.push(`Multi-draw operation recommended: ${numberOfDraws} draws required for d/D = ${roundTo(actualDrawRatio, 3)}`);
+        notes.add(`Multi-draw operation recommended: ${numberOfDraws} draws required for d/D = ${roundTo(actualDrawRatio, 3)}`, {
+          code: 'multiple_draws_required', parameter: 'drawRatio', got: roundTo(actualDrawRatio, 3), count: numberOfDraws,
+        });
       }
 
       if (frictionCoefficient > 0.15) {
-        warnings.push('High friction coefficient. Ensure adequate lubrication to prevent galling.');
+        notes.add('High friction coefficient. Ensure adequate lubrication to prevent galling.', {
+          code: 'friction_high', parameter: 'frictionCoefficient', got: frictionCoefficient, max: 0.15,
+        });
       }
 
       if (blankHolderPressure > 5) {
-        warnings.push('High blank holder pressure may cause excessive thinning.');
+        notes.add('High blank holder pressure may cause excessive thinning.', {
+          code: 'blank_holder_pressure_high', parameter: 'blankHolderPressure', got: blankHolderPressure, max: 5,
+        });
       } else if (blankHolderPressure < 1.5) {
-        warnings.push('Low blank holder pressure may cause wrinkling.');
+        notes.add('Low blank holder pressure may cause wrinkling.', {
+          code: 'blank_holder_pressure_low', parameter: 'blankHolderPressure', got: blankHolderPressure, min: 1.5,
+        });
       }
     }
 
@@ -378,6 +391,7 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     drawRatio: roundTo(actualDrawRatio, 3),
     numberOfDraws,
     breakdown,
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
-import { assertBendDomain } from './bendDomain.js';
+import { assertBendDomain, EXTREME_BEND_ANGLE } from './bendDomain.js';
 import type {
   BendAllowanceInput,
   BendAllowanceResult,
@@ -8,6 +8,7 @@ import type {
   Din6935StrengthClass,
   MinBendRadiusBasis,
 } from './types.js';
+import { Notes } from '../diagnostics.js';
 
 /**
  * Default K-factor values by material.
@@ -95,7 +96,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
     material = 'mildSteel',
     rollingDirection = 'longitudinal',
   } = input;
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   // An unknown material used to surface as «kFactor outside [0, 1]» — the wrong field.
   if (input.kFactor === undefined && !Object.hasOwn(K_FACTOR_TABLE, material)) {
@@ -127,12 +128,16 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
 
   // Warn if inside radius is less than minimum
   if (insideRadius < minBendRadius) {
-    warnings.push(`Inside radius (${insideRadius}mm) is less than minimum recommended (${minBendRadius}mm)`);
+    notes.add(`Inside radius (${insideRadius}mm) is less than minimum recommended (${minBendRadius}mm)`, {
+      code: 'bend_radius_below_minimum', parameter: 'insideRadius', got: insideRadius, min: minBendRadius,
+    });
   }
 
   // Warn for extreme bend angles
-  if (bendAngle > 170) {
-    warnings.push(`Extreme bend angle (${bendAngle}) may cause springback issues`);
+  if (bendAngle > EXTREME_BEND_ANGLE) {
+    notes.add(`Extreme bend angle (${bendAngle}) may cause springback issues`, {
+      code: 'bend_angle_extreme', parameter: 'bendAngle', got: bendAngle, max: EXTREME_BEND_ANGLE,
+    });
   }
 
   // Convert bend angle to radians
@@ -161,6 +166,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
     recommendedVDie,
     minBendRadius,
     minBendRadiusBasis,
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

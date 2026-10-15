@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { FallClearanceInput, FallClearanceResult } from './types.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 /*
  * OSHA 29 CFR 1926.502(d)(16) states each limit in both units — "6 feet (1.8 m)", "3.5 feet
@@ -85,15 +86,21 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     workingHeight === undefined ? null : roundTo(workingHeight - obstacleHeight - requiredClearance, 3);
   const isAdequate = clearanceAboveObstacle === null ? null : clearanceAboveObstacle >= 0;
 
-  const warnings: string[] = [];
+  const notes = new Notes();
   if (freeFallDistance > MAX_FREE_FALL) {
-    warnings.push(`Free fall of ${freeFallDistance.toFixed(2)} m exceeds the OSHA limit of 1.8 m (6 ft) — raise the anchor or shorten the lanyard`);
+    notes.add(`Free fall of ${freeFallDistance.toFixed(2)} m exceeds the OSHA limit of 1.8 m (6 ft) — raise the anchor or shorten the lanyard`, {
+      code: 'free_fall_exceeds_limit', parameter: 'freeFallDistance', got: roundTo(freeFallDistance, 3), max: roundTo(MAX_FREE_FALL, 3),
+    });
   }
   if (DD > MAX_DECELERATION) {
-    warnings.push('Deceleration distance exceeds the OSHA limit of 1.07 m (3.5 ft)');
+    notes.add('Deceleration distance exceeds the OSHA limit of 1.07 m (3.5 ft)', {
+      code: 'deceleration_exceeds_limit', parameter: 'decelerationDistance', got: roundTo(DD, 3), max: roundTo(MAX_DECELERATION, 3),
+    });
   }
   if (clearanceAboveObstacle !== null && clearanceAboveObstacle < 0) {
-    warnings.push(`Insufficient clearance: ${Math.abs(clearanceAboveObstacle).toFixed(2)} m short of the required clearance above the obstacle`);
+    notes.add(`Insufficient clearance: ${Math.abs(clearanceAboveObstacle).toFixed(2)} m short of the required clearance above the obstacle`, {
+      code: 'clearance_insufficient', parameter: 'workingHeight', got: roundTo(Math.abs(clearanceAboveObstacle), 3),
+    });
   }
 
   return {
@@ -103,6 +110,7 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     freeFallDistance: roundTo(freeFallDistance, 3),
     clearanceAboveObstacle,
     isAdequate,
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

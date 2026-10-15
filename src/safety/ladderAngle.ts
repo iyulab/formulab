@@ -1,6 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { LadderAngleInput, LadderAngleResult } from './types.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
@@ -31,7 +32,7 @@ export const LADDER_COMPLIANT_ANGLE_RANGE = { min: 70, max: 80 } as const;
 export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   requireFinite('ladderAngle', input);
   let { ladderLength, height, baseDistance } = input;
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   if (height !== undefined && height < 0) {
     throw inputRangeError('height must not be negative', {
@@ -63,7 +64,9 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     }
     if (ladderLength === height) {
       baseDistance = 0;
-      warnings.push('Ladder length must be greater than height');
+      notes.add('Ladder length must be greater than height', {
+        code: 'ladder_too_short', parameter: 'height', got: ladderLength,
+      });
     } else {
       baseDistance = Math.sqrt(ladderLength * ladderLength - height * height);
     }
@@ -76,7 +79,9 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     }
     if (ladderLength === baseDistance) {
       height = 0;
-      warnings.push('Ladder length must be greater than base distance');
+      notes.add('Ladder length must be greater than base distance', {
+        code: 'ladder_too_short', parameter: 'baseDistance', got: ladderLength,
+      });
     } else {
       height = Math.sqrt(ladderLength * ladderLength - baseDistance * baseDistance);
     }
@@ -108,14 +113,18 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
 
   // Generate warnings
   if (angle < LADDER_COMPLIANT_ANGLE_RANGE.min) {
-    warnings.push('Angle too shallow (< 70°): ladder may slide out at base');
+    notes.add('Angle too shallow (< 70°): ladder may slide out at base', {
+      code: 'ladder_angle_too_shallow', parameter: 'angle', got: roundTo(angle, 2), min: LADDER_COMPLIANT_ANGLE_RANGE.min,
+    });
   } else if (angle > LADDER_COMPLIANT_ANGLE_RANGE.max) {
-    warnings.push('Angle too steep (> 80°): ladder may tip backwards');
+    notes.add('Angle too steep (> 80°): ladder may tip backwards', {
+      code: 'ladder_angle_too_steep', parameter: 'angle', got: roundTo(angle, 2), max: LADDER_COMPLIANT_ANGLE_RANGE.max,
+    });
   }
 
   if (ladderLength > 0 && (height ?? 0) > 0) {
     if (isCompliant && (height ?? 0) > ladderLength * 0.97) {
-      warnings.push('Ladder may not extend sufficiently above landing surface');
+      notes.add('Ladder may not extend sufficiently above landing surface', { code: 'ladder_extension_short' });
     }
   }
 
@@ -127,6 +136,7 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
     idealBaseDistance: roundTo(idealBaseDistance, 4),
     reachHeight: roundTo(reachHeight, 4),
     isCompliant,
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

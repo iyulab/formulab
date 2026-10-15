@@ -1,6 +1,7 @@
 import type { ConfinedSpaceInput, ConfinedSpaceResult } from './types.js';
 import { requireFinite } from '../utils.js';
 import { inputRangeError } from '../errors.js';
+import { Notes } from '../diagnostics.js';
 
 /**
  * Confined Space Atmospheric Assessment — OSHA 29 CFR 1910.146
@@ -47,7 +48,7 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
     throw new RangeError('customGas concentration must not be negative and pel/idlh must be greater than 0');
   }
 
-  const warnings: string[] = [];
+  const notes = new Notes();
 
   // Oxygen assessment
   let oxygenStatus: ConfinedSpaceResult['oxygenStatus'];
@@ -55,10 +56,14 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
     oxygenStatus = 'safe';
   } else if (oxygenPercent < 19.5) {
     oxygenStatus = 'deficient';
-    warnings.push(`Oxygen deficient: ${oxygenPercent}% (minimum 19.5%)`);
+    notes.add(`Oxygen deficient: ${oxygenPercent}% (minimum 19.5%)`, {
+      code: 'oxygen_deficient', parameter: 'oxygenPercent', got: oxygenPercent, min: 19.5,
+    });
   } else {
     oxygenStatus = 'enriched';
-    warnings.push(`Oxygen enriched: ${oxygenPercent}% (maximum 23.5%)`);
+    notes.add(`Oxygen enriched: ${oxygenPercent}% (maximum 23.5%)`, {
+      code: 'oxygen_enriched', parameter: 'oxygenPercent', got: oxygenPercent, max: 23.5,
+    });
   }
 
   // LEL assessment
@@ -67,10 +72,14 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
     lelStatus = 'safe';
   } else if (lelPercent <= 25) {
     lelStatus = 'caution';
-    warnings.push(`LEL elevated: ${lelPercent}% (action level 10%)`);
+    notes.add(`LEL elevated: ${lelPercent}% (action level 10%)`, {
+      code: 'gas_elevated', parameter: 'lelPercent', got: lelPercent, max: 10,
+    });
   } else {
     lelStatus = 'danger';
-    warnings.push(`LEL dangerous: ${lelPercent}% (exceeds 25%)`);
+    notes.add(`LEL dangerous: ${lelPercent}% (exceeds 25%)`, {
+      code: 'gas_above_limit', parameter: 'lelPercent', got: lelPercent, max: 25,
+    });
   }
 
   // H₂S assessment
@@ -80,13 +89,19 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
       h2sStatus = 'safe';
     } else if (h2sPpm <= 20) {
       h2sStatus = 'caution';
-      warnings.push(`H₂S elevated: ${h2sPpm} ppm (PEL ceiling 20 ppm)`);
+      notes.add(`H₂S elevated: ${h2sPpm} ppm (PEL ceiling 20 ppm)`, {
+        code: 'gas_elevated', parameter: 'h2sPpm', got: h2sPpm, max: 10,
+      });
     } else if (h2sPpm <= 100) {
       h2sStatus = 'danger';
-      warnings.push(`H₂S dangerous: ${h2sPpm} ppm (exceeds PEL)`);
+      notes.add(`H₂S dangerous: ${h2sPpm} ppm (exceeds PEL)`, {
+        code: 'gas_above_limit', parameter: 'h2sPpm', got: h2sPpm, max: 20,
+      });
     } else {
       h2sStatus = 'idlh';
-      warnings.push(`H₂S IDLH: ${h2sPpm} ppm (IDLH = 100 ppm)`);
+      notes.add(`H₂S IDLH: ${h2sPpm} ppm (IDLH = 100 ppm)`, {
+        code: 'gas_idlh', parameter: 'h2sPpm', got: h2sPpm, max: 100,
+      });
     }
   }
 
@@ -97,13 +112,19 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
       coStatus = 'safe';
     } else if (coPpm <= 50) {
       coStatus = 'caution';
-      warnings.push(`CO elevated: ${coPpm} ppm (PEL 50 ppm)`);
+      notes.add(`CO elevated: ${coPpm} ppm (PEL 50 ppm)`, {
+        code: 'gas_elevated', parameter: 'coPpm', got: coPpm, max: 25,
+      });
     } else if (coPpm <= 1200) {
       coStatus = 'danger';
-      warnings.push(`CO dangerous: ${coPpm} ppm (exceeds PEL)`);
+      notes.add(`CO dangerous: ${coPpm} ppm (exceeds PEL)`, {
+        code: 'gas_above_limit', parameter: 'coPpm', got: coPpm, max: 50,
+      });
     } else {
       coStatus = 'idlh';
-      warnings.push(`CO IDLH: ${coPpm} ppm (IDLH = 1200 ppm)`);
+      notes.add(`CO IDLH: ${coPpm} ppm (IDLH = 1200 ppm)`, {
+        code: 'gas_idlh', parameter: 'coPpm', got: coPpm, max: 1200,
+      });
     }
   }
 
@@ -112,10 +133,14 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
   if (customGas) {
     if (customGas.concentration >= customGas.idlh) {
       customGasStatus = 'idlh';
-      warnings.push(`${customGas.name} IDLH: ${customGas.concentration} (IDLH = ${customGas.idlh})`);
+      notes.add(`${customGas.name} IDLH: ${customGas.concentration} (IDLH = ${customGas.idlh})`, {
+        code: 'gas_idlh', parameter: 'customGas', name: customGas.name, got: customGas.concentration, max: customGas.idlh,
+      });
     } else if (customGas.concentration >= customGas.pel) {
       customGasStatus = 'exceeds_pel';
-      warnings.push(`${customGas.name} exceeds PEL: ${customGas.concentration} (PEL = ${customGas.pel})`);
+      notes.add(`${customGas.name} exceeds PEL: ${customGas.concentration} (PEL = ${customGas.pel})`, {
+        code: 'gas_above_limit', parameter: 'customGas', name: customGas.name, got: customGas.concentration, max: customGas.pel,
+      });
     } else {
       customGasStatus = 'safe';
     }
@@ -138,6 +163,7 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
     customGasStatus,
     overallStatus,
     entryPermitted,
-    warnings,
+    warnings: notes.warnings,
+    diagnostics: notes.diagnostics,
   };
 }

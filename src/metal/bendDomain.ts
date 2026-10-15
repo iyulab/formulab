@@ -1,5 +1,8 @@
 import { inputRangeError } from '../errors.js';
 
+/** Above this bend angle (degrees) the springback is hard to predict — both bend functions warn. */
+export const EXTREME_BEND_ANGLE = 170;
+
 /**
  * The domain of the sheet-metal bend formulas shared by `bendAllowance()` and `flatPattern()`.
  *

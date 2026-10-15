@@ -1,3 +1,4 @@
+import type { Diagnostic } from '../diagnostics.js';
 /**
  * Metal Weight Types
  */
@@ -84,6 +85,8 @@ export interface BendAllowanceResult {
   minBendRadius: number;    // mm
   minBendRadiusBasis: MinBendRadiusBasis;
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 export interface SpringbackInput {
@@ -123,6 +126,9 @@ export interface FlatPatternResult {
   bendAllowance: number;    // mm
   bendDeduction: number;    // mm
   kFactor: number;
+  warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 export interface KFactorReverseInput {
@@ -190,6 +196,8 @@ export interface PressTonnageResult {
     force: number;
   }[];
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 

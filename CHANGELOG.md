@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Warnings as data: `diagnostics`.** Every result that carries `warnings: string[]` (`bendAllowance`, `flatPattern`,
+  `pressTonnage`, `confinedSpace`, `fallClearance`, `ladderAngle`, `pallet3d`, `waterActivity`) now also carries
+  `diagnostics` — the same notes, one for one and in the same order, as `{ code, parameter?, got?, min?, max?, count?, name? }`
+  — so a consumer can translate a warning and name the input instead of showing the English sentence. `min`/`max` are the
+  bound the value crossed (a recommended minimum, an exposure limit, an action level). Types `Diagnostic` and
+  `DiagnosticCode` are exported from the package root.
+- **`metal/flatPattern()` reports `warnings`** (with `diagnostics`): a bend above 170° is flagged as `bendAllowance()`
+  already did — both read the same threshold.
+
 ## [0.62.0] - 2026-10-16
 
 ### Added

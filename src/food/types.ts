@@ -1,3 +1,4 @@
+import type { Diagnostic } from '../diagnostics.js';
 /**
  * Calorie Calculator Types
  */
@@ -135,6 +136,8 @@ export interface WaterActivityResult {
     xerophilic: boolean;
   };
   warnings: string[];
+  /** `warnings` as data, one for one and in the same order. */
+  diagnostics: Diagnostic[];
 }
 
 /**
