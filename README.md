@@ -199,7 +199,7 @@ import { oee, cpk, taktTime, dpmo, controlChart, movingAverageRangeChart, accept
 | `dpmo()` | Defects Per Million Opportunities |
 | `lineBalancing()` | Line balancing optimization |
 | `mtbf()` | Mean Time Between Failures |
-| `ppk()` | Process Performance Index |
+| `ppk()` | Process Performance Index — from the overall mean and σ, or from the readings |
 | `ppm()` | Parts Per Million conversion |
 | `rpn()` | Risk Priority Number (FMEA) |
 | `yieldCalc()` | First Pass Yield / RTY |

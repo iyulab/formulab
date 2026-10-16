@@ -239,12 +239,26 @@ export interface MtbfResult {
 /**
  * Ppk (Process Performance Index) Types
  */
-export interface PpkInput {
+/** Ppk from summary figures: the overall mean and the overall (long-term) standard deviation. */
+export interface PpkSummaryInput {
   usl: number;     // upper spec limit
   lsl: number;     // lower spec limit
   mean: number;    // overall process mean
   stdDev: number;  // overall (long-term) standard deviation
 }
+
+/**
+ * Ppk from the readings themselves: the overall mean and the sample standard deviation (n − 1) of every
+ * reading, ignoring any subgrouping — the «overall» σ of AIAG SPC, as opposed to the within-subgroup σ̂ of Cpk.
+ */
+export interface PpkDataInput {
+  usl: number;
+  lsl: number;
+  /** Individual readings, at least 2. */
+  data: number[];
+}
+
+export type PpkInput = PpkSummaryInput | PpkDataInput;
 
 /** Same shape and σ = 0 rule as `CpkResult`, with the long-term σ. */
 export interface PpkResult {

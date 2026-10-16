@@ -232,3 +232,24 @@ describe('ppk', () => {
     });
   });
 });
+
+describe('ppk from readings', () => {
+  // 10, 12, 14: mean 12, sample σ = √((4 + 0 + 4) / 2) = 2; USL 18, LSL 6 → Pp = 12 / 12 = 1, Ppk = 6 / 6 = 1
+  it('takes the overall mean and the sample standard deviation (n − 1)', () => {
+    expect(ppk({ usl: 18, lsl: 6, data: [10, 12, 14] })).toMatchObject({ pp: 1, ppk: 1 });
+  });
+
+  // 10, 11, 12, 13, 14: mean 12, sample σ = √(10 / 4) = 1.5811 (the population σ √2 would give 1.18 / 0.94)
+  it('uses n − 1, not n', () => {
+    const fromData = ppk({ usl: 18, lsl: 7, data: [10, 11, 12, 13, 14] });
+    expect(fromData).toEqual(ppk({ usl: 18, lsl: 7, mean: 12, stdDev: Math.sqrt(2.5) }));
+    expect(fromData.ppk).not.toBe(ppk({ usl: 18, lsl: 7, mean: 12, stdDev: Math.sqrt(2) }).ppk);
+  });
+
+  it.each([
+    [[], 'empty_input'],
+    [[5], 'insufficient_data'],
+  ] as const)('refuses %j readings', (data, code) => {
+    expect(() => ppk({ usl: 18, lsl: 6, data: [...data] })).toThrow(expect.objectContaining({ code, parameter: 'data', min: 2 }));
+  });
+});

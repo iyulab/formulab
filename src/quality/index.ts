@@ -67,6 +67,8 @@ export type {
   MtbfResult,
   // Ppk types
   PpkInput,
+  PpkSummaryInput,
+  PpkDataInput,
   PpkResult,
   // PPM types
   ConvertFrom,

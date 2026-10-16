@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`ppk()` takes the readings**: `ppk({ usl, lsl, data })` uses their overall mean and sample standard deviation
+  (n − 1), the long-term σ AIAG SPC defines, so a caller no longer computes it. Fewer than 2 readings is
+  `empty_input` / `insufficient_data` (`parameter: 'data'`, `min: 2`). The result is unchanged (the same fields as
+  `cpk()`). Types `PpkSummaryInput`, `PpkDataInput`; `PpkInput` is their union.
+
+### Added
+
 - **`palletStack()` takes `palletWeight`** (kg, the empty pallet — EUR about 25). It counts against `maxWeight`, which
   is now the loaded pallet's gross weight limit, and `totalWeight` is the gross weight (`totalBoxes × boxWeight +
   palletWeight`). Without `palletWeight` both are as before. A pallet heavier than `maxWeight` carries nothing

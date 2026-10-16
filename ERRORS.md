@@ -73,7 +73,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `dpmo()` | `throw` | defects < 0, units ≤ 0, opportunities ≤ 0, defects > units × opportunities |
 | `lineBalancing()` | `throw` | Empty tasks, cycleTime ≤ 0, a task time ≤ 0 or > cycleTime (infeasible), a repeated task id, a predecessor that names no task (it looped until memory ran out before 0.58.0), circular dependency |
 | `mtbf()` | `throw` | totalOperatingTime ≤ 0, numberOfFailures ≤ 0 |
-| `ppk()` | `throw` | as `cpk()` (same arithmetic, long-term σ) |
+| `ppk()` | `throw` | as `cpk()` (same arithmetic, long-term σ); with `data`, fewer than 2 readings (`empty_input` / `insufficient_data`) |
 | `ppm()` | `throw` | defectRate outside [0, 100], ppm outside [0, 1,000,000], sigma outside [0, 6] (previously clamped silently) |
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
