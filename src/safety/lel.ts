@@ -22,12 +22,16 @@ export function lel(input: LelInput): LelResult {
   requireFinite('lel', input);
   const { gases } = input;
 
-  for (const gas of gases) {
+  for (const [i, gas] of gases.entries()) {
     if (!(gas.concentration >= 0)) {
-      throw new RangeError(`gas "${gas.name}" concentration must not be negative`);
+      throw inputRangeError(`gas "${gas.name}" concentration must not be negative`, {
+        code: 'parameter_out_of_range', parameter: `gases[${i}].concentration`, min: 0, got: gas.concentration,
+      });
     }
     if (!(gas.lel > 0)) {
-      throw new RangeError(`gas "${gas.name}" LEL must be greater than 0`);
+      throw inputRangeError(`gas "${gas.name}" LEL must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: `gases[${i}].lel`, exclusive_min: 0, got: gas.lel,
+      });
     }
   }
 

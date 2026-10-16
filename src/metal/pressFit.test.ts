@@ -264,3 +264,12 @@ describe('pressFit', () => {
     });
   });
 });
+
+describe('pressFit refusals carry their facts', () => {
+  it('bounds the hub outer diameter by the larger of shaft and hole', () => {
+    expect(() => pressFit({
+      shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 25, contactLength: 30,
+      youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15,
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'hubOuterDiameter', exclusive_min: 25.05, got: 25 }));
+  });
+});

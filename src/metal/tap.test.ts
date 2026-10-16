@@ -203,3 +203,12 @@ describe('tap percentage of thread (chart convention)', () => {
   });
 });
 
+
+describe('tap refusals carry their facts', () => {
+  it('bounds the pitch by the major diameter, in the caller\'s own unit', () => {
+    expect(() => tap({ standard: 'metric', majorDiameter: 10, pitch: 20 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pitch', got: 20, exclusive_max: 10 / (1.25 * 0.866025) }));
+    expect(() => tap({ standard: 'unified', majorDiameter: 10, pitch: 1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pitch', got: 1, exclusive_min: (25.4 * 1.25 * 0.866025) / 10 }));
+  });
+});

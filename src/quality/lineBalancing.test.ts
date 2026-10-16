@@ -273,3 +273,27 @@ describe('lineBalancing precedence input', () => {
     expect(() => lineBalancing({ cycleTime: 10, tasks: [{ id: 'A', time: 3, predecessors: [] }, { id: 'A', time: 2, predecessors: [] }] })).toThrow(/used more than once/);
   });
 });
+
+describe('lineBalancing refusal codes', () => {
+  it('names the task whose time is not positive', () => {
+    const tasks = [
+      { id: 'A', name: 'A', time: 5, predecessors: [] },
+      { id: 'B', name: 'B', time: 0, predecessors: ['A'] },
+    ];
+    expect(() => lineBalancing({ tasks, cycleTime: 10 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tasks[1].time', exclusive_min: 0, got: 0 }));
+  });
+  it('codes a cycle time shorter than the longest task', () => {
+    const tasks = [{ id: 'A', name: 'A', time: 12, predecessors: [] }];
+    expect(() => lineBalancing({ tasks, cycleTime: 10 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'cycleTime', min: 12, got: 10 }));
+  });
+  it('codes a predecessor that names no task', () => {
+    const tasks = [
+      { id: 'A', name: 'A', time: 5, predecessors: [] },
+      { id: 'B', name: 'B', time: 5, predecessors: ['Z'] },
+    ];
+    expect(() => lineBalancing({ tasks, cycleTime: 10 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'tasks[1].predecessors', got: 'Z' }));
+  });
+});

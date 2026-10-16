@@ -39,7 +39,11 @@ export function shipping(input: ShippingInput): ShippingResult {
     : mode === 'express' ? VOLUMETRIC_KG_PER_M3.express
     : mode === 'truck' ? VOLUMETRIC_KG_PER_M3.truck
     : undefined;
-  if (volumetricKgPerM3 === undefined) throw new RangeError('unknown shipping mode: ' + mode);
+  if (volumetricKgPerM3 === undefined) {
+    throw inputRangeError('unknown shipping mode: ' + mode, {
+      code: 'unknown_option', parameter: 'mode', got: String(mode),
+    });
+  }
   const volumetricWeight = roundTo(volume * volumetricKgPerM3, 2);
   const chargeableWeight = roundTo(Math.max(weight, volumetricWeight), 2);
 

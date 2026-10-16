@@ -374,19 +374,27 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
   }
 
   // The centre of gravity is weighted by box weight; weightless boxes would divide 0 by 0.
-  for (const box of input.boxes) {
+  for (const [i, box] of input.boxes.entries()) {
     if (!(box.weight > 0)) {
-      throw new RangeError('box weight must be greater than 0');
+      throw inputRangeError('box weight must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: `boxes[${i}].weight`, exclusive_min: 0, got: box.weight,
+      });
     }
     // A box with a zero or negative side has no volume to place and breaks the collision test.
     if (!(box.length > 0)) {
-      throw new RangeError('box length must be greater than 0');
+      throw inputRangeError('box length must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: `boxes[${i}].length`, exclusive_min: 0, got: box.length,
+      });
     }
     if (!(box.width > 0)) {
-      throw new RangeError('box width must be greater than 0');
+      throw inputRangeError('box width must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: `boxes[${i}].width`, exclusive_min: 0, got: box.width,
+      });
     }
     if (!(box.height > 0)) {
-      throw new RangeError('box height must be greater than 0');
+      throw inputRangeError('box height must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: `boxes[${i}].height`, exclusive_min: 0, got: box.height,
+      });
     }
   }
   if (input.customLength != null && !(input.customLength > 0)) {

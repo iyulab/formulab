@@ -43,19 +43,21 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
   operations.forEach((op, i) => {
     if (op.distance !== undefined && !(op.distance >= 0)) {
       throw inputRangeError(`operations[${i}].distance must not be negative`, {
-        code: 'parameter_out_of_range', parameter: 'op.distance', min: 0, got: op.distance,
+        code: 'parameter_out_of_range', parameter: `operations[${i}].distance`, min: 0, got: op.distance,
       });
     }
     if (op.time !== undefined && !(op.time >= 0)) {
       throw inputRangeError(`operations[${i}].time must not be negative`, {
-        code: 'parameter_out_of_range', parameter: 'op.time', min: 0, got: op.time,
+        code: 'parameter_out_of_range', parameter: `operations[${i}].time`, min: 0, got: op.time,
       });
     }
     // A cutting move with a distance but no positive feed has no duration to add; skipping it
     // silently would under-report the cycle.
     if (op.type === 'cutting' && (op.feedRate !== undefined || op.distance !== undefined)
       && !(op.feedRate !== undefined && op.feedRate > 0)) {
-      throw new RangeError(`operations[${i}].feedRate must be greater than 0`);
+      throw inputRangeError(`operations[${i}].feedRate must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: `operations[${i}].feedRate`, exclusive_min: 0, got: op.feedRate,
+      });
     }
   });
 
@@ -64,7 +66,7 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
   let toolChangeTime = 0; // seconds
   let dwellTime = 0;     // seconds
 
-  for (const op of operations) {
+  for (const [i, op] of operations.entries()) {
     switch (op.type) {
       case 'cutting': {
         if (op.distance !== undefined && op.feedRate !== undefined) {
@@ -76,7 +78,9 @@ export function cycleTimeEstimator(input: CycleTimeEstimatorInput): CycleTimeEst
         if (op.distance !== undefined) {
           const rate = op.rapidRate ?? DEFAULT_RAPID_RATE;
           if (!(rate > 0)) {
-            throw new RangeError('rapidRate must be greater than 0');
+            throw inputRangeError('rapidRate must be greater than 0', {
+              code: 'parameter_out_of_range', parameter: `operations[${i}].rapidRate`, exclusive_min: 0, got: rate,
+            });
           }
           rapidTime += (op.distance / rate) * 60;
         }

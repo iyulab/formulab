@@ -40,7 +40,9 @@ export function beamLoad(input: LoadInput): LoadResult {
     }
   }
   if (pointPosition !== undefined && pointPosition !== null && (pointPosition < 0 || pointPosition > span)) {
-    throw new RangeError('pointPosition must be within [0, span]');
+    throw inputRangeError('pointPosition must be within [0, span]', {
+      code: 'parameter_out_of_range', parameter: 'pointPosition', min: 0, max: span, got: pointPosition,
+    });
   }
 
   const w = uniformLoad ?? 0;

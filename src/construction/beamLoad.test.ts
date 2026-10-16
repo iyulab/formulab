@@ -358,3 +358,10 @@ describe('beamLoad', () => {
     });
   });
 });
+
+describe('beamLoad refusal codes', () => {
+  it('names pointPosition outside [0, span] with both bounds', () => {
+    expect(() => beamLoad({ loadType: 'concentrated', support: 'simple', span: 4, pointLoad: 10, pointPosition: 5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pointPosition', min: 0, max: 4, got: 5 }));
+  });
+});

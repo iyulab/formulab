@@ -61,8 +61,25 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
     mf = 0.8,
   } = input;
 
-  if (roomLength <= 0 || roomWidth <= 0 || lumensPerLuminaire <= 0 || targetLux <= 0) {
-    throw new RangeError('roomLength, roomWidth, lumensPerLuminaire, and targetLux must all be greater than 0');
+  if (roomLength <= 0) {
+    throw inputRangeError('roomLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'roomLength', exclusive_min: 0, got: roomLength,
+    });
+  }
+  if (roomWidth <= 0) {
+    throw inputRangeError('roomWidth must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'roomWidth', exclusive_min: 0, got: roomWidth,
+    });
+  }
+  if (lumensPerLuminaire <= 0) {
+    throw inputRangeError('lumensPerLuminaire must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'lumensPerLuminaire', exclusive_min: 0, got: lumensPerLuminaire,
+    });
+  }
+  if (targetLux <= 0) {
+    throw inputRangeError('targetLux must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'targetLux', exclusive_min: 0, got: targetLux,
+    });
   }
 
   if (!(mf > 0)) {
@@ -82,7 +99,9 @@ export function illuminance(input: IlluminanceInput): IlluminanceResult {
   const hm = luminaireHeight - workplaneHeight;
 
   if (hm <= 0) {
-    throw new RangeError('luminaireHeight must be greater than workplaneHeight');
+    throw inputRangeError('luminaireHeight must be greater than workplaneHeight', {
+      code: 'parameter_out_of_range', parameter: 'luminaireHeight', exclusive_min: workplaneHeight, got: luminaireHeight,
+    });
   }
 
   // Room Index (Cavity Ratio)

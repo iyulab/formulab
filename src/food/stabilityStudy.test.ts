@@ -197,3 +197,9 @@ describe('stabilityStudy', () => {
     });
   });
 });
+
+describe('stabilityStudy coded refusals', () => {
+  it('names the data point at or below absolute zero', () => {
+    expect(() => stabilityStudy({ dataPoints: [{ temperature: 30, time: 1, degradation: 1 }, { temperature: -300, time: 1, degradation: 2 }], shelfLifeCriterion: 10, storageTemp: 25 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'dataPoints[1].temperature', exclusive_min: -273.15, got: -300 }));
+  });
+});

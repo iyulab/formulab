@@ -166,3 +166,10 @@ describe('reflowProfile', () => {
     });
   });
 });
+
+describe('reflowProfile refusal codes', () => {
+  it('names an unknown paste type', () => {
+    expect(() => reflowProfile('invalid' as never))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'pasteType', got: 'invalid' }));
+  });
+});

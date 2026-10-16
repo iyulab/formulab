@@ -73,3 +73,10 @@ describe('movingAverage', () => {
     expect(() => movingAverage({ data: [1, 2, 3], window: 0, method: 'sma' })).toThrow(RangeError);
   });
 });
+
+describe('movingAverage refusal codes', () => {
+  it('codes an unknown method', () => {
+    expect(() => movingAverage({ data: [1, 2, 3], window: 2, method: 'wma' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'method', got: 'wma' }));
+  });
+});

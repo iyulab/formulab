@@ -215,7 +215,9 @@ describe('stencilAperture', () => {
           stencilThickness: 0.12,
           componentType: 'qfp',
         })
-      ).toThrow('Aperture width and stencil thickness must be positive');
+      ).toThrow(expect.objectContaining({
+        message: 'Aperture width must be positive', code: 'parameter_out_of_range', parameter: 'apertureWidth', got: 0,
+      }));
     });
 
     it('should throw error for zero stencil thickness', () => {
@@ -227,7 +229,9 @@ describe('stencilAperture', () => {
           stencilThickness: 0,
           componentType: 'qfp',
         })
-      ).toThrow('Aperture width and stencil thickness must be positive');
+      ).toThrow(expect.objectContaining({
+        message: 'Stencil thickness must be positive', code: 'parameter_out_of_range', parameter: 'stencilThickness', got: 0,
+      }));
     });
 
     it('should throw error for rectangle with zero length', () => {

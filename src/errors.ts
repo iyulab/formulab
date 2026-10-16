@@ -27,7 +27,11 @@ export type InputErrorCode =
   /** A list the function needs at least one entry in is empty. */
   | 'empty_input'
   /** A list has entries, but fewer than the calculation needs — `min` is the least count. */
-  | 'insufficient_data';
+  | 'insufficient_data'
+  /** A name or choice the function does not know (a material, a shape, a table key) — `got` is what was given. */
+  | 'unknown_option'
+  /** Lists that must pair up differ in length — `expected` is the length they must match, `got` this one's. */
+  | 'dimension_mismatch';
 
 /** The facts behind a refusal. Bounds are closed (`min`/`max`) or open (`exclusive_min`/`exclusive_max`). */
 export interface InputErrorDetail {
@@ -38,8 +42,10 @@ export interface InputErrorDetail {
   max?: number;
   exclusive_min?: number;
   exclusive_max?: number;
-  /** The value that was given (a count, for `insufficient_data`). */
-  got?: number;
+  /** The value that was given (a count, for `insufficient_data` and `dimension_mismatch`; the name, for `unknown_option`). */
+  got?: number | string;
+  /** The length a list must have, for `dimension_mismatch`. */
+  expected?: number;
 }
 
 /** A `RangeError` carrying the facts behind the refusal (what `inputRangeError()` returns). */

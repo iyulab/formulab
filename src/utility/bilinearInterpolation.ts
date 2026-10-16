@@ -20,13 +20,17 @@ export function bilinearInterpolation(input: BilinearInterpolationInput): Biline
     throw inputRangeError(`y must contain at least 2 points, got ${y?.length ?? 0}`, { code: 'insufficient_data', parameter: 'y', min: 2, got: y?.length ?? 0 });
   }
   if (!z || z.length !== x.length) {
-    throw new RangeError(`z must have ${x.length} rows to match x, got ${z?.length ?? 0}`);
+    throw inputRangeError(`z must have ${x.length} rows to match x, got ${z?.length ?? 0}`, {
+      code: 'dimension_mismatch', parameter: 'z', expected: x.length, got: z?.length ?? 0,
+    });
   }
-  for (const row of z) {
+  z.forEach((row, i) => {
     if (row.length !== y.length) {
-      throw new RangeError(`each z row must have ${y.length} columns to match y, got ${row.length}`);
+      throw inputRangeError(`each z row must have ${y.length} columns to match y, got ${row.length}`, {
+        code: 'dimension_mismatch', parameter: `z[${i}]`, expected: y.length, got: row.length,
+      });
     }
-  }
+  });
 
   const xi = findBracket(x, targetX);
   const yi = findBracket(y, targetY);

@@ -196,3 +196,12 @@ describe('havsCalculate', () => {
     });
   });
 });
+
+describe('havsCalculate coded refusals', () => {
+  it('names the tool whose vibrationMagnitude is negative', () => {
+    expect(() => havsCalculate({ tools: [{ vibrationMagnitude: 3, exposureTime: 2 }, { vibrationMagnitude: -1, exposureTime: 2 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tools[1].vibrationMagnitude', min: 0, got: -1 }));
+  });
+  it('names the tool whose exposureTime is negative', () => {
+    expect(() => havsCalculate({ tools: [{ vibrationMagnitude: 3, exposureTime: -1 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tools[0].exposureTime', min: 0, got: -1 }));
+  });
+});

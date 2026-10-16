@@ -284,3 +284,23 @@ describe('flatPattern — bend domain and flanges', () => {
     expect(flatPattern({ ...base, shapeType: 'lShape', bendAngle: 90 }).flatLength).toBeGreaterThan(0);
   });
 });
+
+describe('flatPattern refusals carry their facts', () => {
+  const base = { thickness: 2, insideRadius: 2, bendAngle: 90, flangeA: 50, flangeB: 30 };
+
+  it('refuses an unknown shape and an unknown material as unknown options', () => {
+    expect(() => flatPattern({ ...base, shapeType: 'zShape' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'shapeType', got: 'zShape' }));
+    expect(() => flatPattern({ ...base, shapeType: 'lShape', material: 'unobtainium' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'material', got: 'unobtainium' }));
+  });
+
+  it('names each flange that is not positive', () => {
+    expect(() => flatPattern({ ...base, shapeType: 'lShape', flangeA: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'flangeA', exclusive_min: 0, got: 0 }));
+    expect(() => flatPattern({ ...base, shapeType: 'lShape', flangeB: -1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'flangeB', exclusive_min: 0, got: -1 }));
+    expect(() => flatPattern({ ...base, shapeType: 'uShape' }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'flangeC', exclusive_min: 0, got: 0 }));
+  });
+});

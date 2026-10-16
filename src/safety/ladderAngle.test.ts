@@ -240,3 +240,9 @@ describe('ladderAngle — a ladder cannot be shorter than a leg', () => {
     expect(r.warnings.length).toBeGreaterThan(0);
   });
 });
+
+describe('ladderAngle coded refusals', () => {
+  it('codes a non-positive ladderLength', () => {
+    expect(() => ladderAngle({ ladderLength: 0, height: 5 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ladderLength', exclusive_min: 0, got: 0 }));
+  });
+});

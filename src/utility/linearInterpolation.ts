@@ -13,11 +13,16 @@ import { inputRangeError } from '../errors.js';
 export function linearInterpolation(input: LinearInterpolationInput): LinearInterpolationResult {
   requireFinite('linearInterpolation', input);
   const { x, y, target } = input;
-  if (!x || !y) {
-    throw new RangeError('x and y arrays are required');
+  if (!x) {
+    throw inputRangeError('x array is required', { code: 'empty_input', parameter: 'x' });
+  }
+  if (!y) {
+    throw inputRangeError('y array is required', { code: 'empty_input', parameter: 'y' });
   }
   if (x.length !== y.length) {
-    throw new RangeError(`x and y must have the same length, got x.length=${x.length}, y.length=${y.length}`);
+    throw inputRangeError(`x and y must have the same length, got x.length=${x.length}, y.length=${y.length}`, {
+      code: 'dimension_mismatch', parameter: 'y', expected: x.length, got: y.length,
+    });
   }
   if (x.length < 2) {
     throw inputRangeError(`x must contain at least 2 points, got ${x.length}`, {

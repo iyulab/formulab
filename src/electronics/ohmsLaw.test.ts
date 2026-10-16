@@ -74,3 +74,14 @@ describe('ohmsLaw', () => {
     });
   });
 });
+
+describe('ohmsLaw refusal codes', () => {
+  it('names the refused quantity and its bound', () => {
+    expect(() => ohmsLaw({ solveFor: 'voltage', current: 0, resistance: 5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'current', exclusive_min: 0, got: 0 }));
+    expect(() => ohmsLaw({ solveFor: 'current', voltage: 10, resistance: -2 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'resistance', exclusive_min: 0, got: -2 }));
+    expect(() => ohmsLaw({ solveFor: 'power', voltage: -5, current: 1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'voltage', min: 0, got: -5 }));
+  });
+});

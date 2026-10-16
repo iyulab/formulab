@@ -1,5 +1,6 @@
 import type { FlangeSpecInput, FlangeSpecResult, PressureClass } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 interface FlangeDimension {
   od: number;                // flange OD, mm
@@ -94,19 +95,25 @@ export function flangeSpec(input: FlangeSpecInput): FlangeSpecResult {
   const { standard, pressureClass, nominalSize } = input;
 
   if (standard === 'EN_1092_1') {
-    throw new RangeError('EN 1092-1 support not yet implemented. Use ASME_B16_5.');
+    throw inputRangeError('EN 1092-1 support not yet implemented. Use ASME_B16_5.', {
+      code: 'unknown_option', parameter: 'standard', got: String(standard),
+    });
   }
 
   // Normalize nominal size (remove quotes)
   const nps = nominalSize.replace(/"/g, '').replace(/'/g, '').trim();
   const sizeData = ASME_B16_5[nps];
   if (!sizeData) {
-    throw new RangeError(`Unknown flange size: ${nps}`);
+    throw inputRangeError(`Unknown flange size: ${nps}`, {
+      code: 'unknown_option', parameter: 'nominalSize', got: String(nominalSize),
+    });
   }
 
   const dim = sizeData[pressureClass];
   if (!dim) {
-    throw new RangeError(`Pressure class ${pressureClass} not available for size ${nps}`);
+    throw inputRangeError(`Pressure class ${pressureClass} not available for size ${nps}`, {
+      code: 'unknown_option', parameter: 'pressureClass', got: String(pressureClass),
+    });
   }
 
   return {

@@ -2,6 +2,7 @@ import type { FlatPatternInput, FlatPatternResult } from './types.js';
 import { assertBendDomain, EXTREME_BEND_ANGLE, resolveKFactor } from './bendDomain.js';
 import { requireFinite } from '../utils.js';
 import { Notes } from '../diagnostics.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate flat pattern length for bent sheet metal.
@@ -32,12 +33,26 @@ export function flatPattern(input: FlatPatternInput): FlatPatternResult {
   // An unknown shape used to be bent as a U, and an unknown material reported as a K-factor out of
   // range — each error named the wrong field.
   if (shapeType !== 'lShape' && shapeType !== 'uShape') {
-    throw new RangeError(`shapeType must be lShape or uShape, got ${String(shapeType)}`);
+    throw inputRangeError(`shapeType must be lShape or uShape, got ${String(shapeType)}`, {
+      code: 'unknown_option', parameter: 'shapeType', got: String(shapeType),
+    });
   }
   const kFactor = resolveKFactor(material, input.kFactor);
   assertBendDomain({ thickness, bendAngle, insideRadius, kFactor });
-  if (!(flangeA > 0) || !(flangeB > 0) || (shapeType !== 'lShape' && !(flangeC > 0))) {
-    throw new RangeError('flange lengths must be greater than 0');
+  if (!(flangeA > 0)) {
+    throw inputRangeError('flangeA must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'flangeA', exclusive_min: 0, got: flangeA,
+    });
+  }
+  if (!(flangeB > 0)) {
+    throw inputRangeError('flangeB must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'flangeB', exclusive_min: 0, got: flangeB,
+    });
+  }
+  if (shapeType !== 'lShape' && !(flangeC > 0)) {
+    throw inputRangeError('flangeC must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'flangeC', exclusive_min: 0, got: flangeC,
+    });
   }
 
   // Convert bend angle to radians

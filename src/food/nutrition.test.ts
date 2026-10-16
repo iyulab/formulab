@@ -236,3 +236,9 @@ describe('nutrition', () => {
     });
   });
 });
+
+describe('nutrition coded refusals', () => {
+  it('names the ingredient field that is negative', () => {
+    expect(() => nutrition({ servingSize: 100, ingredients: [{ name: 'a', amountG: 100, calories: 100, totalFat: 5, saturatedFat: 2, transFat: 0, cholesterol: 10, sodium: 100, totalCarbs: 20, dietaryFiber: 3, sugars: 5, protein: 5 }, { ...{ name: 'a', amountG: 100, calories: 100, totalFat: 5, saturatedFat: 2, transFat: 0, cholesterol: 10, sodium: 100, totalCarbs: 20, dietaryFiber: 3, sugars: 5, protein: 5 }, sodium: -1 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ingredients[1].sodium', min: 0, got: -1 }));
+  });
+});

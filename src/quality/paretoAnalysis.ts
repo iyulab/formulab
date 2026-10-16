@@ -22,11 +22,13 @@ export function paretoAnalysis(input: ParetoInput): ParetoResult {
   if (!Array.isArray(items) || items.length === 0) {
     throw inputRangeError('items must contain at least one item', { code: 'empty_input', parameter: 'items' });
   }
-  for (const item of items) {
+  items.forEach((item, i) => {
     if (!(item.value >= 0)) {
-      throw new RangeError(`value of ${item.name} must not be negative`);
+      throw inputRangeError(`value of ${item.name} must not be negative`, {
+        code: 'parameter_out_of_range', parameter: `items[${i}].value`, min: 0, got: item.value,
+      });
     }
-  }
+  });
 
   const totalValue = items.reduce((s, item) => s + item.value, 0);
 

@@ -1,4 +1,5 @@
 import type { ContainerSpec, ContainerType } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Typical inside dimensions and payload of standard steel dry freight containers.
@@ -26,7 +27,9 @@ const SPECS: Readonly<Record<ContainerType, ContainerSpec>> = {
  */
 export function getContainerSpec(type: ContainerType): ContainerSpec {
   if (!Object.hasOwn(SPECS, type)) {
-    throw new RangeError(`unknown container type: ${String(type)}`);
+    throw inputRangeError(`unknown container type: ${String(type)}`, {
+      code: 'unknown_option', parameter: 'type', got: String(type),
+    });
   }
   const spec = SPECS[type];
   return { type: spec.type, interior: { ...spec.interior }, maxPayload: spec.maxPayload };

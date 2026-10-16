@@ -26,8 +26,11 @@ export interface CapabilityIndices {
  *   stdDev is negative or not finite
  */
 export function capabilityIndices(usl: number, lsl: number, mean: number, stdDev: number): CapabilityIndices {
-  if (!Number.isFinite(usl) || !Number.isFinite(lsl)) {
-    throw new RangeError('usl and lsl must be finite');
+  if (!Number.isFinite(usl)) {
+    throw inputRangeError('usl must be finite', { code: 'value_not_finite', parameter: 'usl', got: usl });
+  }
+  if (!Number.isFinite(lsl)) {
+    throw inputRangeError('lsl must be finite', { code: 'value_not_finite', parameter: 'lsl', got: lsl });
   }
   // A capability is the room between two limits; with the limits crossed every index is negative.
   if (!(usl > lsl)) {
@@ -36,7 +39,7 @@ export function capabilityIndices(usl: number, lsl: number, mean: number, stdDev
     });
   }
   if (!Number.isFinite(mean)) {
-    throw new RangeError('mean must be finite');
+    throw inputRangeError('mean must be finite', { code: 'value_not_finite', parameter: 'mean', got: mean });
   }
   if (!(stdDev >= 0) || !Number.isFinite(stdDev)) {
     throw inputRangeError('stdDev must not be negative', {

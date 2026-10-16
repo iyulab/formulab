@@ -17,7 +17,7 @@ const RECOMMENDATIONS: Record<ComponentType, { areaRatio: number; aspectRatio: n
 
 /**
  * Calculate stencil aperture area ratio and aspect ratio
- * @throws {RangeError} Aperture width and stencil thickness must be positive
+ * @throws {RangeError} Aperture width (or stencil thickness) must be positive
  * @throws {RangeError} Aperture length must be positive for rectangular apertures
  * @param input - Aperture dimensions, stencil thickness, and component type
  * @returns Area ratio, aspect ratio, and pass/fail status
@@ -28,8 +28,15 @@ export function stencilAperture(input: StencilInput): StencilResult {
   const { shape, apertureWidth, apertureLength, stencilThickness, componentType } = input;
 
   // Validate inputs
-  if (apertureWidth <= 0 || stencilThickness <= 0) {
-    throw new RangeError('Aperture width and stencil thickness must be positive');
+  if (apertureWidth <= 0) {
+    throw inputRangeError('Aperture width must be positive', {
+      code: 'parameter_out_of_range', parameter: 'apertureWidth', exclusive_min: 0, got: apertureWidth,
+    });
+  }
+  if (stencilThickness <= 0) {
+    throw inputRangeError('Stencil thickness must be positive', {
+      code: 'parameter_out_of_range', parameter: 'stencilThickness', exclusive_min: 0, got: stencilThickness,
+    });
   }
   if (shape === 'rectangle' && apertureLength <= 0) {
     throw inputRangeError('Aperture length must be positive for rectangular apertures', {

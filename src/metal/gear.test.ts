@@ -158,3 +158,10 @@ describe('gear', () => {
     });
   });
 });
+
+describe('gear refusals carry their facts', () => {
+  it('names the tooth count that leaves no root circle', () => {
+    expect(() => gear({ mode: 'fromModule', module: 2, teethGear1: 20, teethGear2: 2 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'teethGear2', exclusive_min: 2.5, got: 2 }));
+  });
+});

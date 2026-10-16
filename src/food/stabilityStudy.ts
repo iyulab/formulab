@@ -39,7 +39,9 @@ export function stabilityStudy(input: StabilityStudyInput): StabilityStudyResult
   }
   for (const [i, dp] of dataPoints.entries()) {
     if (!(dp.temperature > -273.15)) {
-      throw new RangeError(`dataPoints[${i}].temperature must be above absolute zero (-273.15 °C)`);
+      throw inputRangeError(`dataPoints[${i}].temperature must be above absolute zero (-273.15 °C)`, {
+        code: 'parameter_out_of_range', parameter: `dataPoints[${i}].temperature`, exclusive_min: -273.15, got: dp.temperature,
+      });
     }
   }
 

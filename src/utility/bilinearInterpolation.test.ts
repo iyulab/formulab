@@ -72,3 +72,11 @@ describe('bilinearInterpolation', () => {
     })).toThrow(RangeError);
   });
 });
+
+describe('bilinearInterpolation refusal codes', () => {
+  it('codes a z grid that does not match the axes', () => {
+    const base = { x: [0, 1], y: [0, 1], targetX: 0.5, targetY: 0.5 };
+    expect(() => bilinearInterpolation({ ...base, z: [[1, 2]] })).toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'z', expected: 2, got: 1 }));
+    expect(() => bilinearInterpolation({ ...base, z: [[1, 2], [3]] })).toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'z[1]', expected: 2, got: 1 }));
+  });
+});

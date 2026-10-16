@@ -25,7 +25,10 @@ export function timeStudy(input: TimeStudyInput): TimeStudyResult {
   const { observations, confidence, accuracy } = input;
 
   if (!Array.isArray(observations) || observations.length < 2) {
-    throw new RangeError('Observations must have at least 2 elements');
+    throw inputRangeError('Observations must have at least 2 elements', {
+      code: 'insufficient_data', parameter: 'observations', min: 2,
+      got: Array.isArray(observations) ? observations.length : 0,
+    });
   }
   for (let i = 0; i < observations.length; i++) {
     if (!Number.isFinite(observations[i]) || observations[i] <= 0) {

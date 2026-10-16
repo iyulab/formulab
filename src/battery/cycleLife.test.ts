@@ -123,3 +123,10 @@ describe('cycleLife', () => {
     });
   });
 });
+
+describe('cycleLife refusals carry their facts', () => {
+  it('refuses an unknown chemistry as an unknown option', () => {
+    expect(() => cycleLife({ chemistry: 'Zinc' as never, depthOfDischarge: 80, temperatureC: 25 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'chemistry', got: 'Zinc' }));
+  });
+});

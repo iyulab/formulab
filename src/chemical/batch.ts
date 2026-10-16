@@ -28,11 +28,13 @@ export function batch(input: BatchInput): BatchResult {
     });
   }
   // A negative amount scales to a negative quantity to weigh out.
-  for (const ing of ingredients) {
+  ingredients.forEach((ing, i) => {
     if (!(ing.amount >= 0)) {
-      throw new RangeError(`ingredient "${ing.name}" amount must not be negative`);
+      throw inputRangeError(`ingredient "${ing.name}" amount must not be negative`, {
+        code: 'parameter_out_of_range', parameter: `ingredients[${i}].amount`, min: 0, got: ing.amount,
+      });
     }
-  }
+  });
 
   const scaleFactor = targetBatchSize / originalBatchSize;
 

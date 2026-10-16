@@ -15,8 +15,16 @@ import { inputRangeError } from '../errors.js';
 export function correlation(input: CorrelationInput): CorrelationResult {
   requireFinite('correlation', input);
   const { x, y } = input;
-  if (!x || !y || x.length !== y.length) {
-    throw new RangeError(`x and y must have the same length, got ${x?.length ?? 0} and ${y?.length ?? 0}`);
+  if (!x) {
+    throw inputRangeError('x is required', { code: 'empty_input', parameter: 'x' });
+  }
+  if (!y) {
+    throw inputRangeError('y is required', { code: 'empty_input', parameter: 'y' });
+  }
+  if (x.length !== y.length) {
+    throw inputRangeError(`x and y must have the same length, got ${x.length} and ${y.length}`, {
+      code: 'dimension_mismatch', parameter: 'y', expected: x.length, got: y.length,
+    });
   }
   if (x.length < 2) {
     throw inputRangeError(`x and y must contain at least 2 points, got ${x.length}`, {

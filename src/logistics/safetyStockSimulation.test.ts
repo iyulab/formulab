@@ -65,3 +65,15 @@ describe('safetyStockSimulation', () => {
     expect(() => safetyStockSimulation({ ...base, ...override })).toThrow(RangeError);
   });
 });
+
+describe('safetyStockSimulation coded refusals', () => {
+  it('codes iterations out of range', () => {
+    expect(() => safetyStockSimulation({ ...base, iterations: 99 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'iterations', min: 100, max: 100_000, got: 99 }));
+  });
+  it('codes bins below 1', () => {
+    expect(() => safetyStockSimulation({ ...base, bins: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'bins', min: 1, got: 0 }));
+  });
+  it('codes an unknown demand distribution', () => {
+    expect(() => safetyStockSimulation({ ...base, demandDistribution: 'gamma' as never })).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'demandDistribution', got: 'gamma' }));
+  });
+});

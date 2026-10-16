@@ -166,3 +166,15 @@ describe('flangeSpec ASME B16.5 — golden rows from public tables', () => {
     });
   }
 });
+
+
+describe('flangeSpec refusals carry their facts', () => {
+  it('refuses an unsupported standard, an unknown size and an unavailable class as unknown options', () => {
+    expect(() => flangeSpec({ standard: 'EN_1092_1', pressureClass: '150', nominalSize: '4' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'standard', got: 'EN_1092_1' }));
+    expect(() => flangeSpec({ standard: 'ASME_B16_5', pressureClass: '150', nominalSize: '99' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'nominalSize', got: '99' }));
+    expect(() => flangeSpec({ standard: 'ASME_B16_5', pressureClass: '9999' as never, nominalSize: '4' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'pressureClass', got: '9999' }));
+  });
+});

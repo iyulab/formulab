@@ -60,7 +60,11 @@ export function bolt(input: BoltInput): BoltResult {
   if (mode === 'torqueToPreload') {
     // Given torque, calculate preload
     torque = input.torque;
-    if (torque == null || torque <= 0) throw new RangeError('torque must be greater than 0');
+    if (torque == null || torque <= 0) {
+      throw inputRangeError('torque must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'torque', exclusive_min: 0, got: torque ?? undefined,
+      });
+    }
     // T = K * D * F => F = T / (K * D)
     // T in N-m, D in mm => need to convert D to m: D/1000
     // F = T / (K * D/1000) = T * 1000 / (K * D)

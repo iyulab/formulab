@@ -26,7 +26,9 @@ export function getAggregateDensity(type: AggregateType): number | null {
   const aggregate = AGGREGATE_DENSITIES.find(a => a.type === type);
   // A density of 0 for an unknown type would turn every volume into 0 kg.
   if (!aggregate) {
-    throw new RangeError(`unknown aggregate type: ${String(type)}`);
+    throw inputRangeError(`unknown aggregate type: ${String(type)}`, {
+      code: 'unknown_option', parameter: 'type', got: String(type),
+    });
   }
   return aggregate.density;
 }
@@ -34,15 +36,22 @@ export function getAggregateDensity(type: AggregateType): number | null {
 /**
  * Calculate how much area can be covered with a given volume at a specific depth
  *
- * @throws {RangeError} Volume and depth must be greater than zero
+ * @throws {RangeError} Volume (or depth) must be greater than zero
  * @param volumeM3 - Volume in cubic meters
  * @param depthCm - Depth in centimeters
  * @returns Coverage area in square meters
  */
 export function aggregateCoverage(volumeM3: number, depthCm: number): number {
   requireFinite('aggregateCoverage', { volumeM3, depthCm });
-  if (volumeM3 <= 0 || depthCm <= 0) {
-    throw new RangeError('Volume and depth must be greater than zero');
+  if (volumeM3 <= 0) {
+    throw inputRangeError('Volume must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'volumeM3', exclusive_min: 0, got: volumeM3,
+    });
+  }
+  if (depthCm <= 0) {
+    throw inputRangeError('Depth must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'depthCm', exclusive_min: 0, got: depthCm,
+    });
   }
   const depthM = depthCm / 100;
   return roundTo(volumeM3 / depthM, 2);
@@ -56,7 +65,7 @@ export function aggregateCoverage(volumeM3: number, depthCm: number): number {
  * - Weight = volume × density
  * - Coverage area = length × width (footprint)
  *
- * @throws {RangeError} All dimensions must be greater than zero
+ * @throws {RangeError} Length, width or depth must be greater than zero
  * @throws {RangeError} Custom density must be provided and greater than zero
  * @throws {RangeError} Unknown aggregate type: {aggregateType}
  * @param input - Aggregate input parameters
@@ -67,8 +76,20 @@ export function aggregate(input: AggregateInput): AggregateResult {
   const { length, width, depth, depthUnit, aggregateType, customDensity } = input;
 
   // Validate inputs
-  if (length <= 0 || width <= 0 || depth <= 0) {
-    throw new RangeError('All dimensions must be greater than zero');
+  if (length <= 0) {
+    throw inputRangeError('Length must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'length', exclusive_min: 0, got: length,
+    });
+  }
+  if (width <= 0) {
+    throw inputRangeError('Width must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'width', exclusive_min: 0, got: width,
+    });
+  }
+  if (depth <= 0) {
+    throw inputRangeError('Depth must be greater than zero', {
+      code: 'parameter_out_of_range', parameter: 'depth', exclusive_min: 0, got: depth,
+    });
   }
 
   // Convert depth to meters if in centimeters
@@ -86,7 +107,9 @@ export function aggregate(input: AggregateInput): AggregateResult {
   } else {
     const aggregateInfo = AGGREGATE_DENSITIES.find(a => a.type === aggregateType);
     if (!aggregateInfo || aggregateInfo.density === null) {
-      throw new RangeError(`Unknown aggregate type: ${aggregateType}`);
+      throw inputRangeError(`Unknown aggregate type: ${aggregateType}`, {
+        code: 'unknown_option', parameter: 'aggregateType', got: String(aggregateType),
+      });
     }
     density = aggregateInfo.density;
   }

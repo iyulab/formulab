@@ -115,3 +115,10 @@ describe('paretoAnalysis', () => {
     });
   });
 });
+
+describe('paretoAnalysis refusal codes', () => {
+  it('names the negative item value by its index', () => {
+    expect(() => paretoAnalysis({ items: [{ name: 'a', value: 3 }, { name: 'b', value: -1 }] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'items[1].value', min: 0, got: -1 }));
+  });
+});

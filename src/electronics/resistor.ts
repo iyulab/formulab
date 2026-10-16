@@ -1,5 +1,6 @@
 import type { ResistorBands, ResistorResult, ColorName } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Digit value carried by each band colour.
@@ -123,23 +124,31 @@ function formatResistance(resistance: number, tolerance: number, tempCoeff?: num
 function digitValue(color: ColorName, position: number): number {
   const value = COLOR_VALUES[color];
   if (value === undefined || value < 0) {
-    throw new RangeError(`invalid digit band color at position ${position}: ${String(color)}`);
+    throw inputRangeError(`invalid digit band color at position ${position}: ${String(color)}`, {
+      code: 'unknown_option', parameter: `bands[${position - 1}]`, got: String(color),
+    });
   }
   return value;
 }
 
-function multiplierValue(color: ColorName): number {
+/** `index` is the band's index in `bands`, for the refusal's parameter path. */
+function multiplierValue(color: ColorName, index: number): number {
   const value = MULTIPLIERS[color];
   if (value === undefined) {
-    throw new RangeError(`invalid multiplier band color: ${String(color)}`);
+    throw inputRangeError(`invalid multiplier band color: ${String(color)}`, {
+      code: 'unknown_option', parameter: `bands[${index}]`, got: String(color),
+    });
   }
   return value;
 }
 
-function toleranceValue(color: string): number {
+/** `index` is the band's index in `bands`, for the refusal's parameter path. */
+function toleranceValue(color: string, index: number): number {
   const value = TOLERANCES[color];
   if (value === undefined) {
-    throw new RangeError(`invalid tolerance band color: ${String(color)}`);
+    throw inputRangeError(`invalid tolerance band color: ${String(color)}`, {
+      code: 'unknown_option', parameter: `bands[${index}]`, got: String(color),
+    });
   }
   return value;
 }
@@ -156,10 +165,14 @@ export function resistorDecode(input: ResistorBands): ResistorResult {
   const { bandCount, bands } = input;
 
   if (bandCount !== 4 && bandCount !== 5 && bandCount !== 6) {
-    throw new RangeError(`bandCount must be 4, 5, or 6 (got ${String(bandCount)})`);
+    throw inputRangeError(`bandCount must be 4, 5, or 6 (got ${String(bandCount)})`, {
+      code: 'unknown_option', parameter: 'bandCount', got: String(bandCount),
+    });
   }
   if (!bands || bands.length < bandCount) {
-    throw new RangeError(`expected ${bandCount} band colors, got ${bands ? bands.length : 0}`);
+    throw inputRangeError(`expected ${bandCount} band colors, got ${bands ? bands.length : 0}`, {
+      code: 'dimension_mismatch', parameter: 'bands', expected: bandCount, got: bands ? bands.length : 0,
+    });
   }
 
   let resistance: number;
@@ -170,8 +183,8 @@ export function resistorDecode(input: ResistorBands): ResistorResult {
     // 4-band: digit1, digit2, multiplier, tolerance
     const digit1 = digitValue(bands[0], 1);
     const digit2 = digitValue(bands[1], 2);
-    const multiplier = multiplierValue(bands[2]);
-    tolerance = toleranceValue(bands[3]);
+    const multiplier = multiplierValue(bands[2], 2);
+    tolerance = toleranceValue(bands[3], 3);
 
     resistance = (digit1 * 10 + digit2) * multiplier;
   } else if (bandCount === 5) {
@@ -179,8 +192,8 @@ export function resistorDecode(input: ResistorBands): ResistorResult {
     const digit1 = digitValue(bands[0], 1);
     const digit2 = digitValue(bands[1], 2);
     const digit3 = digitValue(bands[2], 3);
-    const multiplier = multiplierValue(bands[3]);
-    tolerance = toleranceValue(bands[4]);
+    const multiplier = multiplierValue(bands[3], 3);
+    tolerance = toleranceValue(bands[4], 4);
 
     resistance = (digit1 * 100 + digit2 * 10 + digit3) * multiplier;
   } else {
@@ -188,11 +201,13 @@ export function resistorDecode(input: ResistorBands): ResistorResult {
     const digit1 = digitValue(bands[0], 1);
     const digit2 = digitValue(bands[1], 2);
     const digit3 = digitValue(bands[2], 3);
-    const multiplier = multiplierValue(bands[3]);
-    tolerance = toleranceValue(bands[4]);
+    const multiplier = multiplierValue(bands[3], 3);
+    tolerance = toleranceValue(bands[4], 4);
     tempCoeff = TEMP_COEFFICIENTS[bands[5]];
     if (tempCoeff === undefined) {
-      throw new RangeError(`invalid tempCoeff band color: ${String(bands[5])}`);
+      throw inputRangeError(`invalid tempCoeff band color: ${String(bands[5])}`, {
+        code: 'unknown_option', parameter: 'bands[5]', got: String(bands[5]),
+      });
     }
 
     resistance = (digit1 * 100 + digit2 * 10 + digit3) * multiplier;

@@ -153,3 +153,15 @@ describe('confinedSpace', () => {
     });
   });
 });
+
+describe('confinedSpace coded refusals', () => {
+  it('names a negative customGas concentration', () => {
+    expect(() => confinedSpace({ oxygenPercent: 20.9, lelPercent: 0, customGas: { name: 'NH3', concentration: -1, pel: 25, idlh: 300 } })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'customGas.concentration', min: 0, got: -1 }));
+  });
+  it('names a non-positive customGas pel', () => {
+    expect(() => confinedSpace({ oxygenPercent: 20.9, lelPercent: 0, customGas: { name: 'NH3', concentration: 10, pel: 0, idlh: 300 } })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'customGas.pel', exclusive_min: 0, got: 0 }));
+  });
+  it('names a non-positive customGas idlh', () => {
+    expect(() => confinedSpace({ oxygenPercent: 20.9, lelPercent: 0, customGas: { name: 'NH3', concentration: 10, pel: 25, idlh: 0 } })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'customGas.idlh', exclusive_min: 0, got: 0 }));
+  });
+});

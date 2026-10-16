@@ -319,3 +319,14 @@ describe('controlChart', () => {
     });
   });
 });
+
+describe('controlChart refusal codes', () => {
+  it('codes a subgroup whose size differs from the first', () => {
+    expect(() => controlChart({ chartType: 'xbarR', subgroups: [[1, 2, 3], [1, 2]] }))
+      .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'subgroups[1]', expected: 3, got: 2 }));
+  });
+  it('codes an I-MR subgroup that is not a single value', () => {
+    expect(() => controlChart({ chartType: 'imr', subgroups: [[1], [2, 3]] }))
+      .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'subgroups[1]', expected: 1, got: 2 }));
+  });
+});

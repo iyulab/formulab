@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ScrewInput, ScrewResult, ScrewSpec } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Nominal diameters with their coarse and fine pitches, and clearance hole diameters.
@@ -42,7 +43,9 @@ export function screw(input: ScrewInput): ScrewResult {
   requireFinite('screw', input);
   const spec = SCREW_TABLE[input.designation];
   if (!spec) {
-    throw new RangeError('unknown screw designation: ' + input.designation);
+    throw inputRangeError('unknown screw designation: ' + input.designation, {
+      code: 'unknown_option', parameter: 'designation', got: String(input.designation),
+    });
   }
 
   const pitch = input.pitchType === 'coarse' ? spec.coarsePitch : spec.finePitch;

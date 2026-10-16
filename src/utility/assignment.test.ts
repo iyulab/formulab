@@ -208,3 +208,11 @@ describe('solveAssignment', () => {
     });
   });
 });
+
+describe('solveAssignment refusal codes', () => {
+  it('codes an empty matrix and an empty first row', () => {
+    const base = { rowLabels: [], colLabels: [], objective: 'minimize' as const };
+    expect(() => solveAssignment({ ...base, matrix: [] })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'matrix' }));
+    expect(() => solveAssignment({ ...base, matrix: [[]] })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'matrix[0]' }));
+  });
+});

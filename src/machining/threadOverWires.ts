@@ -57,7 +57,9 @@ export function threadOverWires(input: ThreadOverWiresInput): ThreadOverWiresRes
   }
   const depthFactor = PITCH_DIAMETER_FACTOR[threadAngle];
   if (depthFactor === undefined) {
-    throw new RangeError(`threadAngle must be 60, 55, 29 or 30 (got ${threadAngle})`);
+    throw inputRangeError(`threadAngle must be 60, 55, 29 or 30 (got ${threadAngle})`, {
+      code: 'unknown_option', parameter: 'threadAngle', got: String(threadAngle),
+    });
   }
 
   const halfAngleRad = ((threadAngle / 2) * Math.PI) / 180;
@@ -72,8 +74,11 @@ export function threadOverWires(input: ThreadOverWiresInput): ThreadOverWiresRes
   // Judged on the value the result reports (4 decimals): at P = d/k the subtraction leaves a
   // floating-point residue (6.495 − 0.6495 × 10 = 8.9e-16) that would pass as a positive diameter.
   if (roundTo(pitchDiameter, 4) <= 0) {
-    throw new RangeError(
+    throw inputRangeError(
       `pitch ${pitch} is too coarse for majorDiameter ${majorDiameter}: the pitch diameter would be ${roundTo(pitchDiameter, 4)} (pitch must be below ${roundTo(majorDiameter / depthFactor, 4)})`,
+      {
+        code: 'parameter_out_of_range', parameter: 'pitch', exclusive_max: roundTo(majorDiameter / depthFactor, 4), got: pitch,
+      },
     );
   }
 

@@ -32,7 +32,9 @@ export function cuspHeight(input: CuspHeightInput): CuspHeightResult {
     });
   }
   if (stepover > 2 * toolRadius) {
-    throw new RangeError('stepover must not exceed the tool diameter (2 x toolRadius)');
+    throw inputRangeError('stepover must not exceed the tool diameter (2 x toolRadius)', {
+      code: 'parameter_out_of_range', parameter: 'stepover', max: 2 * toolRadius, got: stepover,
+    });
   }
 
   const halfStep = stepover / 2;

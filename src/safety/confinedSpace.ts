@@ -44,8 +44,20 @@ export function confinedSpace(input: ConfinedSpaceInput): ConfinedSpaceResult {
       code: 'parameter_out_of_range', parameter: 'coPpm', min: 0, got: coPpm,
     });
   }
-  if (customGas && (customGas.concentration < 0 || customGas.pel <= 0 || customGas.idlh <= 0)) {
-    throw new RangeError('customGas concentration must not be negative and pel/idlh must be greater than 0');
+  if (customGas && customGas.concentration < 0) {
+    throw inputRangeError('customGas.concentration must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'customGas.concentration', min: 0, got: customGas.concentration,
+    });
+  }
+  if (customGas && customGas.pel <= 0) {
+    throw inputRangeError('customGas.pel must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'customGas.pel', exclusive_min: 0, got: customGas.pel,
+    });
+  }
+  if (customGas && customGas.idlh <= 0) {
+    throw inputRangeError('customGas.idlh must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'customGas.idlh', exclusive_min: 0, got: customGas.idlh,
+    });
   }
 
   const notes = new Notes();

@@ -1,5 +1,6 @@
 import type { PasteType, ReflowProfileNumbers, ReflowResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 type Range = readonly [min: number, max: number];
 
@@ -67,7 +68,9 @@ export function reflowProfile(pasteType: PasteType): ReflowResult {
   requireFinite('reflowProfile', pasteType);
   const w = Object.hasOwn(REFLOW_WINDOWS, pasteType) ? REFLOW_WINDOWS[pasteType] : undefined;
   if (!w) {
-    throw new RangeError(`pasteType must be one of ${PASTE_TYPES.join(', ')}`);
+    throw inputRangeError(`pasteType must be one of ${PASTE_TYPES.join(', ')}`, {
+      code: 'unknown_option', parameter: 'pasteType', got: String(pasteType),
+    });
   }
   const profile: ReflowProfileNumbers = {
     preheatRateCPerS: span(w.preheatRate),

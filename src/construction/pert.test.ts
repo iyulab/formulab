@@ -298,3 +298,22 @@ describe('pert precedence input', () => {
     ] })).toThrow(/used more than once/);
   });
 });
+
+describe('pert refusal codes', () => {
+  const ok = { id: 'A', optimistic: 1, mostLikely: 2, pessimistic: 3, predecessors: [] as string[] };
+
+  it('names the negative estimate by its task index', () => {
+    expect(() => pert({ tasks: [ok, { ...ok, id: 'B', optimistic: -1 }] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tasks[1].optimistic', min: 0, got: -1 }));
+  });
+
+  it('names optimistic above mostLikely, bounded by mostLikely', () => {
+    expect(() => pert({ tasks: [{ ...ok, optimistic: 3, mostLikely: 2, pessimistic: 4 }] }))
+      .toThrow(expect.objectContaining({ message: 'task A optimistic must not exceed mostLikely', code: 'parameter_out_of_range', parameter: 'tasks[0].optimistic', max: 2, got: 3 }));
+  });
+
+  it('names mostLikely above pessimistic, bounded by pessimistic', () => {
+    expect(() => pert({ tasks: [{ ...ok, optimistic: 1, mostLikely: 5, pessimistic: 4 }] }))
+      .toThrow(expect.objectContaining({ message: 'task A mostLikely must not exceed pessimistic', code: 'parameter_out_of_range', parameter: 'tasks[0].mostLikely', max: 4, got: 5 }));
+  });
+});

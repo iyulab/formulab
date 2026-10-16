@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { AssignmentInput, AssignmentResult, AssignmentPair } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Hungarian algorithm (Jonker-Volgenant variant)
@@ -14,10 +15,13 @@ export function solveAssignment(input: AssignmentInput): AssignmentResult {
   requireFinite('solveAssignment', input);
   const { matrix, rowLabels, colLabels, objective } = input;
 
-  if (matrix.length === 0 || matrix[0].length === 0) {
-    throw new RangeError(
-      `matrix must have at least one row and one column, got ${matrix.length}x${matrix.length === 0 ? 0 : matrix[0].length}`
-    );
+  if (matrix.length === 0) {
+    throw inputRangeError('matrix must have at least one row, got 0', { code: 'empty_input', parameter: 'matrix' });
+  }
+  if (matrix[0].length === 0) {
+    throw inputRangeError('matrix[0] must have at least one column, got 0', {
+      code: 'empty_input', parameter: 'matrix[0]',
+    });
   }
 
   const nRows = matrix.length;

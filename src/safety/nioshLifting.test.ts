@@ -567,3 +567,9 @@ describe('nioshLifting', () => {
     });
   });
 });
+
+describe('nioshLifting coded refusals', () => {
+  it('names a negative input', () => {
+    expect(() => nioshLifting({ horizontalDistance: 25, verticalDistance: 75, verticalTravel: 25, asymmetryAngle: 0, frequency: -1, duration: 'short', coupling: 'good', loadWeight: 10 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'frequency', min: 0, got: -1 }));
+  });
+});

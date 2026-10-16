@@ -22,7 +22,7 @@ const STEFAN_BOLTZMANN = 5.670374419e-8;
  * @throws {RangeError} Thickness must be positive
  * @throws {RangeError} Convection coefficient must be positive
  * @throws {RangeError} Emissivity must be between 0 and 1
- * @throws {RangeError} Absolute temperature must be positive
+ * @throws {RangeError} tempHot / tempCold must be above absolute zero (radiation)
  * @param input - discriminated union by `mode`
  * @returns heat transfer rate and related quantities
  */
@@ -42,7 +42,11 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
           code: 'parameter_out_of_range', parameter: 'conductivity', exclusive_min: 0, got: conductivity,
         });
       }
-      if (area <= 0) throw new RangeError('Area must be positive');
+      if (area <= 0) {
+        throw inputRangeError('Area must be positive', {
+          code: 'parameter_out_of_range', parameter: 'area', exclusive_min: 0, got: area,
+        });
+      }
       if (thickness <= 0) {
         throw inputRangeError('Thickness must be positive', {
           code: 'parameter_out_of_range', parameter: 'thickness', exclusive_min: 0, got: thickness,
@@ -63,7 +67,11 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
           code: 'parameter_out_of_range', parameter: 'coefficient', exclusive_min: 0, got: coefficient,
         });
       }
-      if (area <= 0) throw new RangeError('Area must be positive');
+      if (area <= 0) {
+        throw inputRangeError('Area must be positive', {
+          code: 'parameter_out_of_range', parameter: 'area', exclusive_min: 0, got: area,
+        });
+      }
       tempDifference = tempSurface - tempFluid;
       // Newton's Law of Cooling: Q = h × A × ΔT
       heatRate = coefficient * area * tempDifference;
@@ -79,12 +87,25 @@ export function heatTransfer(input: HeatTransferInput): HeatTransferResult {
           code: 'parameter_out_of_range', parameter: 'emissivity', exclusive_min: 0, max: 1, got: emissivity,
         });
       }
-      if (area <= 0) throw new RangeError('Area must be positive');
+      if (area <= 0) {
+        throw inputRangeError('Area must be positive', {
+          code: 'parameter_out_of_range', parameter: 'area', exclusive_min: 0, got: area,
+        });
+      }
       tempDifference = tempHot - tempCold;
       // Convert to Kelvin for Stefan-Boltzmann
       const tHotK = tempHot + 273.15;
       const tColdK = tempCold + 273.15;
-      if (tHotK <= 0 || tColdK <= 0) throw new RangeError('Absolute temperature must be positive');
+      if (tHotK <= 0) {
+        throw inputRangeError('tempHot must be above absolute zero (-273.15 °C)', {
+          code: 'parameter_out_of_range', parameter: 'tempHot', exclusive_min: -273.15, got: tempHot,
+        });
+      }
+      if (tColdK <= 0) {
+        throw inputRangeError('tempCold must be above absolute zero (-273.15 °C)', {
+          code: 'parameter_out_of_range', parameter: 'tempCold', exclusive_min: -273.15, got: tempCold,
+        });
+      }
       // Stefan-Boltzmann Law: Q = ε × σ × A × (T_h⁴ - T_c⁴)
       heatRate = emissivity * STEFAN_BOLTZMANN * area * (Math.pow(tHotK, 4) - Math.pow(tColdK, 4));
       // Linearized thermal resistance (approximate): R ≈ 1 / (h_rad × A)

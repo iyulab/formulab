@@ -317,3 +317,9 @@ describe('shipping', () => {
     });
   });
 });
+
+describe('shipping coded refusals', () => {
+  it('codes an unknown shipping mode', () => {
+    expect(() => shipping({ mode: 'rail' as never, weight: 500, volume: 1 })).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'mode', got: 'rail' }));
+  });
+});

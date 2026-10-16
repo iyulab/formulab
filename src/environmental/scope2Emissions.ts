@@ -37,7 +37,9 @@ const GRID_EMISSION_FACTORS: Record<Exclude<GridRegion, 'custom'>, number> = {
  */
 export function getGridEmissionFactor(region: Exclude<GridRegion, 'custom'>): number {
   if (!Object.hasOwn(GRID_EMISSION_FACTORS, region)) {
-    throw new RangeError(`unknown grid region: ${String(region)}`);
+    throw inputRangeError(`unknown grid region: ${String(region)}`, {
+      code: 'unknown_option', parameter: 'region', got: String(region),
+    });
   }
   return GRID_EMISSION_FACTORS[region];
 }
@@ -118,7 +120,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
     const effectiveContractedKwh = contractedKwh ?? 0;
     if (effectiveContractedKwh < 0) {
       throw inputRangeError('contractedKwh cannot be negative', {
-        code: 'parameter_out_of_range', parameter: 'effectiveContractedKwh', min: 0, got: effectiveContractedKwh,
+        code: 'parameter_out_of_range', parameter: 'contractedKwh', min: 0, got: effectiveContractedKwh,
       });
     }
     if (effectiveContractedKwh > 0 && supplierFactor == null) {
@@ -126,7 +128,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
     }
     if (effectiveContractedKwh > electricityKwh) {
       throw inputRangeError('contractedKwh cannot exceed electricityKwh', {
-        code: 'parameter_out_of_range', parameter: 'effectiveContractedKwh', max: electricityKwh, got: effectiveContractedKwh,
+        code: 'parameter_out_of_range', parameter: 'contractedKwh', max: electricityKwh, got: effectiveContractedKwh,
       });
     }
     const remainderKwh = electricityKwh - effectiveContractedKwh;

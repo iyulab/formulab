@@ -331,3 +331,15 @@ describe('vibration rejects inputs that would produce a non-finite result', () =
     expect(() => vibration({ system: 'cantilever', material: 'custom', crossSection: 'rectangular', width: 20, height: 10, length: 500, youngsModulus: 200, density: -1 })).toThrow(RangeError);
   });
 });
+
+describe('vibration refusals carry their facts', () => {
+  it('names the custom material property that is not positive', () => {
+    expect(() => vibration({ system: 'cantilever', material: 'custom', crossSection: 'rectangular', width: 20, height: 10, length: 500, youngsModulus: 200, density: -1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'density', exclusive_min: 0, got: -1 }));
+  });
+
+  it('names a disk radius that is not positive', () => {
+    expect(() => vibration({ system: 'shaftDisk', material: 'steel', length: 300, crossSection: 'circular', diameter: 25, diskMass: 5, diskRadius: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'diskRadius', exclusive_min: 0, got: 0 }));
+  });
+});

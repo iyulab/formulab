@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ToleranceInput, ToleranceResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 // Size ranges [min, max] in mm
 const SIZE_RANGES: [number, number][] = [
@@ -102,18 +103,25 @@ export function tolerance(input: ToleranceInput): ToleranceResult {
 
   const idx = getSizeRangeIndex(nominalSize);
   if (idx < 0) {
-    throw new RangeError('nominal size out of range');
+    throw inputRangeError('nominal size out of range', {
+      code: 'parameter_out_of_range', parameter: 'nominalSize',
+      exclusive_min: SIZE_RANGES[0][0], max: SIZE_RANGES[SIZE_RANGES.length - 1][1], got: nominalSize,
+    });
   }
 
   if (!IT_GRADES[itGrade] || itGrade < MIN_INPUT_GRADE) {
-    throw new RangeError('unknown IT grade: ' + itGrade);
+    throw inputRangeError('unknown IT grade: ' + itGrade, {
+      code: 'unknown_option', parameter: 'itGrade', got: String(itGrade),
+    });
   }
   const toleranceVal = getToleranceValue(nominalSize, itGrade);
 
   const letter = deviationLetter.toLowerCase();
   const deviations = FUNDAMENTAL_DEVIATIONS[letter === 'js' ? 'js' : letter];
   if (!deviations) {
-    throw new RangeError('unknown deviation letter: ' + deviationLetter);
+    throw inputRangeError('unknown deviation letter: ' + deviationLetter, {
+      code: 'unknown_option', parameter: 'deviationLetter', got: String(deviationLetter),
+    });
   }
 
   let upperDev: number;

@@ -33,7 +33,9 @@ export function movingAverage(input: MovingAverageInput): MovingAverageResult {
   if (method === 'ema') {
     return { values: ema(data, window) };
   }
-  throw new RangeError(`method must be 'sma' or 'ema', got ${String(method)}`);
+  throw inputRangeError(`method must be 'sma' or 'ema', got ${String(method)}`, {
+    code: 'unknown_option', parameter: 'method', got: String(method),
+  });
 }
 
 function sma(data: number[], window: number): number[] {

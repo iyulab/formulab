@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Two refusal codes**: `unknown_option` (a material, shape, size, unit or table key the function does not know —
+  `parameter`, and `got` the name given) and `dimension_mismatch` (lists that must pair up differ in length —
+  `expected` the length to match, `got` this list's). `InputErrorDetail.got` is `number | string`; `expected` is new.
+
+### Changed
+
+- **169 more refusals carry their facts** (bare refusals 207 → 38): every guard that checks one input — a bound, a
+  known name, a list's length or emptiness — throws with `code` and `parameter`, a list entry named by its path
+  (`items[2].weight`, `tasks[3].time`, `bands[1]`). A condition over several inputs is checked one input at a time,
+  so each refusal names its own (`illuminance` `roomLength` / `roomWidth` / `lumensPerLuminaire` / `targetLux`;
+  `momentOfInertia`, `pid`, `heatTransfer`, `ventilationRate`, `waterFootprint`, `aggregate`, `brick`, `stencil`,
+  `flatPattern` flanges, `pert` estimates, `confinedSpace` custom gas, `havsCalculate`, `acceptanceControlChart`,
+  `capability`, `gageRR`, list-required checks in `correlation`, `regression`, `linearInterpolation`,
+  `weightedScore`, `assignment`); their messages now name that input. A relation between two given inputs names the
+  first, with the other's value as the bound (`luminaireHeight` above `workplaneHeight`). Conditions, results and the
+  other messages are unchanged.
+- Refusals that were already coded but named an internal variable now name the caller's input: `momentOfInertia`
+  `diameter` / `innerDiameter` / `webThickness` (were `d`, `tw`), `slope` `value` (was `degrees`),
+  `cycleTimeEstimator` `operations[i].distance` / `.time` (were `op.*`), `scope2Emissions` `contractedKwh` (was
+  `effectiveContractedKwh`), `weightedScore` `weights[j]` (was `w`), `cuttingStock` `pieces[i].length`, now `parameter_out_of_range`
+  (was `empty_input` on `p`).
+- Left without the facts (38): a value computed inside the function (a flat length, a relieving pressure, a total
+  recipe weight), inputs impossible only together (three sides that make no triangle, a dependency cycle), and a
+  required input missing for the chosen mode — no code says «missing» yet.
+
 ## [0.68.0] - 2026-10-16
 
 ### Added

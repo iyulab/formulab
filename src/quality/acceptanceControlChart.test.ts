@@ -107,3 +107,17 @@ describe('acceptanceControlChart', () => {
     });
   });
 });
+
+describe('acceptanceControlChart refusal codes', () => {
+  const base = { upperSpecLimit: 10, sigma: 1, acceptableProportion: 0.01, rejectableProportion: 0.05 };
+  it('codes each proportion and risk on its own', () => {
+    expect(() => acceptanceControlChart({ ...base, acceptableProportion: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'acceptableProportion', exclusive_min: 0, exclusive_max: 1, got: 0 }));
+    expect(() => acceptanceControlChart({ ...base, rejectableProportion: 1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'rejectableProportion', exclusive_min: 0, exclusive_max: 1, got: 1 }));
+    expect(() => acceptanceControlChart({ ...base, alpha: 1.5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'alpha', got: 1.5 }));
+    expect(() => acceptanceControlChart({ ...base, beta: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'beta', got: 0 }));
+  });
+});

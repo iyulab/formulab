@@ -355,3 +355,20 @@ describe('pressTonnage rejects inputs that would produce a non-finite result', (
     expect(() => pressTonnage({ operation: 'drawing', thickness: 1, tensileStrength: 400, shearStrength: 300, punchDiameter: 0, blankDiameter: 100 })).toThrow(RangeError);
   });
 });
+
+describe('pressTonnage refusals carry their facts', () => {
+  it('names a material constant that is not positive', () => {
+    expect(() => pressTonnage({ operation: 'blanking', thickness: 2, tensileStrength: 400, shearStrength: 0, cuttingPerimeter: 100 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'shearStrength', exclusive_min: 0, got: 0 }));
+  });
+
+  it('names a dimension that is negative', () => {
+    expect(() => pressTonnage({ operation: 'blanking', thickness: 2, tensileStrength: 400, shearStrength: 300, cuttingPerimeter: 100, bendLength: -1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'bendLength', min: 0, got: -1 }));
+  });
+
+  it('bounds a given blank diameter by the punch diameter', () => {
+    expect(() => pressTonnage({ operation: 'drawing', thickness: 1, tensileStrength: 400, shearStrength: 300, punchDiameter: 50, blankDiameter: 40 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'blankDiameter', exclusive_min: 50, got: 40 }));
+  });
+});

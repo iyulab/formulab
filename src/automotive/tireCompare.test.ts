@@ -241,3 +241,10 @@ describe('tireCompare', () => {
     });
   });
 });
+
+describe('tireLoadCapacityKg refusals carry their facts', () => {
+  it('bounds the load index by the supported table', () => {
+    expect(() => tireLoadCapacityKg(131))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'loadIndex', min: 60, max: 130, got: 131 }));
+  });
+});

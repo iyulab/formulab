@@ -145,3 +145,9 @@ describe('esgSummary without a span of years', () => {
   });
 
 });
+
+describe('esgSummary coded refusals', () => {
+  it('bounds currentYear by baselineYear', () => {
+    expect(() => esgSummary({ baselineYear: 2025, baselineCo2Tonnes: 1000, currentYear: 2024, currentCo2Tonnes: 800, targetYear: 2030, targetCo2Tonnes: 500 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'currentYear', min: 2025, got: 2024 }));
+  });
+});

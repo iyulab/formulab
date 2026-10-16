@@ -75,3 +75,10 @@ describe('brakingDistance', () => {
     });
   });
 });
+
+describe('brakingDistance refusals carry their facts', () => {
+  it('bounds a downhill grade by the friction it would overcome', () => {
+    expect(() => brakingDistance({ speed: 60, friction: 0.7, reactionTime: 1.5, grade: -80 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'grade', exclusive_min: -70, got: -80 }));
+  });
+});

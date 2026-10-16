@@ -160,7 +160,9 @@ export function controlChart(input: ControlChartInput): ControlChartResult {
   // Validate consistent subgroup size
   for (let i = 0; i < subgroups.length; i++) {
     if (subgroups[i].length !== n) {
-      throw new RangeError(`Subgroup ${i + 1} has size ${subgroups[i].length}, expected ${n}`);
+      throw inputRangeError(`Subgroup ${i + 1} has size ${subgroups[i].length}, expected ${n}`, {
+        code: 'dimension_mismatch', parameter: `subgroups[${i}]`, expected: n, got: subgroups[i].length,
+      });
     }
   }
 
@@ -286,8 +288,11 @@ function calcXbarS(subgroups: number[][], n: number): ControlChartResult {
 }
 
 function calcImr(subgroups: number[][]): ControlChartResult {
-  if (subgroups.some(sg => sg.length !== 1)) {
-    throw new RangeError('I-MR chart requires subgroups of size 1');
+  const wrong = subgroups.findIndex(sg => sg.length !== 1);
+  if (wrong !== -1) {
+    throw inputRangeError('I-MR chart requires subgroups of size 1', {
+      code: 'dimension_mismatch', parameter: `subgroups[${wrong}]`, expected: 1, got: subgroups[wrong].length,
+    });
   }
   // Each subgroup contributes its first element as the individual value
   const individuals = subgroups.map(sg => sg[0]);

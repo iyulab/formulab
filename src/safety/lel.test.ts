@@ -154,3 +154,12 @@ describe('lel', () => {
     });
   });
 });
+
+describe('lel coded refusals', () => {
+  it('names the gas whose concentration is negative', () => {
+    expect(() => lel({ gases: [{ name: 'Methane', concentration: 1, lel: 5 }, { name: 'Propane', concentration: -1, lel: 2.1 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'gases[1].concentration', min: 0, got: -1 }));
+  });
+  it('names the gas whose LEL is not positive', () => {
+    expect(() => lel({ gases: [{ name: 'Methane', concentration: 1, lel: 0 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'gases[0].lel', exclusive_min: 0, got: 0 }));
+  });
+});

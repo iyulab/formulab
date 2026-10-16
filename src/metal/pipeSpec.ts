@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PipeSpecInput, PipeSpecResult, PipeSchedule } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 interface PipeDimension {
   od: number;           // outer diameter, mm
@@ -103,7 +104,9 @@ export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
     const dnKey = nominalSize.toUpperCase().replace(/\s/g, '');
     nps = DN_TO_NPS[dnKey];
     if (!nps) {
-      throw new RangeError(`Unknown DN size: ${nominalSize}`);
+      throw inputRangeError(`Unknown DN size: ${nominalSize}`, {
+        code: 'unknown_option', parameter: 'nominalSize', got: String(nominalSize),
+      });
     }
   } else {
     // Remove quotes and clean up
@@ -112,12 +115,16 @@ export function pipeSpec(input: PipeSpecInput): PipeSpecResult {
 
   const pipeData = PIPE_DATA[nps];
   if (!pipeData) {
-    throw new RangeError(`Unknown pipe size: ${nps}`);
+    throw inputRangeError(`Unknown pipe size: ${nps}`, {
+      code: 'unknown_option', parameter: 'nominalSize', got: String(nominalSize),
+    });
   }
 
   const wallThickness = pipeData.schedules[schedule];
   if (wallThickness == null) {
-    throw new RangeError(`Schedule ${schedule} not available for size ${nps}`);
+    throw inputRangeError(`Schedule ${schedule} not available for size ${nps}`, {
+      code: 'unknown_option', parameter: 'schedule', got: String(schedule),
+    });
   }
 
   const od = pipeData.od;

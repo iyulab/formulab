@@ -236,3 +236,11 @@ describe('getStandardPitch', () => {
     expect(getStandardPitch(25)).toBeGreaterThan(0);
   });
 });
+
+describe('bolt refusals carry their facts', () => {
+  it('names torque when it is not positive', () => {
+    expect(() => bolt({
+      mode: 'torqueToPreload', diameter: 12, pitch: 1.5, torque: 0, kFactor: 0.2, tensileStrength: 800,
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'torque', exclusive_min: 0, got: 0 }));
+  });
+});

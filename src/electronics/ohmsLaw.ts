@@ -1,5 +1,22 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { OhmsLawInput, OhmsLawResult } from './types.js';
+import { inputRangeError } from '../errors.js';
+
+function requirePositive(parameter: 'current' | 'resistance', message: string, value: number): void {
+  if (value <= 0) {
+    throw inputRangeError(message, {
+      code: 'parameter_out_of_range', parameter, exclusive_min: 0, got: value,
+    });
+  }
+}
+
+function requireNonNegativeVoltage(voltage: number): void {
+  if (voltage < 0) {
+    throw inputRangeError('Voltage must be non-negative', {
+      code: 'parameter_out_of_range', parameter: 'voltage', min: 0, got: voltage,
+    });
+  }
+}
 
 /**
  * Ohm's Law Calculator — V = I × R, P = V × I
@@ -24,8 +41,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'voltage': {
       current = input.current;
       resistance = input.resistance;
-      if (current <= 0) throw new RangeError('Current must be positive');
-      if (resistance <= 0) throw new RangeError('Resistance must be positive');
+      requirePositive('current', 'Current must be positive', current);
+      requirePositive('resistance', 'Resistance must be positive', resistance);
       voltage = current * resistance;
       power = voltage * current;
       break;
@@ -33,8 +50,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'current': {
       voltage = input.voltage;
       resistance = input.resistance;
-      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
-      if (resistance <= 0) throw new RangeError('Resistance must be positive');
+      requireNonNegativeVoltage(voltage);
+      requirePositive('resistance', 'Resistance must be positive', resistance);
       current = voltage / resistance;
       power = voltage * current;
       break;
@@ -42,8 +59,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'resistance': {
       voltage = input.voltage;
       current = input.current;
-      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
-      if (current <= 0) throw new RangeError('Current must be positive');
+      requireNonNegativeVoltage(voltage);
+      requirePositive('current', 'Current must be positive', current);
       resistance = voltage / current;
       power = voltage * current;
       break;
@@ -51,8 +68,8 @@ export function ohmsLaw(input: OhmsLawInput): OhmsLawResult {
     case 'power': {
       voltage = input.voltage;
       current = input.current;
-      if (voltage < 0) throw new RangeError('Voltage must be non-negative');
-      if (current <= 0) throw new RangeError('Current must be positive');
+      requireNonNegativeVoltage(voltage);
+      requirePositive('current', 'Current must be positive', current);
       resistance = voltage / current;
       power = voltage * current;
       break;

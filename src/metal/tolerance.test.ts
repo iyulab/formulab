@@ -355,3 +355,17 @@ describe('tolerance', () => {
     });
   });
 });
+
+describe('tolerance refusals carry their facts', () => {
+  it('bounds the nominal size by the ISO 286 size ranges', () => {
+    expect(() => tolerance({ nominalSize: 500, fitType: 'hole', deviationLetter: 'H', itGrade: 7 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'nominalSize', exclusive_min: 0, max: 400, got: 500 }));
+  });
+
+  it('refuses an unknown IT grade and deviation letter as unknown options', () => {
+    expect(() => tolerance({ nominalSize: 25, fitType: 'hole', deviationLetter: 'H', itGrade: 3 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'itGrade', got: '3' }));
+    expect(() => tolerance({ nominalSize: 25, fitType: 'hole', deviationLetter: 'x', itGrade: 7 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'deviationLetter', got: 'x' }));
+  });
+});

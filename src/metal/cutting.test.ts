@@ -194,3 +194,11 @@ describe('cutting', () => {
     });
   });
 });
+
+describe('cutting refusals carry their facts', () => {
+  it('names the operation field that is not positive', () => {
+    expect(() => cutting({
+      operation: 'turning', cuttingSpeed: 100, toolDiameter: 10, feedPerRev: 0, depthOfCut: 2,
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'feedPerRev', exclusive_min: 0, got: 0 }));
+  });
+});

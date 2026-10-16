@@ -270,3 +270,10 @@ describe('solderPaste', () => {
     });
   });
 });
+
+describe('solderPaste refusal codes', () => {
+  it('names the quantity that is not positive', () => {
+    expect(() => solderPaste({ padCount: 100, avgPadArea: 0.5, stencilThickness: 0.12, transferEfficiency: 0.85, density: 7.4, boardsPerPanel: 1, panelCount: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'panelCount', exclusive_min: 0, got: 0 }));
+  });
+});

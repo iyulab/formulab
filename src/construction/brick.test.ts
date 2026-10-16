@@ -276,3 +276,17 @@ describe('brick contract restoration (2026-07 audit)', () => {
     expect(() => brick({ wallArea: 10, brickSize: 'standard', mortarThickness: -300, wasteFactor: 5 })).toThrow(RangeError);
   });
 });
+
+describe('brick refusal codes', () => {
+  it('names the custom dimension that is not positive', () => {
+    expect(() => brick({ wallArea: 10, brickSize: 'custom', customLength: 0, customHeight: 60, mortarThickness: 10, wasteFactor: 5 }))
+      .toThrow(expect.objectContaining({ message: 'customLength must be greater than 0', code: 'parameter_out_of_range', parameter: 'customLength', exclusive_min: 0, got: 0 }));
+    expect(() => brick({ wallArea: 10, brickSize: 'custom', customLength: 200, customHeight: -1, mortarThickness: 10, wasteFactor: 5 }))
+      .toThrow(expect.objectContaining({ message: 'customHeight must be greater than 0', code: 'parameter_out_of_range', parameter: 'customHeight', got: -1 }));
+  });
+
+  it('names an unknown brick size', () => {
+    expect(() => brick({ wallArea: 10, brickSize: 'giant' as never, mortarThickness: 10, wasteFactor: 5 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'brickSize', got: 'giant' }));
+  });
+});

@@ -39,7 +39,9 @@ export function concreteMix(input: ConcreteInput): ConcreteResult {
   const { grade, volume } = input;
   const design = MIX_DESIGNS[grade];
   if (design === undefined) {
-    throw new RangeError(`unknown concrete grade: ${String(grade)}`);
+    throw inputRangeError(`unknown concrete grade: ${String(grade)}`, {
+      code: 'unknown_option', parameter: 'grade', got: String(grade),
+    });
   }
   if (volume <= 0) {
     throw inputRangeError('volume must be greater than 0', {

@@ -68,7 +68,9 @@ export function flowControl(input: FlowControlInput): FlowControlResult {
   const pressureDrop = inletPressure - outletPressure; // kPa
   // Flow through a valve needs a pressure drop across it; none (or a reversed one) has no Cv.
   if (!(pressureDrop > 0)) {
-    throw new RangeError('outletPressure must be lower than inletPressure');
+    throw inputRangeError('outletPressure must be lower than inletPressure', {
+      code: 'parameter_out_of_range', parameter: 'outletPressure', exclusive_max: inletPressure, got: outletPressure,
+    });
   }
 
   // Reference density: water = 999 kg/m³

@@ -179,3 +179,23 @@ describe('cuttingStock', () => {
     });
   });
 });
+
+describe('cuttingStock refusals carry their facts', () => {
+  it('names the piece whose length is not positive', () => {
+    expect(() => cuttingStock({
+      stockLength: 6000, kerf: 3, pieces: [{ length: 100, quantity: 1 }, { length: 0, quantity: 1 }], algorithm: 'ffd',
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pieces[1].length', exclusive_min: 0, got: 0 }));
+  });
+
+  it('names the piece whose quantity is not a whole count', () => {
+    expect(() => cuttingStock({
+      stockLength: 6000, kerf: 3, pieces: [{ length: 100, quantity: 2.5 }], algorithm: 'ffd',
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pieces[0].quantity', min: 1, got: 2.5 }));
+  });
+
+  it('names the piece longer than the stock, with the stock as the bound', () => {
+    expect(() => cuttingStock({
+      stockLength: 6000, kerf: 3, pieces: [{ length: 100, quantity: 1 }, { length: 7000, quantity: 1 }], algorithm: 'ffd',
+    })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pieces[1].length', max: 6000, got: 7000 }));
+  });
+});

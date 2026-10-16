@@ -1,5 +1,6 @@
 import type { SolderInput, SolderResult } from './types.js';
 import { roundTo, requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate solder paste consumption for SMT production
@@ -26,7 +27,9 @@ export function solderPaste(input: SolderInput): SolderResult {
   };
   for (const [name, value] of Object.entries(fields)) {
     if (!(value > 0)) {
-      throw new RangeError(`${name} must be greater than 0`);
+      throw inputRangeError(`${name} must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, got: value,
+      });
     }
   }
 

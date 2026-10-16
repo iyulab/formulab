@@ -57,7 +57,9 @@ export function movingAverageRangeChart(
     });
   }
   if (values.length < k + 1) {
-    throw new RangeError(`At least ${k + 1} values are required for windowSize ${k}`);
+    throw inputRangeError(`At least ${k + 1} values are required for windowSize ${k}`, {
+      code: 'insufficient_data', parameter: 'values', min: k + 1, got: values.length,
+    });
   }
 
   const constants = XBAR_R_CONSTANTS[k];

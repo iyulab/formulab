@@ -82,7 +82,10 @@ export function pressFit(input: PressFitInput): PressFitResult {
   }
   // A hub whose outside diameter does not clear the bore and the shaft has no wall to carry the fit.
   if (!(hubOuterDiameter > Math.max(shaftDiameter, holeDiameter))) {
-    throw new RangeError('hubOuterDiameter must be greater than shaftDiameter and holeDiameter');
+    throw inputRangeError('hubOuterDiameter must be greater than shaftDiameter and holeDiameter', {
+      code: 'parameter_out_of_range', parameter: 'hubOuterDiameter',
+      exclusive_min: Math.max(shaftDiameter, holeDiameter), got: hubOuterDiameter,
+    });
   }
 
   // Interference (mm)

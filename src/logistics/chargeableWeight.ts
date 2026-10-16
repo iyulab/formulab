@@ -44,7 +44,11 @@ export function chargeableWeight(input: ChargeableWeightInput): ChargeableWeight
       code: 'parameter_out_of_range', parameter: 'actualWeight', min: 0, got: actualWeight,
     });
   }
-  if (!Object.hasOwn(VOLUMETRIC_KG_PER_M3, mode)) throw new RangeError(`unknown freight mode: ${String(mode)}`);
+  if (!Object.hasOwn(VOLUMETRIC_KG_PER_M3, mode)) {
+    throw inputRangeError(`unknown freight mode: ${String(mode)}`, {
+      code: 'unknown_option', parameter: 'mode', got: String(mode),
+    });
+  }
 
   const volumetricFactor = VOLUMETRIC_KG_PER_M3[mode];
   const volumetricWeight = roundTo(volume * volumetricFactor, 2);

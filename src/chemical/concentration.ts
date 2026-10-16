@@ -72,7 +72,9 @@ export function concentration(input: ConcentrationInput): ConcentrationResult {
     default: {
       // Unreachable for typed callers; untyped form/API data gets an error, not a zero-filled result.
       const unknownUnit: never = fromUnit;
-      throw new RangeError(`fromUnit must be molPerL, wtPercent or ppm, got ${String(unknownUnit)}`);
+      throw inputRangeError(`fromUnit must be molPerL, wtPercent or ppm, got ${String(unknownUnit)}`, {
+        code: 'unknown_option', parameter: 'fromUnit', got: String(unknownUnit),
+      });
     }
   }
 

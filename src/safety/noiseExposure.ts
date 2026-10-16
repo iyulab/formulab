@@ -1,5 +1,6 @@
 import type { NoiseExposureInput, NoiseExposureResult } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate allowable exposure time for a given sound level (OSHA formula)
@@ -43,9 +44,11 @@ export function noiseExposure(input: NoiseExposureInput): NoiseExposureResult {
   requireFinite('noiseExposure', input);
   const { exposures } = input;
 
-  for (const exposure of exposures) {
+  for (const [i, exposure] of exposures.entries()) {
     if (exposure.duration < 0) {
-      throw new RangeError('exposure duration must not be negative');
+      throw inputRangeError('exposure duration must not be negative', {
+        code: 'parameter_out_of_range', parameter: `exposures[${i}].duration`, min: 0, got: exposure.duration,
+      });
     }
   }
 

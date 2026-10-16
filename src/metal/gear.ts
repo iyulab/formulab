@@ -70,7 +70,11 @@ export function gear(input: GearInput): GearResult {
   // A gear's root circle is m x (z - 2.5); at 2.5 teeth or fewer it does not exist, so there is no
   // gear with that tooth count to describe.
   for (const [name, z] of [[mode === 'fromModule' ? 'teethGear1' : 'numberOfTeeth', z1], ['teethGear2', z2]] as const) {
-    if (z !== undefined && !(z > 2.5)) throw new RangeError(`${name} must be greater than 2.5 (no root circle otherwise)`);
+    if (z !== undefined && !(z > 2.5)) {
+      throw inputRangeError(`${name} must be greater than 2.5 (no root circle otherwise)`, {
+        code: 'parameter_out_of_range', parameter: name, exclusive_min: 2.5, got: z,
+      });
+    }
   }
 
   // Pitch diameters

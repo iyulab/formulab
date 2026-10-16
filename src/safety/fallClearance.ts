@@ -68,7 +68,11 @@ export function fallClearance(input: FallClearanceInput): FallClearanceResult {
     ['safetyFactor', SF],
     ['obstacleHeight', obstacleHeight],
   ] as const) {
-    if (!(value >= 0)) throw new RangeError(`${name} must not be negative`);
+    if (!(value >= 0)) {
+      throw inputRangeError(`${name} must not be negative`, {
+        code: 'parameter_out_of_range', parameter: name, min: 0, got: value,
+      });
+    }
   }
   if (workingHeight !== undefined && !(workingHeight >= 0)) {
     throw inputRangeError('workingHeight must not be negative', {

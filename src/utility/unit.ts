@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { UnitCategory, UnitDef, UnitInput, UnitResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Helper to create linear conversion functions
@@ -172,16 +173,22 @@ export function calculateUnit(input: UnitInput): UnitResult {
   requireFinite('calculateUnit', input);
   const units = UNITS[input.category];
   if (!units) {
-    throw new RangeError(`unknown unit category '${input.category}'`);
+    throw inputRangeError(`unknown unit category '${input.category}'`, {
+      code: 'unknown_option', parameter: 'category', got: String(input.category),
+    });
   }
 
   const from = units.find((u) => u.id === input.fromUnit);
   if (!from) {
-    throw new RangeError(`unknown fromUnit '${input.fromUnit}' in category '${input.category}'`);
+    throw inputRangeError(`unknown fromUnit '${input.fromUnit}' in category '${input.category}'`, {
+      code: 'unknown_option', parameter: 'fromUnit', got: String(input.fromUnit),
+    });
   }
   const to = units.find((u) => u.id === input.toUnit);
   if (!to) {
-    throw new RangeError(`unknown toUnit '${input.toUnit}' in category '${input.category}'`);
+    throw inputRangeError(`unknown toUnit '${input.toUnit}' in category '${input.category}'`, {
+      code: 'unknown_option', parameter: 'toUnit', got: String(input.toUnit),
+    });
   }
 
   const baseValue = from.toBase(input.value);

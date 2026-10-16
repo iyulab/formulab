@@ -375,16 +375,27 @@ function validateStudyShape(measurements: GageRRInput['measurements']): void {
   }
   const operators = measurements[0]?.length ?? 0;
   const trials = measurements[0]?.[0]?.length ?? 0;
-  if (operators === 0 || trials === 0) {
-    throw new RangeError('each part needs at least one operator with at least one trial');
+  if (operators === 0) {
+    throw inputRangeError('each part needs at least one operator', {
+      code: 'empty_input', parameter: 'measurements[0]',
+    });
+  }
+  if (trials === 0) {
+    throw inputRangeError('each operator needs at least one trial', {
+      code: 'empty_input', parameter: 'measurements[0][0]',
+    });
   }
   measurements.forEach((part, p) => {
     if (part.length !== operators) {
-      throw new RangeError(`part ${p + 1} has ${part.length} operators, part 1 has ${operators}`);
+      throw inputRangeError(`part ${p + 1} has ${part.length} operators, part 1 has ${operators}`, {
+        code: 'dimension_mismatch', parameter: `measurements[${p}]`, expected: operators, got: part.length,
+      });
     }
     part.forEach((readings, o) => {
       if (readings.length !== trials) {
-        throw new RangeError(`part ${p + 1}, operator ${o + 1} has ${readings.length} trials, the study has ${trials}`);
+        throw inputRangeError(`part ${p + 1}, operator ${o + 1} has ${readings.length} trials, the study has ${trials}`, {
+          code: 'dimension_mismatch', parameter: `measurements[${p}][${o}]`, expected: trials, got: readings.length,
+        });
       }
     });
   });

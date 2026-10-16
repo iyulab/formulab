@@ -239,3 +239,10 @@ describe('concreteMix contract restoration (2026-07 audit)', () => {
     expect(() => concreteMix({ grade: '25', volume: -1 })).toThrow(RangeError);
   });
 });
+
+describe('concreteMix refusal codes', () => {
+  it('names an unknown grade', () => {
+    expect(() => concreteMix({ grade: '99' as never, volume: 1 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'grade', got: '99' }));
+  });
+});

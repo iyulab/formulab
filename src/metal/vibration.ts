@@ -58,7 +58,9 @@ export function vibration(input: VibrationInput): VibrationResult {
       ['shearModulus', input.shearModulus],
     ] as const) {
       if (value !== undefined && !(value > 0)) {
-        throw new RangeError(`${name} must be greater than 0`);
+        throw inputRangeError(`${name} must be greater than 0`, {
+          code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, got: value,
+        });
       }
     }
   }
@@ -200,7 +202,9 @@ export function vibration(input: VibrationInput): VibrationResult {
       });
     }
     if (diskRadius <= 0) {
-      throw new RangeError('diskRadius must be greater than 0');
+      throw inputRangeError('diskRadius must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'diskRadius', exclusive_min: 0, got: input.diskRadius ?? 0,
+      });
     }
     const Ip = 0.5 * diskMass * Math.pow(diskRadius, 2); // kg-m2
     const omega = Math.sqrt((G_Pa * J_m4) / (L_m * Ip));

@@ -136,3 +136,10 @@ describe('weibull rejects inputs that would produce a non-finite result', () => 
     expect(() => weibull({ failureTimes: [100, 120, 130], missionTime: -1 })).toThrow(RangeError);
   });
 });
+
+describe('weibull refusal codes', () => {
+  it('names the first non-positive failure time', () => {
+    expect(() => weibull({ failureTimes: [10, 0, 30] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'failureTimes[1]', exclusive_min: 0, got: 0 }));
+  });
+});

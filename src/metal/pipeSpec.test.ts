@@ -82,3 +82,14 @@ describe('pipeSpec', () => {
     });
   });
 });
+
+describe('pipeSpec refusals carry their facts', () => {
+  it('refuses unknown sizes and schedules as unknown options', () => {
+    expect(() => pipeSpec({ standard: 'DN', nominalSize: 'DN999', schedule: 'SCH40' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'nominalSize', got: 'DN999' }));
+    expect(() => pipeSpec({ standard: 'ANSI', nominalSize: '99', schedule: 'SCH40' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'nominalSize', got: '99' }));
+    expect(() => pipeSpec({ standard: 'ANSI', nominalSize: '2', schedule: 'SCH999' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'schedule', got: 'SCH999' }));
+  });
+});

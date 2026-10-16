@@ -333,3 +333,23 @@ describe('resistorDecode contract restoration (2026-07 audit)', () => {
     expect(() => resistorDecode({ bandCount: 3 as never, bands: ['brown', 'black', 'red'] as never })).toThrow(RangeError);
   });
 });
+
+describe('resistorDecode refusal codes', () => {
+  it('names the band by its index in bands', () => {
+    expect(() => resistorDecode({ bandCount: 4, bands: ['gold', 'black', 'red', 'gold'] }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'bands[0]', got: 'gold' }));
+    expect(() => resistorDecode({ bandCount: 4, bands: ['brown', 'black', 'red', 'white'] }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'bands[3]', got: 'white' }));
+    expect(() => resistorDecode({ bandCount: 5, bands: ['brown', 'black', 'black', 'pink' as never, 'gold'] }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'bands[3]', got: 'pink' }));
+    expect(() => resistorDecode({ bandCount: 6, bands: ['brown', 'black', 'black', 'red', 'gold', 'gold'] }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'bands[5]', got: 'gold' }));
+  });
+
+  it('names bandCount and a short band list', () => {
+    expect(() => resistorDecode({ bandCount: 3 as never, bands: ['brown', 'black', 'red'] as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'bandCount', got: '3' }));
+    expect(() => resistorDecode({ bandCount: 4, bands: ['brown', 'black'] as never }))
+      .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'bands', expected: 4, got: 2 }));
+  });
+});

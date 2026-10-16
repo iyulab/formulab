@@ -25,8 +25,11 @@ export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
   }
   // The balancing time divides by the pack average, so a cell at or below zero volts
   // would drive it to infinity rather than describing a pack that can be balanced.
-  if (!cellVoltages.every((v) => v > 0)) {
-    throw new RangeError('every cell voltage must be greater than 0');
+  const notPositive = cellVoltages.findIndex((v) => !(v > 0));
+  if (notPositive >= 0) {
+    throw inputRangeError('every cell voltage must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: `cellVoltages[${notPositive}]`, exclusive_min: 0, got: cellVoltages[notPositive],
+    });
   }
   if (!(balancingCurrentMA > 0)) {
     throw inputRangeError('balancingCurrentMA must be greater than 0', {

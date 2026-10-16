@@ -1,5 +1,6 @@
 import type { MaterialCategory, MaterialInput, MaterialResult, MaterialSpec } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Room-temperature reference properties, one entry per grade
@@ -90,12 +91,16 @@ export function material(input: MaterialInput): MaterialResult {
   requireFinite('material', input);
   const categoryData = MATERIAL_DATA[input.category];
   if (!categoryData) {
-    throw new RangeError('unknown material category: ' + input.category);
+    throw inputRangeError('unknown material category: ' + input.category, {
+      code: 'unknown_option', parameter: 'category', got: String(input.category),
+    });
   }
 
   const spec = categoryData[input.grade];
   if (!spec) {
-    throw new RangeError('unknown material grade: ' + input.grade);
+    throw inputRangeError('unknown material grade: ' + input.grade, {
+      code: 'unknown_option', parameter: 'grade', got: String(input.grade),
+    });
   }
 
   return {

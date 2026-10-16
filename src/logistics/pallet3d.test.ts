@@ -196,3 +196,12 @@ describe('pallet3d rejects inputs that would produce a non-finite result', () =>
     expect(() => pallet3d({ palletStandard: 'eur', boxes: [{ id: 'box1', length: 400, width: 300, height: 200, weight: 0, quantity: 10, canRotate: 'layered' }] })).toThrow(RangeError);
   });
 });
+
+describe('pallet3d coded refusals', () => {
+  it('names the box whose weight is not positive', () => {
+    expect(() => pallet3d({ palletStandard: 'eur', boxes: [{ id: 'box1', length: 400, width: 300, height: 200, weight: 10, quantity: 10, canRotate: 'layered' }, { ...{ id: 'box1', length: 400, width: 300, height: 200, weight: 10, quantity: 10, canRotate: 'layered' }, id: 'box2', weight: 0 }] } as never)).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'boxes[1].weight', exclusive_min: 0, got: 0 }));
+  });
+  it('names the box side that is not positive', () => {
+    expect(() => pallet3d({ palletStandard: 'eur', boxes: [{ ...{ id: 'box1', length: 400, width: 300, height: 200, weight: 10, quantity: 10, canRotate: 'layered' }, height: -5 }] } as never)).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'boxes[0].height', exclusive_min: 0, got: -5 }));
+  });
+});

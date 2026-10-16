@@ -36,7 +36,9 @@ export function cutting(input: CuttingInput): CuttingResult {
   for (const field of usedFields[operation] ?? []) {
     const value = input[field];
     if (value !== undefined && !((value as number) > 0)) {
-      throw new RangeError(`${field} must be greater than 0`);
+      throw inputRangeError(`${field} must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: field, exclusive_min: 0, got: value as number,
+      });
     }
   }
 

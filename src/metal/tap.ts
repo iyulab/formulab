@@ -70,7 +70,11 @@ export function tap(input: TapInput): TapResult {
   // A pitch this coarse for the diameter (p ≥ D / 1.0825) leaves no core: the minor diameter and
   // the tap drill would come out zero or negative.
   if (!(D_minor_full > 0)) {
-    throw new RangeError('pitch is too coarse for the major diameter — the minor diameter would not be positive');
+    // The bound in the caller's own unit: a metric pitch below D / 1.0825, or a TPI above 25.4 × 1.0825 / D.
+    const coreFactor = 1.25 * 0.866025;
+    throw inputRangeError('pitch is too coarse for the major diameter — the minor diameter would not be positive', standard === 'metric'
+      ? { code: 'parameter_out_of_range', parameter: 'pitch', exclusive_max: majorDiameter / coreFactor, got: inputPitch }
+      : { code: 'parameter_out_of_range', parameter: 'pitch', exclusive_min: (25.4 * coreFactor) / majorDiameter, got: inputPitch });
   }
 
   // Pitch diameter (at mid-height of thread)

@@ -216,13 +216,17 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   const positive = { tensileStrength, shearStrength, safetyFactor, frictionCoefficient, dieRadius };
   for (const [name, value] of Object.entries(positive)) {
     if (!(value > 0)) {
-      throw new RangeError(`${name} must be greater than 0`);
+      throw inputRangeError(`${name} must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, got: value,
+      });
     }
   }
   const nonNegative = { blankHolderPressure, blankDiameter, cuttingPerimeter, bendLength, punchDiameter };
   for (const [name, value] of Object.entries(nonNegative)) {
     if (!(value >= 0)) {
-      throw new RangeError(`${name} must not be negative`);
+      throw inputRangeError(`${name} must not be negative`, {
+        code: 'parameter_out_of_range', parameter: name, min: 0, got: value,
+      });
     }
   }
   if (input.drawRatio !== undefined && !(input.drawRatio > 0)) {
@@ -256,6 +260,12 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
     // A blank no larger than the punch has nothing to draw: ln(D / d) ≤ 0 and the blank holder
     // area π/4 × (D² − d²) turns negative.
     if (derivedBlank > 0 && !(derivedBlank > punchDiameter)) {
+      if (blankDiameter > 0) {
+        throw inputRangeError('blankDiameter must be greater than punchDiameter', {
+          code: 'parameter_out_of_range', parameter: 'blankDiameter', exclusive_min: punchDiameter, got: blankDiameter,
+        });
+      }
+      // The blank was derived from drawRatio, not given.
       throw new RangeError('blankDiameter must be greater than punchDiameter');
     }
   }

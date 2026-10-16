@@ -29,11 +29,15 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
   }
   pieces.forEach((p, i) => {
     if (!(p.length > 0)) {
-      throw inputRangeError(`pieces[${i}].length must be greater than 0`, { code: 'empty_input', parameter: 'p' });
+      throw inputRangeError(`pieces[${i}].length must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: `pieces[${i}].length`, exclusive_min: 0, got: p.length,
+      });
     }
     // A count of pieces: 0 or a negative one was silently dropped from the plan, 2.5 cut as 3.
     if (!(Number.isInteger(p.quantity) && p.quantity > 0)) {
-      throw new RangeError(`pieces[${i}].quantity must be a whole number greater than 0`);
+      throw inputRangeError(`pieces[${i}].quantity must be a whole number greater than 0`, {
+        code: 'parameter_out_of_range', parameter: `pieces[${i}].quantity`, min: 1, got: p.quantity,
+      });
     }
   });
 
@@ -46,8 +50,12 @@ export function cuttingStock(input: CuttingStockInput): CuttingStockResult {
   }
 
   // Check if any piece exceeds stock length
-  if (expanded.some(p => p.length > stockLength)) {
-    throw new RangeError('piece length must not exceed stockLength');
+  // Every piece has a quantity of at least 1 here, so a piece too long for the stock is a listed one.
+  const tooLong = pieces.findIndex(p => p.length > stockLength);
+  if (tooLong >= 0) {
+    throw inputRangeError('piece length must not exceed stockLength', {
+      code: 'parameter_out_of_range', parameter: `pieces[${tooLong}].length`, max: stockLength, got: pieces[tooLong].length,
+    });
   }
 
   // Sort descending by length

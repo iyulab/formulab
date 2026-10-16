@@ -32,7 +32,9 @@ const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
 export function resolveKFactor(material: BendingMaterial, kFactor: number | undefined): number {
   if (kFactor !== undefined) return kFactor;
   if (!Object.hasOwn(K_FACTOR_TABLE, material)) {
-    throw new RangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`);
+    throw inputRangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`, {
+      code: 'unknown_option', parameter: 'material', got: String(material),
+    });
   }
   return K_FACTOR_TABLE[material];
 }

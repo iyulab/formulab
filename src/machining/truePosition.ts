@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TruePositionInput, TruePositionResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate GD&T True Position (diametral method).
@@ -24,10 +25,18 @@ export function truePosition(input: TruePositionInput): TruePositionResult {
   const { actualX, actualY, nominalX, nominalY, tolerance, featureSize, mmcSize } = input;
 
   for (const [name, v] of [['actualX', actualX], ['actualY', actualY], ['nominalX', nominalX], ['nominalY', nominalY]] as const) {
-    if (!Number.isFinite(v)) throw new RangeError(`${name} must be a finite number`);
+    if (!Number.isFinite(v)) {
+      throw inputRangeError(`${name} must be a finite number`, {
+        code: 'value_not_finite', parameter: name, got: v,
+      });
+    }
   }
   for (const [name, v] of [['tolerance', tolerance], ['featureSize', featureSize], ['mmcSize', mmcSize]] as const) {
-    if (v !== undefined && (!Number.isFinite(v) || v < 0)) throw new RangeError(`${name} must be a non-negative finite number`);
+    if (v !== undefined && (!Number.isFinite(v) || v < 0)) {
+      throw inputRangeError(`${name} must be a non-negative finite number`, {
+        code: 'parameter_out_of_range', parameter: name, min: 0, got: v,
+      });
+    }
   }
 
   const dx = actualX - nominalX;

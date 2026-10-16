@@ -15,8 +15,17 @@ import { inputRangeError } from '../errors.js';
 export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
   requireFinite('weightedScore', input);
   const { criteria, weights, alternatives, scores } = input;
-  if (!criteria || !weights || !alternatives || !scores) {
-    throw new RangeError('criteria, weights, alternatives and scores are required');
+  if (!criteria) {
+    throw inputRangeError('criteria is required', { code: 'empty_input', parameter: 'criteria' });
+  }
+  if (!weights) {
+    throw inputRangeError('weights is required', { code: 'empty_input', parameter: 'weights' });
+  }
+  if (!alternatives) {
+    throw inputRangeError('alternatives is required', { code: 'empty_input', parameter: 'alternatives' });
+  }
+  if (!scores) {
+    throw inputRangeError('scores is required', { code: 'empty_input', parameter: 'scores' });
   }
   if (criteria.length === 0) {
     throw inputRangeError('criteria must contain at least 1 entry', { code: 'empty_input', parameter: 'criteria' });
@@ -27,22 +36,28 @@ export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
     });
   }
   if (criteria.length !== weights.length) {
-    throw new RangeError(`weights length must match criteria length ${criteria.length}, got ${weights.length}`);
+    throw inputRangeError(`weights length must match criteria length ${criteria.length}, got ${weights.length}`, {
+      code: 'dimension_mismatch', parameter: 'weights', expected: criteria.length, got: weights.length,
+    });
   }
   if (scores.length !== alternatives.length) {
-    throw new RangeError(`scores must have one row per alternative (${alternatives.length}), got ${scores.length}`);
+    throw inputRangeError(`scores must have one row per alternative (${alternatives.length}), got ${scores.length}`, {
+      code: 'dimension_mismatch', parameter: 'scores', expected: alternatives.length, got: scores.length,
+    });
   }
-  for (const row of scores) {
+  scores.forEach((row, i) => {
     if (row.length !== criteria.length) {
-      throw new RangeError(`each scores row must have one value per criterion (${criteria.length}), got ${row.length}`);
+      throw inputRangeError(`each scores row must have one value per criterion (${criteria.length}), got ${row.length}`, {
+        code: 'dimension_mismatch', parameter: `scores[${i}]`, expected: criteria.length, got: row.length,
+      });
     }
-  }
+  });
 
   // A negative weight turns a criterion into its opposite and can flip the ranking.
   weights.forEach((w, j) => {
     if (!(w >= 0)) {
       throw inputRangeError(`weights[${j}] must not be negative, got ${w}`, {
-        code: 'parameter_out_of_range', parameter: 'w', min: 0, got: w,
+        code: 'parameter_out_of_range', parameter: `weights[${j}]`, min: 0, got: w,
       });
     }
   });

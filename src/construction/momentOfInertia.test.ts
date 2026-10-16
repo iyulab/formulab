@@ -171,3 +171,36 @@ describe('momentOfInertia', () => {
     });
   });
 });
+
+describe('momentOfInertia refusal codes', () => {
+  it('names each dimension by the field the caller passes', () => {
+    expect(() => momentOfInertia({ shape: 'rectangle', width: 100, height: 0 }))
+      .toThrow(expect.objectContaining({ message: 'height must be positive', code: 'parameter_out_of_range', parameter: 'height', exclusive_min: 0, got: 0 }));
+    expect(() => momentOfInertia({ shape: 'circle', diameter: -1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'diameter', got: -1 }));
+    expect(() => momentOfInertia({ shape: 'hollowCircle', outerDiameter: 50, innerDiameter: 0 }))
+      .toThrow(expect.objectContaining({ parameter: 'innerDiameter', got: 0 }));
+    expect(() => momentOfInertia({ shape: 'tSection', flangeWidth: 100, flangeThickness: 10, webThickness: 8, webHeight: 0 }))
+      .toThrow(expect.objectContaining({ parameter: 'webHeight', got: 0 }));
+  });
+
+  it('bounds inner by outer for the hollow shapes', () => {
+    expect(() => momentOfInertia({ shape: 'hollowRectangle', outerWidth: 100, outerHeight: 200, innerWidth: 100, innerHeight: 150 }))
+      .toThrow(expect.objectContaining({ message: 'Inner width must be smaller than outer width', parameter: 'innerWidth', exclusive_max: 100, got: 100 }));
+    expect(() => momentOfInertia({ shape: 'hollowRectangle', outerWidth: 100, outerHeight: 200, innerWidth: 80, innerHeight: 250 }))
+      .toThrow(expect.objectContaining({ message: 'Inner height must be smaller than outer height', parameter: 'innerHeight', exclusive_max: 200, got: 250 }));
+    expect(() => momentOfInertia({ shape: 'hollowCircle', outerDiameter: 50, innerDiameter: 60 }))
+      .toThrow(expect.objectContaining({ parameter: 'innerDiameter', exclusive_max: 50, got: 60 }));
+  });
+
+  it('bounds web and flange thickness by the section', () => {
+    expect(() => momentOfInertia({ shape: 'iBeam', flangeWidth: 100, totalHeight: 200, webThickness: 120, flangeThickness: 10 }))
+      .toThrow(expect.objectContaining({ parameter: 'webThickness', exclusive_max: 100, got: 120 }));
+    expect(() => momentOfInertia({ shape: 'iBeam', flangeWidth: 100, totalHeight: 200, webThickness: 8, flangeThickness: 100 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'flangeThickness', exclusive_max: 100, got: 100 }));
+    expect(() => momentOfInertia({ shape: 'cChannel', flangeWidth: 50, totalHeight: 100, webThickness: 6, flangeThickness: 60 }))
+      .toThrow(expect.objectContaining({ parameter: 'flangeThickness', exclusive_max: 50, got: 60 }));
+    expect(() => momentOfInertia({ shape: 'cChannel', flangeWidth: 0, totalHeight: 100, webThickness: 6, flangeThickness: 8 }))
+      .toThrow(expect.objectContaining({ parameter: 'flangeWidth', got: 0 }));
+  });
+});

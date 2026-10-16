@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { PidInput, PidResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /** A tuning parameter the method needs. A missing one was replaced by 1 — tuning for a process nobody entered. */
 function required(value: number | undefined, name: string): number {
@@ -42,8 +43,20 @@ export function pid(input: PidInput): PidResult {
     const L = required(input.deadTime, 'deadTime');
     const T = required(input.timeConstant, 'timeConstant');
 
-    if (!(K > 0) || !(L > 0) || !(T > 0)) {
-      throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
+    if (!(K > 0)) {
+      throw inputRangeError('processGain must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'processGain', exclusive_min: 0, got: K,
+      });
+    }
+    if (!(L > 0)) {
+      throw inputRangeError('deadTime must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'deadTime', exclusive_min: 0, got: L,
+      });
+    }
+    if (!(T > 0)) {
+      throw inputRangeError('timeConstant must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'timeConstant', exclusive_min: 0, got: T,
+      });
     }
 
     if (controllerType === 'P') {
@@ -65,8 +78,15 @@ export function pid(input: PidInput): PidResult {
     const Ku = required(input.ultimateGain, 'ultimateGain');
     const Pu = required(input.ultimatePeriod, 'ultimatePeriod');
 
-    if (!(Ku > 0) || !(Pu > 0)) {
-      throw new RangeError('ultimateGain and ultimatePeriod must both be greater than 0');
+    if (!(Ku > 0)) {
+      throw inputRangeError('ultimateGain must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'ultimateGain', exclusive_min: 0, got: Ku,
+      });
+    }
+    if (!(Pu > 0)) {
+      throw inputRangeError('ultimatePeriod must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'ultimatePeriod', exclusive_min: 0, got: Pu,
+      });
     }
 
     if (controllerType === 'P') {
@@ -89,8 +109,20 @@ export function pid(input: PidInput): PidResult {
     const L = required(input.deadTime, 'deadTime');
     const T = required(input.timeConstant, 'timeConstant');
 
-    if (!(K > 0) || !(L > 0) || !(T > 0)) {
-      throw new RangeError('processGain, deadTime, and timeConstant must all be greater than 0');
+    if (!(K > 0)) {
+      throw inputRangeError('processGain must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'processGain', exclusive_min: 0, got: K,
+      });
+    }
+    if (!(L > 0)) {
+      throw inputRangeError('deadTime must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'deadTime', exclusive_min: 0, got: L,
+      });
+    }
+    if (!(T > 0)) {
+      throw inputRangeError('timeConstant must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'timeConstant', exclusive_min: 0, got: T,
+      });
     }
 
     const r = L / T; // dead time ratio

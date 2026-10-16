@@ -25,7 +25,9 @@ export function boltCircle(input: BoltCircleInput): BoltCircleResult {
     });
   }
   if (!Number.isInteger(numberOfHoles) || numberOfHoles < 1) {
-    throw new RangeError('numberOfHoles must be an integer of at least 1');
+    throw inputRangeError('numberOfHoles must be an integer of at least 1', {
+      code: 'parameter_out_of_range', parameter: 'numberOfHoles', min: 1, got: numberOfHoles,
+    });
   }
 
   const radius = boltCircleDiameter / 2;

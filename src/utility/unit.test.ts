@@ -497,3 +497,14 @@ describe('calculateUnit', () => {
     });
   });
 });
+
+describe('calculateUnit refusal codes', () => {
+  it('codes an unknown category, fromUnit and toUnit', () => {
+    expect(() => calculateUnit({ category: 'colour' as never, fromUnit: 'm', toUnit: 'ft', value: 1 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'category', got: 'colour' }));
+    expect(() => calculateUnit({ category: 'length', fromUnit: 'cubit', toUnit: 'ft', value: 1 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'fromUnit', got: 'cubit' }));
+    expect(() => calculateUnit({ category: 'length', fromUnit: 'm', toUnit: 'cubit', value: 1 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'toUnit', got: 'cubit' }));
+  });
+});

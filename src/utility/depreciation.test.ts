@@ -96,3 +96,10 @@ describe('depreciation', () => {
     })).toThrow(RangeError);
   });
 });
+
+describe('depreciation refusal codes', () => {
+  it('codes an unknown method', () => {
+    expect(() => depreciation({ assetCost: 100, salvageValue: 10, usefulLife: 5, method: 'bogus' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'method', got: 'bogus' }));
+  });
+});

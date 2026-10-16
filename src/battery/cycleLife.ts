@@ -94,7 +94,9 @@ export function cycleLife(input: CycleLifeInput): CycleLifeResult {
 
   const baseCycles = BASE_CYCLE_LIFE[chemistry];
   if (baseCycles === undefined) {
-    throw new RangeError(`Unknown chemistry: ${String(chemistry)}`);
+    throw inputRangeError(`Unknown chemistry: ${String(chemistry)}`, {
+      code: 'unknown_option', parameter: 'chemistry', got: String(chemistry),
+    });
   }
   const dodCurve = dodCurveFor(chemistry);
   const dodFactor = getDodFactor(depthOfDischarge, dodCurve);

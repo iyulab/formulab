@@ -101,3 +101,12 @@ describe('truePosition', () => {
     expect(() => truePosition({ actualX: 1, actualY: 0, nominalX: 0, nominalY: 0, featureSize: -1, mmcSize: 5 })).toThrow(RangeError);
   });
 });
+
+describe('truePosition coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => truePosition({ actualX: 1, actualY: undefined as never, nominalX: 0, nominalY: 0 }))
+      .toThrow(expect.objectContaining({ code: 'value_not_finite', parameter: 'actualY' }));
+    expect(() => truePosition({ actualX: 1, actualY: 0, nominalX: 0, nominalY: 0, tolerance: -0.1 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tolerance', min: 0, got: -0.1 }));
+  });
+});

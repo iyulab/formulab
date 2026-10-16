@@ -73,3 +73,10 @@ describe('cuspHeight', () => {
     });
   });
 });
+
+describe('cuspHeight coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => cuspHeight({ toolRadius: 3, stepover: 6.5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'stepover', max: 6, got: 6.5 }));
+  });
+});

@@ -95,3 +95,10 @@ describe('boltCircle input domain', () => {
   });
 
 });
+
+describe('boltCircle coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => boltCircle({ boltCircleDiameter: 100, numberOfHoles: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'numberOfHoles', min: 1, got: 0 }));
+  });
+});

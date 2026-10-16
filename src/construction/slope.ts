@@ -24,7 +24,9 @@ export function slope(input: SlopeInput): SlopeResult {
   // A ratio of 1:N with N <= 0 is vertical/undefined, not flat ground.
   // (percent/degrees value 0 is legitimately flat and returns zeros below.)
   if (!Number.isFinite(value)) {
-    throw new RangeError('value must be a finite number');
+    throw inputRangeError('value must be a finite number', {
+      code: 'value_not_finite', parameter: 'value', got: typeof value === 'number' ? value : String(value),
+    });
   }
   if (fromUnit === 'ratio' && value <= 0) {
     throw inputRangeError('ratio value must be greater than 0', {
@@ -33,7 +35,7 @@ export function slope(input: SlopeInput): SlopeResult {
   }
   if (fromUnit === 'degrees' && !(value > -90 && value < 90)) {
     throw inputRangeError('degrees must be between -90 and 90 (exclusive)', {
-      code: 'parameter_out_of_range', parameter: 'degrees', exclusive_min: -90, exclusive_max: 90, got: value,
+      code: 'parameter_out_of_range', parameter: 'value', exclusive_min: -90, exclusive_max: 90, got: value,
     });
   }
 

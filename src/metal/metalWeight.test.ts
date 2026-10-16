@@ -260,3 +260,17 @@ describe('metalWeight', () => {
     });
   });
 });
+
+describe('metalWeight refusals carry their facts', () => {
+  it('refuses an unknown material and shape as unknown options', () => {
+    expect(() => metalWeight({ shape: 'plate', materialName: 'mithril' as never, length: 100, width: 100, thickness: 10 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'materialName', got: 'mithril' }));
+    expect(() => metalWeight({ shape: 'hexagon', materialName: 'steel', length: 100 } as never))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'shape', got: 'hexagon' }));
+  });
+
+  it('bounds an angle thickness by its shorter leg', () => {
+    expect(() => metalWeight({ shape: 'angle', materialName: 'steel', length: 100, width: 50, height: 30, thickness: 40 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'thickness', max: 30, got: 40 }));
+  });
+});

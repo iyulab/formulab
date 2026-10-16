@@ -11,9 +11,9 @@ function refusal(fn: () => unknown): Record<string, unknown> {
     fn();
   } catch (e) {
     expect(Object.getPrototypeOf(e)).toBe(RangeError.prototype);
-    const { code, parameter, min, max, exclusive_min, exclusive_max, got } = e as InputRangeError;
+    const { code, parameter, min, max, exclusive_min, exclusive_max, got, expected } = e as InputRangeError;
     return Object.fromEntries(
-      Object.entries({ code, parameter, min, max, exclusive_min, exclusive_max, got }).filter(([, v]) => v !== undefined),
+      Object.entries({ code, parameter, min, max, exclusive_min, exclusive_max, got, expected }).filter(([, v]) => v !== undefined),
     );
   }
   throw new Error('expected a refusal');

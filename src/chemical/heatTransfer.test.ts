@@ -142,3 +142,14 @@ describe('heatTransfer', () => {
     });
   });
 });
+
+describe('heatTransfer coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => heatTransfer({ mode: 'convection', coefficient: 10, area: 0, tempSurface: 100, tempFluid: 50 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'area', exclusive_min: 0, got: 0 }));
+    expect(() => heatTransfer({ mode: 'radiation', emissivity: 0.9, area: 1, tempHot: -300, tempCold: 20 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tempHot', exclusive_min: -273.15, got: -300 }));
+    expect(() => heatTransfer({ mode: 'radiation', emissivity: 0.9, area: 1, tempHot: 100, tempCold: -300 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'tempCold', exclusive_min: -273.15, got: -300 }));
+  });
+});

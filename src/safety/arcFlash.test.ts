@@ -182,3 +182,9 @@ describe('arcFlash', () => {
     });
   });
 });
+
+describe('arcFlash coded refusals', () => {
+  it('codes equipment without a distance exponent above 1 kV as a voltage bound', () => {
+    expect(() => arcFlash({ ...PHILLIPS, equipment: 'mcc', voltage: 4160 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'voltage', max: 1000, got: 4160 }));
+  });
+});

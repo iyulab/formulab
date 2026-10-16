@@ -40,7 +40,9 @@ export function depreciation(input: DepreciationInput): DepreciationResult {
   if (method === 'declining-balance') {
     return decliningBalance(assetCost, salvageValue, usefulLife);
   }
-  throw new RangeError(`method must be 'straight-line' or 'declining-balance', got ${String(method)}`);
+  throw inputRangeError(`method must be 'straight-line' or 'declining-balance', got ${String(method)}`, {
+    code: 'unknown_option', parameter: 'method', got: String(method),
+  });
 }
 
 function straightLine(cost: number, salvage: number, life: number): DepreciationResult {

@@ -40,10 +40,12 @@ export function nutrition(input: NutritionInput): NutritionResult {
     });
   }
   // A negative amount or nutrient subtracts from the recipe total it is meant to add to.
-  for (const ing of ingredients) {
+  for (const [i, ing] of ingredients.entries()) {
     for (const field of INGREDIENT_FIELDS) {
       if (!(ing[field] >= 0)) {
-        throw new RangeError(`ingredient "${ing.name}" ${field} must not be negative`);
+        throw inputRangeError(`ingredient "${ing.name}" ${field} must not be negative`, {
+          code: 'parameter_out_of_range', parameter: `ingredients[${i}].${field}`, min: 0, got: ing[field],
+        });
       }
     }
   }

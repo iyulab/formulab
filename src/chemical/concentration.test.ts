@@ -217,3 +217,10 @@ describe('concentration input domain', () => {
   });
 
 });
+
+describe('concentration coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => concentration({ fromUnit: 'unknown' as never, value: 1, molecularWeight: 100, solutionDensity: 1.0 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'fromUnit', got: 'unknown' }));
+  });
+});

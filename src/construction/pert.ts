@@ -94,16 +94,25 @@ export function pert(input: PertInput): PertResult {
   if (tasks.length === 0) {
     throw inputRangeError('tasks must not be empty', { code: 'empty_input', parameter: 'tasks' });
   }
-  for (const t of tasks) {
+  tasks.forEach((t, i) => {
     for (const field of ['optimistic', 'mostLikely', 'pessimistic'] as const) {
       if (!(t[field] >= 0)) {
-        throw new RangeError(`task ${t.id} ${field} must not be negative`);
+        throw inputRangeError(`task ${t.id} ${field} must not be negative`, {
+          code: 'parameter_out_of_range', parameter: `tasks[${i}].${field}`, min: 0, got: t[field],
+        });
       }
     }
-    if (!(t.optimistic <= t.mostLikely && t.mostLikely <= t.pessimistic)) {
-      throw new RangeError(`task ${t.id} estimates must satisfy optimistic <= mostLikely <= pessimistic`);
+    if (!(t.optimistic <= t.mostLikely)) {
+      throw inputRangeError(`task ${t.id} optimistic must not exceed mostLikely`, {
+        code: 'parameter_out_of_range', parameter: `tasks[${i}].optimistic`, max: t.mostLikely, got: t.optimistic,
+      });
     }
-  }
+    if (!(t.mostLikely <= t.pessimistic)) {
+      throw inputRangeError(`task ${t.id} mostLikely must not exceed pessimistic`, {
+        code: 'parameter_out_of_range', parameter: `tasks[${i}].mostLikely`, max: t.pessimistic, got: t.mostLikely,
+      });
+    }
+  });
   if (deadline !== undefined && !(deadline >= 0)) {
     throw inputRangeError('deadline must not be negative', {
       code: 'parameter_out_of_range', parameter: 'deadline', min: 0, got: deadline,

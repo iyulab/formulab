@@ -219,3 +219,18 @@ describe('pid missing parameters', () => {
     expect(() => pid({ method: 'ziegler-nichols-step', controllerType: 'PID', processGain: NaN, deadTime: 2, timeConstant: 10 })).toThrow(RangeError);
   });
 });
+
+describe('pid coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => pid({ method: 'ziegler-nichols-step', controllerType: 'PID', processGain: 0, deadTime: 1, timeConstant: 10 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'processGain', exclusive_min: 0, got: 0 }));
+    expect(() => pid({ method: 'cohen-coon', controllerType: 'PI', processGain: 1, deadTime: -1, timeConstant: 10 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'deadTime', got: -1 }));
+    expect(() => pid({ method: 'cohen-coon', controllerType: 'PI', processGain: 1, deadTime: 1, timeConstant: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'timeConstant', got: 0 }));
+    expect(() => pid({ method: 'ziegler-nichols-ultimate', controllerType: 'PID', ultimateGain: 0, ultimatePeriod: 5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ultimateGain', got: 0 }));
+    expect(() => pid({ method: 'ziegler-nichols-ultimate', controllerType: 'PID', ultimateGain: 4, ultimatePeriod: -5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ultimatePeriod', got: -5 }));
+  });
+});

@@ -148,3 +148,10 @@ describe('flowControl rejects inputs that would produce a non-finite result', ()
     });
   });
 });
+
+describe('flowControl coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => flowControl({ flowRate: 10, inletPressure: 300, outletPressure: 500, fluidDensity: 998, fluidType: 'liquid' }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'outletPressure', exclusive_max: 300, got: 500 }));
+  });
+});

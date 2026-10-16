@@ -35,7 +35,9 @@ export function normalize(input: NormalizeInput): NormalizeResult {
       ? data.map(() => 0)
       : data.map((v) => roundTo((v - mean) / stdDev, 6));
   } else {
-    throw new RangeError(`method must be 'min-max' or 'z-score', got ${String(method)}`);
+    throw inputRangeError(`method must be 'min-max' or 'z-score', got ${String(method)}`, {
+      code: 'unknown_option', parameter: 'method', got: String(method),
+    });
   }
 
   return {

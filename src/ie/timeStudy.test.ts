@@ -81,3 +81,10 @@ describe('timeStudy', () => {
     });
   });
 });
+
+describe('timeStudy refusal codes', () => {
+  it('codes too few observations', () => {
+    expect(() => timeStudy({ observations: [5], confidence: 0.95, accuracy: 5 }))
+      .toThrow(expect.objectContaining({ code: 'insufficient_data', parameter: 'observations', min: 2, got: 1 }));
+  });
+});

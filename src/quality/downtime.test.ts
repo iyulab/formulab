@@ -207,3 +207,10 @@ describe('downtime', () => {
     });
   });
 });
+
+describe('downtime refusal codes', () => {
+  it('names the negative input', () => {
+    expect(() => downtime({ hourlyRate: 100, laborCostPerHour: 50, downtimeMinutes: -5, plannedProductionUnits: 10, unitPrice: 2 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'downtimeMinutes', min: 0, got: -5 }));
+  });
+});

@@ -99,3 +99,15 @@ describe('ventilationRate', () => {
     });
   });
 });
+
+describe('ventilationRate coded refusals', () => {
+  it('names roomLength', () => {
+    expect(() => ventilationRate({ roomLength: 10, roomWidth: 10, roomHeight: 3, occupants: 10, activityLevel: 'sedentary', spaceType: 'office', roomLength: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'roomLength', exclusive_min: 0, got: 0 }));
+  });
+  it('names roomWidth', () => {
+    expect(() => ventilationRate({ roomLength: 10, roomWidth: 10, roomHeight: 3, occupants: 10, activityLevel: 'sedentary', spaceType: 'office', roomWidth: -2 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'roomWidth', exclusive_min: 0, got: -2 }));
+  });
+  it('names roomHeight', () => {
+    expect(() => ventilationRate({ roomLength: 10, roomWidth: 10, roomHeight: 3, occupants: 10, activityLevel: 'sedentary', spaceType: 'office', roomHeight: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'roomHeight', exclusive_min: 0, got: 0 }));
+  });
+});

@@ -156,3 +156,9 @@ describe('fallClearance', () => {
     });
   });
 });
+
+describe('fallClearance coded refusals', () => {
+  it('names a negative lanyardLength', () => {
+    expect(() => fallClearance({ ...EIGHTEEN_FIVE, lanyardLength: -1 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'lanyardLength', min: 0, got: -1 }));
+  });
+});

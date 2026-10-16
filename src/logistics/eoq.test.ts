@@ -193,3 +193,9 @@ describe('eoqCostCurve', () => {
     expect(() => eoqCostCurve({ ...input, ...override })).toThrow(RangeError);
   });
 });
+
+describe('eoqCostCurve coded refusals', () => {
+  it('codes too few points', () => {
+    expect(() => eoqCostCurve({ annualDemand: 10000, orderCost: 50, holdingCost: 2, minQuantity: 500, maxQuantity: 1000, points: 1 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'points', min: 2, got: 1 }));
+  });
+});

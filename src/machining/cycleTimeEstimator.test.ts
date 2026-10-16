@@ -110,3 +110,14 @@ describe('cycleTimeEstimator rejects inputs that would produce a non-finite resu
     expect(() => cycleTimeEstimator({ operations: [{ type: 'rapid', distance: 100, rapidRate: 0 }] })).toThrow(RangeError);
   });
 });
+
+describe('cycleTimeEstimator coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => cycleTimeEstimator({ operations: [{ type: 'dwell', time: 1 }, { type: 'rapid', distance: 100, rapidRate: 0 }] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'operations[1].rapidRate', exclusive_min: 0, got: 0 }));
+    expect(() => cycleTimeEstimator({ operations: [{ type: 'cutting', distance: 100, feedRate: 0 }] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'operations[0].feedRate', exclusive_min: 0, got: 0 }));
+    expect(() => cycleTimeEstimator({ operations: [{ type: 'dwell', time: 1 }, { type: 'dwell', time: -1 }] }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'operations[1].time', min: 0, got: -1 }));
+  });
+});

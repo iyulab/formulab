@@ -215,3 +215,12 @@ describe('capacitorDecode fractional multipliers (EIA-198 / IEC 60062)', () => {
     expect(() => capacitorDecode({ code: '107' })).toThrow(RangeError);
   });
 });
+
+describe('capacitorDecode refusal codes', () => {
+  it('names the code it cannot read', () => {
+    expect(() => capacitorDecode({ code: '10A' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'code', got: '10A' }));
+    expect(() => capacitorDecode({ code: '107' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'code', got: '107' }));
+  });
+});

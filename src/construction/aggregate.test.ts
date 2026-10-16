@@ -203,7 +203,9 @@ describe('aggregate', () => {
           depthUnit: 'centimeters',
           aggregateType: 'gravel',
         })
-      ).toThrow('All dimensions must be greater than zero');
+      ).toThrow(expect.objectContaining({
+        message: 'Length must be greater than zero', code: 'parameter_out_of_range', parameter: 'length', got: 0,
+      }));
     });
 
     it('should throw error for negative width', () => {
@@ -215,7 +217,9 @@ describe('aggregate', () => {
           depthUnit: 'centimeters',
           aggregateType: 'gravel',
         })
-      ).toThrow('All dimensions must be greater than zero');
+      ).toThrow(expect.objectContaining({
+        message: 'Width must be greater than zero', code: 'parameter_out_of_range', parameter: 'width', got: -1,
+      }));
     });
 
     it('should throw error for zero depth', () => {
@@ -227,7 +231,21 @@ describe('aggregate', () => {
           depthUnit: 'centimeters',
           aggregateType: 'gravel',
         })
-      ).toThrow('All dimensions must be greater than zero');
+      ).toThrow(expect.objectContaining({
+        message: 'Depth must be greater than zero', code: 'parameter_out_of_range', parameter: 'depth', got: 0,
+      }));
+    });
+
+    it('names an unknown aggregate type', () => {
+      expect(() =>
+        aggregate({
+          length: 5,
+          width: 5,
+          depth: 10,
+          depthUnit: 'centimeters',
+          aggregateType: 'basalt' as never,
+        })
+      ).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'aggregateType', got: 'basalt' }));
     });
   });
 
@@ -246,6 +264,9 @@ describe('aggregate', () => {
 
     it('rejects a type that is not in the table', () => {
       expect(() => getAggregateDensity('basalt' as never)).toThrow(/unknown aggregate type/);
+      expect(() => getAggregateDensity('basalt' as never)).toThrow(
+        expect.objectContaining({ code: 'unknown_option', parameter: 'type', got: 'basalt' }),
+      );
     });
   });
 
@@ -257,11 +278,15 @@ describe('aggregate', () => {
     });
 
     it('should throw error for zero volume', () => {
-      expect(() => aggregateCoverage(0, 10)).toThrow('Volume and depth must be greater than zero');
+      expect(() => aggregateCoverage(0, 10)).toThrow(expect.objectContaining({
+        message: 'Volume must be greater than zero', code: 'parameter_out_of_range', parameter: 'volumeM3', got: 0,
+      }));
     });
 
     it('should throw error for zero depth', () => {
-      expect(() => aggregateCoverage(5, 0)).toThrow('Volume and depth must be greater than zero');
+      expect(() => aggregateCoverage(5, 0)).toThrow(expect.objectContaining({
+        message: 'Depth must be greater than zero', code: 'parameter_out_of_range', parameter: 'depthCm', got: 0,
+      }));
     });
   });
 

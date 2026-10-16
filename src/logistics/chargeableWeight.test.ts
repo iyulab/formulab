@@ -28,3 +28,9 @@ describe('chargeableWeight', () => {
     expect(() => chargeableWeight({ volume: 1, actualWeight: 1, mode: 'toString' as never })).toThrow(/unknown freight mode/);
   });
 });
+
+describe('chargeableWeight coded refusals', () => {
+  it('codes an unknown freight mode', () => {
+    expect(() => chargeableWeight({ volume: 1, actualWeight: 1, mode: 'rail' as never })).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'mode', got: 'rail' }));
+  });
+});

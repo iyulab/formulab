@@ -41,3 +41,9 @@ describe('getContainerSpec', () => {
     expect(r).toMatchObject({ unitsPerLayer: 20, layers: 2, totalUnits: 33, limitedBy: 'payload' });
   });
 });
+
+describe('getContainerSpec coded refusals', () => {
+  it('codes an unknown container type', () => {
+    expect(() => getContainerSpec('45ft' as never)).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'type', got: '45ft' }));
+  });
+});

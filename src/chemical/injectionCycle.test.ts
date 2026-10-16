@@ -363,3 +363,16 @@ describe('injectionCycle rejects inputs that would produce a non-finite result',
     });
   });
 });
+
+describe('injectionCycle coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => injectionCycle({ resin: 'custom', wallThickness: 3, shotWeight: 50, density: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'density', exclusive_min: 0, got: 0 }));
+    expect(() => injectionCycle({ resin: 'custom', wallThickness: 2, shotWeight: 30, thermalDiffusivity: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'thermalDiffusivity', exclusive_min: 0, got: 0 }));
+    expect(() => injectionCycle({ resin: 'custom', wallThickness: 2, shotWeight: 30, meltTemp: 230, moldTemp: 100, ejectionTemp: 90 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ejectionTemp', exclusive_min: 100, got: 90 }));
+    expect(() => injectionCycle({ resin: 'custom', wallThickness: 2, shotWeight: 30, thermalDiffusivity: 0.12, meltTemp: 95, moldTemp: 50, ejectionTemp: 90 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'meltTemp', got: 95 }));
+  });
+});

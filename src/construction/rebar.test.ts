@@ -315,3 +315,12 @@ describe('getRebarSizes', () => {
     for (const s of sizes) expect(getRebarUnitWeight(s)).toBeGreaterThan(0);
   });
 });
+
+describe('rebar refusal codes', () => {
+  it('names an unknown size', () => {
+    expect(() => getRebarUnitWeight('D99' as never))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'size', got: 'D99' }));
+    expect(() => rebarWeight({ size: 'toString' as never, length: 1, quantity: 1 }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'size', got: 'toString' }));
+  });
+});

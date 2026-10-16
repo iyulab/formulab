@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { TriangleSolverInput, TriangleSolverResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 const DEG = Math.PI / 180;
 const RAD = 180 / Math.PI;
@@ -31,12 +32,16 @@ export function triangleSolver(input: TriangleSolverInput): TriangleSolverResult
   // comes back NaN; an angle outside (0, 180) is not an angle of a triangle at all.
   for (const [name, side] of [['a', a], ['b', b], ['c', c]] as const) {
     if (side !== undefined && !(side > 0)) {
-      throw new RangeError(`side ${name} must be greater than 0`);
+      throw inputRangeError(`side ${name} must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, got: side,
+      });
     }
   }
   for (const [name, angle] of [['A', A], ['B', B], ['C', C]] as const) {
     if (angle !== undefined && (!(angle > 0) || angle >= 180)) {
-      throw new RangeError(`angle ${name} must be greater than 0 and less than 180`);
+      throw inputRangeError(`angle ${name} must be greater than 0 and less than 180`, {
+        code: 'parameter_out_of_range', parameter: name, exclusive_min: 0, exclusive_max: 180, got: angle,
+      });
     }
   }
 

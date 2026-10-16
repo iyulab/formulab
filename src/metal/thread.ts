@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { ThreadInput, ThreadResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 const METRIC_THREADS: Record<string, { majorDiameter: number; pitch: number; tapDrill: number }> = {
   'M3':  { majorDiameter: 3, pitch: 0.5, tapDrill: 2.5 },
@@ -57,7 +58,9 @@ export function thread(input: ThreadInput): ThreadResult {
   if (input.type === 'metric') {
     const spec = METRIC_THREADS[input.size];
     if (!spec) {
-      throw new RangeError('unknown thread size: ' + input.size);
+      throw inputRangeError('unknown thread size: ' + input.size, {
+        code: 'unknown_option', parameter: 'size', got: String(input.size),
+      });
     }
 
     const minorDiameter = roundTo(spec.majorDiameter - 1.0825 * spec.pitch, 3);
@@ -75,7 +78,9 @@ export function thread(input: ThreadInput): ThreadResult {
 
   const spec = UNIFIED_THREADS[input.size];
   if (!spec) {
-    throw new RangeError('unknown thread size: ' + input.size);
+    throw inputRangeError('unknown thread size: ' + input.size, {
+      code: 'unknown_option', parameter: 'size', got: String(input.size),
+    });
   }
 
   const pitchMm = 25.4 / spec.tpi;

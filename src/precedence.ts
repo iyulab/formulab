@@ -1,3 +1,5 @@
+import { inputRangeError } from './errors.js';
+
 /**
  * Precedence-graph input checks shared by `lineBalancing()` and `pert()` — internal, not part of the
  * public API.
@@ -16,11 +18,13 @@ export function validatePrecedence(tasks: readonly { id: string; predecessors: r
     }
     ids.add(t.id);
   }
-  for (const t of tasks) {
+  tasks.forEach((t, i) => {
     for (const p of t.predecessors) {
       if (!ids.has(p)) {
-        throw new RangeError(`task ${t.id} has predecessor ${p}, which is not a task`);
+        throw inputRangeError(`task ${t.id} has predecessor ${p}, which is not a task`, {
+          code: 'unknown_option', parameter: `tasks[${i}].predecessors`, got: String(p),
+        });
       }
     }
-  }
+  });
 }

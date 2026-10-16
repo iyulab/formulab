@@ -33,7 +33,9 @@ export function learningCurve(input: LearningCurveInput): LearningCurveResult {
     });
   }
   if (!Number.isFinite(unitNumber) || unitNumber < 1 || !Number.isInteger(unitNumber)) {
-    throw new RangeError('Unit number must be a positive integer');
+    throw inputRangeError('Unit number must be a positive integer', {
+      code: 'parameter_out_of_range', parameter: 'unitNumber', min: 1, got: unitNumber,
+    });
   }
 
   const b = Math.log(learningRate) / Math.log(2);

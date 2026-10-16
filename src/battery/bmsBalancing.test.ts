@@ -85,3 +85,10 @@ describe('bmsBalancing input domain', () => {
       .toThrow(expect.objectContaining({ code: 'insufficient_data', parameter: 'cellVoltages', min: 2, got: 1 }));
   });
 });
+
+describe('bmsBalancing refusals carry their facts', () => {
+  it('names the cell whose voltage is not positive', () => {
+    expect(() => bmsBalancing({ cellVoltages: [3.9, 0, 3.8], balancingCurrentMA: 100, cellCapacityAh: 100 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'cellVoltages[1]', exclusive_min: 0, got: 0 }));
+  });
+});

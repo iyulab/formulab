@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { DowntimeInput, DowntimeResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate downtime cost analysis
@@ -15,7 +16,9 @@ export function downtime(input: DowntimeInput): DowntimeResult {
   const fields = { hourlyRate, laborCostPerHour, downtimeMinutes, plannedProductionUnits, unitPrice };
   for (const [name, value] of Object.entries(fields)) {
     if (!(value >= 0)) {
-      throw new RangeError(`${name} must not be negative`);
+      throw inputRangeError(`${name} must not be negative`, {
+        code: 'parameter_out_of_range', parameter: name, min: 0, got: value,
+      });
     }
   }
 

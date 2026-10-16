@@ -127,15 +127,19 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
       code: 'parameter_out_of_range', parameter: 'cycleTime', exclusive_min: 0, got: cycleTime,
     });
   }
-  for (const t of tasks) {
+  tasks.forEach((t, i) => {
     if (!(t.time > 0)) {
-      throw new RangeError(`task ${t.id} time must be greater than 0`);
+      throw inputRangeError(`task ${t.id} time must be greater than 0`, {
+        code: 'parameter_out_of_range', parameter: `tasks[${i}].time`, exclusive_min: 0, got: t.time,
+      });
     }
-  }
+  });
 
   // Check if any task exceeds cycle time
   if (tasks.some(t => t.time > cycleTime)) {
-    throw new RangeError('cycleTime must be at least the maximum task time');
+    throw inputRangeError('cycleTime must be at least the maximum task time', {
+      code: 'parameter_out_of_range', parameter: 'cycleTime', min: Math.max(...tasks.map(t => t.time)), got: cycleTime,
+    });
   }
 
   validatePrecedence(tasks);

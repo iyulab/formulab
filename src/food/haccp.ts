@@ -1,5 +1,6 @@
 import type { HaccpCategory, HaccpInput, HaccpResult, HaccpCheckItem } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 const CHECKLIST_DATA: Record<HaccpCategory, HaccpCheckItem[]> = {
   receiving: [
@@ -68,7 +69,9 @@ export function getCategories(): HaccpCategory[] {
 export function haccp(input: HaccpInput): HaccpResult {
   requireFinite('haccp', input);
   if (!Object.hasOwn(CHECKLIST_DATA, input.category)) {
-    throw new RangeError(`category must be one of ${Object.keys(CHECKLIST_DATA).join(', ')}`);
+    throw inputRangeError(`category must be one of ${Object.keys(CHECKLIST_DATA).join(', ')}`, {
+      code: 'unknown_option', parameter: 'category', got: String(input.category),
+    });
   }
   const items = CHECKLIST_DATA[input.category];
 

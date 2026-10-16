@@ -13,11 +13,16 @@ import { inputRangeError } from '../errors.js';
 export function regression(input: RegressionInput): RegressionResult {
   requireFinite('regression', input);
   const { x, y } = input;
-  if (!x || !y) {
-    throw new RangeError('x and y data arrays are required');
+  if (!x) {
+    throw inputRangeError('x array is required', { code: 'empty_input', parameter: 'x' });
+  }
+  if (!y) {
+    throw inputRangeError('y array is required', { code: 'empty_input', parameter: 'y' });
   }
   if (x.length !== y.length) {
-    throw new RangeError(`x and y must have the same length, got ${x.length} and ${y.length}`);
+    throw inputRangeError(`x and y must have the same length, got ${x.length} and ${y.length}`, {
+      code: 'dimension_mismatch', parameter: 'y', expected: x.length, got: y.length,
+    });
   }
   if (x.length < 2) {
     throw inputRangeError(`at least 2 data points are required, got ${x.length}`, {

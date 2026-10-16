@@ -174,3 +174,9 @@ describe('haccp', () => {
     });
   });
 });
+
+describe('haccp coded refusals', () => {
+  it('codes an unknown category', () => {
+    expect(() => haccp({ category: 'invalid' } as never)).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'category', got: 'invalid' }));
+  });
+});

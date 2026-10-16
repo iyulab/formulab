@@ -354,3 +354,12 @@ describe('getGrades', () => {
     expect(grades).toEqual([]);
   });
 });
+
+describe('material refusals carry their facts', () => {
+  it('refuses an unknown category and grade as unknown options', () => {
+    expect(() => material({ category: 'invalid' as never, grade: 'SS400' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'category', got: 'invalid' }));
+    expect(() => material({ category: 'steel', grade: 'INVALID' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'grade', got: 'INVALID' }));
+  });
+});

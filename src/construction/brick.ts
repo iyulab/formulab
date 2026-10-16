@@ -50,13 +50,22 @@ export function brick(input: BrickInput): BrickResult {
   if (brickSize === 'custom') {
     length = customLength ?? 200;
     height = customHeight ?? 60;
-    if (!(length > 0) || !(height > 0)) {
-      throw new RangeError('custom brick dimensions must be greater than 0');
+    if (!(length > 0)) {
+      throw inputRangeError('customLength must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'customLength', exclusive_min: 0, got: length,
+      });
+    }
+    if (!(height > 0)) {
+      throw inputRangeError('customHeight must be greater than 0', {
+        code: 'parameter_out_of_range', parameter: 'customHeight', exclusive_min: 0, got: height,
+      });
     }
   } else {
     const dims = BRICK_SIZES[brickSize as Exclude<BrickSize, 'custom'>];
     if (dims === undefined) {
-      throw new RangeError(`unknown brick size: ${String(brickSize)}`);
+      throw inputRangeError(`unknown brick size: ${String(brickSize)}`, {
+        code: 'unknown_option', parameter: 'brickSize', got: String(brickSize),
+      });
     }
     length = dims.length;
     height = dims.height;

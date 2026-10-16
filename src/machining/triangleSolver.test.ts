@@ -88,3 +88,12 @@ describe('triangleSolver input domain', () => {
   });
 
 });
+
+describe('triangleSolver coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => triangleSolver({ a: 3, b: 0, c: 5 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'b', exclusive_min: 0, got: 0 }));
+    expect(() => triangleSolver({ a: 3, b: 4, C: 180 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'C', exclusive_min: 0, exclusive_max: 180, got: 180 }));
+  });
+});

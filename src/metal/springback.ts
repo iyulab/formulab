@@ -89,10 +89,14 @@ export function springback(input: SpringbackInput): SpringbackResult {
     yieldStrength = input.yieldStrength ?? NaN;
     elasticModulus = input.elasticModulus ?? NaN;
     if (!(yieldStrength > 0)) {
-      throw new RangeError('yieldStrength must be greater than 0 for custom material');
+      throw inputRangeError('yieldStrength must be greater than 0 for custom material', {
+        code: 'parameter_out_of_range', parameter: 'yieldStrength', exclusive_min: 0, got: input.yieldStrength,
+      });
     }
     if (!(elasticModulus > 0)) {
-      throw new RangeError('elasticModulus must be greater than 0 for custom material');
+      throw inputRangeError('elasticModulus must be greater than 0 for custom material', {
+        code: 'parameter_out_of_range', parameter: 'elasticModulus', exclusive_min: 0, got: input.elasticModulus,
+      });
     }
   } else {
     ({ yieldStrength, elasticModulus } = MATERIAL_PROPS[material]);

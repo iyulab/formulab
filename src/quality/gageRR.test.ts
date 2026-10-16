@@ -335,3 +335,16 @@ describe('gageRR study shape', () => {
     expect(() => gageRR({ measurements: [] })).toThrow(/must not be empty/);
   });
 });
+
+describe('gageRR refusal codes', () => {
+  it('codes a study with no operators or no trials', () => {
+    expect(() => gageRR({ measurements: [[]] })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'measurements[0]' }));
+    expect(() => gageRR({ measurements: [[[]]] })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'measurements[0][0]' }));
+  });
+  it('codes a ragged study', () => {
+    expect(() => gageRR({ measurements: [[[1, 2], [1, 2]], [[1, 2]]] }))
+      .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'measurements[1]', expected: 2, got: 1 }));
+    expect(() => gageRR({ measurements: [[[1, 2], [1, 2]], [[1, 2], [1]]] }))
+      .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'measurements[1][1]', expected: 2, got: 1 }));
+  });
+});

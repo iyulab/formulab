@@ -87,3 +87,12 @@ describe('abcAnalysis', () => {
     });
   });
 });
+
+describe('abcAnalysis coded refusals', () => {
+  it('names the item whose annualUsage is negative', () => {
+    expect(() => abcAnalysis({ items: [{ id: 'a', annualUsage: 1, unitCost: 1 }, { id: 'b', annualUsage: -1, unitCost: 1 }] } as never)).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'items[1].annualUsage', min: 0, got: -1 }));
+  });
+  it('names the item whose unitCost is negative', () => {
+    expect(() => abcAnalysis({ items: [{ id: 'a', annualUsage: 1, unitCost: -2 }] } as never)).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'items[0].unitCost', min: 0, got: -2 }));
+  });
+});

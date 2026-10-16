@@ -159,3 +159,15 @@ describe('grid emission factor lookup', () => {
     expect(() => getGridEmissionFactor('toString' as never)).toThrow(RangeError);
   });
 });
+
+describe('scope2Emissions coded refusals', () => {
+  it('codes an unknown grid region', () => {
+    expect(() => getGridEmissionFactor('Atlantis' as never)).toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'region', got: 'Atlantis' }));
+  });
+  it('names contractedKwh when it is negative', () => {
+    expect(() => scope2Emissions({ electricityKwh: 10000, region: 'US_average', contractedKwh: -1, supplierFactor: 50 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'contractedKwh', min: 0, got: -1 }));
+  });
+  it('names contractedKwh when it exceeds electricityKwh', () => {
+    expect(() => scope2Emissions({ electricityKwh: 100, region: 'US_average', contractedKwh: 200, supplierFactor: 50, residualMixFactor: 400 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'contractedKwh', max: 100, got: 200 }));
+  });
+});

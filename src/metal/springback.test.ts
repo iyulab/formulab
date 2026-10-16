@@ -247,3 +247,12 @@ describe('springback', () => {
     });
   });
 });
+
+describe('springback refusals carry their facts', () => {
+  it('names the custom material property that is missing or not positive', () => {
+    expect(() => springback({ material: 'custom', thickness: 2, bendRadius: 5, bendAngle: 90, yieldStrength: 0, elasticModulus: 200 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'yieldStrength', exclusive_min: 0, got: 0 }));
+    expect(() => springback({ material: 'custom', thickness: 2, bendRadius: 5, bendAngle: 90, yieldStrength: 250 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'elasticModulus', exclusive_min: 0 }));
+  });
+});

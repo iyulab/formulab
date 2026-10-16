@@ -124,3 +124,10 @@ describe('getDesignations', () => {
     expect(designations.length).toBeGreaterThan(10);
   });
 });
+
+describe('screw refusals carry their facts', () => {
+  it('refuses an unknown designation as an unknown option', () => {
+    expect(() => screw({ designation: 'M7', pitchType: 'coarse' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'designation', got: 'M7' }));
+  });
+});

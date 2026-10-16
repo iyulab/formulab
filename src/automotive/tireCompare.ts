@@ -47,7 +47,9 @@ export function tireLoadCapacityKg(loadIndex: number): number {
   requireFinite('tireLoadCapacityKg', loadIndex);
   const capacity = TIRE_LOAD_INDEX_KG[loadIndex];
   if (capacity == null) {
-    throw new RangeError(`loadIndex must be an integer between 60 and 130 (got ${loadIndex})`);
+    throw inputRangeError(`loadIndex must be an integer between 60 and 130 (got ${loadIndex})`, {
+      code: 'parameter_out_of_range', parameter: 'loadIndex', min: 60, max: 130, got: loadIndex,
+    });
   }
   return capacity;
 }

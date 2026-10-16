@@ -87,11 +87,19 @@ export function safetyStockSimulation(input: SafetyStockSimulationInput): Safety
     });
   }
   if (!Number.isInteger(iterations) || iterations < 100 || iterations > 100_000) {
-    throw new RangeError('iterations must be a whole number from 100 to 100000');
+    throw inputRangeError('iterations must be a whole number from 100 to 100000', {
+      code: 'parameter_out_of_range', parameter: 'iterations', min: 100, max: 100_000, got: iterations,
+    });
   }
-  if (!Number.isInteger(bins) || bins < 1) throw new RangeError('bins must be a whole number of at least 1');
+  if (!Number.isInteger(bins) || bins < 1) {
+    throw inputRangeError('bins must be a whole number of at least 1', {
+      code: 'parameter_out_of_range', parameter: 'bins', min: 1, got: bins,
+    });
+  }
   if (demandDistribution !== 'normal' && demandDistribution !== 'poisson') {
-    throw new RangeError(`unknown demand distribution: ${String(demandDistribution)}`);
+    throw inputRangeError(`unknown demand distribution: ${String(demandDistribution)}`, {
+      code: 'unknown_option', parameter: 'demandDistribution', got: String(demandDistribution),
+    });
   }
 
   const rand = mulberry32(seed);

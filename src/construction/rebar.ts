@@ -73,7 +73,9 @@ export function getRebarSizes(): RebarSize[] {
 /** The table's own entry — an inherited key such as `'toString'` is no rebar size. */
 function unitWeightOf(size: RebarSize): number {
   if (!Object.hasOwn(REBAR_UNIT_WEIGHTS, size)) {
-    throw new RangeError(`unknown rebar size: ${String(size)}`);
+    throw inputRangeError(`unknown rebar size: ${String(size)}`, {
+      code: 'unknown_option', parameter: 'size', got: String(size),
+    });
   }
   return REBAR_UNIT_WEIGHTS[size];
 }

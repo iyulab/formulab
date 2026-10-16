@@ -116,3 +116,10 @@ describe('movingAverageRangeChart', () => {
     });
   });
 });
+
+describe('movingAverageRangeChart refusal codes', () => {
+  it('codes too few values for the window', () => {
+    expect(() => movingAverageRangeChart({ values: [1, 2, 3], windowSize: 3 }))
+      .toThrow(expect.objectContaining({ code: 'insufficient_data', parameter: 'values', min: 4, got: 3 }));
+  });
+});

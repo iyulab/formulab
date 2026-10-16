@@ -61,3 +61,10 @@ describe('normalize', () => {
     expect(() => normalize({ data: [], method: 'min-max' })).toThrow(RangeError);
   });
 });
+
+describe('normalize refusal codes', () => {
+  it('codes an unknown method', () => {
+    expect(() => normalize({ data: [1, 2, 3], method: 'robust' as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'method', got: 'robust' }));
+  });
+});

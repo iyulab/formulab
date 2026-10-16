@@ -168,3 +168,15 @@ describe('slope — degree domain (tan diverges at ±90°)', () => {
     expect(slope({ fromUnit: 'percent', value: 1_000_000 }).degrees).toBeCloseTo(89.9943, 3);
   });
 });
+
+describe('slope refusal codes', () => {
+  it('names value for a non-numeric value', () => {
+    expect(() => slope({ fromUnit: 'percent', value: 'abc' as never }))
+      .toThrow(expect.objectContaining({ code: 'value_not_finite', parameter: 'value', got: 'abc' }));
+  });
+
+  it('names value (the field the caller passes) for degrees out of range', () => {
+    expect(() => slope({ fromUnit: 'degrees', value: 95 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'value', exclusive_min: -90, exclusive_max: 90, got: 95 }));
+  });
+});

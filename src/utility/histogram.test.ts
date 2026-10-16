@@ -101,3 +101,10 @@ describe('histogram', () => {
     });
   });
 });
+
+describe('histogram refusal codes', () => {
+  it('codes a non-positive normal.stdDev', () => {
+    expect(() => histogram({ data: [1, 2, 3], normal: { mean: 2, stdDev: 0 } }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'normal.stdDev', exclusive_min: 0, got: 0 }));
+  });
+});

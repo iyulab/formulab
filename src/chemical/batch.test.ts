@@ -175,3 +175,11 @@ describe('batch', () => {
     });
   });
 });
+
+describe('batch coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => batch({ originalBatchSize: 10, targetBatchSize: 20, ingredients: [
+      { name: 'Flour', amount: 500, unit: 'g' }, { name: 'Salt', amount: -1, unit: 'g' },
+    ] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'ingredients[1].amount', min: 0, got: -1 }));
+  });
+});

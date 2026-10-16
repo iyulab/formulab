@@ -149,7 +149,9 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
 
   // Volume = shot weight / density (g / (g/cm^3) = cm^3); fill time then divides by the rate.
   if (!(props.density > 0)) {
-    throw new RangeError('density must be greater than 0');
+    throw inputRangeError('density must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'density', exclusive_min: 0, got: props.density,
+    });
   }
   if (injectionRate !== undefined && !(injectionRate > 0)) {
     throw inputRangeError('injectionRate must be greater than 0', {
@@ -165,17 +167,27 @@ export function injectionCycle(input: InjectionCycleInput): InjectionCycleResult
   const tempRatioDenominator = props.ejectionTemp - props.moldTemp;
 
   if (!(props.thermalDiffusivity > 0)) {
-    throw new RangeError('thermalDiffusivity must be greater than 0');
+    throw inputRangeError('thermalDiffusivity must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'thermalDiffusivity', exclusive_min: 0, got: props.thermalDiffusivity,
+    });
   }
   if (!(tempRatioDenominator > 0)) {
-    throw new RangeError('ejectionTemp must be higher than moldTemp');
+    throw inputRangeError('ejectionTemp must be higher than moldTemp', {
+      code: 'parameter_out_of_range', parameter: 'ejectionTemp', exclusive_min: props.moldTemp, got: props.ejectionTemp,
+    });
   }
   // The cooling-time model is the first term of the slab conduction series; it is positive only when
   // (8/π²)·(Tm − Tw)/(Te − Tw) > 1. A melt temperature at or barely above the ejection temperature
   // falls outside it and gave a negative cooling time.
   const tempRatio = (8 / piSquared) * (tempRatioNumerator / tempRatioDenominator);
   if (!(tempRatio > 1)) {
-    throw new RangeError('meltTemp is too close to ejectionTemp for the cooling-time model ((8/π²)·(Tm − Tw)/(Te − Tw) must exceed 1)');
+    throw inputRangeError('meltTemp is too close to ejectionTemp for the cooling-time model ((8/π²)·(Tm − Tw)/(Te − Tw) must exceed 1)', {
+      code: 'parameter_out_of_range',
+      parameter: 'meltTemp',
+      // The least melt temperature the model accepts: Tw + (Te − Tw)·π²/8.
+      exclusive_min: props.moldTemp + tempRatioDenominator * piSquared / 8,
+      got: props.meltTemp,
+    });
   }
   const coolingTime = (s * s / (piSquared * props.thermalDiffusivity)) * Math.log(tempRatio);
 

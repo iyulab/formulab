@@ -48,7 +48,9 @@ export function ladderAngle(input: LadderAngleInput): LadderAngleResult {
   // its input value (often a 0 placeholder) is ignored. Otherwise it is a given.
   const bothGiven = height !== undefined && baseDistance !== undefined;
   if (!bothGiven && ladderLength <= 0) {
-    throw new RangeError('ladderLength must be greater than 0');
+    throw inputRangeError('ladderLength must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'ladderLength', exclusive_min: 0, got: ladderLength,
+    });
   }
 
   // Resolve the third dimension from the other two

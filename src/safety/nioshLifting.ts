@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { multiplicativeCascade } from '../math.js';
+import { inputRangeError } from '../errors.js';
 import type {
   NioshInput,
   NioshResult,
@@ -185,7 +186,9 @@ export function nioshLifting(input: NioshInput): NioshResult {
     ['loadWeight', loadWeight],
   ] as const) {
     if (!(value >= 0)) {
-      throw new RangeError(`${name} must not be negative`);
+      throw inputRangeError(`${name} must not be negative`, {
+        code: 'parameter_out_of_range', parameter: name, min: 0, got: value,
+      });
     }
   }
 

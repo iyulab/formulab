@@ -68,3 +68,15 @@ describe('waterFootprint contract restoration (2026-07 audit)', () => {
     expect(() => waterFootprint({ blueWaterM3: -1, greenWaterM3: 0, greyWaterM3: 0 })).toThrow(RangeError);
   });
 });
+
+describe('waterFootprint coded refusals', () => {
+  it('names blueWaterM3', () => {
+    expect(() => waterFootprint({ blueWaterM3: -1, greenWaterM3: 0, greyWaterM3: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'blueWaterM3', min: 0, got: -1 }));
+  });
+  it('names greenWaterM3', () => {
+    expect(() => waterFootprint({ blueWaterM3: 0, greenWaterM3: -1, greyWaterM3: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'greenWaterM3', min: 0, got: -1 }));
+  });
+  it('names greyWaterM3', () => {
+    expect(() => waterFootprint({ blueWaterM3: 0, greenWaterM3: 0, greyWaterM3: -1 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'greyWaterM3', min: 0, got: -1 }));
+  });
+});

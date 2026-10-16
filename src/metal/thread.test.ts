@@ -125,3 +125,12 @@ describe('getUnifiedSizes', () => {
     expect(sizes).toContain('3/4-10');
   });
 });
+
+describe('thread refusals carry their facts', () => {
+  it('refuses an unknown size as an unknown option', () => {
+    expect(() => thread({ type: 'metric', size: 'M7' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'size', got: 'M7' }));
+    expect(() => thread({ type: 'unified', size: '1/3-20' }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'size', got: '1/3-20' }));
+  });
+});

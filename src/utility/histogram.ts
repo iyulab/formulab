@@ -20,7 +20,9 @@ export function histogram(input: HistogramInput): HistogramResult {
 
   const n = data.length;
   if (input.normal && !(input.normal.stdDev > 0)) {
-    throw new RangeError(`normal.stdDev must be greater than 0, got ${input.normal.stdDev}`);
+    throw inputRangeError(`normal.stdDev must be greater than 0, got ${input.normal.stdDev}`, {
+      code: 'parameter_out_of_range', parameter: 'normal.stdDev', exclusive_min: 0, got: input.normal.stdDev,
+    });
   }
   // Sturges' rule for default bin count
   const numBins = input.bins ?? Math.max(1, Math.ceil(Math.log2(n) + 1));

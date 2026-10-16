@@ -97,3 +97,12 @@ describe('threadOverWires', () => {
     });
   });
 });
+
+describe('threadOverWires coded refusals', () => {
+  it('names the refused input and its bound', () => {
+    expect(() => threadOverWires({ majorDiameter: 10, pitch: 1, threadAngle: 45 as never }))
+      .toThrow(expect.objectContaining({ code: 'unknown_option', parameter: 'threadAngle', got: '45' }));
+    expect(() => threadOverWires({ majorDiameter: 1, pitch: 2 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'pitch', got: 2 }));
+  });
+});

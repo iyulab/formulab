@@ -68,7 +68,9 @@ export function esgSummary(input: EsgSummaryInput): EsgSummaryResult {
   // A reading taken before its own baseline is a contradiction, not a negative trend.
   const yearsElapsed = currentYear - baselineYear;
   if (yearsElapsed < 0) {
-    throw new RangeError('currentYear must not be before baselineYear');
+    throw inputRangeError('currentYear must not be before baselineYear', {
+      code: 'parameter_out_of_range', parameter: 'currentYear', min: baselineYear, got: currentYear,
+    });
   }
   // No elapsed time → no trend: the rate and the projection have no value, not 0.
   const annualRatePercent = yearsElapsed > 0

@@ -1,5 +1,6 @@
 import type { HavsInput, HavsResult, ToolExposure } from './types.js';
 import { requireFinite } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Daily exposure action value (EAV) for hand-arm vibration, in m/s² A(8).
@@ -107,9 +108,16 @@ export function havsCalculate(input: HavsInput): HavsResult {
   requireFinite('havsCalculate', input);
   const { tools } = input;
 
-  for (const t of tools) {
-    if (t.vibrationMagnitude < 0 || t.exposureTime < 0) {
-      throw new RangeError('tool vibrationMagnitude and exposureTime must not be negative');
+  for (const [i, t] of tools.entries()) {
+    if (t.vibrationMagnitude < 0) {
+      throw inputRangeError('tool vibrationMagnitude must not be negative', {
+        code: 'parameter_out_of_range', parameter: `tools[${i}].vibrationMagnitude`, min: 0, got: t.vibrationMagnitude,
+      });
+    }
+    if (t.exposureTime < 0) {
+      throw inputRangeError('tool exposureTime must not be negative', {
+        code: 'parameter_out_of_range', parameter: `tools[${i}].exposureTime`, min: 0, got: t.exposureTime,
+      });
     }
   }
 

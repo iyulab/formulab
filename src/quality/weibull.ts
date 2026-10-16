@@ -28,8 +28,12 @@ export function weibull(input: WeibullInput): WeibullResult {
       code: 'insufficient_data', parameter: 'failureTimes', min: 2, got: failureTimes.length,
     });
   }
-  if (failureTimes.some((t) => !(t > 0))) {
-    throw new RangeError('All failure times must be greater than 0');
+  const nonPositive = failureTimes.findIndex((t) => !(t > 0));
+  if (nonPositive !== -1) {
+    throw inputRangeError('All failure times must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: `failureTimes[${nonPositive}]`, exclusive_min: 0,
+      got: failureTimes[nonPositive],
+    });
   }
   if (failureTimes.every((t) => t === failureTimes[0])) {
     throw new RangeError('failure times must not all be identical');

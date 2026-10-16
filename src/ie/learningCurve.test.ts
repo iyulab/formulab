@@ -107,3 +107,10 @@ describe('learningCurve', () => {
     });
   });
 });
+
+describe('learningCurve refusal codes', () => {
+  it('codes a unit number below 1', () => {
+    expect(() => learningCurve({ firstUnitTime: 10, learningRate: 0.8, unitNumber: 0 }))
+      .toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'unitNumber', min: 1, got: 0 }));
+  });
+});

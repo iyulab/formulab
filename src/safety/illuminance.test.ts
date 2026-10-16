@@ -267,3 +267,21 @@ describe('illuminance input domain', () => {
   });
 
 });
+
+describe('illuminance coded refusals', () => {
+  it('names roomLength', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 3000, roomLength: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'roomLength', exclusive_min: 0, got: 0 }));
+  });
+  it('names roomWidth', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 3000, roomWidth: -1 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'roomWidth', exclusive_min: 0, got: -1 }));
+  });
+  it('names lumensPerLuminaire', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 3000, lumensPerLuminaire: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'lumensPerLuminaire', exclusive_min: 0, got: 0 }));
+  });
+  it('names targetLux', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 3000, targetLux: 0 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'targetLux', exclusive_min: 0, got: 0 }));
+  });
+  it('bounds luminaireHeight by workplaneHeight', () => {
+    expect(() => illuminance({ roomLength: 10, roomWidth: 8, luminaireHeight: 3, targetLux: 500, lumensPerLuminaire: 3000, luminaireHeight: 0.8, workplaneHeight: 0.85 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'luminaireHeight', exclusive_min: 0.85, got: 0.8 }));
+  });
+});

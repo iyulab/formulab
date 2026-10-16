@@ -23,12 +23,16 @@ export function abcAnalysis(input: AbcInput): AbcResult {
 
   // A negative usage or cost gives a negative annual value, which sorts below every real item
   // and pulls the cumulative share past 100%.
-  for (const item of items) {
+  for (const [i, item] of items.entries()) {
     if (!(item.annualUsage >= 0)) {
-      throw new RangeError('annualUsage must not be negative');
+      throw inputRangeError('annualUsage must not be negative', {
+        code: 'parameter_out_of_range', parameter: `items[${i}].annualUsage`, min: 0, got: item.annualUsage,
+      });
     }
     if (!(item.unitCost >= 0)) {
-      throw new RangeError('unitCost must not be negative');
+      throw inputRangeError('unitCost must not be negative', {
+        code: 'parameter_out_of_range', parameter: `items[${i}].unitCost`, min: 0, got: item.unitCost,
+      });
     }
   }
 

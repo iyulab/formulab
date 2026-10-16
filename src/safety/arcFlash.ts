@@ -105,7 +105,9 @@ export function arcFlash(input: ArcFlashInput): ArcFlashResult {
   const lowVoltage = voltage <= 1000;
   const x = lowVoltage ? DISTANCE_EXPONENT[equipment].low : DISTANCE_EXPONENT[equipment].medium;
   if (x === null) {
-    throw new RangeError(`equipment '${equipment}' has no distance exponent above 1 kV in IEEE 1584-2002 Table 4`);
+    throw inputRangeError(`equipment '${equipment}' has no distance exponent above 1 kV in IEEE 1584-2002 Table 4`, {
+      code: 'parameter_out_of_range', parameter: 'voltage', max: 1000, got: voltage,
+    });
   }
 
   const V = voltage / 1000; // kV

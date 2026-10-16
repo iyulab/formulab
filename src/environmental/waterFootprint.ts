@@ -1,5 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import type { WaterFootprintInput, WaterFootprintResult } from './types.js';
+import { inputRangeError } from '../errors.js';
 
 /**
  * Calculate water footprint (blue, green, grey)
@@ -15,8 +16,20 @@ export function waterFootprint(input: WaterFootprintInput): WaterFootprintResult
   requireFinite('waterFootprint', input);
   const { blueWaterM3, greenWaterM3, greyWaterM3, productionUnits } = input;
 
-  if (blueWaterM3 < 0 || greenWaterM3 < 0 || greyWaterM3 < 0) {
-    throw new RangeError('water volumes must not be negative');
+  if (blueWaterM3 < 0) {
+    throw inputRangeError('blueWaterM3 must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'blueWaterM3', min: 0, got: blueWaterM3,
+    });
+  }
+  if (greenWaterM3 < 0) {
+    throw inputRangeError('greenWaterM3 must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'greenWaterM3', min: 0, got: greenWaterM3,
+    });
+  }
+  if (greyWaterM3 < 0) {
+    throw inputRangeError('greyWaterM3 must not be negative', {
+      code: 'parameter_out_of_range', parameter: 'greyWaterM3', min: 0, got: greyWaterM3,
+    });
   }
 
   const totalWaterM3 = roundTo(blueWaterM3 + greenWaterM3 + greyWaterM3, 2);

@@ -98,7 +98,11 @@ export function eoqCostCurve(input: EoqCostCurveInput): EoqCostPoint[] {
       code: 'parameter_out_of_range', parameter: 'maxQuantity', exclusive_min: minQuantity, got: maxQuantity,
     });
   }
-  if (!Number.isInteger(points) || points < 2) throw new RangeError('points must be a whole number of at least 2');
+  if (!Number.isInteger(points) || points < 2) {
+    throw inputRangeError('points must be a whole number of at least 2', {
+      code: 'parameter_out_of_range', parameter: 'points', min: 2, got: points,
+    });
+  }
 
   const out: EoqCostPoint[] = [];
   for (let i = 0; i < points; i++) {

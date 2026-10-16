@@ -194,3 +194,9 @@ describe('noiseExposure', () => {
     });
   });
 });
+
+describe('noiseExposure coded refusals', () => {
+  it('names the exposure whose duration is negative', () => {
+    expect(() => noiseExposure({ exposures: [{ soundLevel: 90, duration: 2 }, { soundLevel: 95, duration: -1 }] })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'exposures[1].duration', min: 0, got: -1 }));
+  });
+});

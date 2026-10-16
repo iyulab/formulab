@@ -32,8 +32,20 @@ export function ventilationRate(input: VentilationRateInput): VentilationRateRes
   requireFinite('ventilationRate', input);
   const { roomLength, roomWidth, roomHeight, occupants, activityLevel, spaceType, customAch } = input;
 
-  if (roomLength <= 0 || roomWidth <= 0 || roomHeight <= 0) {
-    throw new RangeError('Room dimensions must be positive');
+  if (roomLength <= 0) {
+    throw inputRangeError('roomLength must be positive', {
+      code: 'parameter_out_of_range', parameter: 'roomLength', exclusive_min: 0, got: roomLength,
+    });
+  }
+  if (roomWidth <= 0) {
+    throw inputRangeError('roomWidth must be positive', {
+      code: 'parameter_out_of_range', parameter: 'roomWidth', exclusive_min: 0, got: roomWidth,
+    });
+  }
+  if (roomHeight <= 0) {
+    throw inputRangeError('roomHeight must be positive', {
+      code: 'parameter_out_of_range', parameter: 'roomHeight', exclusive_min: 0, got: roomHeight,
+    });
   }
   if (occupants <= 0) {
     throw inputRangeError('Occupants must be positive', {

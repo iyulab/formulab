@@ -47,7 +47,9 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
 
   // An unknown material has no density: the weight came back empty with no reason given.
   if (!Object.hasOwn(MATERIAL_DENSITIES, materialName)) {
-    throw new RangeError(`materialName must be one of ${Object.keys(MATERIAL_DENSITIES).join(', ')}, got ${String(materialName)}`);
+    throw inputRangeError(`materialName must be one of ${Object.keys(MATERIAL_DENSITIES).join(', ')}, got ${String(materialName)}`, {
+      code: 'unknown_option', parameter: 'materialName', got: String(materialName),
+    });
   }
   const density = MATERIAL_DENSITIES[materialName];
 
@@ -117,7 +119,9 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
       }
       // A leg cannot be thinner than the section is thick; past that the corner overlap exceeds the legs.
       if (input.thickness > Math.min(input.width, input.height)) {
-        throw new RangeError('thickness must not exceed width or height');
+        throw inputRangeError('thickness must not exceed width or height', {
+          code: 'parameter_out_of_range', parameter: 'thickness', max: Math.min(input.width, input.height), got: input.thickness,
+        });
       }
       // L-angle: two legs minus the corner overlap
       crossSectionArea = (input.width * input.thickness) + (input.height * input.thickness) - (input.thickness * input.thickness);
@@ -126,7 +130,9 @@ export function metalWeight(input: MetalWeightInput): MetalWeightResult {
     default: {
       // Unreachable for typed callers; untyped form/API data gets a reason, not an empty weight.
       const unknownShape: never = shape;
-      throw new RangeError(`shape must be plate, round, pipe, or angle, got ${String(unknownShape)}`);
+      throw inputRangeError(`shape must be plate, round, pipe, or angle, got ${String(unknownShape)}`, {
+        code: 'unknown_option', parameter: 'shape', got: String(unknownShape),
+      });
     }
   }
 

@@ -51,7 +51,10 @@ export function brakingDistance(input: BrakingDistanceInput): BrakingDistanceRes
   const effectiveFriction = friction + gradeDecimal;
 
   if (effectiveFriction <= 0) {
-    throw new RangeError('Effective friction (friction + grade) must be positive — vehicle cannot stop on this grade');
+    // friction + grade/100 ≤ 0: the grade the caller gave is too steep a descent for this friction.
+    throw inputRangeError('Effective friction (friction + grade) must be positive — vehicle cannot stop on this grade', {
+      code: 'parameter_out_of_range', parameter: 'grade', exclusive_min: -friction * 100, got: grade,
+    });
   }
 
   // Deceleration: a = g × (f ± G)
