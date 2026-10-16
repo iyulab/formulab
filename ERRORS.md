@@ -103,7 +103,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `roughness()` | `throw` | value ≤ 0 |
 | `screw()` | `throw` | Unknown designation |
 | `spring()` | `throw` | wireDiameter/meanCoilDiameter/activeCoils ≤ 0 |
-| `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0; threadPercentage not in (0, 100]; a pitch so coarse that the minor diameter is not positive (p ≥ D / 1.0825) |
+| `tap()` | `throw` | majorDiameter ≤ 0, pitch ≤ 0; threadPercentage not in (0, 100]; a pitch so coarse that the minor diameter is not positive (p ≥ D / 1.0825); a threadPercentage that leaves no hole (≥ 100·D / 1.299p) |
 | `thread()` | `throw` | Unknown size |
 | `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
 | `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); custom youngsModulus/density/shearModulus ≤ 0; innerDiameter ≥ outerDiameter |

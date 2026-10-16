@@ -29,7 +29,7 @@ const UNIFIED_THREADS: Record<string, { majorDiameter: number; tpi: number; tapD
   '3/8-16':  { majorDiameter: roundTo(0.375 * 25.4, 3), tpi: 16, tapDrill: 7.94 },
   '7/16-14': { majorDiameter: roundTo(0.4375 * 25.4, 3), tpi: 14, tapDrill: 9.35 },
   '1/2-13':  { majorDiameter: roundTo(0.500 * 25.4, 3), tpi: 13, tapDrill: 10.80 },
-  '5/8-11':  { majorDiameter: roundTo(0.625 * 25.4, 3), tpi: 11, tapDrill: 13.39 },
+  '5/8-11':  { majorDiameter: roundTo(0.625 * 25.4, 3), tpi: 11, tapDrill: 13.49 }, // 17/32 in; 13.39 was the class 2B minor-diameter minimum (0.527 in)
   '3/4-10':  { majorDiameter: roundTo(0.750 * 25.4, 3), tpi: 10, tapDrill: 16.50 },
 };
 

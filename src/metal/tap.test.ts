@@ -177,3 +177,29 @@ describe('tap — the minor diameter must stay positive', () => {
     expect(tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 100 }).threadPercentage).toBe(100);
   });
 });
+
+// The tap drill chart convention: 100 % of thread = a diametral depth of 1.299 p (Machinery's
+// Handbook, «D − 1.299 × % / TPI»), so the chart drill D − p is 76.98 % and ISO 2306's drills
+// (≈ D − p) read the same percentage on every diameter.
+describe('tap percentage of thread (chart convention)', () => {
+  it('M10 x 1.5 at 75 % is 8.54 mm, and the chart drill 8.5 mm is 76.98 %', () => {
+    expect(tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 75 }).tapDrillSize).toBe(8.54);
+    expect(tap({ standard: 'metric', majorDiameter: 10, pitch: 1.5, threadPercentage: 76.98 }).tapDrillSize).toBe(8.5);
+  });
+
+  it('D - p is 76.98 % for every metric coarse pitch', () => {
+    for (const [d, p] of [[6, 1], [8, 1.25], [12, 1.75], [16, 2], [24, 3]] as const) {
+      expect(tap({ standard: 'metric', majorDiameter: d, pitch: p, threadPercentage: 76.98 }).tapDrillSize).toBeCloseTo(d - p, 2);
+    }
+  });
+
+  it('1/4-20 UNC at 75 % is 0.2013 in (the #7 drill, 0.2010 in, is the chart choice)', () => {
+    const r = tap({ standard: 'unified', majorDiameter: 6.35, pitch: 20, threadPercentage: 75 });
+    expect(r.tapDrillSize / 25.4).toBeCloseTo(0.2013, 3);
+  });
+
+  it('refuses a percentage that leaves no hole', () => {
+    expect(() => tap({ standard: 'metric', majorDiameter: 1, pitch: 0.9, threadPercentage: 100 })).toThrow(RangeError);
+  });
+});
+

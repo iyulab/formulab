@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: `metal/tap()` measures the percentage of thread as tap drill charts do.** 100 % is now
+  a diametral depth of 1.299 × pitch (1.5 H — Machinery's Handbook's «D − 1.299 × % / TPI»), so the
+  chart drill D − p is 76.98 % on every diameter, as ISO 2306's tapping drills (≈ D − p) are. It used
+  the basic internal profile height (1.0825 × pitch) as 100 %, which put M10 × 1.5 at 75 % on
+  8.78 mm while every chart and the function's own documentation gave about 8.5 mm. At 75 % the
+  drill is now D − 0.974 p (M10 × 1.5 → 8.54 mm). A percentage that leaves no hole (≥ 100·D / 1.299p)
+  is refused, naming `threadPercentage`.
+
+### Fixed
+
+- **`metal/thread()`: the `5/8-11` UNC tap drill is 13.49 mm (17/32 in).** It was 13.39 mm
+  (0.527 in) — the class 2B minor-diameter minimum, copied from the neighbouring column — the only
+  row of the table that broke the tap-drill-near-D−p relation the other ten follow.
+
 ## [0.63.0] - 2026-10-16
 
 ### Added
