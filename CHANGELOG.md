@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`getContainerSpec(type)` / `getContainerTypes()`** — inside dimensions and typical payload of the standard
+  steel dry vans (`20ft`, `40ft`, `40hc`), shaped to pass straight to `containerFit()` (`interior`, `maxPayload`).
+  ISO 668 fixes the outside dimensions; inside dimensions and tare vary a little by builder, and a container's CSC
+  plate is authoritative.
+
+### Changed
+
+- **Breaking: `containerFit()` and `palletStack()` take a rotation constraint and weight limits.**
+  - `allowRotation: boolean` is replaced by `rotation`, the `RotationConstraint` `pallet3d()` already uses:
+    `full` (any face — the old `true` for `containerFit`), `layered` (upright, turned on the floor — the old `true`
+    for `palletStack`, and new for `containerFit`: cargo marked «this way up», loaded pallets) or `fixed` (the old
+    `false`). `palletStack()` accepts `layered` and `fixed` only; boxes on a pallet stay upright.
+  - `containerFit()` takes `maxPayload` and `maxStackWeight` (kg; absent = no limit) and `cargo.weight` becomes
+    optional (absent = 0). A column is cut to `⌊maxStackWeight / weight⌋` layers and the load to
+    `⌊maxPayload / weight⌋` units; the orientation that loads the most after the limits wins, which under a column
+    limit need not be the one that fits most by space. The result adds `totalWeight`, `limitedBy`
+    (`space` | `stack_weight` | `payload`), `volumeUtilization` and `floorUtilization` (%).
+  - `palletStack()` takes `boxWeight` and `maxWeight` (kg; absent = no limit). The result adds `stackHeight` (the
+    loaded stack, its last layer part-filled when the weight stops it), `totalWeight`, `limitedBy`
+    (`space` | `weight`) and `volumeUtilization` (% of deck × `maxHeight`).
+  - Negative weights and limits are refused with `parameter_out_of_range` (`cargo.weight`, `maxPayload`,
+    `maxStackWeight`, `boxWeight`, `maxWeight`, `min: 0`), and a dimension that is not greater than 0 now carries
+    the code too, naming the first one (`cargo.length` … `container.height`, `box.length` … `pallet.width`,
+    `exclusive_min: 0`). Messages are unchanged. Bare refusals left: 207.
+
+  Migration: `allowRotation: true` → `rotation: 'full'` (`containerFit`) or `'layered'` (`palletStack`);
+  `allowRotation: false` → `rotation: 'fixed'`. Weight caps and utilization computed beside these calls can be
+  replaced by the new inputs and fields.
+
 ## [0.65.0] - 2026-10-16
 
 ### Changed

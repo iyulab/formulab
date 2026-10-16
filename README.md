@@ -352,17 +352,18 @@ import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'f
 | `abcAnalysis()` | ABC inventory classification by annual value |
 | `cbm()` | Cubic meter calculation |
 | `chargeableWeight()` | Chargeable weight by freight mode (air · express · ocean W/M · truck) |
-| `containerFit()` | Container capacity estimation |
+| `containerFit()` | Container loading by space, column weight and payload, with utilization |
 | `dimWeight()` | Dimensional weight |
 | `eoq()` | Economic Order Quantity |
 | `eoqCostCurve()` | Annual ordering / holding / total cost across order quantities |
 | `fillRate()` | Fill rate calculation |
+| `getContainerSpec()` | Inside dimensions and typical payload of 20 ft / 40 ft / 40 ft high cube dry vans; `getContainerTypes()` lists them |
 | `freightClass()` | NMFC freight class |
 | `inventoryTurnover()` | Inventory turnover ratio & days of supply |
 | `kanban()` | Kanban quantity |
 | `loadCapacity()` | Forklift load capacity derating |
 | `pallet3d()` | 3D pallet loading heuristic (BLF + FFD) |
-| `palletStack()` | Pallet stacking calculation |
+| `palletStack()` | Pallet stacking by deck, height and load weight |
 | `pickTime()` | Picking time estimation |
 | `safetyStock()` | Safety stock calculation |
 | `safetyStockSimulation()` | Safety stock by Monte Carlo simulation of demand during lead time |

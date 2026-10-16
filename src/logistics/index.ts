@@ -2,6 +2,7 @@
 export { cbm } from './cbm.js';
 export { chargeableWeight, VOLUMETRIC_KG_PER_M3 } from './chargeableWeight.js';
 export { containerFit } from './containerFit.js';
+export { getContainerSpec, getContainerTypes } from './containerSpec.js';
 export { dimWeight } from './dimWeight.js';
 export { eoq, eoqCostCurve } from './eoq.js';
 export { fillRate, serviceLevel } from './fillRate.js';
@@ -34,6 +35,9 @@ export type {
   ContainerFitInput,
   BoxOrientation,
   ContainerFitResult,
+  LoadLimit,
+  ContainerType,
+  ContainerSpec,
   // DIM Weight types
   CarrierType,
   DimWeightInput,

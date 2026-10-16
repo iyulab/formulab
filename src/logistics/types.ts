@@ -36,13 +36,23 @@ export interface CargoDimensions {
   length: number;  // mm
   width: number;   // mm
   height: number;  // mm
-  weight: number;  // kg
+  /** kg, one unit (≥ 0). Absent: 0 — the weight limits cannot bind. */
+  weight?: number;
 }
 
 export interface ContainerFitInput {
   container: ContainerDimensions;
+  /** One unit; its `weight` counts only against the weight limits below. */
   cargo: CargoDimensions;
-  allowRotation: boolean;
+  /**
+   * How a unit may be turned: `full` — onto any face (6 orientations); `layered` — upright, turned on the
+   * floor only (cargo marked «this way up», a loaded pallet); `fixed` — as given.
+   */
+  rotation: RotationConstraint;
+  /** What the container may carry (kg, ≥ 0) — its payload. Absent: no weight limit. */
+  maxPayload?: number;
+  /** What one column of units may weigh (kg, ≥ 0) — the load the bottom unit bears plus its own. Absent: no limit. */
+  maxStackWeight?: number;
 }
 
 export interface BoxOrientation {
@@ -51,11 +61,34 @@ export interface BoxOrientation {
   height: number;
 }
 
+/** What stopped the load: the container's space, the column weight, or the container's payload. */
+export type LoadLimit = 'space' | 'stack_weight' | 'payload';
+
 export interface ContainerFitResult {
   unitsPerLayer: number;
+  /** Layers in a column — the space allows, unless `maxStackWeight` allows fewer. */
   layers: number;
+  /** Units loaded — `unitsPerLayer × layers`, unless `maxPayload` allows fewer. */
   totalUnits: number;
   bestOrientation: BoxOrientation;
+  /** kg — `totalUnits × cargo.weight`. */
+  totalWeight: number;
+  limitedBy: LoadLimit;
+  /** % of the container's volume the loaded units take. */
+  volumeUtilization: number;
+  /** % of the container's floor one full layer covers. */
+  floorUtilization: number;
+}
+
+/** Standard dry freight containers `getContainerSpec()` knows. */
+export type ContainerType = '20ft' | '40ft' | '40hc';
+
+export interface ContainerSpec {
+  type: ContainerType;
+  /** Inside dimensions, mm. */
+  interior: ContainerDimensions;
+  /** Typical payload, kg — the gross mass rating less the tare. The container's CSC plate is authoritative. */
+  maxPayload: number;
 }
 
 /**
@@ -107,14 +140,27 @@ export interface PalletStackInput {
   pallet: PalletDimensions;
   box: BoxDimensions;
   maxHeight: number;      // mm
-  allowRotation: boolean;
+  /** Boxes stay upright on a pallet: `layered` turns them on the floor, `fixed` keeps them as given. */
+  rotation: Exclude<RotationConstraint, 'full'>;
+  /** One box's weight, kg (≥ 0). Absent: 0 — the weight limit cannot bind. */
+  boxWeight?: number;
+  /** What the pallet load may weigh, kg (≥ 0). Absent: no weight limit. */
+  maxWeight?: number;
 }
 
 export interface PalletStackResult {
   boxesPerLayer: number;
   layers: number;
+  /** Boxes stacked — `boxesPerLayer × layers`, unless `maxWeight` allows fewer. */
   totalBoxes: number;
   bestOrientation: BoxOrientation;
+  /** mm — height of the loaded stack: its layers, the last one partly filled when the weight limit stops mid-layer. */
+  stackHeight: number;
+  /** kg — `totalBoxes × boxWeight`. */
+  totalWeight: number;
+  limitedBy: 'space' | 'weight';
+  /** % of the pallet's footprint × `maxHeight` the boxes take. */
+  volumeUtilization: number;
 }
 
 /**

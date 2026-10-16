@@ -1,95 +1,118 @@
-import type { ContainerFitInput, ContainerFitResult, BoxOrientation } from './types.js';
-import { requireFinite } from '../utils.js';
+import type { ContainerFitInput, ContainerFitResult, BoxOrientation, RotationConstraint, LoadLimit } from './types.js';
+import { requireFinite, roundTo } from '../utils.js';
+import { inputRangeError } from '../errors.js';
 
 /**
- * Generate all possible orientations for a box
- * If allowRotation is false, only return the original orientation
+ * The orientations a unit may take: `fixed` — as given; `layered` — upright, turned on the floor;
+ * `full` — onto any face. The given orientation comes first, so it wins a tie.
  */
-function getOrientations(l: number, w: number, h: number, allowRotation: boolean): BoxOrientation[] {
-  if (!allowRotation) {
-    return [{ length: l, width: w, height: h }];
+export function cargoOrientations(l: number, w: number, h: number, rotation: RotationConstraint): BoxOrientation[] {
+  const candidates: [number, number, number][] =
+    rotation === 'fixed' ? [[l, w, h]]
+      : rotation === 'layered' ? [[l, w, h], [w, l, h]]
+        : [[l, w, h], [w, l, h], [l, h, w], [h, l, w], [w, h, l], [h, w, l]];
+  const seen = new Set<string>();
+  const out: BoxOrientation[] = [];
+  for (const [length, width, height] of candidates) {
+    const key = `${length}|${width}|${height}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ length, width, height });
   }
-
-  // Generate all 6 orientations (permutations of l, w, h)
-  const dims = [l, w, h];
-  const orientations: BoxOrientation[] = [];
-
-  // All permutations of [l, w, h]
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (i === j) continue;
-      for (let k = 0; k < 3; k++) {
-        if (k === i || k === j) continue;
-        orientations.push({
-          length: dims[i],
-          width: dims[j],
-          height: dims[k],
-        });
-      }
-    }
-  }
-
-  return orientations;
+  return out;
 }
 
 /**
- * Calculate how many boxes fit in a container
+ * Every listed dimension must be greater than 0 — the layout divides by it. The refusal names the first
+ * one that is not (`cargo.height`, `pallet.width`, …); the message names the group.
+ */
+export function requirePositiveDimensions<T extends object>(
+  owner: string, dims: T, keys: readonly (keyof T & string)[], message: string,
+): void {
+  for (const key of keys) {
+    const value = dims[key] as number;
+    if (!(value > 0)) {
+      throw inputRangeError(message, { code: 'parameter_out_of_range', parameter: `${owner}.${key}`, exclusive_min: 0, got: value });
+    }
+  }
+}
+
+/** A weight limit of 0 or more must be met; absent means no limit. */
+function requireWeightLimit(name: 'maxPayload' | 'maxStackWeight', value: number | undefined): void {
+  if (value !== undefined && value < 0) {
+    throw inputRangeError(`${name} must be 0 or more`, { code: 'parameter_out_of_range', parameter: name, min: 0, got: value });
+  }
+}
+
+/**
+ * Calculate how many units fit in a container — by space, then by the weight a column may carry and the
+ * weight the container may carry.
  *
- * This function calculates the optimal number of boxes that can fit
- * in a container, considering different orientations if rotation is allowed.
+ * Each orientation the rotation allows is laid out as a grid (`⌊L/l⌋ × ⌊W/w⌋` per layer, `⌊H/h⌋` layers);
+ * a column is cut to `⌊maxStackWeight / weight⌋` layers and the load to `⌊maxPayload / weight⌋` units. The
+ * orientation that loads the most units after the limits wins (the given orientation on a tie) — under a
+ * column limit it need not be the one that fits the most by space.
  *
- * @param input - Container and cargo dimensions
- * @returns Number of units that fit
- * @throws RangeError if any cargo or container dimension is not greater than 0
+ * @formula unitsPerLayer = ⌊L/l⌋·⌊W/w⌋; layers = min(⌊H/h⌋, ⌊maxStackWeight/weight⌋); totalUnits = min(unitsPerLayer·layers, ⌊maxPayload/weight⌋)
+ * @units mm, kg, %
+ * @param input - Container inside dimensions, the unit, how it may be turned and the weight limits
+ * @returns The layout, what limited it, and how much of the container it uses
+ * @throws RangeError if any cargo or container dimension is not greater than 0 (`parameter_out_of_range`,
+ *   `parameter` `cargo.length` … `container.height`), or a weight (`cargo.weight`, `maxPayload`,
+ *   `maxStackWeight`) is below 0 (`parameter_out_of_range`)
  */
 export function containerFit(input: ContainerFitInput): ContainerFitResult {
   requireFinite('containerFit', input);
-  const { container, cargo, allowRotation } = input;
+  const { container, cargo, rotation, maxPayload, maxStackWeight } = input;
 
   // Each container dimension is divided by a cargo dimension.
-  if (!(cargo.length > 0) || !(cargo.width > 0) || !(cargo.height > 0)) {
-    throw new RangeError('cargo length, width and height must be greater than 0');
-  }
+  requirePositiveDimensions('cargo', cargo, ['length', 'width', 'height'], 'cargo length, width and height must be greater than 0');
   // A container with no inside length, width or height holds nothing — 0 units is not a fit result.
-  if (!(container.length > 0) || !(container.width > 0) || !(container.height > 0)) {
-    throw new RangeError('container length, width and height must be greater than 0');
+  requirePositiveDimensions('container', container, ['length', 'width', 'height'], 'container length, width and height must be greater than 0');
+  const weight = cargo.weight ?? 0;
+  if (weight < 0) {
+    throw inputRangeError('cargo weight must be 0 or more', { code: 'parameter_out_of_range', parameter: 'cargo.weight', min: 0, got: weight });
+  }
+  requireWeightLimit('maxPayload', maxPayload);
+  requireWeightLimit('maxStackWeight', maxStackWeight);
+
+  // A weightless unit meets every weight limit.
+  const layersByWeight = maxStackWeight !== undefined && weight > 0 ? Math.floor(maxStackWeight / weight) : Infinity;
+  const unitsByPayload = maxPayload !== undefined && weight > 0 ? Math.floor(maxPayload / weight) : Infinity;
+
+  type Layout = { orient: BoxOrientation; unitsPerLayer: number; layers: number; totalUnits: number; limitedBy: LoadLimit };
+  // The first orientation that fits is kept even when a weight limit leaves it empty, so the result
+  // says which limit emptied it; nothing fitting at all is a space limit.
+  let best: Layout | null = null;
+
+  for (const orient of cargoOrientations(cargo.length, cargo.width, cargo.height, rotation)) {
+    if (orient.length > container.length || orient.width > container.width || orient.height > container.height) continue;
+
+    const unitsPerLayer = Math.floor(container.length / orient.length) * Math.floor(container.width / orient.width);
+    const layersBySpace = Math.floor(container.height / orient.height);
+    const layers = Math.min(layersBySpace, layersByWeight);
+    const stacked = unitsPerLayer * layers;
+    const totalUnits = Math.min(stacked, unitsByPayload);
+    const limitedBy: LoadLimit = totalUnits < stacked ? 'payload' : layers < layersBySpace ? 'stack_weight' : 'space';
+
+    if (best === null || totalUnits > best.totalUnits) best = { orient, unitsPerLayer, layers, totalUnits, limitedBy };
   }
 
-  // Get all possible orientations
-  const orientations = getOrientations(cargo.length, cargo.width, cargo.height, allowRotation);
-
-  let bestResult: ContainerFitResult = {
-    unitsPerLayer: 0,
-    layers: 0,
-    totalUnits: 0,
-    bestOrientation: { length: cargo.length, width: cargo.width, height: cargo.height },
+  const { orient, unitsPerLayer, layers, totalUnits, limitedBy } = best ?? {
+    orient: { length: cargo.length, width: cargo.width, height: cargo.height },
+    unitsPerLayer: 0, layers: 0, totalUnits: 0, limitedBy: 'space' as const,
   };
+  const unitVolume = orient.length * orient.width * orient.height;
+  const containerVolume = container.length * container.width * container.height;
 
-  // Try each orientation and find the best fit
-  for (const orient of orientations) {
-    // Check if box fits at all
-    if (orient.length > container.length || orient.width > container.width || orient.height > container.height) {
-      continue;
-    }
-
-    // Calculate how many boxes fit in each dimension
-    const cols = Math.floor(container.length / orient.length);
-    const rows = Math.floor(container.width / orient.width);
-    const layers = Math.floor(container.height / orient.height);
-
-    const unitsPerLayer = cols * rows;
-    const totalUnits = unitsPerLayer * layers;
-
-    // Keep the orientation that fits the most boxes
-    if (totalUnits > bestResult.totalUnits) {
-      bestResult = {
-        unitsPerLayer,
-        layers,
-        totalUnits,
-        bestOrientation: orient,
-      };
-    }
-  }
-
-  return bestResult;
+  return {
+    unitsPerLayer,
+    layers,
+    totalUnits,
+    bestOrientation: orient,
+    totalWeight: roundTo(totalUnits * weight, 3),
+    limitedBy,
+    volumeUtilization: roundTo((totalUnits * unitVolume / containerVolume) * 100, 2),
+    floorUtilization: roundTo((unitsPerLayer * orient.length * orient.width / (container.length * container.width)) * 100, 2),
+  };
 }

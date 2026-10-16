@@ -16,7 +16,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** Bare `throw new RangeError(` left in src/. Lower it when you convert one; never raise it. */
-const BASELINE = 210;
+const BASELINE = 207;
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
