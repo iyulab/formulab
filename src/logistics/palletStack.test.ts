@@ -206,3 +206,22 @@ describe('palletStack names the dimension it refuses', () => {
     );
   });
 });
+
+describe('palletStack deck height', () => {
+  it('adds the pallet under the load', () => {
+    // EUR pallet 144 mm; 4 layers of 250 mm boxes = 1000 mm stack → 1144 mm loaded
+    const r = palletStack({ pallet: { length: 1200, width: 800 }, box: { length: 400, width: 300, height: 250 }, maxHeight: 1000, rotation: 'layered', deckHeight: 144 });
+    expect(r).toMatchObject({ stackHeight: 1000, loadedHeight: 1144 });
+  });
+
+  it('is the stack alone without a deck', () => {
+    const r = palletStack({ pallet: { length: 1200, width: 800 }, box: { length: 400, width: 300, height: 250 }, maxHeight: 1000, rotation: 'layered' });
+    expect(r.loadedHeight).toBe(r.stackHeight);
+  });
+
+  it('refuses a negative deck height', () => {
+    expect(() => palletStack({ pallet: { length: 1200, width: 800 }, box: { length: 400, width: 300, height: 250 }, maxHeight: 1000, rotation: 'layered', deckHeight: -1 })).toThrow(
+      expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'deckHeight', min: 0 }),
+    );
+  });
+});

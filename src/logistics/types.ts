@@ -53,6 +53,8 @@ export interface ContainerFitInput {
   maxPayload?: number;
   /** What one column of units may weigh (kg, ≥ 0) — the load the bottom unit bears plus its own. Absent: no limit. */
   maxStackWeight?: number;
+  /** How many units a column may hold (a whole number ≥ 1) — 1 for cargo that must not be stacked. Absent: no limit. */
+  maxLayers?: number;
 }
 
 export interface BoxOrientation {
@@ -61,12 +63,12 @@ export interface BoxOrientation {
   height: number;
 }
 
-/** What stopped the load: the container's space, the column weight, or the container's payload. */
-export type LoadLimit = 'space' | 'stack_weight' | 'payload';
+/** What stopped the load: the container's space, the layer count, the column weight, or the container's payload. */
+export type LoadLimit = 'space' | 'max_layers' | 'stack_weight' | 'payload';
 
 export interface ContainerFitResult {
   unitsPerLayer: number;
-  /** Layers in a column — the space allows, unless `maxStackWeight` allows fewer. */
+  /** Layers in a column — the space allows, unless `maxLayers` or `maxStackWeight` allows fewer. */
   layers: number;
   /** Units loaded — `unitsPerLayer × layers`, unless `maxPayload` allows fewer. */
   totalUnits: number;
@@ -146,6 +148,8 @@ export interface PalletStackInput {
   boxWeight?: number;
   /** What the pallet load may weigh, kg (≥ 0). Absent: no weight limit. */
   maxWeight?: number;
+  /** Height of the pallet itself under the load, mm (≥ 0) — EUR 144, many block pallets 150. Absent: 0. */
+  deckHeight?: number;
 }
 
 export interface PalletStackResult {
@@ -156,6 +160,8 @@ export interface PalletStackResult {
   bestOrientation: BoxOrientation;
   /** mm — height of the loaded stack: its layers, the last one partly filled when the weight limit stops mid-layer. */
   stackHeight: number;
+  /** mm — the loaded pallet's outer height, `deckHeight + stackHeight` (what a container or a truck must clear). */
+  loadedHeight: number;
   /** kg — `totalBoxes × boxWeight`. */
   totalWeight: number;
   limitedBy: 'space' | 'weight';

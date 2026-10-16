@@ -49,21 +49,21 @@ function requireWeightLimit(name: 'maxPayload' | 'maxStackWeight', value: number
  * weight the container may carry.
  *
  * Each orientation the rotation allows is laid out as a grid (`⌊L/l⌋ × ⌊W/w⌋` per layer, `⌊H/h⌋` layers);
- * a column is cut to `⌊maxStackWeight / weight⌋` layers and the load to `⌊maxPayload / weight⌋` units. The
+ * a column is cut to `maxLayers` and to `⌊maxStackWeight / weight⌋` layers, and the load to `⌊maxPayload / weight⌋` units. The
  * orientation that loads the most units after the limits wins (the given orientation on a tie) — under a
  * column limit it need not be the one that fits the most by space.
  *
- * @formula unitsPerLayer = ⌊L/l⌋·⌊W/w⌋; layers = min(⌊H/h⌋, ⌊maxStackWeight/weight⌋); totalUnits = min(unitsPerLayer·layers, ⌊maxPayload/weight⌋)
+ * @formula unitsPerLayer = ⌊L/l⌋·⌊W/w⌋; layers = min(⌊H/h⌋, maxLayers, ⌊maxStackWeight/weight⌋); totalUnits = min(unitsPerLayer·layers, ⌊maxPayload/weight⌋)
  * @units mm, kg, %
  * @param input - Container inside dimensions, the unit, how it may be turned and the weight limits
  * @returns The layout, what limited it, and how much of the container it uses
  * @throws RangeError if any cargo or container dimension is not greater than 0 (`parameter_out_of_range`,
  *   `parameter` `cargo.length` … `container.height`), or a weight (`cargo.weight`, `maxPayload`,
- *   `maxStackWeight`) is below 0 (`parameter_out_of_range`)
+ *   `maxStackWeight`) is below 0, or `maxLayers` is not a whole number ≥ 1 (`parameter_out_of_range`)
  */
 export function containerFit(input: ContainerFitInput): ContainerFitResult {
   requireFinite('containerFit', input);
-  const { container, cargo, rotation, maxPayload, maxStackWeight } = input;
+  const { container, cargo, rotation, maxPayload, maxStackWeight, maxLayers } = input;
 
   // Each container dimension is divided by a cargo dimension.
   requirePositiveDimensions('cargo', cargo, ['length', 'width', 'height'], 'cargo length, width and height must be greater than 0');
@@ -75,6 +75,9 @@ export function containerFit(input: ContainerFitInput): ContainerFitResult {
   }
   requireWeightLimit('maxPayload', maxPayload);
   requireWeightLimit('maxStackWeight', maxStackWeight);
+  if (maxLayers !== undefined && !(Number.isInteger(maxLayers) && maxLayers >= 1)) {
+    throw inputRangeError('maxLayers must be a whole number of 1 or more', { code: 'parameter_out_of_range', parameter: 'maxLayers', min: 1, got: maxLayers });
+  }
 
   // A weightless unit meets every weight limit.
   const layersByWeight = maxStackWeight !== undefined && weight > 0 ? Math.floor(maxStackWeight / weight) : Infinity;
@@ -90,10 +93,13 @@ export function containerFit(input: ContainerFitInput): ContainerFitResult {
 
     const unitsPerLayer = Math.floor(container.length / orient.length) * Math.floor(container.width / orient.width);
     const layersBySpace = Math.floor(container.height / orient.height);
-    const layers = Math.min(layersBySpace, layersByWeight);
+    const layersByCount = Math.min(layersBySpace, maxLayers ?? Infinity);
+    const layers = Math.min(layersByCount, layersByWeight);
     const stacked = unitsPerLayer * layers;
     const totalUnits = Math.min(stacked, unitsByPayload);
-    const limitedBy: LoadLimit = totalUnits < stacked ? 'payload' : layers < layersBySpace ? 'stack_weight' : 'space';
+    const limitedBy: LoadLimit = totalUnits < stacked ? 'payload'
+      : layers < layersByCount ? 'stack_weight'
+        : layersByCount < layersBySpace ? 'max_layers' : 'space';
 
     if (best === null || totalUnits > best.totalUnits) best = { orient, unitsPerLayer, layers, totalUnits, limitedBy };
   }

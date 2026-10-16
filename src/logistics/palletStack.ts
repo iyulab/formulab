@@ -13,14 +13,14 @@ import { cargoOrientations, requirePositiveDimensions } from './containerFit.js'
  * @formula boxesPerLayer = ⌊L/l⌋·⌊W/w⌋; layers = ⌊maxHeight/h⌋; totalBoxes = min(boxesPerLayer·layers, ⌊maxWeight/boxWeight⌋)
  * @units mm, kg, %
  * @param input - Pallet dimensions, box dimensions, and constraints
- * @returns Stacking configuration, what limited it, the loaded stack's height and weight
+ * @returns Stacking configuration, what limited it, the loaded stack's height (with the deck: `loadedHeight`) and weight
  * @throws RangeError if any box dimension, the pallet length or width, or maxHeight is not greater than 0
  *   (`parameter_out_of_range`, `parameter` `box.length` … `pallet.width`, `maxHeight`), or `boxWeight` /
- *   `maxWeight` is below 0 (`parameter_out_of_range`)
+ *   `maxWeight` / `deckHeight` is below 0 (`parameter_out_of_range`)
  */
 export function palletStack(input: PalletStackInput): PalletStackResult {
   requireFinite('palletStack', input);
-  const { pallet, box, maxHeight, rotation, boxWeight = 0, maxWeight } = input;
+  const { pallet, box, maxHeight, rotation, boxWeight = 0, maxWeight, deckHeight = 0 } = input;
 
   // Each pallet dimension and the stack height are divided by a box dimension.
   requirePositiveDimensions('box', box, ['length', 'width', 'height'], 'box length, width and height must be greater than 0');
@@ -36,6 +36,9 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
   }
   if (maxWeight !== undefined && maxWeight < 0) {
     throw inputRangeError('maxWeight must be 0 or more', { code: 'parameter_out_of_range', parameter: 'maxWeight', min: 0, got: maxWeight });
+  }
+  if (deckHeight < 0) {
+    throw inputRangeError('deckHeight must be 0 or more', { code: 'parameter_out_of_range', parameter: 'deckHeight', min: 0, got: deckHeight });
   }
 
   // A weightless box meets any weight limit.
@@ -61,7 +64,7 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
     return {
       boxesPerLayer: 0, layers: 0, totalBoxes: 0,
       bestOrientation: { length: box.length, width: box.width, height: box.height },
-      stackHeight: 0, totalWeight: 0, limitedBy: 'space', volumeUtilization: 0,
+      stackHeight: 0, loadedHeight: deckHeight, totalWeight: 0, limitedBy: 'space', volumeUtilization: 0,
     };
   }
 
@@ -75,6 +78,7 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
     totalBoxes,
     bestOrientation: orient,
     stackHeight: loadedLayers * orient.height,
+    loadedHeight: deckHeight + loadedLayers * orient.height,
     totalWeight: roundTo(totalBoxes * boxWeight, 3),
     limitedBy: totalBoxes < stacked ? 'weight' : 'space',
     volumeUtilization: roundTo((totalBoxes * orient.length * orient.width * orient.height / (pallet.length * pallet.width * maxHeight)) * 100, 2),

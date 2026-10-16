@@ -206,3 +206,27 @@ describe('containerFit names the dimension it refuses', () => {
     );
   });
 });
+
+describe('containerFit maxLayers', () => {
+  const container = { length: 5898, width: 2352, height: 2393 };
+  const cargo = { length: 600, width: 400, height: 500, weight: 20 };
+
+  it('keeps cargo that must not be stacked to one layer', () => {
+    expect(containerFit({ container, cargo, rotation: 'fixed', maxLayers: 1 })).toMatchObject({ layers: 1, totalUnits: 45, limitedBy: 'max_layers' });
+  });
+
+  it('is the space when the space allows fewer layers', () => {
+    expect(containerFit({ container, cargo, rotation: 'fixed', maxLayers: 9 })).toMatchObject({ layers: 4, totalUnits: 180, limitedBy: 'space' });
+  });
+
+  it('gives way to a tighter column weight', () => {
+    // 3 layers allowed, 50 kg column → 2
+    expect(containerFit({ container, cargo, rotation: 'fixed', maxLayers: 3, maxStackWeight: 50 })).toMatchObject({ layers: 2, limitedBy: 'stack_weight' });
+  });
+
+  it.each([0, 1.5, -1])('refuses %s layers', (maxLayers) => {
+    expect(() => containerFit({ container, cargo, rotation: 'fixed', maxLayers })).toThrow(
+      expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'maxLayers', min: 1 }),
+    );
+  });
+});

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`containerFit()` takes `maxLayers`** — how many units a column may hold (a whole number ≥ 1; `1` for cargo that
+  must not be stacked, such as loaded pallets that are not stackable). `limitedBy` gains `max_layers`.
+- **`palletStack()` takes `deckHeight`** (mm, the pallet under the load — EUR 144) and returns `loadedHeight`
+  (`deckHeight + stackHeight`), the height a loaded pallet must clear in a container or a truck.
+
 ## [0.66.0] - 2026-10-16
 
 ### Added
