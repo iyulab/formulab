@@ -4,8 +4,7 @@ import { requireFinite } from '../utils.js';
 type Range = readonly [min: number, max: number];
 
 /**
- * Reflow profile windows per solder paste — the one source. The range strings of `ReflowResult`
- * are printed from these numbers, so the numeric `profile` and the strings cannot disagree.
+ * Reflow profile windows per solder paste — the one source of `ReflowResult.profile`.
  */
 const REFLOW_WINDOWS: Record<PasteType, {
   name: string;
@@ -48,9 +47,6 @@ const REFLOW_WINDOWS: Record<PasteType, {
 
 const PASTE_TYPES: PasteType[] = ['sac305', 'sn63pb37', 'sac387', 'snbi58'];
 
-/** Temperatures and times are whole numbers; rates keep one decimal («1.0-3.0», «<4.0»). */
-const whole = (r: Range): string => `${r[0]}-${r[1]}`;
-const rate = (r: Range): string => `${r[0].toFixed(1)}-${r[1].toFixed(1)}`;
 const span = (r: Range): { min: number; max: number } => ({ min: r[0], max: r[1] });
 
 /**
@@ -63,8 +59,8 @@ export function getPasteTypes(): PasteType[] {
 /**
  * Get reflow profile for a specific solder paste type
  * @param pasteType - The type of solder paste
- * @returns Reflow profile. The range strings are for display; `profile` carries the same windows
- *   as numbers (°C, s, °C/s) for a time-axis plot.
+ * @returns Reflow profile: the paste, its melting point, and `profile` — every window as numbers
+ *   (°C, s, °C/s), for display in the reader's number format or a time-axis plot.
  * @throws {RangeError} a paste type that is not one of `getPasteTypes()`
  */
 export function reflowProfile(pasteType: PasteType): ReflowResult {
@@ -87,15 +83,6 @@ export function reflowProfile(pasteType: PasteType): ReflowResult {
   return {
     pasteType: w.name,
     meltingPoint: w.meltingPoint,
-    preheatRate: rate(w.preheatRate),
-    preheatTemp: whole(w.preheatTemp),
-    preheatTime: whole(w.preheatTime),
-    soakTemp: whole(w.soakTemp),
-    soakTime: whole(w.soakTime),
-    peakTemp: whole(w.peakTemp),
-    timeAboveLiquidus: whole(w.timeAboveLiquidus),
-    coolingRate: `<${w.coolingRateMax.toFixed(1)}`,
-    totalProfileTime: whole(w.totalProfileTime),
     profile,
   };
 }

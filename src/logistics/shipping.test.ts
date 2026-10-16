@@ -11,9 +11,10 @@ describe('shipping', () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!.mode).toBe('Ocean FCL (20ft)');
+      expect(result!.mode).toBe('ocean_fcl');
+      expect(result!.tariff).toEqual({ basis: 'container', containerFt: 20, baseUsd: 1500, extraFromKg: 10000, extraUsdPerKg: 0.5 });
       expect(result!.estimatedCost).toBe(1500);
-      expect(result!.transitDays).toBe('20-40 days');
+      expect(result!.transitDays).toEqual({ min: 20, max: 40 });
     });
 
     it('should add extra charge for heavy shipments', () => {
@@ -47,9 +48,10 @@ describe('shipping', () => {
         volume: 5, // 5 CBM = $250
       });
 
-      expect(result!.mode).toBe('Ocean LCL');
+      expect(result!.mode).toBe('ocean_lcl');
+      expect(result!.tariff).toMatchObject({ basis: 'revenue_tonne', usdPerRevenueTonne: 50, minimumUsd: 100 });
       expect(result!.estimatedCost).toBe(250); // 5 * 50
-      expect(result!.transitDays).toBe('25-45 days');
+      expect(result!.transitDays).toEqual({ min: 25, max: 45 });
     });
 
     it('should charge by weight when higher', () => {
@@ -88,10 +90,11 @@ describe('shipping', () => {
         volume: 1, // 1 CBM = 167 kg volumetric
       });
 
-      expect(result!.mode).toBe('Air Freight');
+      expect(result!.mode).toBe('air');
+      expect(result!.tariff).toEqual({ basis: 'chargeable_weight', usdPerKg: 3.5, volumetricKgPerM3: 167 });
       expect(result!.volumetricWeight).toBe(167);
       expect(result!.chargeableWeight).toBe(167);
-      expect(result!.transitDays).toBe('3-7 days');
+      expect(result!.transitDays).toEqual({ min: 3, max: 7 });
     });
 
     it('should use actual weight when higher', () => {
@@ -125,10 +128,11 @@ describe('shipping', () => {
         volume: 0.5, // 0.5 CBM = 100 kg volumetric
       });
 
-      expect(result!.mode).toBe('Express Courier');
+      expect(result!.mode).toBe('express');
+      expect(result!.tariff).toEqual({ basis: 'chargeable_weight', usdPerKg: 8, volumetricKgPerM3: 200, minimumUsd: 50 });
       expect(result!.volumetricWeight).toBe(100);
       expect(result!.chargeableWeight).toBe(100);
-      expect(result!.transitDays).toBe('2-5 days');
+      expect(result!.transitDays).toEqual({ min: 2, max: 5 });
     });
 
     it('should apply minimum charge', () => {
@@ -162,7 +166,8 @@ describe('shipping', () => {
         distance: 500,
       });
 
-      expect(result!.mode).toBe('Truck');
+      expect(result!.mode).toBe('truck');
+      expect(result!.tariff).toMatchObject({ basis: 'distance_weight', usdPerKm: 1.5, usdPerKg: 0.02, kmPerDay: 500 });
       // Cost = 500 * 1.5 + 1000 * 0.02 = 750 + 20 = 770
       expect(result!.estimatedCost).toBe(770);
     });
@@ -175,7 +180,7 @@ describe('shipping', () => {
         distance: 1200, // ~2.4 days
       });
 
-      expect(result!.transitDays).toBe('3-4 days');
+      expect(result!.transitDays).toEqual({ min: 3, max: 4 });
     });
 
     it('should return 1 day for short distance', () => {
@@ -186,7 +191,7 @@ describe('shipping', () => {
         distance: 200,
       });
 
-      expect(result!.transitDays).toBe('1 day');
+      expect(result!.transitDays).toEqual({ min: 1, max: 1 });
     });
 
     it('should throw for missing distance', () => {
@@ -274,7 +279,7 @@ describe('shipping', () => {
 
       expect(result!.chargeableWeight).toBeGreaterThan(0);
       expect(result!.estimatedCost).toBeGreaterThan(0);
-      expect(result!.transitDays).toBe('3-7 days');
+      expect(result!.transitDays).toEqual({ min: 3, max: 7 });
     });
 
     it('should calculate furniture by ocean', () => {

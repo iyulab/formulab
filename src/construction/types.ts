@@ -37,7 +37,15 @@ export interface ConcreteResult {
   sand: number;    // kg
   gravel: number;  // kg
   water: number;   // L
-  ratio: string;   // e.g. "1 : 2 : 3"
+  /** Mix proportions by weight, cement = 1 (e.g. 1 : 1.5 : 3). Numbers — a consumer writes them in its own locale. */
+  ratio: ConcreteRatio;
+}
+
+/** Cement : sand : gravel by weight, cement = 1. */
+export interface ConcreteRatio {
+  cement: 1;
+  sand: number;
+  gravel: number;
 }
 
 /**

@@ -49,7 +49,7 @@ describe('concreteMix', () => {
         volume: 1,
       });
 
-      expect(result.ratio).toBe('1 : 2 : 4');
+      expect(result.ratio).toEqual({ cement: 1, sand: 2, gravel: 4 });
     });
   });
 
@@ -67,7 +67,7 @@ describe('concreteMix', () => {
       expect(result.gravel).toBe(990);
       // Water = 330 × 0.55 = 181.5
       expect(result.water).toBe(181.5);
-      expect(result.ratio).toBe('1 : 1.5 : 3');
+      expect(result.ratio).toEqual({ cement: 1, sand: 1.5, gravel: 3 });
     });
   });
 
@@ -85,7 +85,7 @@ describe('concreteMix', () => {
       expect(result.gravel).toBe(740);
       // Water = 370 × 0.50 = 185
       expect(result.water).toBe(185);
-      expect(result.ratio).toBe('1 : 1 : 2');
+      expect(result.ratio).toEqual({ cement: 1, sand: 1, gravel: 2 });
     });
   });
 
@@ -99,7 +99,7 @@ describe('concreteMix', () => {
       expect(result.cement).toBe(400);
       // Water = 400 × 0.45 = 180
       expect(result.water).toBe(180);
-      expect(result.ratio).toBe('1 : 1 : 2');
+      expect(result.ratio).toEqual({ cement: 1, sand: 1, gravel: 2 });
     });
   });
 
@@ -115,7 +115,7 @@ describe('concreteMix', () => {
       expect(result.gravel).toBe(645);
       // Water = 430 × 0.42 = 180.6
       expect(result.water).toBe(180.6);
-      expect(result.ratio).toBe('1 : 1 : 1.5');
+      expect(result.ratio).toEqual({ cement: 1, sand: 1, gravel: 1.5 });
     });
   });
 
@@ -129,7 +129,7 @@ describe('concreteMix', () => {
       expect(result.cement).toBe(460);
       // Water = 460 × 0.40 = 184
       expect(result.water).toBe(184);
-      expect(result.ratio).toBe('1 : 1 : 1.5');
+      expect(result.ratio).toEqual({ cement: 1, sand: 1, gravel: 1.5 });
     });
   });
 

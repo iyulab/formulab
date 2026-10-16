@@ -7,7 +7,6 @@ interface MixDesign {
   sandRatio: number;    // sand ratio relative to cement
   gravelRatio: number;  // gravel ratio relative to cement
   wcRatio: number;      // water-cement ratio
-  ratioString: string;  // display ratio string
 }
 
 /**
@@ -20,12 +19,12 @@ interface MixDesign {
  * figures as a starting point for estimating quantities, not as a specified mix.
  */
 const MIX_DESIGNS: Record<ConcreteGrade, MixDesign> = {
-  '15': { cementPerM3: 280, sandRatio: 2, gravelRatio: 4, wcRatio: 0.60, ratioString: '1 : 2 : 4' },
-  '20': { cementPerM3: 330, sandRatio: 1.5, gravelRatio: 3, wcRatio: 0.55, ratioString: '1 : 1.5 : 3' },
-  '25': { cementPerM3: 370, sandRatio: 1, gravelRatio: 2, wcRatio: 0.50, ratioString: '1 : 1 : 2' },
-  '30': { cementPerM3: 400, sandRatio: 1, gravelRatio: 2, wcRatio: 0.45, ratioString: '1 : 1 : 2' },
-  '35': { cementPerM3: 430, sandRatio: 1, gravelRatio: 1.5, wcRatio: 0.42, ratioString: '1 : 1 : 1.5' },
-  '40': { cementPerM3: 460, sandRatio: 1, gravelRatio: 1.5, wcRatio: 0.40, ratioString: '1 : 1 : 1.5' },
+  '15': { cementPerM3: 280, sandRatio: 2, gravelRatio: 4, wcRatio: 0.60 },
+  '20': { cementPerM3: 330, sandRatio: 1.5, gravelRatio: 3, wcRatio: 0.55 },
+  '25': { cementPerM3: 370, sandRatio: 1, gravelRatio: 2, wcRatio: 0.50 },
+  '30': { cementPerM3: 400, sandRatio: 1, gravelRatio: 2, wcRatio: 0.45 },
+  '35': { cementPerM3: 430, sandRatio: 1, gravelRatio: 1.5, wcRatio: 0.42 },
+  '40': { cementPerM3: 460, sandRatio: 1, gravelRatio: 1.5, wcRatio: 0.40 },
 };
 
 /**
@@ -58,6 +57,6 @@ export function concreteMix(input: ConcreteInput): ConcreteResult {
     sand,
     gravel,
     water,
-    ratio: design.ratioString,
+    ratio: { cement: 1, sand: design.sandRatio, gravel: design.gravelRatio },
   };
 }

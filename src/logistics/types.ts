@@ -369,14 +369,34 @@ export interface ShippingInput {
 }
 
 export interface ShippingResult {
-  mode: string;
+  /** The mode the estimate is for — the input's key; a consumer names it in its own language. */
+  mode: ShippingMode;
   chargeableWeight: number;  // kg (max of actual vs volumetric)
   volumetricWeight: number;  // kg
   estimatedCost: number;     // USD
   costPerKg: number;         // USD/kg
-  transitDays: string;       // range
-  notes: string;
+  transitDays: ShippingDays;
+  /** How the estimate was priced, as data (what used to be an English `notes` sentence). */
+  tariff: ShippingTariff;
 }
+
+/** A transit time window in days (`min === max` for a single day). */
+export interface ShippingDays { min: number; max: number }
+
+/**
+ * The rate model behind an estimate, by basis:
+ * - `container` — ocean FCL: a 20 ft container at `baseUsd`, plus `extraUsdPerKg` above `extraFromKg`
+ *   (a 40 ft container costs roughly double).
+ * - `revenue_tonne` — ocean LCL: `usdPerRevenueTonne` × the greater of tonnes and m³ (W/M), at least `minimumUsd`.
+ * - `chargeable_weight` — air / express: `usdPerKg` × the greater of actual and volumetric weight
+ *   (`volumetricKgPerM3`), at least `minimumUsd` when given.
+ * - `distance_weight` — truck: `usdPerKm` × distance + `usdPerKg` × weight; `drivingDays` at `kmPerDay`.
+ */
+export type ShippingTariff =
+  | { basis: 'container'; containerFt: 20; baseUsd: number; extraFromKg: number; extraUsdPerKg: number }
+  | { basis: 'revenue_tonne'; usdPerRevenueTonne: number; minimumUsd: number; revenueTonnes: number }
+  | { basis: 'chargeable_weight'; usdPerKg: number; volumetricKgPerM3: number; minimumUsd?: number }
+  | { basis: 'distance_weight'; usdPerKm: number; usdPerKg: number; kmPerDay: number; drivingDays: number };
 
 /**
  * TSP (Traveling Salesman Problem) Types

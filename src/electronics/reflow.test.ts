@@ -13,33 +13,33 @@ describe('reflowProfile', () => {
     it('should return correct preheat parameters', () => {
       const result = reflowProfile('sac305');
 
-      expect(result!.preheatRate).toBe('1.0-3.0');
-      expect(result!.preheatTemp).toBe('150-200');
-      expect(result!.preheatTime).toBe('60-120');
+      expect(result!.profile.preheatRateCPerS).toEqual({ min: 1, max: 3 });
+      expect(result!.profile.preheatTempC).toEqual({ min: 150, max: 200 });
+      expect(result!.profile.preheatTimeS).toEqual({ min: 60, max: 120 });
     });
 
     it('should return correct peak temperature range', () => {
       const result = reflowProfile('sac305');
 
-      expect(result!.peakTemp).toBe('235-250');
+      expect(result!.profile.peakTempC).toEqual({ min: 235, max: 250 });
     });
 
     it('should return correct time above liquidus', () => {
       const result = reflowProfile('sac305');
 
-      expect(result!.timeAboveLiquidus).toBe('60-90');
+      expect(result!.profile.timeAboveLiquidusS).toEqual({ min: 60, max: 90 });
     });
 
     it('should return correct cooling rate', () => {
       const result = reflowProfile('sac305');
 
-      expect(result!.coolingRate).toBe('<4.0');
+      expect(result!.profile.coolingRateMaxCPerS).toBe(4);
     });
 
     it('should return correct total profile time', () => {
       const result = reflowProfile('sac305');
 
-      expect(result!.totalProfileTime).toBe('240-300');
+      expect(result!.profile.totalProfileTimeS).toEqual({ min: 240, max: 300 });
     });
 
     it('should return paste type label', () => {
@@ -60,20 +60,20 @@ describe('reflowProfile', () => {
     it('should return lower peak temperature than lead-free', () => {
       const result = reflowProfile('sn63pb37');
 
-      expect(result!.peakTemp).toBe('210-230');
+      expect(result!.profile.peakTempC).toEqual({ min: 210, max: 230 });
     });
 
     it('should return shorter total profile time', () => {
       const result = reflowProfile('sn63pb37');
 
-      expect(result!.totalProfileTime).toBe('180-240');
+      expect(result!.profile.totalProfileTimeS).toEqual({ min: 180, max: 240 });
     });
 
     it('should return correct soak parameters', () => {
       const result = reflowProfile('sn63pb37');
 
-      expect(result!.soakTemp).toBe('150-183');
-      expect(result!.soakTime).toBe('60-90');
+      expect(result!.profile.soakTempC).toEqual({ min: 150, max: 183 });
+      expect(result!.profile.soakTimeS).toEqual({ min: 60, max: 90 });
     });
   });
 
@@ -88,7 +88,7 @@ describe('reflowProfile', () => {
     it('should return higher peak temperature than SAC305', () => {
       const result = reflowProfile('sac387');
 
-      expect(result!.peakTemp).toBe('240-260');
+      expect(result!.profile.peakTempC).toEqual({ min: 240, max: 260 });
     });
   });
 
@@ -103,25 +103,25 @@ describe('reflowProfile', () => {
     it('should return lower preheat temperature', () => {
       const result = reflowProfile('snbi58');
 
-      expect(result!.preheatTemp).toBe('80-120');
+      expect(result!.profile.preheatTempC).toEqual({ min: 80, max: 120 });
     });
 
     it('should return lower peak temperature', () => {
       const result = reflowProfile('snbi58');
 
-      expect(result!.peakTemp).toBe('160-180');
+      expect(result!.profile.peakTempC).toEqual({ min: 160, max: 180 });
     });
 
     it('should return slower preheat rate', () => {
       const result = reflowProfile('snbi58');
 
-      expect(result!.preheatRate).toBe('0.5-2.0');
+      expect(result!.profile.preheatRateCPerS).toEqual({ min: 0.5, max: 2 });
     });
 
     it('should return lower cooling rate limit', () => {
       const result = reflowProfile('snbi58');
 
-      expect(result!.coolingRate).toBe('<3.0');
+      expect(result!.profile.coolingRateMaxCPerS).toBe(3);
     });
   });
 

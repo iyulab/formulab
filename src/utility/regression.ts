@@ -6,7 +6,7 @@ import { inputRangeError } from '../errors.js';
  * Simple linear regression (least squares)
  *
  * @param input - Regression input with x and y data arrays
- * @returns Slope, intercept, R² and equation string
+ * @returns Slope, intercept and R² (a consumer writes the line y = slope·x + intercept in its own number format)
  * @throws RangeError if x or y is missing, if x and y lengths differ,
  *   if fewer than 2 data points are provided, or if all x values are identical
  */
@@ -55,15 +55,9 @@ export function regression(input: RegressionInput): RegressionResult {
   }, 0);
   const r2 = ssTot === 0 ? 1 : 1 - ssRes / ssTot;
 
-  const slopeStr = roundTo(slope, 6);
-  const interceptStr = roundTo(intercept, 6);
-  const sign = interceptStr >= 0 ? '+' : '-';
-  const equation = `y = ${slopeStr}x ${sign} ${Math.abs(interceptStr)}`;
-
   return {
     slope: roundTo(slope, 6),
     intercept: roundTo(intercept, 6),
     r2: roundTo(r2, 6),
-    equation,
   };
 }

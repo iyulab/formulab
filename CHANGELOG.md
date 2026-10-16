@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking: results carry numbers and data, not display strings.** Four functions returned part of their
+  answer as text a consumer could not put in its reader's language or number format:
+  - `concreteMix().ratio` is `{ cement: 1, sand, gravel }` (was the string `'1 : 1.5 : 3'`). Type `ConcreteRatio`.
+  - `reflowProfile()` drops the range strings `preheatRate`, `preheatTemp`, `preheatTime`, `soakTemp`, `soakTime`,
+    `peakTemp`, `timeAboveLiquidus`, `coolingRate` and `totalProfileTime`; the same windows were already in
+    `profile` as numbers (`preheatRateCPerS: { min, max }`, …, `coolingRateMaxCPerS`). Values unchanged.
+  - `regression()` drops `equation`; `slope` and `intercept` were already there (y = slope·x + intercept).
+  - `shipping()`: `mode` is the input key (`'air'`, … — was an English label such as `'Air Freight'`);
+    `transitDays` is `{ min, max }` (was `'3-7 days'`); `notes` (an English sentence) is replaced by `tariff`, the
+    rate model as data, by `basis`: `container` (20 ft base, extra per kg above a weight), `revenue_tonne` (W/M rate,
+    minimum, the revenue tonnes used), `chargeable_weight` (rate per kg, volumetric factor, minimum) or
+    `distance_weight` (per km, per kg, km per day, driving days). Types `ShippingDays`, `ShippingTariff`. Costs unchanged.
+
+  Migration: format the numbers where they are shown; name the shipping mode and describe the tariff from your own
+  strings, keyed by `mode` and `tariff.basis`.
+
 - **Three more refusals carry a code.** `bmsBalancing` with fewer than 2 cells and `stabilityStudy` with fewer than
   2 temperatures whose degradation rises are `insufficient_data` (`parameter` `cellVoltages` / `dataPoints`, `min: 2`,
   `got`); a `gageRR` Average-Range study outside the AIAG constant tables is `parameter_out_of_range` naming the first

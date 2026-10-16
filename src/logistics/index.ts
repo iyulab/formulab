@@ -82,6 +82,8 @@ export type {
   ShippingMode,
   ShippingInput,
   ShippingResult,
+  ShippingDays,
+  ShippingTariff,
   // TSP types
   TspNode,
   TspInput,

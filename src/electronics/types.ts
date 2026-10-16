@@ -8,23 +8,14 @@ export interface ReflowInput {
 export interface ReflowResult {
   pasteType: string;
   meltingPoint: number;       // C
-  preheatRate: string;        // C/s range
-  preheatTemp: string;        // C range
-  preheatTime: string;        // seconds range
-  soakTemp: string;           // C range
-  soakTime: string;           // seconds range
-  peakTemp: string;           // C range
-  timeAboveLiquidus: string;  // seconds range
-  coolingRate: string;        // C/s max
-  totalProfileTime: string;   // seconds range
-  /** The same windows as numbers — for a time-axis plot or a check against a measured profile. */
+  /** Every window as numbers — for display in the reader's number format, a time-axis plot or a check against a measured profile. */
   profile: ReflowProfileNumbers;
 }
 
 /** A reflow window: lower and upper bound. */
 export interface ReflowSpan { min: number; max: number }
 
-/** Numeric reflow windows (°C, s, °C/s), printed as the range strings of `ReflowResult`. */
+/** Numeric reflow windows (°C, s, °C/s). */
 export interface ReflowProfileNumbers {
   preheatRateCPerS: ReflowSpan;
   preheatTempC: ReflowSpan;

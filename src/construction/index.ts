@@ -13,6 +13,7 @@ export type {
   ConcreteGrade,
   ConcreteInput,
   ConcreteResult,
+  ConcreteRatio,
   // Earthwork
   EarthworkInput,
   EarthworkResult,

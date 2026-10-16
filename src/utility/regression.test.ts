@@ -8,7 +8,7 @@ describe('regression', () => {
     expect(result.slope).toBe(2);
     expect(result.intercept).toBe(0);
     expect(result.r2).toBeCloseTo(1, 4);
-    expect(result.equation).toBe('y = 2x + 0');
+    expect(result).toMatchObject({ slope: 2, intercept: 0 });
   });
 
   it('should calculate with intercept', () => {
@@ -22,14 +22,14 @@ describe('regression', () => {
     const result = regression({ x: [1, 2, 3, 4], y: [10, 8, 6, 4] });
     expect(result.slope).toBe(-2);
     expect(result.intercept).toBe(12);
-    expect(result.equation).toBe('y = -2x + 12');
+    expect(result).toMatchObject({ slope: -2, intercept: 12 });
   });
 
-  it('should handle negative intercept in equation', () => {
+  it('should handle a negative intercept', () => {
     const result = regression({ x: [1, 2, 3], y: [1, 3, 5] });
     expect(result.slope).toBe(2);
     expect(result.intercept).toBe(-1);
-    expect(result.equation).toBe('y = 2x - 1');
+    expect(result).toMatchObject({ slope: 2, intercept: -1 });
   });
 
   it('should calculate R² for imperfect fit', () => {
