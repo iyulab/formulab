@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.68.0] - 2026-10-16
+
 ### Added
 
 - **`ppk()` takes the readings**: `ppk({ usl, lsl, data })` uses their overall mean and sample standard deviation
@@ -14,12 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `empty_input` / `insufficient_data` (`parameter: 'data'`, `min: 2`). The result is unchanged (the same fields as
   `cpk()`). Types `PpkSummaryInput`, `PpkDataInput`; `PpkInput` is their union.
 
-### Added
-
 - **`palletStack()` takes `palletWeight`** (kg, the empty pallet — EUR about 25). It counts against `maxWeight`, which
   is now the loaded pallet's gross weight limit, and `totalWeight` is the gross weight (`totalBoxes × boxWeight +
   palletWeight`). Without `palletWeight` both are as before. A pallet heavier than `maxWeight` carries nothing
   (`limitedBy: 'weight'`).
+
+### Changed
+
+- **Breaking (types): `PpkInput` is the union of the two forms**, so code that reads `mean` or `stdDev` from a
+  `PpkInput` no longer type-checks; declare the summary form as `PpkSummaryInput`. Calls are unchanged.
 
 ## [0.67.0] - 2026-10-16
 
