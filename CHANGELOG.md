@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.64.0] - 2026-10-16
+
 ### Changed
 
 - **Breaking: `metal/tap()` measures the percentage of thread as tap drill charts do.** 100 % is now
