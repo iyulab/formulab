@@ -12,10 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`missing_option`**: an input the call needs is absent — `beamLoad` / `beamDeflection` `uniformLoad` / `pointLoad` for
   the load type chosen, `pressTonnage` `operations` for a combined operation, `pid` a tuning parameter its method reads,
   `scope2Emissions` `customFactor` / `supplierFactor` / `residualMixFactor`, `acceptanceControlChart` with neither
-  specification limit (no `parameter`: either would do). Bare refusals 38 → 26.
+  specification limit (no `parameter`: either would do).
+- **Four codes for the input as a whole**, the @iyulab engines' own: `cyclic_dependency` (`pert`, `lineBalancing`:
+  tasks that wait for each other — `parameter: 'tasks'`), `duplicate_id` (a repeated task id — `parameter`
+  `tasks[i].id`, and `id`, a new detail), `degenerate_data` (`weibull` identical failure times, `regression` constant
+  `x`), `invalid_geometry` (`triangleSolver` sides that cannot meet; too few given values is `missing_option`).
+  Bare refusals 38 → 13 — all of them about a value computed inside the function.
 
 ### Changed
 
+- `cmk` with fewer than 2 measurements is `insufficient_data` (was `parameter_out_of_range`); its per-value finiteness
+  check, and `nelsonRules`' on `centerLine`, are gone — the entry check refuses a non-finite number first.
 - A list not passed at all is `missing_option`, not `empty_input` (`correlation`, `linearInterpolation`, `regression`
   `x` / `y`; `weightedScore` `criteria` / `weights` / `alternatives` / `scores`). An empty list is still `empty_input`.
 

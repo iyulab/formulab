@@ -12,12 +12,14 @@ import { inputRangeError } from './errors.js';
  */
 export function validatePrecedence(tasks: readonly { id: string; predecessors: readonly string[] }[]): void {
   const ids = new Set<string>();
-  for (const t of tasks) {
+  tasks.forEach((t, i) => {
     if (ids.has(t.id)) {
-      throw new RangeError(`task id ${t.id} is used more than once`);
+      throw inputRangeError(`task id ${t.id} is used more than once`, {
+        code: 'duplicate_id', parameter: `tasks[${i}].id`, id: t.id,
+      });
     }
     ids.add(t.id);
-  }
+  });
   tasks.forEach((t, i) => {
     for (const p of t.predecessors) {
       if (!ids.has(p)) {

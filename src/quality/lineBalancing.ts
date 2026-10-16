@@ -146,13 +146,13 @@ export function lineBalancing(input: LineBalancingInput): LineBalancingResult {
 
   // Detect cycle
   if (detectCycle(tasks)) {
-    throw new RangeError('tasks contain a circular dependency');
+    throw inputRangeError('tasks contain a circular dependency', { code: 'cyclic_dependency', parameter: 'tasks' });
   }
 
   // Topological sort
   const sorted = topologicalSort(tasks);
   if (!sorted) {
-    throw new RangeError('tasks contain a circular dependency');
+    throw inputRangeError('tasks contain a circular dependency', { code: 'cyclic_dependency', parameter: 'tasks' });
   }
 
   // Calculate positional weights

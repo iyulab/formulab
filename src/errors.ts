@@ -33,7 +33,15 @@ export type InputErrorCode =
   /** Lists that must pair up differ in length — `expected` is the length they must match, `got` this one's. */
   | 'dimension_mismatch'
   /** An input the call needs — for the mode it chose, or a list it cannot do without — is absent. */
-  | 'missing_option';
+  | 'missing_option'
+  /** Entries that wait for each other in a loop (task predecessors) — `parameter` is the list. */
+  | 'cyclic_dependency'
+  /** Two entries carry the same id — `parameter` is the second one's path, `id` the id. */
+  | 'duplicate_id'
+  /** A list with no variation where the method needs some (identical failure times, constant x). */
+  | 'degenerate_data'
+  /** Lengths and angles that describe no shape (a triangle whose sides cannot meet). */
+  | 'invalid_geometry';
 
 /** The facts behind a refusal. Bounds are closed (`min`/`max`) or open (`exclusive_min`/`exclusive_max`). */
 export interface InputErrorDetail {
@@ -48,6 +56,8 @@ export interface InputErrorDetail {
   got?: number | string;
   /** The length a list must have, for `dimension_mismatch`. */
   expected?: number;
+  /** The entry's own id, for `duplicate_id`. */
+  id?: string;
 }
 
 /** A `RangeError` carrying the facts behind the refusal (what `inputRangeError()` returns). */

@@ -47,7 +47,7 @@ export function regression(input: RegressionInput): RegressionResult {
   }
 
   if (sumX2 === 0) {
-    throw new RangeError('x values must not all be identical (zero variance in x)');
+    throw inputRangeError('x values must not all be identical (zero variance in x)', { code: 'degenerate_data', parameter: 'x' });
   }
 
   const slope = sumXY / sumX2;

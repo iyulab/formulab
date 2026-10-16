@@ -4,6 +4,10 @@ import { bendAllowance } from './metal/bendAllowance.js';
 import { bolt } from './metal/bolt.js';
 import { controlChart } from './quality/controlChart.js';
 import { weibull } from './quality/weibull.js';
+import { regression } from './utility/regression.js';
+import { triangleSolver } from './machining/triangleSolver.js';
+import { lineBalancing } from './quality/lineBalancing.js';
+import { cmk } from './quality/cmk.js';
 
 /** What a refusal says as data — the properties a consumer reads instead of the message. */
 function refusal(fn: () => unknown): Record<string, unknown> {
@@ -11,9 +15,9 @@ function refusal(fn: () => unknown): Record<string, unknown> {
     fn();
   } catch (e) {
     expect(Object.getPrototypeOf(e)).toBe(RangeError.prototype);
-    const { code, parameter, min, max, exclusive_min, exclusive_max, got, expected } = e as InputRangeError;
+    const { code, parameter, min, max, exclusive_min, exclusive_max, got, expected, id } = e as InputRangeError;
     return Object.fromEntries(
-      Object.entries({ code, parameter, min, max, exclusive_min, exclusive_max, got, expected }).filter(([, v]) => v !== undefined),
+      Object.entries({ code, parameter, min, max, exclusive_min, exclusive_max, got, expected, id }).filter(([, v]) => v !== undefined),
     );
   }
   throw new Error('expected a refusal');
@@ -86,3 +90,36 @@ describe('refusals carry the input, the bound and the value given', () => {
     });
   });
 });
+
+describe('refusals about the input as a whole', () => {
+  const task = (id: string, predecessors: string[] = []) => ({ id, time: 2, predecessors });
+
+  it('a dependency loop', () => {
+    expect(refusal(() => lineBalancing({ cycleTime: 10, tasks: [task('A', ['B']), task('B', ['A'])] }))).toEqual({
+      code: 'cyclic_dependency', parameter: 'tasks',
+    });
+  });
+
+  it('a repeated id, by path and by id', () => {
+    expect(refusal(() => lineBalancing({ cycleTime: 10, tasks: [task('A'), task('A')] }))).toEqual({
+      code: 'duplicate_id', parameter: 'tasks[1].id', id: 'A',
+    });
+  });
+
+  it('a list with no variation', () => {
+    expect(refusal(() => weibull({ failureTimes: [5, 5, 5] }))).toEqual({ code: 'degenerate_data', parameter: 'failureTimes' });
+    expect(refusal(() => regression({ x: [2, 2, 2], y: [1, 2, 3] }))).toEqual({ code: 'degenerate_data', parameter: 'x' });
+  });
+
+  it('sides that cannot meet', () => {
+    // SSA: sin B = 10 · sin 30° / 2 = 2.5 > 1
+    expect(refusal(() => triangleSolver({ a: 2, b: 10, A: 30 }))).toEqual({ code: 'invalid_geometry' });
+  });
+
+  it('too few readings is a count, not a range', () => {
+    expect(refusal(() => cmk({ measurements: [1], lsl: 0, usl: 2 }))).toEqual({
+      code: 'insufficient_data', parameter: 'measurements', min: 2, got: 1,
+    });
+  });
+});
+

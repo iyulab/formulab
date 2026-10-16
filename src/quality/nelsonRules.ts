@@ -27,9 +27,6 @@ export function nelsonRules(input: NelsonRulesInput): NelsonRulesResult {
       code: 'parameter_out_of_range', parameter: 'sigma', exclusive_min: 0, got: sigma,
     });
   }
-  if (!Number.isFinite(centerLine)) {
-    throw new RangeError('Center line must be a finite number');
-  }
 
   const violations: NelsonViolation[] = [];
 

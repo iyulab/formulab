@@ -36,7 +36,7 @@ export function weibull(input: WeibullInput): WeibullResult {
     });
   }
   if (failureTimes.every((t) => t === failureTimes[0])) {
-    throw new RangeError('failure times must not all be identical');
+    throw inputRangeError('failure times must not all be identical', { code: 'degenerate_data', parameter: 'failureTimes' });
   }
   // R(t) raises t/η to a fractional power.
   if (missionTime != null && !(missionTime >= 0)) {

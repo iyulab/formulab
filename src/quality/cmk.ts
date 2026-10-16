@@ -28,14 +28,9 @@ export function cmk(input: CmkInput): CmkResult {
   // A sample standard deviation needs two readings; with fewer there is no study to report.
   if (n < 2) {
     throw inputRangeError('measurements must contain at least 2 values', {
-      code: 'parameter_out_of_range', parameter: 'measurements', min: 2, got: n,
+      code: 'insufficient_data', parameter: 'measurements', min: 2, got: n,
     });
   }
-  measurements.forEach((v, i) => {
-    if (!Number.isFinite(v)) {
-      throw new RangeError(`measurements[${i}] must be finite`);
-    }
-  });
 
   const mean = measurements.reduce((s, v) => s + v, 0) / n;
   const stdDev = Math.sqrt(measurements.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1));
