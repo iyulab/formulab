@@ -141,8 +141,14 @@ export interface BoringBarDeflectionResult {
   stiffness: number;          // N/mm
   ldRatio: number;            // L/D ratio — ideally < 4
   youngsModulus: number;      // GPa (E used)
-  recommendation: string;     // guidance based on L/D
+  recommendation: BoringBarRecommendation;
 }
+
+/**
+ * The bar the L/D ratio calls for: `steel_bar` (L/D ≤ 4), `carbide_bar` (≤ 6), `heavy_metal_or_damped_bar` (≤ 10),
+ * `reduce_overhang` (beyond practical limits). A code, so a consumer words it in its reader's language.
+ */
+export type BoringBarRecommendation = 'steel_bar' | 'carbide_bar' | 'heavy_metal_or_damped_bar' | 'reduce_overhang';
 
 /**
  * Thread Over Wires (3-Wire Method) Types

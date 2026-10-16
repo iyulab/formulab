@@ -27,6 +27,7 @@ export type {
   BoringBarMaterial,
   BoringBarDeflectionInput,
   BoringBarDeflectionResult,
+  BoringBarRecommendation,
   // Thread Over Wires
   ThreadAngle,
   ThreadOverWiresInput,

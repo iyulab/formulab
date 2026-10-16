@@ -17,7 +17,7 @@ describe('boringBarDeflection', () => {
     expect(result.deflection).toBeCloseTo(0.00917, 3);
     expect(result.ldRatio).toBe(3);
     expect(result.youngsModulus).toBe(200);
-    expect(result.recommendation).toBe('Steel bar suitable');
+    expect(result.recommendation).toBe('steel_bar');
   });
 
   it('should recommend carbide for L/D 4-6', () => {
@@ -28,7 +28,7 @@ describe('boringBarDeflection', () => {
     });
 
     expect(result.ldRatio).toBe(5);
-    expect(result.recommendation).toBe('Carbide bar recommended');
+    expect(result.recommendation).toBe('carbide_bar');
   });
 
   it('should recommend heavy metal for L/D 6-10', () => {
@@ -39,7 +39,7 @@ describe('boringBarDeflection', () => {
     });
 
     expect(result.ldRatio).toBe(8);
-    expect(result.recommendation).toBe('Heavy metal or damped bar recommended');
+    expect(result.recommendation).toBe('heavy_metal_or_damped_bar');
   });
 
   it('should warn when L/D exceeds 10', () => {
@@ -50,7 +50,7 @@ describe('boringBarDeflection', () => {
     });
 
     expect(result.ldRatio).toBe(12);
-    expect(result.recommendation).toContain('exceeds practical limits');
+    expect(result.recommendation).toBe('reduce_overhang');
   });
 
   it('should use carbide modulus when specified', () => {

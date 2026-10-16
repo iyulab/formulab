@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.71.0] - 2026-10-17
+
+### Changed
+
+- **Breaking: `boringBarDeflection().recommendation` is a code**, type `BoringBarRecommendation`: `steel_bar`
+  (L/D ≤ 4), `carbide_bar` (≤ 6), `heavy_metal_or_damped_bar` (≤ 10), `reduce_overhang` (beyond). It was an English
+  sentence («Carbide bar recommended»), which a consumer could not put in its reader's language. Bands unchanged.
+
+  Migration: word the recommendation from your own strings, keyed by the code.
+
 ## [0.70.0] - 2026-10-16
 
 ### Added

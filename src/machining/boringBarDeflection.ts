@@ -1,5 +1,7 @@
 import { roundTo, requireFinite } from '../utils.js';
-import type { BoringBarDeflectionInput, BoringBarDeflectionResult, BoringBarMaterial } from './types.js';
+import type {
+  BoringBarDeflectionInput, BoringBarDeflectionResult, BoringBarMaterial, BoringBarRecommendation,
+} from './types.js';
 import { inputRangeError } from '../errors.js';
 
 /**
@@ -63,15 +65,15 @@ export function boringBarDeflection(input: BoringBarDeflectionInput): BoringBarD
   const stiffness = (3 * E_MPa * I) / Math.pow(overhang, 3);
   const ldRatio = overhang / barDiameter;
 
-  let recommendation: string;
+  let recommendation: BoringBarRecommendation;
   if (ldRatio <= 4) {
-    recommendation = 'Steel bar suitable';
+    recommendation = 'steel_bar';
   } else if (ldRatio <= 6) {
-    recommendation = 'Carbide bar recommended';
+    recommendation = 'carbide_bar';
   } else if (ldRatio <= 10) {
-    recommendation = 'Heavy metal or damped bar recommended';
+    recommendation = 'heavy_metal_or_damped_bar';
   } else {
-    recommendation = 'L/D exceeds practical limits; reduce overhang';
+    recommendation = 'reduce_overhang';
   }
 
   return {
