@@ -225,3 +225,28 @@ describe('palletStack deck height', () => {
     );
   });
 });
+
+describe('palletStack pallet weight', () => {
+  const pallet = { length: 1200, width: 800 };
+  const box = { length: 400, width: 300, height: 250 };
+
+  it('counts the pallet against the weight limit and in the total', () => {
+    // 1000 kg gross − 25 kg pallet = 975 kg for boxes of 10 kg → 97 boxes, but space holds 32
+    expect(palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10, maxWeight: 1000, palletWeight: 25 }))
+      .toMatchObject({ totalBoxes: 32, totalWeight: 345, limitedBy: 'space' });
+    // 300 kg gross − 25 kg = 275 kg → 27 boxes (without the pallet it would be 30)
+    expect(palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10, maxWeight: 300, palletWeight: 25 }))
+      .toMatchObject({ totalBoxes: 27, totalWeight: 295, limitedBy: 'weight' });
+  });
+
+  it('loads nothing on a pallet heavier than the limit', () => {
+    expect(palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10, maxWeight: 20, palletWeight: 25 }))
+      .toMatchObject({ totalBoxes: 0, totalWeight: 25, limitedBy: 'weight' });
+  });
+
+  it('refuses a negative pallet weight', () => {
+    expect(() => palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', palletWeight: -1 })).toThrow(
+      expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'palletWeight', min: 0 }),
+    );
+  });
+});

@@ -146,8 +146,10 @@ export interface PalletStackInput {
   rotation: Exclude<RotationConstraint, 'full'>;
   /** One box's weight, kg (≥ 0). Absent: 0 — the weight limit cannot bind. */
   boxWeight?: number;
-  /** What the pallet load may weigh, kg (≥ 0). Absent: no weight limit. */
+  /** What the loaded pallet may weigh, kg (≥ 0) — boxes and the pallet itself (`palletWeight`). Absent: no weight limit. */
   maxWeight?: number;
+  /** The empty pallet's weight, kg (≥ 0) — EUR about 25. Counts against `maxWeight` and in `totalWeight`. Absent: 0. */
+  palletWeight?: number;
   /** Height of the pallet itself under the load, mm (≥ 0) — EUR 144, many block pallets 150. Absent: 0. */
   deckHeight?: number;
 }
@@ -162,7 +164,7 @@ export interface PalletStackResult {
   stackHeight: number;
   /** mm — the loaded pallet's outer height, `deckHeight + stackHeight` (what a container or a truck must clear). */
   loadedHeight: number;
-  /** kg — `totalBoxes × boxWeight`. */
+  /** kg — the loaded pallet: `totalBoxes × boxWeight + palletWeight`. */
   totalWeight: number;
   limitedBy: 'space' | 'weight';
   /** % of the pallet's footprint × `maxHeight` the boxes take. */
