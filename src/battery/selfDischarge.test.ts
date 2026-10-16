@@ -55,6 +55,39 @@ describe('selfDischarge', () => {
   });
 });
 
+// OCV screening is written in mV/day against the line's own limit. Example: a cell rested 30 days
+// dropping 4.15 → 4.09 V decays 2 mV/day — far above screening limits of the order of 0.1–1 mV/day,
+// although its 1.62 %/month of nominal voltage looks like a healthy Li-ion capacity figure.
+describe('selfDischarge in mV/day against an acceptance limit', () => {
+  it('reports the decay in mV/day', () => {
+    const r = selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.09, days: 30, nominalVoltage: 3.7 });
+    expect(r.voltageDropMvPerDay).toBe(2);
+    expect(r.voltageDropPerDay).toBe(0.002);
+    expect(r.monthlyRatePercent).toBe(1.62);
+    expect(r.withinLimit).toBeUndefined();
+  });
+
+  it('fails a cell whose decay exceeds the limit', () => {
+    const r = selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.09, days: 30, nominalVoltage: 3.7, limitMvPerDay: 1 });
+    expect(r.withinLimit).toBe(false);
+  });
+
+  it('passes a cell at or under the limit (the limit itself passes)', () => {
+    // 10 mV over 10 days = 1 mV/day exactly
+    const atLimit = selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.14, days: 10, nominalVoltage: 3.7, limitMvPerDay: 1 });
+    expect(atLimit.voltageDropMvPerDay).toBe(1);
+    expect(atLimit.withinLimit).toBe(true);
+    const under = selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.149, days: 10, nominalVoltage: 3.7, limitMvPerDay: 1 });
+    expect(under.voltageDropMvPerDay).toBe(0.1);
+    expect(under.withinLimit).toBe(true);
+  });
+
+  it('refuses a limit that is not greater than 0', () => {
+    expect(() => selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.09, days: 30, nominalVoltage: 3.7, limitMvPerDay: 0 })).toThrow(RangeError);
+    expect(() => selfDischarge({ initialVoltage: 4.15, finalVoltage: 4.09, days: 30, nominalVoltage: 3.7, limitMvPerDay: -1 })).toThrow(RangeError);
+  });
+});
+
 // ERRORS.md guarantees no NaN/Infinity in output fields; these inputs used to
 // produce them instead of throwing.
 describe('selfDischarge input domain', () => {

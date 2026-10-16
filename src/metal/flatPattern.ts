@@ -1,18 +1,7 @@
-import type { FlatPatternInput, FlatPatternResult, BendingMaterial } from './types.js';
-import { assertBendDomain, EXTREME_BEND_ANGLE } from './bendDomain.js';
+import type { FlatPatternInput, FlatPatternResult } from './types.js';
+import { assertBendDomain, EXTREME_BEND_ANGLE, resolveKFactor } from './bendDomain.js';
 import { requireFinite } from '../utils.js';
 import { Notes } from '../diagnostics.js';
-
-/**
- * Default K-factor values by material
- */
-const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
-  mildSteel: 0.44,
-  stainless304: 0.45,
-  aluminum5052: 0.40,
-  aluminum6061: 0.42,
-  custom: 0.44,
-};
 
 /**
  * Calculate flat pattern length for bent sheet metal.
@@ -45,12 +34,7 @@ export function flatPattern(input: FlatPatternInput): FlatPatternResult {
   if (shapeType !== 'lShape' && shapeType !== 'uShape') {
     throw new RangeError(`shapeType must be lShape or uShape, got ${String(shapeType)}`);
   }
-  if (input.kFactor === undefined && !Object.hasOwn(K_FACTOR_TABLE, material)) {
-    throw new RangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`);
-  }
-
-  // Get K-factor: use provided or default from table
-  const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
+  const kFactor = resolveKFactor(material, input.kFactor);
   assertBendDomain({ thickness, bendAngle, insideRadius, kFactor });
   if (!(flangeA > 0) || !(flangeB > 0) || (shapeType !== 'lShape' && !(flangeC > 0))) {
     throw new RangeError('flange lengths must be greater than 0');

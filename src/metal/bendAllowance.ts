@@ -1,6 +1,6 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
-import { assertBendDomain, EXTREME_BEND_ANGLE } from './bendDomain.js';
+import { assertBendDomain, EXTREME_BEND_ANGLE, resolveKFactor } from './bendDomain.js';
 import type {
   BendAllowanceInput,
   BendAllowanceResult,
@@ -11,29 +11,9 @@ import type {
 import { Notes } from '../diagnostics.js';
 
 /**
- * Default K-factor values by material.
- *
- * K-factor is the neutral-axis position as a fraction of thickness. It is empirical:
- * it varies with forming method, tooling and lot, so the source matters as much as
- * the number.
- *
- * These are conventional air-bending defaults in common shop use; no normative source
- * is attached to them. They are a starting point, not a specification. Callers that
- * need a traceable figure should pass `input.kFactor` explicitly, or derive one from a
- * measured flat length via `kFactorReverse`.
- */
-const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
-  mildSteel: 0.44,
-  stainless304: 0.45,
-  aluminum5052: 0.40,
-  aluminum6061: 0.42,
-  custom: 0.44,
-};
-
-/**
  * Minimum bend radius multiplier (x thickness) by material.
  *
- * Like the K-factor table above, these are conventional shop defaults, not values
+ * Like the K-factor defaults (`bendDomain.ts`), these are conventional shop defaults, not values
  * drawn from a specific standard's table. Treat them as a starting point for a
  * feasibility check, not a specification limit; verify against tooling and material
  * datasheets for production use.
@@ -98,13 +78,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
   } = input;
   const notes = new Notes();
 
-  // An unknown material used to surface as «kFactor outside [0, 1]» — the wrong field.
-  if (input.kFactor === undefined && !Object.hasOwn(K_FACTOR_TABLE, material)) {
-    throw new RangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`);
-  }
-
-  // Get K-factor: use provided or default from table
-  const kFactor = input.kFactor ?? K_FACTOR_TABLE[material];
+  const kFactor = resolveKFactor(material, input.kFactor);
   assertBendDomain({ thickness, bendAngle, insideRadius, kFactor }, { allowClosedHem: true });
 
   // Minimum bend radius: read the normative table where one covers this material, and fall

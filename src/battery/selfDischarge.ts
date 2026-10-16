@@ -3,16 +3,21 @@ import type { SelfDischargeInput, SelfDischargeResult } from './types.js';
 import { inputRangeError } from '../errors.js';
 
 /**
- * Calculate battery self-discharge rate
+ * Battery self-discharge from two open-circuit voltage readings.
  *
- * @formula monthlyRate% = (ΔV / days) × 30 / Vnominal × 100
- * @param input - Initial voltage, final voltage, elapsed days, nominal voltage
- * @returns Daily and monthly self-discharge rates
- * @throws {RangeError} initialVoltage, finalVoltage, days or nominalVoltage is not greater than 0
+ * The measured quantity is the OCV decay rate, ΔV / days — what a cell-line OCV screen (K-value)
+ * compares against its acceptance limit. The percentages are that decay relative to the nominal
+ * voltage; they are **not** capacity loss, so they cannot be compared with datasheet
+ * self-discharge figures (% of capacity per month) without the chemistry's OCV–SOC curve.
+ *
+ * @formula ΔV/day = (Vinitial − Vfinal) / days; monthlyRate% = ΔV/day × 30 / Vnominal × 100
+ * @param input - Initial voltage, final voltage, elapsed days, nominal voltage, optional acceptance limit (mV/day)
+ * @returns Decay per day (V and mV), as % of nominal per day and per month, and — given a limit — whether it is within it
+ * @throws {RangeError} initialVoltage, finalVoltage, days, nominalVoltage or limitMvPerDay is not greater than 0
  */
 export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
   requireFinite('selfDischarge', input);
-  const { initialVoltage, finalVoltage, days, nominalVoltage } = input;
+  const { initialVoltage, finalVoltage, days, nominalVoltage, limitMvPerDay } = input;
 
   // A negative voltage reading is not a resting cell and flips the sign of the drop.
   if (!(initialVoltage > 0)) {
@@ -43,10 +48,18 @@ export function selfDischarge(input: SelfDischargeInput): SelfDischargeResult {
       code: 'parameter_out_of_range', parameter: 'finalVoltage', max: initialVoltage, got: finalVoltage,
     });
   }
+  if (limitMvPerDay !== undefined && !(limitMvPerDay > 0)) {
+    throw inputRangeError('limitMvPerDay must be greater than 0', {
+      code: 'parameter_out_of_range', parameter: 'limitMvPerDay', exclusive_min: 0, got: limitMvPerDay,
+    });
+  }
   const totalVoltageDrop = initialVoltage - finalVoltage;
   const voltageDropPerDay = roundTo(totalVoltageDrop / days, 6);
+  const voltageDropMvPerDay = roundTo((totalVoltageDrop * 1000) / days, 3);
   const dailyRatePercent = roundTo((voltageDropPerDay / nominalVoltage) * 100, 4);
   const monthlyRatePercent = roundTo(dailyRatePercent * 30, 2);
 
-  return { voltageDropPerDay, monthlyRatePercent, dailyRatePercent };
+  const result: SelfDischargeResult = { voltageDropPerDay, voltageDropMvPerDay, monthlyRatePercent, dailyRatePercent };
+  if (limitMvPerDay !== undefined) result.withinLimit = voltageDropMvPerDay <= limitMvPerDay;
+  return result;
 }

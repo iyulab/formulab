@@ -121,12 +121,28 @@ export interface SelfDischargeInput {
   finalVoltage: number;     // V
   days: number;             // days
   nominalVoltage: number;   // V (for percentage calculation)
+  /**
+   * Acceptance limit on the open-circuit voltage decay, mV/day — the line's own screening limit
+   * (it depends on cell, temperature and meter resolution; there is no universal value). When
+   * given, the result says whether the measured decay is within it.
+   */
+  limitMvPerDay?: number;
 }
 
 export interface SelfDischargeResult {
   voltageDropPerDay: number;     // V/day
-  monthlyRatePercent: number;    // %/month
-  dailyRatePercent: number;      // %/day
+  /** The same decay in mV/day — the unit OCV screening limits are written in. */
+  voltageDropMvPerDay: number;   // mV/day
+  /**
+   * Voltage decay as % of the nominal voltage per month. **Not a capacity loss**: datasheet
+   * self-discharge figures (e.g. Li-ion 1–3 %/month) are % of capacity, and on a flat OCV–SOC
+   * curve one % of voltage is several % of state of charge.
+   */
+  monthlyRatePercent: number;    // %/month of nominal voltage
+  /** Voltage decay as % of the nominal voltage per day (not a capacity loss). */
+  dailyRatePercent: number;      // %/day of nominal voltage
+  /** `voltageDropMvPerDay ≤ limitMvPerDay`. Present only when `limitMvPerDay` is given. */
+  withinLimit?: boolean;
 }
 
 /**

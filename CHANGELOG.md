@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.0] - 2026-10-16
+
 ### Added
 
 - **Warnings as data: `diagnostics`.** Every result that carries `warnings: string[]` (`bendAllowance`, `flatPattern`,
@@ -17,6 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `DiagnosticCode` are exported from the package root.
 - **`metal/flatPattern()` reports `warnings`** (with `diagnostics`): a bend above 170° is flagged as `bendAllowance()`
   already did — both read the same threshold.
+- **`battery/selfDischarge()` reports the decay in mV/day and checks it against an acceptance limit.** The result gains
+  `voltageDropMvPerDay` — the unit open-circuit-voltage screens write their limits in — and the input takes an optional
+  `limitMvPerDay`; when it is given the result carries `withinLimit` (`voltageDropMvPerDay ≤ limitMvPerDay`). A limit
+  that is not greater than 0 is refused. There is no default limit: it depends on the cell, the temperature and the
+  meter's resolution.
+
+### Changed
+
+- **`selfDischarge()` documents what its percentages are.** `monthlyRatePercent` and `dailyRatePercent` are the voltage
+  decay as a percentage of the nominal voltage — not capacity loss. Datasheet self-discharge figures (Li-ion 1–3 %/month)
+  are percentages of capacity, and on a flat OCV–SOC curve one percent of voltage is several percent of state of charge,
+  so the two cannot be compared directly. Values are unchanged.
+- `bendAllowance()` and `flatPattern()` read one K-factor default table instead of two copies of it. Values and
+  messages are unchanged.
 
 ## [0.62.0] - 2026-10-16
 

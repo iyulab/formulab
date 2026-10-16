@@ -85,8 +85,8 @@ export function kFactorReverse(input: KFactorReverseInput): KFactorReverseResult
 /**
  * K-factor reverse calculation with a defensible range, derived from
  * measurement uncertainty on the physically-measured inputs rather than
- * from the K-factor table's own unsourced defaults (see `bendAllowance`'s
- * `K_FACTOR_TABLE` doc comment -- that table has no range to propagate,
+ * from the K-factor table's own unsourced defaults (see the
+ * `K_FACTOR_TABLE` doc comment in `bendDomain.ts` -- that table has no range to propagate,
  * because it has no source at all). `thickness` and `bendAngle` are
  * treated as exact: they are typically nominal/design values the caller
  * already knows, not measured on the physical part.

@@ -1,7 +1,41 @@
 import { inputRangeError } from '../errors.js';
+import type { BendingMaterial } from './types.js';
 
 /** Above this bend angle (degrees) the springback is hard to predict — both bend functions warn. */
 export const EXTREME_BEND_ANGLE = 170;
+
+/**
+ * Default K-factor values by material, read by both `bendAllowance()` and `flatPattern()`.
+ *
+ * K-factor is the neutral-axis position as a fraction of thickness. It is empirical:
+ * it varies with forming method, tooling and lot, so the source matters as much as
+ * the number.
+ *
+ * These are conventional air-bending defaults in common shop use; no normative source
+ * is attached to them. They are a starting point, not a specification. Callers that
+ * need a traceable figure should pass `input.kFactor` explicitly, or derive one from a
+ * measured flat length via `kFactorReverse`.
+ */
+const K_FACTOR_TABLE: Record<BendingMaterial, number> = {
+  mildSteel: 0.44,
+  stainless304: 0.45,
+  aluminum5052: 0.40,
+  aluminum6061: 0.42,
+  custom: 0.44,
+};
+
+/**
+ * The K-factor a bend function uses: the caller's `kFactor` when given, otherwise the material's
+ * default. An unknown material with no `kFactor` is refused here, naming `material` — it used to
+ * surface as «kFactor outside [0, 1]», the wrong field.
+ */
+export function resolveKFactor(material: BendingMaterial, kFactor: number | undefined): number {
+  if (kFactor !== undefined) return kFactor;
+  if (!Object.hasOwn(K_FACTOR_TABLE, material)) {
+    throw new RangeError(`material must be one of ${Object.keys(K_FACTOR_TABLE).join(', ')} (or give kFactor), got ${String(material)}`);
+  }
+  return K_FACTOR_TABLE[material];
+}
 
 /**
  * The domain of the sheet-metal bend formulas shared by `bendAllowance()` and `flatPattern()`.
