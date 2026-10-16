@@ -271,7 +271,7 @@ export function pressTonnage(input: PressTonnageInput): PressTonnageResult {
   }
   // Combined operation requires an explicit operations array
   if (operation === 'combined' && !input.operations) {
-    throw new RangeError('operations is required for combined operation');
+    throw inputRangeError('operations is required for combined operation', { code: 'missing_option', parameter: 'operations' });
   }
 
   let blankingForce = 0;

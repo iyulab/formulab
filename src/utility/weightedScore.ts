@@ -16,16 +16,16 @@ export function weightedScore(input: WeightedScoreInput): WeightedScoreResult {
   requireFinite('weightedScore', input);
   const { criteria, weights, alternatives, scores } = input;
   if (!criteria) {
-    throw inputRangeError('criteria is required', { code: 'empty_input', parameter: 'criteria' });
+    throw inputRangeError('criteria is required', { code: 'missing_option', parameter: 'criteria' });
   }
   if (!weights) {
-    throw inputRangeError('weights is required', { code: 'empty_input', parameter: 'weights' });
+    throw inputRangeError('weights is required', { code: 'missing_option', parameter: 'weights' });
   }
   if (!alternatives) {
-    throw inputRangeError('alternatives is required', { code: 'empty_input', parameter: 'alternatives' });
+    throw inputRangeError('alternatives is required', { code: 'missing_option', parameter: 'alternatives' });
   }
   if (!scores) {
-    throw inputRangeError('scores is required', { code: 'empty_input', parameter: 'scores' });
+    throw inputRangeError('scores is required', { code: 'missing_option', parameter: 'scores' });
   }
   if (criteria.length === 0) {
     throw inputRangeError('criteria must contain at least 1 entry', { code: 'empty_input', parameter: 'criteria' });

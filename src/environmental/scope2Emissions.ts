@@ -102,7 +102,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
   let gridFactor: number;
   if (region === 'custom') {
     if (customFactor == null) {
-      throw new RangeError('customFactor is required when region is "custom"');
+      throw inputRangeError('customFactor is required when region is "custom"', { code: 'missing_option', parameter: 'customFactor' });
     }
     gridFactor = customFactor;
   } else {
@@ -124,7 +124,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
       });
     }
     if (effectiveContractedKwh > 0 && supplierFactor == null) {
-      throw new RangeError('supplierFactor is required when contractedKwh > 0');
+      throw inputRangeError('supplierFactor is required when contractedKwh > 0', { code: 'missing_option', parameter: 'supplierFactor' });
     }
     if (effectiveContractedKwh > electricityKwh) {
       throw inputRangeError('contractedKwh cannot exceed electricityKwh', {
@@ -133,7 +133,7 @@ export function scope2Emissions(input: Scope2EmissionsInput): Scope2EmissionsRes
     }
     const remainderKwh = electricityKwh - effectiveContractedKwh;
     if (remainderKwh > 0 && residualMixFactor == null) {
-      throw new RangeError('residualMixFactor is required when contractedKwh < electricityKwh');
+      throw inputRangeError('residualMixFactor is required when contractedKwh < electricityKwh', { code: 'missing_option', parameter: 'residualMixFactor' });
     }
 
     const contractedCo2G = effectiveContractedKwh * (supplierFactor ?? 0);

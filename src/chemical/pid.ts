@@ -5,7 +5,7 @@ import { inputRangeError } from '../errors.js';
 /** A tuning parameter the method needs. A missing one was replaced by 1 — tuning for a process nobody entered. */
 function required(value: number | undefined, name: string): number {
   if (value === undefined || value === null) {
-    throw new RangeError(`${name} is required for this tuning method`);
+    throw inputRangeError(`${name} is required for this tuning method`, { code: 'missing_option', parameter: name });
   }
   return value;
 }

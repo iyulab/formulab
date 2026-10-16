@@ -49,8 +49,8 @@ describe('correlation', () => {
 
 describe('correlation refusal codes', () => {
   it('codes missing and unequal-length samples', () => {
-    expect(() => correlation({ x: undefined as never, y: [1, 2] })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'x' }));
-    expect(() => correlation({ x: [1, 2], y: undefined as never })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'y' }));
+    expect(() => correlation({ x: undefined as never, y: [1, 2] })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'x' }));
+    expect(() => correlation({ x: [1, 2], y: undefined as never })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'y' }));
     expect(() => correlation({ x: [1, 2, 3], y: [1, 2] })).toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'y', expected: 3, got: 2 }));
   });
 });

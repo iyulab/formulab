@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`missing_option`**: an input the call needs is absent — `beamLoad` / `beamDeflection` `uniformLoad` / `pointLoad` for
+  the load type chosen, `pressTonnage` `operations` for a combined operation, `pid` a tuning parameter its method reads,
+  `scope2Emissions` `customFactor` / `supplierFactor` / `residualMixFactor`, `acceptanceControlChart` with neither
+  specification limit (no `parameter`: either would do). Bare refusals 38 → 26.
+
+### Changed
+
+- A list not passed at all is `missing_option`, not `empty_input` (`correlation`, `linearInterpolation`, `regression`
+  `x` / `y`; `weightedScore` `criteria` / `weights` / `alternatives` / `scores`). An empty list is still `empty_input`.
+
 ## [0.69.0] - 2026-10-16
 
 ### Added

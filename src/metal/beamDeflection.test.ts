@@ -68,6 +68,11 @@ describe('beamDeflection', () => {
     expect(r.isSafe).toBe(false);
   });
 
+  it('names the load the chosen load type needs when it is absent', () => {
+    expect(() => beamDeflection({ ...base, support: 'simple', loadType: 'uniform' })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'uniformLoad' }));
+    expect(() => beamDeflection({ ...base, support: 'simple', loadType: 'concentrated' })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'pointLoad' }));
+  });
+
   it('throws RangeError on non-positive span/E/I/ratio', () => {
     const ok: BeamDeflectionInput = { ...base, support: 'simple', loadType: 'uniform', uniformLoad: 1 };
     expect(() => beamDeflection({ ...ok, span: 0 })).toThrow(RangeError);

@@ -67,10 +67,10 @@ function resolveLoads(input: BeamDeflectionInput): { w: number; P: number } {
   const needPoint = loadType === 'concentrated' || loadType === 'combined';
 
   if (needUniform && (uniformLoad === undefined || uniformLoad === null)) {
-    throw new RangeError('uniformLoad is required for uniform/combined load type');
+    throw inputRangeError('uniformLoad is required for uniform/combined load type', { code: 'missing_option', parameter: 'uniformLoad' });
   }
   if (needPoint && (pointLoad === undefined || pointLoad === null)) {
-    throw new RangeError('pointLoad is required for concentrated/combined load type');
+    throw inputRangeError('pointLoad is required for concentrated/combined load type', { code: 'missing_option', parameter: 'pointLoad' });
   }
 
   return {

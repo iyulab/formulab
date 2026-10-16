@@ -160,6 +160,14 @@ describe('pid', () => {
   });
 
   describe('edge cases', () => {
+    it('names the tuning parameter the method needs when it is absent', () => {
+      expect(() => pid({
+        method: 'ziegler-nichols-step',
+        controllerType: 'PID',
+        deadTime: 1, timeConstant: 10,
+      } as never)).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'processGain' }));
+    });
+
     it('should throw for zero process gain (Z-N step)', () => {
       expect(() => pid({
         method: 'ziegler-nichols-step',

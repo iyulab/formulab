@@ -24,6 +24,10 @@ describe('scope2Emissions', () => {
     expect(result.co2Kg).toBeCloseTo(6700, 0);
   });
 
+  it('names the factor a custom region needs when it is absent', () => {
+    expect(() => scope2Emissions({ electricityKwh: 5000, region: 'custom' })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'customFactor' }));
+  });
+
   it('should handle custom region with custom factor', () => {
     const result = scope2Emissions({
       electricityKwh: 5000,

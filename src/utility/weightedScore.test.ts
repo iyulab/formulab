@@ -98,10 +98,10 @@ describe('weightedScore', () => {
 describe('weightedScore refusal codes', () => {
   const base = { criteria: ['A', 'B'], weights: [1, 1], alternatives: ['X'], scores: [[1, 2]] };
   it('codes each missing list', () => {
-    expect(() => weightedScore({ ...base, criteria: undefined as never })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'criteria' }));
-    expect(() => weightedScore({ ...base, weights: undefined as never })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'weights' }));
-    expect(() => weightedScore({ ...base, alternatives: undefined as never })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'alternatives' }));
-    expect(() => weightedScore({ ...base, scores: undefined as never })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'scores' }));
+    expect(() => weightedScore({ ...base, criteria: undefined as never })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'criteria' }));
+    expect(() => weightedScore({ ...base, weights: undefined as never })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'weights' }));
+    expect(() => weightedScore({ ...base, alternatives: undefined as never })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'alternatives' }));
+    expect(() => weightedScore({ ...base, scores: undefined as never })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'scores' }));
   });
   it('codes lists that do not pair up', () => {
     expect(() => weightedScore({ ...base, weights: [1] })).toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'weights', expected: 2, got: 1 }));

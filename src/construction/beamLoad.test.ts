@@ -304,7 +304,7 @@ describe('beamLoad', () => {
         loadType: 'uniform',
         support: 'simple',
         span: 6,
-      })).toThrow('uniformLoad is required for uniform load type');
+      })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'uniformLoad' }));
     });
 
     it('should throw RangeError for concentrated load without pointLoad value', () => {
@@ -312,7 +312,7 @@ describe('beamLoad', () => {
         loadType: 'concentrated',
         support: 'simple',
         span: 6,
-      })).toThrow('pointLoad is required for concentrated load type');
+      })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'pointLoad' }));
     });
 
     it('should throw RangeError for combined load without both values', () => {
@@ -321,7 +321,7 @@ describe('beamLoad', () => {
         support: 'simple',
         span: 6,
         uniformLoad: 10,
-      })).toThrow('pointLoad is required for combined load type');
+      })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'pointLoad' }));
     });
 
     it('should throw RangeError for pointPosition outside the span', () => {

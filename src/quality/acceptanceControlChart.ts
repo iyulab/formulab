@@ -88,7 +88,7 @@ export function acceptanceControlChart(input: AcceptanceControlChartInput): Acce
   } = input;
 
   if (upperSpecLimit === undefined && lowerSpecLimit === undefined) {
-    throw new RangeError('At least one of upperSpecLimit or lowerSpecLimit is required');
+    throw inputRangeError('At least one of upperSpecLimit or lowerSpecLimit is required', { code: 'missing_option' });
   }
   if (!(sigma > 0)) {
     throw inputRangeError('sigma must be positive', {

@@ -9,6 +9,12 @@ describe('acceptanceControlChart', () => {
       })).toThrow(RangeError);
     });
 
+    it('needs at least one specification limit', () => {
+      expect(() => acceptanceControlChart({
+        sigma: 0.1, acceptableProportion: 0.001, rejectableProportion: 0.025,
+      })).toThrow(expect.objectContaining({ code: 'missing_option' }));
+    });
+
     it('throws for non-positive sigma', () => {
       expect(() => acceptanceControlChart({
         upperSpecLimit: 10.5, sigma: 0, acceptableProportion: 0.001, rejectableProportion: 0.025,

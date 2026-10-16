@@ -14,10 +14,10 @@ export function linearInterpolation(input: LinearInterpolationInput): LinearInte
   requireFinite('linearInterpolation', input);
   const { x, y, target } = input;
   if (!x) {
-    throw inputRangeError('x array is required', { code: 'empty_input', parameter: 'x' });
+    throw inputRangeError('x array is required', { code: 'missing_option', parameter: 'x' });
   }
   if (!y) {
-    throw inputRangeError('y array is required', { code: 'empty_input', parameter: 'y' });
+    throw inputRangeError('y array is required', { code: 'missing_option', parameter: 'y' });
   }
   if (x.length !== y.length) {
     throw inputRangeError(`x and y must have the same length, got x.length=${x.length}, y.length=${y.length}`, {

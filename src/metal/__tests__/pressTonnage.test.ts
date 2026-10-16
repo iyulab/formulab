@@ -256,7 +256,7 @@ describe('pressTonnage', () => {
         thickness: 2,
         tensileStrength: 400,
         shearStrength: 300,
-      })).toThrow(RangeError);
+      })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'operations' }));
     });
   });
 

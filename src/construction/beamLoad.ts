@@ -26,17 +26,17 @@ export function beamLoad(input: LoadInput): LoadResult {
 
   // Validate required inputs based on load type
   if (loadType === 'uniform' && (uniformLoad === undefined || uniformLoad === null)) {
-    throw new RangeError('uniformLoad is required for uniform load type');
+    throw inputRangeError('uniformLoad is required for uniform load type', { code: 'missing_option', parameter: 'uniformLoad' });
   }
   if (loadType === 'concentrated' && (pointLoad === undefined || pointLoad === null)) {
-    throw new RangeError('pointLoad is required for concentrated load type');
+    throw inputRangeError('pointLoad is required for concentrated load type', { code: 'missing_option', parameter: 'pointLoad' });
   }
   if (loadType === 'combined') {
     if (uniformLoad === undefined || uniformLoad === null) {
-      throw new RangeError('uniformLoad is required for combined load type');
+      throw inputRangeError('uniformLoad is required for combined load type', { code: 'missing_option', parameter: 'uniformLoad' });
     }
     if (pointLoad === undefined || pointLoad === null) {
-      throw new RangeError('pointLoad is required for combined load type');
+      throw inputRangeError('pointLoad is required for combined load type', { code: 'missing_option', parameter: 'pointLoad' });
     }
   }
   if (pointPosition !== undefined && pointPosition !== null && (pointPosition < 0 || pointPosition > span)) {

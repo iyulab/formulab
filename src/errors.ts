@@ -31,7 +31,9 @@ export type InputErrorCode =
   /** A name or choice the function does not know (a material, a shape, a table key) — `got` is what was given. */
   | 'unknown_option'
   /** Lists that must pair up differ in length — `expected` is the length they must match, `got` this one's. */
-  | 'dimension_mismatch';
+  | 'dimension_mismatch'
+  /** An input the call needs — for the mode it chose, or a list it cannot do without — is absent. */
+  | 'missing_option';
 
 /** The facts behind a refusal. Bounds are closed (`min`/`max`) or open (`exclusive_min`/`exclusive_max`). */
 export interface InputErrorDetail {

@@ -67,8 +67,8 @@ describe('linearInterpolation', () => {
 
 describe('linearInterpolation refusal codes', () => {
   it('codes missing and unequal-length arrays', () => {
-    expect(() => linearInterpolation({ x: undefined as never, y: [1, 2], target: 1 })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'x' }));
-    expect(() => linearInterpolation({ x: [1, 2], y: undefined as never, target: 1 })).toThrow(expect.objectContaining({ code: 'empty_input', parameter: 'y' }));
+    expect(() => linearInterpolation({ x: undefined as never, y: [1, 2], target: 1 })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'x' }));
+    expect(() => linearInterpolation({ x: [1, 2], y: undefined as never, target: 1 })).toThrow(expect.objectContaining({ code: 'missing_option', parameter: 'y' }));
     expect(() => linearInterpolation({ x: [1, 2, 3], y: [1, 2], target: 1 }))
       .toThrow(expect.objectContaining({ code: 'dimension_mismatch', parameter: 'y', expected: 3, got: 2 }));
   });
