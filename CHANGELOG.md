@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Three more refusals carry a code.** `bmsBalancing` with fewer than 2 cells and `stabilityStudy` with fewer than
+  2 temperatures whose degradation rises are `insufficient_data` (`parameter` `cellVoltages` / `dataPoints`, `min: 2`,
+  `got`); a `gageRR` Average-Range study outside the AIAG constant tables is `parameter_out_of_range` naming the first
+  dimension outside them (`numParts` 2–10, then `numOperators` 2–3, then `numTrials` 2–3, with `min`, `max`, `got`).
+  Messages are unchanged. Bare refusals left: 210.
+
 ## [0.64.0] - 2026-10-16
 
 ### Changed

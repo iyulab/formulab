@@ -154,6 +154,14 @@ describe('stabilityStudy', () => {
       })).toThrow(/2 or more temperatures/);
     });
 
+    it('codes the single-temperature refusal (insufficient_data on dataPoints)', () => {
+      expect(() => stabilityStudy({
+        dataPoints: [{ temperature: 40, time: 1, degradation: 2 }],
+        shelfLifeCriterion: 10,
+        storageTemp: 25,
+      })).toThrow(expect.objectContaining({ code: 'insufficient_data', parameter: 'dataPoints', min: 2, got: 1 }));
+    });
+
     it('counts only temperatures whose degradation rises', () => {
       expect(() => stabilityStudy({
         dataPoints: [

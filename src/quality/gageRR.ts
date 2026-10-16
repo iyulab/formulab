@@ -95,8 +95,13 @@ function gageRRAverageRange(input: GageRRInput): GageRRResult {
   const k2 = K2[numOperators];
   const k3 = K3[numParts];
   if (k1 === undefined || k2 === undefined || k3 === undefined) {
-    throw new RangeError(
+    // The first dimension outside its table names the refusal (parts, then operators, then trials).
+    const [parameter, min, max, got] = k3 === undefined ? ['numParts', 2, 10, numParts] as const
+      : k2 === undefined ? ['numOperators', 2, 3, numOperators] as const
+      : ['numTrials', 2, 3, numTrials] as const;
+    throw inputRangeError(
       `the Average-Range method has AIAG constants for 2–3 trials, 2–3 operators and 2–10 parts (got ${numTrials} trials, ${numOperators} operators, ${numParts} parts) — use method 'anova'`,
+      { code: 'parameter_out_of_range', parameter, min, max, got },
     );
   }
 

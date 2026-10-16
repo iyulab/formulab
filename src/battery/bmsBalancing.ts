@@ -19,7 +19,9 @@ export function bmsBalancing(input: BmsBalancingInput): BmsBalancingResult {
   // Balancing moves charge between cells: one cell has nothing to balance against, and a missing
   // list used to fail as a TypeError inside the function.
   if (!Array.isArray(cellVoltages) || cellVoltages.length < 2) {
-    throw new RangeError('cellVoltages must list at least 2 cells');
+    throw inputRangeError('cellVoltages must list at least 2 cells', {
+      code: 'insufficient_data', parameter: 'cellVoltages', min: 2, got: Array.isArray(cellVoltages) ? cellVoltages.length : 0,
+    });
   }
   // The balancing time divides by the pack average, so a cell at or below zero volts
   // would drive it to infinity rather than describing a pack that can be balanced.

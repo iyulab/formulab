@@ -322,6 +322,11 @@ describe('gageRR study shape', () => {
     expect(() => gageRR({ measurements: study(10, 3, 4) })).toThrow(/AIAG constants/);
     expect(() => gageRR({ measurements: study(12, 3, 3) })).toThrow(/AIAG constants/);
   });
+  it('names the first dimension outside the tables, with its range', () => {
+    expect(() => gageRR({ measurements: study(1, 3, 2) })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'numParts', min: 2, max: 10, got: 1 }));
+    expect(() => gageRR({ measurements: study(10, 4, 3) })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'numOperators', min: 2, max: 3, got: 4 }));
+    expect(() => gageRR({ measurements: study(10, 3, 4) })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'numTrials', min: 2, max: 3, got: 4 }));
+  });
   it('refuses ragged and non-finite measurements', () => {
     const ragged = study(5, 3, 3); ragged[2] = ragged[2].slice(0, 2);
     expect(() => gageRR({ measurements: ragged })).toThrow(/part 3 has 2 operators/);

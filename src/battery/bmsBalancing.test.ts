@@ -81,5 +81,7 @@ describe('bmsBalancing input domain', () => {
 
   it('rejects an empty pack that would make an output non-finite', () => {
     expect(() => bmsBalancing({ cellVoltages: [], balancingCurrentMA: 100, cellCapacityAh: 100 })).toThrow(RangeError);
+    expect(() => bmsBalancing({ cellVoltages: [3.65], balancingCurrentMA: 100, cellCapacityAh: 100 }))
+      .toThrow(expect.objectContaining({ code: 'insufficient_data', parameter: 'cellVoltages', min: 2, got: 1 }));
   });
 });

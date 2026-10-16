@@ -75,8 +75,9 @@ export function stabilityStudy(input: StabilityStudyInput): StabilityStudyResult
   // The Arrhenius line needs two temperatures with a measurable rate. With fewer there is no
   // extrapolation — the former default (Ea 0, Q10 1, shelf life 0) read as «expires at once».
   if (lnKValues.length < 2) {
-    throw new RangeError(
+    throw inputRangeError(
       `degradation must rise over time at 2 or more temperatures to fit the Arrhenius line (got ${lnKValues.length})`,
+      { code: 'insufficient_data', parameter: 'dataPoints', min: 2, got: lnKValues.length },
     );
   }
 
