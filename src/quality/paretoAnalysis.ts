@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { ParetoInput, ParetoResult, ParetoClassification } from './types.js';
 
@@ -19,7 +20,7 @@ export function paretoAnalysis(input: ParetoInput): ParetoResult {
   requireFinite('paretoAnalysis', input);
   const { items, thresholdA = 80, thresholdB = 95 } = input;
   if (!Array.isArray(items) || items.length === 0) {
-    throw new RangeError('items must contain at least one item');
+    throw inputRangeError('items must contain at least one item', { code: 'empty_input', parameter: 'items' });
   }
   for (const item of items) {
     if (!(item.value >= 0)) {

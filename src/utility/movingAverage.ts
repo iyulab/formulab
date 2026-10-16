@@ -14,7 +14,7 @@ export function movingAverage(input: MovingAverageInput): MovingAverageResult {
   requireFinite('movingAverage', input);
   const { data, window, method } = input;
   if (!data || data.length === 0) {
-    throw new RangeError('data must contain at least one value');
+    throw inputRangeError('data must contain at least one value', { code: 'empty_input', parameter: 'data' });
   }
   if (window < 1) {
     throw inputRangeError(`window must be >= 1, got ${window}`, {

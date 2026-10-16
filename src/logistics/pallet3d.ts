@@ -370,7 +370,7 @@ export function pallet3d(input: Pallet3DInput): Pallet3DResult {
 
   // No boxes → no load plan. An empty plan with a 0 × 0 × 0 pallet would read as a result.
   if (!input.boxes || input.boxes.length === 0) {
-    throw new RangeError('boxes must not be empty');
+    throw inputRangeError('boxes must not be empty', { code: 'empty_input', parameter: 'boxes' });
   }
 
   // The centre of gravity is weighted by box weight; weightless boxes would divide 0 by 0.

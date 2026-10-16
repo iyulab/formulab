@@ -20,7 +20,7 @@ export function nelsonRules(input: NelsonRulesInput): NelsonRulesResult {
   const { values, centerLine, sigma, rules = [1, 2, 3, 4, 5, 6, 7, 8] } = input;
 
   if (!Array.isArray(values) || values.length < 1) {
-    throw new RangeError('Values array must have at least 1 element');
+    throw inputRangeError('Values array must have at least 1 element', { code: 'empty_input', parameter: 'values' });
   }
   if (!Number.isFinite(sigma) || sigma <= 0) {
     throw inputRangeError('Sigma must be a positive number', {

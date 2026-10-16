@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { TspInput, TspResult, TspNode } from './types.js';
 
@@ -122,7 +123,7 @@ export function tsp(input: TspInput): TspResult {
       nnTour: [0], nnDistance: 0, optimizedTour: [0], optimizedDistance: 0,
       improvementPercent: 0,
     };
-    throw new RangeError('nodes must contain at least 1 element');
+    throw inputRangeError('nodes must contain at least 1 element', { code: 'empty_input', parameter: 'nodes' });
   }
   if (nodes.length === 2) {
     return {

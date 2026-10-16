@@ -13,7 +13,7 @@ export function percentile(input: PercentileInput): PercentileResult {
   requireFinite('percentile', input);
   const { data, percentile: p } = input;
   if (!data || data.length === 0) {
-    throw new RangeError('data must contain at least one value');
+    throw inputRangeError('data must contain at least one value', { code: 'empty_input', parameter: 'data' });
   }
   if (p < 0 || p > 100) {
     throw inputRangeError(`percentile must be in [0, 100], got ${p}`, {

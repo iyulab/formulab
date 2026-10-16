@@ -31,7 +31,7 @@ export function cusum(input: CusumInput): CusumResult {
 
   // No readings → no chart; an empty «in control» result would read as a verdict.
   if (n === 0) {
-    throw new RangeError('values must not be empty');
+    throw inputRangeError('values must not be empty', { code: 'empty_input', parameter: 'values' });
   }
 
   // A negative allowance widens nothing — it makes C⁺ and C⁻ grow on target data; a decision

@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { NormalizeInput, NormalizeResult } from './types.js';
 
@@ -12,7 +13,7 @@ export function normalize(input: NormalizeInput): NormalizeResult {
   requireFinite('normalize', input);
   const { data, method } = input;
   if (!data || data.length === 0) {
-    throw new RangeError('data must contain at least one value');
+    throw inputRangeError('data must contain at least one value', { code: 'empty_input', parameter: 'data' });
   }
 
   const n = data.length;

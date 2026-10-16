@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { BilinearInterpolationInput, BilinearInterpolationResult } from './types.js';
 
@@ -13,10 +14,10 @@ export function bilinearInterpolation(input: BilinearInterpolationInput): Biline
   requireFinite('bilinearInterpolation', input);
   const { x, y, z, targetX, targetY } = input;
   if (!x || x.length < 2) {
-    throw new RangeError(`x must contain at least 2 points, got ${x?.length ?? 0}`);
+    throw inputRangeError(`x must contain at least 2 points, got ${x?.length ?? 0}`, { code: 'insufficient_data', parameter: 'x', min: 2, got: x?.length ?? 0 });
   }
   if (!y || y.length < 2) {
-    throw new RangeError(`y must contain at least 2 points, got ${y?.length ?? 0}`);
+    throw inputRangeError(`y must contain at least 2 points, got ${y?.length ?? 0}`, { code: 'insufficient_data', parameter: 'y', min: 2, got: y?.length ?? 0 });
   }
   if (!z || z.length !== x.length) {
     throw new RangeError(`z must have ${x.length} rows to match x, got ${z?.length ?? 0}`);

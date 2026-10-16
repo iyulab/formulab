@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drill is now D − 0.974 p (M10 × 1.5 → 8.54 mm). A percentage that leaves no hole (≥ 100·D / 1.299p)
   is refused, naming `threadPercentage`.
 
+- **Empty input lists are refused with a code.** `abcAnalysis`, `paretoAnalysis`, `yieldCalc`, `cusum`,
+  `degreeDay`, `productCarbonFootprint`, `vaAnalysis`, `pallet3d`, `tsp`, `gageRR`, `nelsonRules`,
+  `histogram`, `movingAverage`, `normalize`, `npv`, `percentile` and `statistics` throw their empty-list
+  `RangeError` with `code: 'empty_input'` and the list's `parameter`; `bilinearInterpolation` refuses a
+  one-point axis with `insufficient_data` (`min: 2`, `got`). Messages are unchanged. Bare refusals left: 213.
+
 ### Fixed
 
 - **`metal/thread()`: the `5/8-11` UNC tap drill is 13.49 mm (17/32 in).** It was 13.39 mm

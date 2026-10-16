@@ -19,7 +19,7 @@ export function yieldCalc(input: YieldInput): YieldResult {
   const { steps } = input;
 
   if (!steps || steps.length === 0) {
-    throw new RangeError('steps must contain at least one process step');
+    throw inputRangeError('steps must contain at least one process step', { code: 'empty_input', parameter: 'steps' });
   }
   steps.forEach((step, i) => {
     if (!(step.total > 0)) {

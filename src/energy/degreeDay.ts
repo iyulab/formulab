@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { DegreeDayInput, DegreeDayResult } from './types.js';
 
@@ -18,7 +19,7 @@ export function degreeDay(input: DegreeDayInput): DegreeDayResult {
   const totalDays = dailyTemps.length;
 
   if (totalDays === 0) {
-    throw new RangeError('dailyTemps must not be empty');
+    throw inputRangeError('dailyTemps must not be empty', { code: 'empty_input', parameter: 'dailyTemps' });
   }
 
   let hdd = 0;

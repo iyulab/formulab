@@ -19,7 +19,7 @@ export function vaAnalysis(input: VaAnalysisInput): VaAnalysisResult {
   const { activities } = input;
 
   if (!Array.isArray(activities) || activities.length < 1) {
-    throw new RangeError('Activities array must have at least 1 element');
+    throw inputRangeError('Activities array must have at least 1 element', { code: 'empty_input', parameter: 'activities' });
   }
 
   for (let i = 0; i < activities.length; i++) {

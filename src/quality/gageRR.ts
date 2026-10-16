@@ -366,7 +366,7 @@ export function gageRR(input: GageRRInput): GageRRResult {
  */
 function validateStudyShape(measurements: GageRRInput['measurements']): void {
   if (!Array.isArray(measurements) || measurements.length === 0) {
-    throw new RangeError('measurements must not be empty');
+    throw inputRangeError('measurements must not be empty', { code: 'empty_input', parameter: 'measurements' });
   }
   const operators = measurements[0]?.length ?? 0;
   const trials = measurements[0]?.[0]?.length ?? 0;

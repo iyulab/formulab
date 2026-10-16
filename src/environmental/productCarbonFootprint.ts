@@ -19,7 +19,7 @@ export function productCarbonFootprint(input: ProductCarbonFootprintInput): Prod
   const { stages, productionQuantity } = input;
 
   if (!stages || stages.length === 0) {
-    throw new RangeError('stages must contain at least one lifecycle stage');
+    throw inputRangeError('stages must contain at least one lifecycle stage', { code: 'empty_input', parameter: 'stages' });
   }
   if (!(productionQuantity > 0)) {
     throw inputRangeError('productionQuantity must be greater than 0', {

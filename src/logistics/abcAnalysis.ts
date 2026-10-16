@@ -1,3 +1,4 @@
+import { inputRangeError } from '../errors.js';
 import { roundTo, requireFinite } from '../utils.js';
 import type { AbcInput, AbcResult, AbcClassification } from './types.js';
 
@@ -42,7 +43,7 @@ export function abcAnalysis(input: AbcInput): AbcResult {
   // Each class is a share of the total annual value — with no items, or no value among them,
   // there is no share to rank by. Every item landing in 'C' would read as a classification.
   if (totalItems === 0) {
-    throw new RangeError('items must not be empty');
+    throw inputRangeError('items must not be empty', { code: 'empty_input', parameter: 'items' });
   }
   if (!(totalValue > 0)) {
     throw new RangeError('the items have no annual value to classify (every usage × unitCost is 0)');

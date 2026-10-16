@@ -19,7 +19,7 @@ export function npv(input: NpvInput): NpvResult {
     });
   }
   if (!cashFlows || cashFlows.length === 0) {
-    throw new RangeError('cashFlows must contain at least one value');
+    throw inputRangeError('cashFlows must contain at least one value', { code: 'empty_input', parameter: 'cashFlows' });
   }
   if (discountRate < 0 || discountRate >= 1) {
     throw inputRangeError(`discountRate must be in [0, 1), got ${discountRate}`, {
