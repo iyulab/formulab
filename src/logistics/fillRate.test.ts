@@ -44,24 +44,24 @@ describe('fillRate', () => {
       })).toThrow();
     });
 
-    it('should clamp filled to total orders', () => {
-      const result = fillRate({
-        totalOrders: 100,
-        filledComplete: 150, // More than total
-      });
-
-      expect(result.fillRate).toBe(100);
-      expect(result.filledComplete).toBe(100);
+    it('refuses more filled than ordered, which would read as a 100 % fill rate', () => {
+      let error: unknown;
+      try {
+        fillRate({ totalOrders: 100, filledComplete: 150 });
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(RangeError);
+      expect(error).toMatchObject({ code: 'parameter_out_of_range', parameter: 'filledComplete', min: 0, max: 100, got: 150 });
     });
 
-    it('should clamp negative filled to zero', () => {
-      const result = fillRate({
-        totalOrders: 100,
-        filledComplete: -10,
-      });
+    it('refuses a negative filled count', () => {
+      expect(() => fillRate({ totalOrders: 100, filledComplete: -10 })).toThrow(RangeError);
+    });
 
-      expect(result.fillRate).toBe(0);
-      expect(result.filledComplete).toBe(0);
+    it('accepts the boundaries 0 and totalOrders', () => {
+      expect(fillRate({ totalOrders: 100, filledComplete: 100 }).fillRate).toBe(100);
+      expect(fillRate({ totalOrders: 100, filledComplete: 0 }).shortfall).toBe(100);
     });
   });
 

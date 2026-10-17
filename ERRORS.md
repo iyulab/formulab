@@ -264,7 +264,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `shipping()` | `throw` | weight ≤ 0, volume ≤ 0, distance ≤ 0 or missing (truck mode), unknown mode |
 | `tsp()` | `throw` | Empty nodes (a single node returns a single-node result, does not throw) |
 | `dimWeight()` | `throw` | length/width/height ≤ 0, actualWeight < 0 |
-| `fillRate()` | `throw` | totalOrders ≤ 0 |
+| `fillRate()` | `throw` | totalOrders ≤ 0; filledComplete below 0 or above totalOrders |
 | `serviceLevel()` | `throw` | safetyStock or demandStdDev < 0 (demandStdDev = 0 → the σ → 0 limits: serviceLevel 100 with a safety stock, 50 without; zScore null with a safety stock — it is unbounded — and 0 without) |
 | `freightClass()` | `throw` | weight/length/width/height ≤ 0 |
 | `kanban()` | `throw` | dailyDemand, leadTime or containerQuantity ≤ 0; safetyFactor < 0 (NaN included) |

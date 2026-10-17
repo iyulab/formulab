@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.72.3] - 2026-10-17
+
+### Fixed
+
+- **`logistics/fillRate()` refuses a `filledComplete` outside 0..`totalOrders`.** It used to clamp silently — 150 filled of
+  100 orders came back as a 100 % fill rate with `filledComplete: 100`, so a mistyped count looked like a perfect result.
+  The input is now refused (`parameter_out_of_range` on `filledComplete`, `min` 0, `max` = `totalOrders`); the boundaries
+  0 and `totalOrders` stay valid.
+
 ## [0.72.2] - 2026-10-17
 
 ### Fixed

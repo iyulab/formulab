@@ -16,6 +16,7 @@ import { inputRangeError } from '../errors.js';
  *
  * @param input - Fill rate calculation inputs
  * @returns Fill rate results
+ * @throws {RangeError} totalOrders is not above 0, or filledComplete lies outside 0..totalOrders
  */
 export function fillRate(input: FillRateInput): FillRateResult {
   requireFinite('fillRate', input);
@@ -27,8 +28,13 @@ export function fillRate(input: FillRateInput): FillRateResult {
     });
   }
 
-  // Clamp filledComplete to valid range
-  const actualFilled = Math.min(Math.max(0, filledComplete), totalOrders);
+  // More filled than ordered (or a negative count) is a mistyped input, not a 100 % or 0 % fill rate.
+  if (filledComplete < 0 || filledComplete > totalOrders) {
+    throw inputRangeError('filledComplete must be between 0 and totalOrders', {
+      code: 'parameter_out_of_range', parameter: 'filledComplete', min: 0, max: totalOrders, got: filledComplete,
+    });
+  }
+  const actualFilled = filledComplete;
   const shortfall = totalOrders - actualFilled;
 
   // Calculate fill rate
