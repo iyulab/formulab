@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.72.1] - 2026-10-17
+
+### Fixed
+
+- **`construction/brick()`: `bricksWithoutWaste + wastedBricks` now always equals `totalBricks`.** The three counts were
+  each rounded up from their own unrounded value, so for many wall areas the waste was one brick too high (10.03 m² of
+  standard brick at 5 %: 703 net, 738 total, but 36 wasted — 739 together). `totalBricks` and `bricksWithoutWaste` are
+  unchanged; `wastedBricks` is now the whole bricks between the two, which is the number to add to the order. Where
+  the old value was one higher, `wastedBricks` is one lower.
+
 ## [0.72.0] - 2026-10-17
 
 ### Added

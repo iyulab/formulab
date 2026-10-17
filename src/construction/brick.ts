@@ -19,6 +19,10 @@ export const BRICK_SIZES: Record<Exclude<BrickSize, 'custom'>, BrickDimensions> 
  * - Bricks per m² = 1,000,000 / ((brick length + mortar) × (brick height + mortar))
  * - Total bricks = wall area × bricks per m² × (1 + waste factor)
  *
+ * Bricks are bought whole, so the net and the total are each rounded up to a whole brick and the
+ * waste is the difference of those two counts, so `bricksWithoutWaste + wastedBricks === totalBricks`
+ * always holds (rounding each of the three separately could leave them one brick apart).
+ *
  * @param input - Brick input parameters
  * @returns Brick calculation results
  * @throws {RangeError} wallArea ≤ 0, unknown brickSize, custom dimensions ≤ 0, mortarThickness < 0, or wasteFactor < 0
@@ -83,13 +87,16 @@ export function brick(input: BrickInput): BrickResult {
   const wasteMultiplier = 1 + (wasteFactor / 100);
   const totalBricks = bricksWithoutWaste * wasteMultiplier;
 
-  // Wasted bricks
-  const wastedBricks = totalBricks - bricksWithoutWaste;
+  // Whole bricks: the order is a count, so the net and the total are rounded up and the waste is
+  // what lies between them. Rounding the unrounded waste on its own made the three counts
+  // disagree by one brick for many wall areas.
+  const totalWhole = Math.ceil(totalBricks);
+  const netWhole = Math.ceil(bricksWithoutWaste);
 
   return {
     bricksPerSqMeter: roundTo(bricksPerSqMeter, 1),
-    totalBricks: Math.ceil(totalBricks),
-    bricksWithoutWaste: Math.ceil(bricksWithoutWaste),
-    wastedBricks: Math.ceil(wastedBricks),
+    totalBricks: totalWhole,
+    bricksWithoutWaste: netWhole,
+    wastedBricks: totalWhole - netWhole,
   };
 }

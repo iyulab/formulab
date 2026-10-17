@@ -101,6 +101,21 @@ describe('brick', () => {
       expect(result.wastedBricks).toBeCloseTo(expectedWaste, -1);
     });
 
+    it('keeps the net, the waste and the total in step for every wall area', () => {
+      // 10.03 m² of standard brick at 5 %: net 702.8 → 703, total 737.97 → 738, and the unrounded
+      // waste 35.14 rounds up to 36 on its own — 703 + 36 = 739 ≠ 738. The three counts are one order.
+      const r = brick({ wallArea: 10.03, brickSize: 'standard', mortarThickness: 10, wasteFactor: 5 });
+      expect(r.bricksWithoutWaste + r.wastedBricks).toBe(r.totalBricks);
+
+      for (const wallArea of [1, 3.7, 10.03, 12.5, 20, 33, 47.3, 99.9, 100]) {
+        for (const wasteFactor of [0, 3, 5, 7.5, 10, 15]) {
+          const x = brick({ wallArea, brickSize: 'standard', mortarThickness: 10, wasteFactor });
+          expect(x.bricksWithoutWaste + x.wastedBricks).toBe(x.totalBricks);
+          expect(x.wastedBricks).toBeGreaterThanOrEqual(0);
+        }
+      }
+    });
+
     it('should handle zero waste factor', () => {
       const result = brick({
         wallArea: 50,
