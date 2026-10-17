@@ -12,6 +12,10 @@ export type {
   BendAllowanceResult,
   Din6935RollingDirection,
   Din6935StrengthClass,
+  AluminumBendAlloy,
+  AluminumBendTemper,
+  MinBendRadiusAluminumInput,
+  MinBendRadiusAluminumResult,
   MinBendRadiusBasis,
   MinBendRadiusDin6935Input,
   MinBendRadiusDin6935Result,
@@ -150,6 +154,7 @@ export { isMetalWeightInput, isBoltInput } from './guards.js';
 export { metalWeight } from './metalWeight.js';
 export { bendAllowance } from './bendAllowance.js';
 export { minBendRadiusDin6935, DIN_6935_MAX_THICKNESS } from './minBendRadius.js';
+export { minBendRadiusAluminum, ALUMINUM_BEND_MAX_THICKNESS } from './minBendRadiusAluminum.js';
 export { springback } from './springback.js';
 export { flatPattern } from './flatPattern.js';
 export { kFactorReverse, kFactorReverseRange } from './kFactorReverse.js';

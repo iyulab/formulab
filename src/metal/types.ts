@@ -51,14 +51,37 @@ export interface MinBendRadiusDin6935Result {
   nextSizeUpApplied: boolean;
 }
 
+/** Aluminium alloys whose bend-radius row is transcribed from the Aluminum Association table. */
+export type AluminumBendAlloy = '5052' | '6061';
+
+/**
+ * Temper of the sheet being bent. 6061 is tabulated as `O`, `T4` and `T6` (the `T6 & T651` row);
+ * 5052 as `O`, `H32` and `H34`.
+ */
+export type AluminumBendTemper = 'O' | 'H32' | 'H34' | 'T4' | 'T6';
+
+export interface MinBendRadiusAluminumInput {
+  alloy: AluminumBendAlloy;
+  temper: AluminumBendTemper;
+  thickness: number;                            // mm (table covers up to 12.7 = 1/2 in)
+}
+
+export interface MinBendRadiusAluminumResult {
+  minBendRadius: number;                        // mm
+  multiplier: number;                           // the table's value, in multiples of thickness
+  thicknessColumnUpper: number;                 // mm, the table column that was read
+  alloy: AluminumBendAlloy;
+  temper: AluminumBendTemper;
+}
+
 /**
  * Where a reported minimum bend radius comes from.
  *
- * `din6935` means the figure was read from a normative table; `convention` means it is a
- * shop default with nothing behind it. Callers that cite sources need to tell the two apart,
- * and the same result object carries both cases.
+ * `din6935` and `aluminumAssociation` mean the figure was read from a published table;
+ * `convention` means it is a shop default with nothing behind it. Callers that cite sources
+ * need to tell them apart, and the same result object carries every case.
  */
-export type MinBendRadiusBasis = 'din6935' | 'convention';
+export type MinBendRadiusBasis = 'din6935' | 'aluminumAssociation' | 'convention';
 
 export interface BendAllowanceInput {
   thickness: number;        // mm
@@ -66,6 +89,12 @@ export interface BendAllowanceInput {
   insideRadius: number;     // mm
   kFactor?: number;         // 0.3-0.5 (optional)
   material?: BendingMaterial;
+  /**
+   * Temper of an aluminium sheet, which the minimum bend radius depends on several-fold. Read for
+   * `aluminum6061` (default `T6`) and `aluminum5052` (default `H32`); other materials ignore it.
+   * A temper the alloy's row does not list is refused.
+   */
+  temper?: AluminumBendTemper;
   /**
    * Bend orientation relative to the rolling direction. Used for steel, where DIN 6935
    * tabulates the two separately. Defaults to `longitudinal`, the more demanding of the two:

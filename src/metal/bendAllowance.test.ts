@@ -188,12 +188,14 @@ describe('bendAllowance', () => {
       expect(result.minBendRadiusBasis).toBe('convention');
     });
 
-    it('keeps the alloys on conventional multipliers', () => {
-      for (const material of ['aluminum5052', 'aluminum6061', 'custom'] as const) {
+    it('keeps custom on a conventional multiplier and reads the aluminium alloys from their table', () => {
+      expect(
+        bendAllowance({ thickness: 3, bendAngle: 90, insideRadius: 5, material: 'custom' }).minBendRadiusBasis,
+      ).toBe('convention');
+      for (const material of ['aluminum5052', 'aluminum6061'] as const) {
         expect(
-          bendAllowance({ thickness: 3, bendAngle: 90, insideRadius: 5, material })
-            .minBendRadiusBasis,
-        ).toBe('convention');
+          bendAllowance({ thickness: 3, bendAngle: 90, insideRadius: 5, material }).minBendRadiusBasis,
+        ).toBe('aluminumAssociation');
       }
     });
   });

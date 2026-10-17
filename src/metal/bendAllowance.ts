@@ -1,7 +1,10 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
+import { minBendRadiusAluminum } from './minBendRadiusAluminum.js';
 import { assertBendDomain, EXTREME_BEND_ANGLE, resolveKFactor } from './bendDomain.js';
 import type {
+  AluminumBendAlloy,
+  AluminumBendTemper,
   BendAllowanceInput,
   BendAllowanceResult,
   BendingMaterial,
@@ -18,13 +21,11 @@ import { Notes } from '../diagnostics.js';
  * feasibility check, not a specification limit; verify against tooling and material
  * datasheets for production use.
  *
- * These stay conventions because no normative table has been sourced for these alloys.
- * Steel is resolved from a standard instead, and reaches this fallback only past the
- * thicknesses that table covers; the dispatch is at the call site, not here.
- *
- * aluminum6061 in particular: minimum bend radius for this alloy varies several-fold
- * with temper (O/T4/T6), so a single multiplier is a rougher approximation here than
- * for the other materials in this table.
+ * Stainless and `custom` have no table sourced, so they stay conventions. Steel is resolved
+ * from DIN 6935 and the two aluminium alloys from the Aluminum Association table; each reaches
+ * this fallback only past the thicknesses its table covers. The dispatch is at the call site,
+ * not here, and the 5052 and 6061 values below are those fallbacks, not the limits in the
+ * ordinary range: the 6061 limit runs from 1× to 5× with thickness and temper.
  */
 const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
   mildSteel: 1.0,
@@ -32,6 +33,21 @@ const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
   aluminum5052: 1.0,
   aluminum6061: 1.5,
   custom: 1.5,
+};
+
+/** The aluminium alloy a `BendingMaterial` stands for, where the Aluminum Association table covers it. */
+const ALUMINUM_ALLOY: Partial<Record<string, AluminumBendAlloy>> = {
+  aluminum5052: '5052',
+  aluminum6061: '6061',
+};
+
+/**
+ * Temper assumed when none is given — the one the library's own material table lists for each
+ * alloy (`A6061-T6`, `A5052-H32`). For 6061 it is also the most demanding of the three tabulated.
+ */
+const DEFAULT_ALUMINUM_TEMPER: Record<AluminumBendAlloy, AluminumBendTemper> = {
+  '5052': 'H32',
+  '6061': 'T6',
 };
 
 /**
@@ -94,8 +110,21 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
           bendAngle,
         })
       : null;
-  const minBendRadius = din6935?.minBendRadius ?? MIN_BEND_RADIUS_MULTIPLIER[material] * thickness;
-  const minBendRadiusBasis: MinBendRadiusBasis = din6935 ? 'din6935' : 'convention';
+  const aluminumAlloy = ALUMINUM_ALLOY[material as string];
+  const aluminum = aluminumAlloy
+    ? minBendRadiusAluminum({
+        alloy: aluminumAlloy,
+        temper: input.temper ?? DEFAULT_ALUMINUM_TEMPER[aluminumAlloy],
+        thickness,
+      })
+    : null;
+  const minBendRadius =
+    din6935?.minBendRadius ?? aluminum?.minBendRadius ?? MIN_BEND_RADIUS_MULTIPLIER[material] * thickness;
+  const minBendRadiusBasis: MinBendRadiusBasis = din6935
+    ? 'din6935'
+    : aluminum
+      ? 'aluminumAssociation'
+      : 'convention';
 
   // Calculate recommended V-die opening
   const recommendedVDie = roundTo(V_DIE_MULTIPLIER * thickness, 0);

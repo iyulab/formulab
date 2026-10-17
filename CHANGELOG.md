@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`metal/minBendRadiusAluminum()`** — minimum recommended bend radius for aluminium sheet and plate, read from the
+  Aluminum Association table «Recommended Minimum Bend Radii for 90 Degree Cold Forming of Sheet and Plate» (Aluminum
+  Design Manual Table 3-1): 6061-O / T4 / T6, 5052-O / H32 / H34, eight thickness columns from 1/64 to 1/2 in. A
+  thickness between columns reads the next thicker one; past 12.7 mm it returns `null` rather than extrapolating. The
+  radii are for press-brake air bending and the table does not separate bends across and along the grain.
+- **`BendAllowanceInput.temper`** — optional temper for `aluminum6061` (default `T6`) and `aluminum5052` (default
+  `H32`); a temper the alloy does not list is refused (`unknown_option`).
+- **`MinBendRadiusBasis` `'aluminumAssociation'`.**
+
+### Changed
+
+- **`metal/bendAllowance()` reads the aluminium alloys' minimum bend radius from the table instead of 1.5× (6061) and
+  1.0× (5052).** The limit is not a constant multiple: 6061-T6 is 1.5× at 1.6 mm, 2.5× at 3.2 mm and 5× at 12.7 mm, so
+  the flat 1.5× let thick T6 sheet through without the warning (a 4 mm radius in 3.2 mm 6061-T6 drew none; the table
+  says 8 mm). Returned `minBendRadius` and `minBendRadiusBasis` change for both alloys up to 12.7 mm; beyond it the
+  conventional multiplier still applies and reports `convention`.
+
 ## [0.71.0] - 2026-10-17
 
 ### Changed
