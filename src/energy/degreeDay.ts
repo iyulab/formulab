@@ -11,7 +11,7 @@ import type { DegreeDayInput, DegreeDayResult } from './types.js';
  *
  * @reference ASHRAE Fundamentals Handbook — Degree Day Method
  * @reference ISO 50001:2018 — Energy management systems
- * @throws RangeError if dailyTemps is empty
+ * @throws RangeError if dailyTemps is empty, or baseHeating is above baseCooling
  */
 export function degreeDay(input: DegreeDayInput): DegreeDayResult {
   requireFinite('degreeDay', input);
@@ -20,6 +20,14 @@ export function degreeDay(input: DegreeDayInput): DegreeDayResult {
 
   if (totalDays === 0) {
     throw inputRangeError('dailyTemps must not be empty', { code: 'empty_input', parameter: 'dailyTemps' });
+  }
+
+  // A heating base above the cooling base would count a day between them as heating and cooling at once,
+  // and the neutral days (total − heating − cooling) would go negative.
+  if (baseHeating > baseCooling) {
+    throw inputRangeError('baseHeating must not exceed baseCooling', {
+      code: 'parameter_out_of_range', parameter: 'baseHeating', max: baseCooling, got: baseHeating,
+    });
   }
 
   let hdd = 0;

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.72.2] - 2026-10-17
+
+### Fixed
+
+- **`energy/degreeDay()` refuses a heating base above the cooling base.** With `baseHeating: 24, baseCooling: 18`, a day at
+  20 °C counted as a heating day and a cooling day at once, so `neutralDays` came out negative (-1 for three days at
+  20, 10 and 30). The input is now refused (`parameter_out_of_range` on `baseHeating`, `max` = `baseCooling`); equal bases
+  are accepted and `heatingDays + coolingDays + neutralDays` always equals `totalDays`.
+
 ## [0.72.1] - 2026-10-17
 
 ### Fixed

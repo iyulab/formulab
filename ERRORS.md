@@ -286,7 +286,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `windOutput()` | `throw` | hubHeight, referenceHeight or ratedSpeed ≤ 0; ratedPower, averageWindSpeed, cutInSpeed, cutOutSpeed, rotorDiameter or terrainRoughness < 0 (sweptArea/betzLimit null without rotorDiameter; zero wind → capacityFactor 0) |
 | `compressedAirCost()` | `throw` | compressorPower/runningHours/airOutput ≤ 0; electricityRate or maintenanceCost < 0 |
 | `insulationRoi()` | `throw` | surfaceArea/tempDifference/insulationK/insulationThickness/surfaceCoefficient ≤ 0; boilerEfficiency ∉ (0, 1]; operatingHours, energyCost or installationCost < 0 (paybackPeriod null without positive installationCost/annualCostSaved) |
-| `degreeDay()` | `throw` | Empty dailyTemps |
+| `degreeDay()` | `throw` | Empty dailyTemps; baseHeating above baseCooling |
 | `motorEfficiency()` | `throw` | currentEfficiency/newEfficiency ∉ (0, 1]; loadFactor ∉ [0, 1]; motorPower, runningHours, electricityRate or upgradeCost < 0 (paybackPeriod null without positive upgradeCost/annualSavings) |
 | `solarOutput()` | `throw` | panelWattage/panelCount/peakSunHours ≤ 0, systemEfficiency outside (0, 1], tiltAngle outside [0, 90], latitude outside [-90, 90] |
 

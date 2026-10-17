@@ -67,6 +67,23 @@ describe('degreeDay', () => {
       expect(() => degreeDay({ dailyTemps: [] })).toThrow(RangeError);
     });
 
+    it('refuses a heating base above the cooling base, which would count days between them twice', () => {
+      let error: unknown;
+      try {
+        degreeDay({ dailyTemps: [20, 10, 30], baseHeating: 24, baseCooling: 18 });
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(RangeError);
+      expect(error).toMatchObject({ code: 'parameter_out_of_range', parameter: 'baseHeating', max: 18, got: 24 });
+    });
+
+    it('accepts equal bases; the heating, cooling and neutral days then add up to the total', () => {
+      const result = degreeDay({ dailyTemps: [10, 20, 30, 20], baseHeating: 20, baseCooling: 20 });
+      expect(result.heatingDays + result.coolingDays + result.neutralDays).toBe(result.totalDays);
+      expect(result.neutralDays).toBe(2);
+    });
+
     it('should handle single day', () => {
       const result = degreeDay({ dailyTemps: [10] });
       expect(result.hdd).toBe(8);
