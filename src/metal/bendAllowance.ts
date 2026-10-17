@@ -1,10 +1,9 @@
 import { roundTo, requireFinite } from '../utils.js';
 import { minBendRadiusDin6935 } from './minBendRadius.js';
-import { minBendRadiusAluminum } from './minBendRadiusAluminum.js';
+import { minBendRadiusAluminum, DEFAULT_ALUMINUM_BEND_TEMPER } from './minBendRadiusAluminum.js';
 import { assertBendDomain, EXTREME_BEND_ANGLE, resolveKFactor } from './bendDomain.js';
 import type {
   AluminumBendAlloy,
-  AluminumBendTemper,
   BendAllowanceInput,
   BendAllowanceResult,
   BendingMaterial,
@@ -39,15 +38,6 @@ const MIN_BEND_RADIUS_MULTIPLIER: Record<BendingMaterial, number> = {
 const ALUMINUM_ALLOY: Partial<Record<string, AluminumBendAlloy>> = {
   aluminum5052: '5052',
   aluminum6061: '6061',
-};
-
-/**
- * Temper assumed when none is given — the one the library's own material table lists for each
- * alloy (`A6061-T6`, `A5052-H32`). For 6061 it is also the most demanding of the three tabulated.
- */
-const DEFAULT_ALUMINUM_TEMPER: Record<AluminumBendAlloy, AluminumBendTemper> = {
-  '5052': 'H32',
-  '6061': 'T6',
 };
 
 /**
@@ -114,7 +104,7 @@ export function bendAllowance(input: BendAllowanceInput): BendAllowanceResult {
   const aluminum = aluminumAlloy
     ? minBendRadiusAluminum({
         alloy: aluminumAlloy,
-        temper: input.temper ?? DEFAULT_ALUMINUM_TEMPER[aluminumAlloy],
+        temper: input.temper ?? DEFAULT_ALUMINUM_BEND_TEMPER[aluminumAlloy],
         thickness,
       })
     : null;

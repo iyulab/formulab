@@ -40,6 +40,21 @@ const TABLE: Record<AluminumBendAlloy, Partial<Record<AluminumBendTemper, readon
   },
 };
 
+/** The tempers each alloy's row lists, in the table's order — what a caller may pass as `temper`. */
+export const ALUMINUM_BEND_TEMPERS: Readonly<Record<AluminumBendAlloy, readonly AluminumBendTemper[]>> = {
+  '5052': Object.keys(TABLE['5052']) as AluminumBendTemper[],
+  '6061': Object.keys(TABLE['6061']) as AluminumBendTemper[],
+};
+
+/**
+ * Temper assumed when none is given — the one the library's own material table lists for each
+ * alloy (`A6061-T6`, `A5052-H32`). For 6061 it is also the most demanding of the three tabulated.
+ */
+export const DEFAULT_ALUMINUM_BEND_TEMPER: Readonly<Record<AluminumBendAlloy, AluminumBendTemper>> = {
+  '5052': 'H32',
+  '6061': 'T6',
+};
+
 /**
  * Minimum recommended bend radius for aluminium sheet and plate, read from the Aluminum
  * Association table.

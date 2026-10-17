@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { minBendRadiusAluminum, ALUMINUM_BEND_MAX_THICKNESS } from './minBendRadiusAluminum.js';
+import {
+  minBendRadiusAluminum,
+  ALUMINUM_BEND_MAX_THICKNESS,
+  ALUMINUM_BEND_TEMPERS,
+  DEFAULT_ALUMINUM_BEND_TEMPER,
+} from './minBendRadiusAluminum.js';
 import { bendAllowance } from './bendAllowance.js';
 import type { AluminumBendAlloy, AluminumBendTemper } from './types.js';
 
@@ -153,5 +158,15 @@ describe('bendAllowance — aluminium minimum bend radius', () => {
   it('ignores temper for a material it does not apply to', () => {
     const r = bendAllowance({ thickness: 2, bendAngle: 90, insideRadius: 3, material: 'stainless304', temper: 'T6' });
     expect(r.minBendRadiusBasis).toBe('convention');
+  });
+});
+
+describe('aluminium temper lists', () => {
+  it('lists exactly the tempers the table rows hold, defaulting inside them', () => {
+    expect(ALUMINUM_BEND_TEMPERS['6061']).toEqual(['O', 'T4', 'T6']);
+    expect(ALUMINUM_BEND_TEMPERS['5052']).toEqual(['O', 'H32', 'H34']);
+    for (const alloy of ['5052', '6061'] as const) {
+      expect(ALUMINUM_BEND_TEMPERS[alloy]).toContain(DEFAULT_ALUMINUM_BEND_TEMPER[alloy]);
+    }
   });
 });

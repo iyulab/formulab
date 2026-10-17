@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.72.0] - 2026-10-17
+
 ### Added
 
 - **`metal/minBendRadiusAluminum()`** — minimum recommended bend radius for aluminium sheet and plate, read from the
@@ -16,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   radii are for press-brake air bending and the table does not separate bends across and along the grain.
 - **`BendAllowanceInput.temper`** — optional temper for `aluminum6061` (default `T6`) and `aluminum5052` (default
   `H32`); a temper the alloy does not list is refused (`unknown_option`).
-- **`MinBendRadiusBasis` `'aluminumAssociation'`.**
+- **`MinBendRadiusBasis` `'aluminumAssociation'`**, and **`ALUMINUM_BEND_TEMPERS`** / **`DEFAULT_ALUMINUM_BEND_TEMPER`** —
+  the tempers each alloy's row lists and the one assumed when none is given, so a form can offer exactly the choices the
+  function accepts.
 
 ### Changed
 
