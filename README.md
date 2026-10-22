@@ -9,6 +9,8 @@
 
 A comprehensive collection of engineering formulas and calculations for manufacturing, quality control, logistics, and industrial applications. Zero dependencies, fully typed, tree-shakeable.
 
+**Try it in the browser:** [online-tools.work](https://online-tools.work/) runs on formulab — for example the [Gage R&R](https://online-tools.work/quality/en/gage-rr), [Weibull analysis](https://online-tools.work/quality/en/weibull), [sheet metal bending](https://online-tools.work/metal/en/bending) and [pipe flow](https://online-tools.work/chemical/en/pipe-flow) calculators.
+
 ## Features
 
 - **212 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
