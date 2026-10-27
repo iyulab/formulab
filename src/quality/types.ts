@@ -522,9 +522,10 @@ export interface CpkToOccurrenceInput {
 }
 
 export interface CpkToOccurrenceResult {
-  occurrence: number;   // 1-10
-  description: string;
-  cpkRange: string;
+  occurrence: number;   // 2-10 (1 is reserved for causes a prevention control rules out)
+  description: string;  // the handbook's occurrence category, e.g. 'High'
+  cpkRange: string;     // Cpk band of this rating, e.g. '0.86 - 1.03'
+  ppm: number;          // expected nonconforming parts per million, 2·Φ(−3·Cpk)·10⁶
 }
 
 /**

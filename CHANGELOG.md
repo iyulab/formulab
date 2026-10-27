@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.73.0] - 2026-10-27
+
+### Changed
+
+- **Breaking: `quality/cpkToOccurrence()` rates through the AIAG & VDA FMEA Handbook (2019) alternative PFMEA
+  occurrence table (incidents per 1,000).** The function cited a «Table O-1» that the handbook does not have; the
+  handbook rates process occurrence by prevention controls and has no Cpk column, and the old thresholds
+  (2.00 / 1.67 / 1.33 / 1.00 / 0.83 / 0.67 / 0.51 / 0.33 / 0.17) were a sigma ladder with no published source. The
+  Cpk is now turned into the expected nonconforming fraction of a normal process, `2·Φ(−3·Cpk)`, and rated against
+  the table's rates (each listed rate is the lower limit of its rating; 0.001–0.01 per thousand, which the table
+  leaves unassigned, is rated 3). Ratings move: Cpk 1.00 → 6 (was 4), 1.33 → 3 (was 3), 1.67 → 2 (was 2),
+  2.00 → 2 (was 1). Rating 1 is no longer returned — the handbook keeps it for causes a prevention control makes
+  impossible. The result gains `ppm` (expected nonconforming parts per million); `description` is the handbook's
+  category (`'Extremely high'` … `'Very low'`); `cpkRange` states the band computed from the table.
+
+  Migration: occurrence ratings derived from a Cpk change for most inputs — re-rate stored FMEA rows that took
+  their occurrence from this function. Code that branched on `occurrence === 1` no longer reaches that branch.
+
 ## [0.72.3] - 2026-10-17
 
 ### Fixed

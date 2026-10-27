@@ -208,7 +208,7 @@ import { oee, cpk, taktTime, dpmo, controlChart, movingAverageRangeChart, accept
 | `weibull()` | Weibull reliability analysis |
 | `paretoAnalysis()` | Pareto 80/20 ABC classification |
 | `actionPriority()` | AIAG-VDA 2019 Action Priority (AP) matrix — table exported as `AP_TABLE` + `AP_*_BANDS` |
-| `cpkToOccurrence()` | Cpk → FMEA occurrence rating mapping |
+| `cpkToOccurrence()` | Cpk → PFMEA occurrence rating via the AIAG-VDA 2019 alternative occurrence table (incidents per 1,000) |
 | `nelsonRules()` | SPC Nelson rules (8 control-chart tests) |
 
 ### Metal & Machining (34 functions)
