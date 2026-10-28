@@ -13,7 +13,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **215 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **216 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -30,7 +30,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
-| Quality | 23 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-3, ISO 7870-5 |
+| Quality | 24 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-3, ISO 7870-5 |
 | Metal | 35 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
 | Logistics | 21 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
@@ -76,6 +76,7 @@ The following functions include tests verified against published reference value
 | `nioshLifting()` | NIOSH Publication 94-110 | LC=23kg ideal, FM/CM table values, RWL calculation |
 | `oee()` | JIPM TPM Handbook | World-class OEE (A≥90%, P≥95%, Q≥99.9%), perfect 100% |
 | `cpk()` | ISO 22514-2 | Six Sigma Cpk=2.0, minimum capable Cpk≈1.33, off-center penalty |
+| `conformityDecision()` | ILAC-G8:09/2019 Table 1, JCGM 106:2012 | Guard band w = U → false-accept risk 2.3 % at the acceptance limit (Φ(−2)); 1.5U → 0.14 %; 3U → below 1 ppm; simple acceptance → 50 % on the limit; the speed-limit example (2 % relative uncertainty, 99.9 % → 107 km/h) |
 | `controlChart()` | AIAG/ASTM E2587-16 | A2, D3, D4, d2 constants for n=2, 3, 5 |
 | `movingAverageRangeChart()` | ISO 7870-5:2014, Clause 6.5 | Worked example (k=3, 25 individuals) recomputed from the standard's raw Table 1 data — per-row moving average/range, R̄/x̄ center lines, UCL/LCL |
 | `acceptanceControlChart()` | ISO 7870-3:2012, Clause 9.1/9.2 | Example 1 (bottle filling): APL/RPL/n reproduced exactly; ACL within documented rounding-path tolerance. Example 2 (coating thickness) independently cross-verifies the ACL weighting formula to 3 decimals |
@@ -191,6 +192,7 @@ import { oee, cpk, taktTime, dpmo, controlChart, movingAverageRangeChart, accept
 |----------|-------------|
 | `oee()` | Overall Equipment Effectiveness |
 | `cpk()` | Process Capability Index |
+| `conformityDecision()` | Statement of conformity (pass / conditional pass / conditional fail / fail) for a measured value against a tolerance, with a guard band w = r·U from the expanded uncertainty, and the JCGM 106 conformance probability |
 | `controlChart()` | SPC X-bar/R and X-bar/S charts |
 | `movingAverageRangeChart()` | SPC moving average / moving range chart for individual measurements (destructive testing, slow production rate) |
 | `acceptanceControlChart()` | Acceptance control chart — APL/RPL/ACL and required sample size from spec limits and risk parameters |

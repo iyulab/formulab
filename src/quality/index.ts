@@ -1,6 +1,7 @@
 // Quality domain formulas
 export { oee } from './oee.js';
 export { cpk } from './cpk.js';
+export { conformityDecision } from './conformityDecision.js';
 export { cycleTime } from './cycle.js';
 export { taktTime } from './takt.js';
 export { aql, AQL_LOT_SIZE_RANGES } from './aql.js';
@@ -122,4 +123,8 @@ export type {
   NelsonRulesInput,
   NelsonViolation,
   NelsonRulesResult,
+  // Conformity decision types
+  ConformityStatement,
+  ConformityDecisionInput,
+  ConformityDecisionResult,
 } from './types.js';

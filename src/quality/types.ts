@@ -586,3 +586,36 @@ export interface ParetoResult {
   };
   totalValue: number;
 }
+
+/**
+ * Conformity decision (ILAC-G8 guard bands, JCGM 106 conformance probability) Types
+ */
+export type ConformityStatement = 'pass' | 'conditionalPass' | 'conditionalFail' | 'fail';
+
+export interface ConformityDecisionInput {
+  measured: number;             // the measured value y
+  upperLimit?: number;          // tolerance upper limit — at least one of the two limits is required
+  lowerLimit?: number;          // tolerance lower limit
+  expandedUncertainty: number;  // U of the measured value, same unit (>= 0)
+  coverageFactor?: number;      // k with U = k·u (default 2)
+  guardBandFactor?: number;     // r in the guard band w = r·U (default 1; 0 = simple acceptance; ILAC-G8 Table 1)
+}
+
+export interface ConformityDecisionResult {
+  /** The non-binary statement (ILAC-G8 §4.2.3). With `guardBandFactor = 0` only `pass` and `fail` occur. */
+  decision: ConformityStatement;
+  /** The binary statement of the same rule (ILAC-G8 §4.2.2): `pass` only when `decision` is `pass`. */
+  binaryDecision: 'pass' | 'fail';
+  /** The measured value lies inside the tolerance, limits included — the simple-acceptance answer. */
+  withinTolerance: boolean;
+  guardBand: number;            // w = r·U
+  acceptanceLower: number | null;   // LL + w — null without a lower limit
+  acceptanceUpper: number | null;   // UL − w — null without an upper limit
+  rejectionLower: number | null;    // LL − w
+  rejectionUpper: number | null;    // UL + w
+  /** True when the guard bands leave no acceptance interval (two limits, 2w wider than the tolerance): nothing can pass. */
+  acceptanceIntervalEmpty: boolean;
+  standardUncertainty: number;  // u = U / k
+  /** P(measurand within the tolerance | measured), normal PDF, no prior knowledge of the item (JCGM 106 §7). 1 − this is the risk that an accepted item is out of tolerance. */
+  conformanceProbability: number;
+}

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`conformityDecision()`** — the decision rule of a statement of conformity (ILAC-G8:09/2019 §4, JCGM 106:2012). Give the measured
+  value, one or two tolerance limits and the expanded uncertainty U; it returns `pass`, `conditionalPass`, `conditionalFail` or
+  `fail` against the acceptance interval [LL + w, UL − w] with guard band w = r·U (`guardBandFactor` r, default 1; 0 is simple
+  acceptance, the «shared risk» rule), the binary statement of the same rule, whether the guard bands leave any acceptance interval,
+  and the JCGM 106 conformance probability (normal PDF, no prior knowledge of the item; `coverageFactor` k, default 2). Before, a
+  caller comparing a measurement with a limit could only do simple acceptance by hand, where a result on the limit is accepted
+  with up to a 50 % chance of being out of tolerance.
+
 ### Changed
 
 - **`pressFit()` no longer takes `poissonRatio`** (breaking, 0.x) — for the same-material, solid-shaft model the two Poisson terms
