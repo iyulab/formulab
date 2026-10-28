@@ -286,3 +286,31 @@ export interface PidResult {
   td: number;                 // Derivative time (s)
   method: string;
 }
+
+export interface PidStepResponseInput {
+  processGain: number;        // K — process-variable change per unit of controller output
+  timeConstant: number;       // T (seconds)
+  deadTime: number;           // L (seconds)
+  kp: number;                 // Proportional gain
+  ti: number;                 // Integral time (s); 0 = no integral action (as pid() returns for P)
+  td: number;                 // Derivative time (s); 0 = no derivative action
+  stepSize?: number;          // Setpoint step from rest (default 1)
+  duration?: number;          // Simulated span (s); default 10·L + 3·T
+  points?: number;            // Samples returned, integer 10–2000 (default 200)
+}
+
+export interface PidStepResponseResult {
+  time: number[];             // s
+  processVariable: number[];  // response to the setpoint step
+  controllerOutput: number[]; // controller output u
+  setpoint: number;           // the step size
+  peakValue: number;
+  peakTime: number;           // s
+  overshootPercent: number;   // 0 when the response never exceeds the setpoint
+  riseTime: number | null;    // s, 10 % → 90 % of the setpoint; null if 90 % is never reached
+  settlingTime: number | null; // s, stays within ±2 % of the setpoint; null if not settled by the end
+  finalValue: number;         // process variable at the last simulated instant
+  diverged: boolean;          // the loop grew without bound and the simulation stopped there
+  resolutionLimited: boolean; // the step was made coarser than wanted to bound the work
+  timeStep: number;           // s, the simulation step
+}

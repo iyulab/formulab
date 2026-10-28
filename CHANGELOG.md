@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`chemical/pidStepResponse()`** — the closed-loop setpoint step response of a PID loop on a first-order-plus-dead-time
+  process (the model `pid()` tunes). Returns the time series (process variable and controller output), peak,
+  overshoot, rise time (10 → 90 %) and 2 % settling time. Ideal-form PID with the derivative on the measurement
+  through a Td/10 filter; unconstrained (no actuator limits). `pid()` output can be passed straight in
+  (`ti = 0` means no integral action). A diverging loop stops and is flagged (`diverged`), a coarsened step is
+  flagged (`resolutionLimited`).
+
 ## [0.73.0] - 2026-10-27
 
 ### Changed

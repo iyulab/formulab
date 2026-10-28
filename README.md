@@ -13,7 +13,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **212 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **213 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -34,7 +34,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Metal | 34 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
 | Logistics | 20 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
-| Chemical | 12 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
+| Chemical | 13 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 12 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
 | Construction | 13 | momentOfInertia | AISC, Timoshenko, Roark's (momentOfInertia only — see note) |
 | Automotive | 10 | chargingLoss, tireLoadCapacityKg | AASHTO, SAE J1772, ISO 4000-1 |
@@ -277,6 +277,7 @@ import { dilution, concentration, ph, reactor, pipeFlow, heatTransfer, flowContr
 | `flowControl()` | Control valve Cv/Kv sizing (ISA/IEC 60534) |
 | `reliefValve()` | Safety relief valve sizing (API 520/526) |
 | `pid()` | PID controller tuning (Z-N / Cohen-Coon) |
+| `pidStepResponse()` | Closed-loop setpoint step response of a PID loop on a first-order-plus-dead-time process |
 
 ### Electronics & SMT (13 functions)
 

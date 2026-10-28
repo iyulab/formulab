@@ -138,6 +138,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `flowControl()` | `throw` | flowRate ≤ 0, inletPressure ≤ 0, outletPressure < 0 (absolute) or ≥ inletPressure (no pressure drop across the valve), fluidDensity ≤ 0; gas: molecularWeight ≤ 0 (when given), temperature ≤ −273.15 °C |
 | `reliefValve()` | `throw` | requiredCapacity ≤ 0, setPressure ≤ 0, molecularWeight ≤ 0, specificGravity ≤ 0, specificHeatRatio ≤ 1 or compressibility ≤ 0; overpressure < 0; temperature ≤ −273.15 °C (any fluid since 0.59.0 — liquid sizing does not read it, but a value below absolute zero describes nothing); liquid with back pressure at or above the relieving pressure (no differential — it returned requiredArea 0 and the smallest orifice before 0.57.0) |
 | `pid()` | `throw` | A parameter the method needs missing (it was replaced by 1 before 0.58.0) or not > 0 (NaN included): processGain/deadTime/timeConstant, or ultimateGain/ultimatePeriod |
+| `pidStepResponse()` | `throw` | processGain, timeConstant, deadTime, kp or stepSize or duration not > 0 (NaN included); ti or td negative; points not an integer 10–2000. A loop that grows without bound returns `diverged = true` and stops there; a step made coarser than wanted returns `resolutionLimited = true`; riseTime / settlingTime are `null` when never reached / not settled |
 
 ### Electronics (12 functions)
 

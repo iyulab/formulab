@@ -46,6 +46,8 @@ export type {
   // PID types
   PidInput,
   PidResult,
+  PidStepResponseInput,
+  PidStepResponseResult,
 } from './types.js';
 
 // Guards
@@ -64,3 +66,4 @@ export { injectionCycle } from './injectionCycle.js';
 export { flowControl } from './flowControl.js';
 export { reliefValve } from './reliefValve.js';
 export { pid } from './pid.js';
+export { pidStepResponse } from './pidStepResponse.js';
