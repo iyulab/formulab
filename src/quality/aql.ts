@@ -109,7 +109,8 @@ function getAcceptReject(
  * Calculate AQL (Acceptable Quality Level) sampling plan
  *
  * @reference ISO 2859-1:1999, Table 1 (sample size code letters) and Table 2-A
- *   (single sampling plans for normal inspection). Equivalent to ANSI/ASQ Z1.4.
+ *   (single sampling plans for normal inspection). Equivalent to ANSI/ASQ Z1.4. The tables follow this edition;
+ *   ISO 2859-1:2026 replaced it in January 2026 and has not been checked against it.
  * @remarks Simplified relative to the standard: the sample size is always the code
  *   letter's own size — Table 2-A arrow cells (which redirect to a plan with a
  *   different sample size) reuse the redirected plan's Ac/Re with this letter's size.

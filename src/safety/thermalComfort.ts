@@ -9,7 +9,8 @@ import { inputRangeError } from '../errors.js';
  *   - PMV = f(M, W, Icl, ta, tr, var, pa) with iterative tcl solve
  *   - PPD = 100 − 95 × exp(−0.03353×PMV⁴ − 0.2179×PMV²)
  *
- * @reference ISO 7730:2005 — Ergonomics of the thermal environment
+ * @reference ISO 7730:2005 — Ergonomics of the thermal environment (the calculation follows this edition;
+ *   ISO 7730:2025 is the current one and has not been checked against it)
  * @reference ASHRAE Standard 55-2020
  * @reference pythermalcomfort reference implementation
  *

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Documentation: the edition each standard-backed function follows** — `thermalComfort()` follows ISO 7730:2005 (ISO 7730:2025 is
+  current and has not been checked against it) and `aql()` follows the ISO 2859-1:1999 tables (ISO 2859-1:2026 replaced them in
+  January 2026 and has not been checked against). Behaviour is unchanged.
+
 ## [0.77.0] - 2026-10-28
 
 ### Added
