@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`cpk()`, `ppk()` and `cmk()` accept a one-sided specification** — give `usl` or `lsl`, not necessarily both (at least one;
+  neither is refused with `missing_option`). A one-sided tolerance has one limit, so only that side's index exists:
+  `cpk` / `ppk` / `cmk` is `cpu` (or `cpl`), the other side and `cp` / `pp` / `cm` are `null`, and `withinSpecPercent` keeps
+  just the given limit. Before, a caller with «Ra ≤ 0.8» had to invent a lower limit, which then entered `cp`, `cpk` and
+  `withinSpecPercent` — and made the index fall as the process got better. The types are `CapabilitySpecLimits`
+  (new, exported) combined with the existing fields; calls with both limits are unchanged.
+
 ## [0.76.0] - 2026-10-28
 
 ### Added

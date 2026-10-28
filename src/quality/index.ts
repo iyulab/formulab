@@ -37,6 +37,7 @@ export type {
   OeeResult,
   CascadeStep,
   // Cpk types
+  CapabilitySpecLimits,
   CpkInput,
   CpkResult,
   // Cycle time types

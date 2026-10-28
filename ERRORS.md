@@ -60,7 +60,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | Function | Error Behavior | Conditions |
 |----------|---------------|------------|
 | `oee()` | `throw` | plannedTime, runTime, idealCycleTime or totalCount ≤ 0; runTime > plannedTime; goodCount < 0 or > totalCount |
-| `cpk()` | `throw` | usl ≤ lsl; a limit or the mean not finite; stdDev < 0 or not finite. stdDev = 0 → cp/cpk/cpu/cpl/sigmaLevel null (they divide by σ); withinSpecPercent 100 or 0 |
+| `cpk()` | `throw` | neither usl nor lsl given (`missing_option`); usl ≤ lsl; a limit or the mean not finite; stdDev < 0 or not finite. One limit only is a valid one-sided specification → that side's index only (the other side and cp are null). stdDev = 0 → cp/cpk/cpu/cpl/sigmaLevel null (they divide by σ); withinSpecPercent 100 or 0 |
 | `controlChart()` | `throw` | Empty data, subgroup size < 2 |
 | `acceptanceControlChart()` | `throw` | no spec limit; sigma ≤ 0; proportions outside (0, 1) or rejectable ≤ acceptable; alpha/beta outside (0, 1) |
 | `cycleTime()` | `throw` | empty measurements; a measurement ≤ 0 (NaN included) |
@@ -78,7 +78,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `rpn()` | `safe` | — |
 | `yieldCalc()` | `throw` | no steps; a step with total ≤ 0, good < 0, or good > total |
 | `gageRR()` | `throw` | Empty or ragged measurements; a tolerance given and ≤ 0 (read as «no tolerance» before 0.59.0); Average-Range: a study outside the AIAG constant tables (2–3 trials, 2–3 operators, 2–10 parts — it used the 3/3/10 constants silently before 0.58.0); `method: 'anova'`: fewer than 2 parts, 2 operators, or 2 trials |
-| `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; usl ≤ lsl. Identical measurements (σ = 0) → cm/cmk/isCapable null |
+| `cmk()` | `throw` | fewer than 2 measurements; a measurement not finite; neither usl nor lsl given (`missing_option`); usl ≤ lsl. One limit only → cmk is that side's index and cm is null. Identical measurements (σ = 0) → cm/cmk/isCapable null |
 | `weibull()` | `throw` | < 2 failure times, a failure time ≤ 0, all failure times identical, missionTime < 0 |
 | `paretoAnalysis()` | `throw` | Empty items, an item value < 0 |
 

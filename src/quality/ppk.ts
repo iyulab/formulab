@@ -24,12 +24,14 @@ function overall(data: readonly number[]): { mean: number; stdDev: number } {
  * Ppl = (mu - LSL) / 3sigma   (lower capability)
  * Ppk = min(Ppu, Ppl)    (process performance)
  *
+ * With a one-sided specification (only USL or only LSL) only that side's index exists: Ppk = Ppu or Ppl, Pp is null.
+ *
  * @remarks Field naming is aligned with `cpk()` for a symmetric capability/performance API. With
  *   stdDev = 0 every index is `null` (it divides by σ) and withinSpecPercent is 100 or 0.
  *
  * @param input - The limits with either the overall mean and σ, or the readings (`data`) to take them from
  * @returns Ppk analysis result
- * @throws {RangeError} usl is not greater than lsl, a limit or the mean is not finite, stdDev
+ * @throws {RangeError} neither usl nor lsl is given (`missing_option`), usl is not greater than lsl, a limit or the mean is not finite, stdDev
  *   is negative or not finite, or `data` has fewer than 2 readings (`empty_input` / `insufficient_data`)
  */
 export function ppk(input: PpkInput): PpkResult {

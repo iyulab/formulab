@@ -12,9 +12,13 @@ import { requireFinite } from '../utils.js';
  *   - Cpk = min(Cpu, Cpl)                — Actual capability
  *   - Sigma Level = 3 × Cpk
  *   - Within-Spec % = [Φ((USL−mean)/σ) − Φ((LSL−mean)/σ)] × 100
+ *   - One-sided specification (only USL or only LSL): only that side's index exists — Cpk = Cpu or
+ *     Cpl, Cp is null, and Within-Spec % keeps just the given limit (Φ((USL−mean)/σ), or 1 − Φ((LSL−mean)/σ))
  *
  * @reference Montgomery, D. C. "Introduction to Statistical Quality Control", 7th Ed. Wiley.
  * @reference ISO 22514-2:2017. Statistical methods in process management — Capability and performance.
+ * @reference AIAG & VDA, SPC manual — one-sided tolerance limits: a one-sided tolerance has one limit, so only
+ *   the index of that limit is calculated.
  *
  * @units USL/LSL/mean/stdDev: same unit (e.g., mm, g); Cp/Cpk dimensionless; withinSpecPercent in %
  *
@@ -32,8 +36,8 @@ import { requireFinite } from '../utils.js';
  *
  * @param input - Cpk input parameters
  * @returns Cpk result with capability indices, sigma level, and within-spec percentage
- * @throws {RangeError} usl is not greater than lsl, a limit or the mean is not finite, or stdDev
- *   is negative or not finite
+ * @throws {RangeError} neither usl nor lsl is given (`missing_option`), usl is not greater than lsl,
+ *   a limit or the mean is not finite, or stdDev is negative or not finite
  */
 export function cpk(input: CpkInput): CpkResult {
   requireFinite('cpk', input);

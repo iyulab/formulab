@@ -38,26 +38,37 @@ export interface OeeResult {
 }
 
 /**
+ * The specification limits of a capability or performance study: both, or the one a one-sided
+ * tolerance has (a surface roughness «Ra ≤ 0.8», a minimum strength). At least one is required —
+ * with neither there is nothing to measure the process against.
+ */
+export type CapabilitySpecLimits =
+  | { usl: number; lsl?: number }
+  | { usl?: number; lsl: number };
+
+/**
  * Cpk (Process Capability Index) Types
  */
-export interface CpkInput {
-  usl: number;    // upper specification limit
-  lsl: number;    // lower specification limit
+export type CpkInput = CapabilitySpecLimits & {
   mean: number;   // process mean
   stdDev: number; // standard deviation
-}
+};
 
 /**
  * The indices divide by σ, so with σ = 0 they have no value (`null`) — not 0, which reads as
  * «incapable», and not infinity. `withinSpecPercent` is still defined: every part is the mean.
+ *
+ * With a one-sided specification only the index of the given limit exists: the other side's
+ * `cpu` / `cpl` and `cp` (a spread against the width between two limits) are `null`, and `cpk`
+ * is the given side's index.
  */
 export interface CpkResult {
   cp: number | null;     // process capability (potential)
   cpk: number | null;    // process capability index (actual)
   cpu: number | null;    // upper process capability
   cpl: number | null;    // lower process capability
-  withinSpecPercent: number; // estimated % of output within [LSL, USL] under a normal model (short-term σ)
-  sigmaLevel: number | null; // sigma level (min of upper and lower z-scores)
+  withinSpecPercent: number; // estimated % of output within the specification under a normal model (short-term σ)
+  sigmaLevel: number | null; // sigma level (3 × cpk)
 }
 
 /**
@@ -240,23 +251,19 @@ export interface MtbfResult {
  * Ppk (Process Performance Index) Types
  */
 /** Ppk from summary figures: the overall mean and the overall (long-term) standard deviation. */
-export interface PpkSummaryInput {
-  usl: number;     // upper spec limit
-  lsl: number;     // lower spec limit
+export type PpkSummaryInput = CapabilitySpecLimits & {
   mean: number;    // overall process mean
   stdDev: number;  // overall (long-term) standard deviation
-}
+};
 
 /**
  * Ppk from the readings themselves: the overall mean and the sample standard deviation (n − 1) of every
  * reading, ignoring any subgrouping — the «overall» σ of AIAG SPC, as opposed to the within-subgroup σ̂ of Cpk.
  */
-export interface PpkDataInput {
-  usl: number;
-  lsl: number;
+export type PpkDataInput = CapabilitySpecLimits & {
   /** Individual readings, at least 2. */
   data: number[];
-}
+};
 
 export type PpkInput = PpkSummaryInput | PpkDataInput;
 
@@ -456,11 +463,9 @@ export interface GageRRResult {
 /**
  * Cmk (Machine Capability Index) Types
  */
-export interface CmkInput {
+export type CmkInput = CapabilitySpecLimits & {
   measurements: number[];
-  lsl: number;
-  usl: number;
-}
+};
 
 export interface CmkResult {
   mean: number;

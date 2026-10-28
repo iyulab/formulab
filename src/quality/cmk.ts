@@ -10,6 +10,7 @@ import { inputRangeError } from '../errors.js';
  *   - Cm  = (USL - LSL) / (6σ)
  *   - Cmk = min((USL - x̄) / (3σ), (x̄ - LSL) / (3σ))
  *   - Threshold: Cmk ≥ 1.67 (stricter than Cpk ≥ 1.33)
+ *   - One-sided specification (only USL or only LSL): Cmk is that side's index and Cm is null
  *
  * @reference VDA 5 — Measurement System Analysis
  * @reference ISO 22514-3:2020 — Machine performance studies
@@ -17,8 +18,8 @@ import { inputRangeError } from '../errors.js';
  * @param input - Raw measurements and specification limits
  * @returns Machine capability indices — `cm`, `cmk` and `isCapable` are `null` when the
  *   measurements do not vary (σ = 0)
- * @throws {RangeError} fewer than 2 measurements, a measurement that is not finite, or usl not
- *   greater than lsl
+ * @throws {RangeError} fewer than 2 measurements, a measurement that is not finite, neither usl nor
+ *   lsl given (`missing_option`), or usl not greater than lsl
  */
 export function cmk(input: CmkInput): CmkResult {
   requireFinite('cmk', input);
