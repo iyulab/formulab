@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`quality/cpkToOccurrence()` accepts a negative Cpk** — it threw "Cpk must be a non-negative number", but a negative Cpk
   is a measured result (the mean lies beyond a specification limit) and the table's top row is its answer.
   Any finite Cpk is rated now: negative rates 10 ("Extremely high"), and `ppm` is capped at 1,000,000 where the
-  formula `2·Φ(−3·Cpk)` would exceed 1. Non-finite input is still refused (`parameter_out_of_range`, without a `min`).
+  formula `2·Φ(−3·Cpk)` would exceed 1. Non-finite input is still refused (`value_not_finite`, the library-wide finite-input check).
   Callers that clamped a negative Cpk to 0 before the call can drop the clamp; the result is the same.
 
 ## [0.74.0] - 2026-10-28

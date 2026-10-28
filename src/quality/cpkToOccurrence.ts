@@ -1,6 +1,5 @@
 import type { CpkToOccurrenceInput, CpkToOccurrenceResult } from './types.js';
 import { requireFinite, roundTo } from '../utils.js';
-import { inputRangeError } from '../errors.js';
 import { normalCDF, normalInvCDF } from '../math.js';
 
 /**
@@ -28,17 +27,11 @@ import { normalCDF, normalInvCDF } from '../math.js';
  * like any Cpk under the top row's limit; its `ppm` is capped at 1,000,000 (every part
  * nonconforming), where the formula would pass 1.
  *
- * @throws {RangeError} Cpk must be a finite number
+ * @throws {RangeError} `code: 'value_not_finite'` when `cpk` is NaN or ±Infinity
  */
 export function cpkToOccurrence(input: CpkToOccurrenceInput): CpkToOccurrenceResult {
   requireFinite('cpkToOccurrence', input);
   const { cpk } = input;
-
-  if (!Number.isFinite(cpk)) {
-    throw inputRangeError('Cpk must be a finite number', {
-      code: 'parameter_out_of_range', parameter: 'cpk', got: cpk,
-    });
-  }
 
   const row = RATINGS.find(r => cpk <= r.maxCpk)!;
 
