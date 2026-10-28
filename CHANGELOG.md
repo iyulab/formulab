@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.75.0] - 2026-10-28
+
 ### Added
 
 - **`metal/beamModeShape()`** — the mode shape behind a transverse natural frequency of `vibration()`: the curve over the
