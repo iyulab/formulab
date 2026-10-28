@@ -160,6 +160,9 @@ export interface StabilityStudyResult {
   q10: number;
   predictedShelfLife: number; // months
   rateConstants: { temperature: number; rateConstant: number }[];
+  /** The fitted line ln(k) = intercept + slope / T, T in kelvin (slope = −Ea / R). */
+  arrheniusLine: { slope: number; intercept: number };
+  storageRateConstant: number; // k at storageTemp read off the line, per the time unit of the data
   r2: number | null;          // null when every temperature has the same rate (nothing to explain)
   accelerationFactor: number;
 }

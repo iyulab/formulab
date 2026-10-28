@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`food/stabilityStudy()` returns the fitted Arrhenius line** — `arrheniusLine` (`{ slope, intercept }` of ln k against 1/T, T in kelvin;
+  slope = −Ea / R) and `storageRateConstant` (k read off the line at `storageTemp`) — what a plot of the
+  extrapolation needs. Existing fields are unchanged.
 - **`chemical/pidStepResponse()`** — the closed-loop setpoint step response of a PID loop on a first-order-plus-dead-time
   process (the model `pid()` tunes). Returns the time series (process variable and controller output), peak,
   overshoot, rise time (10 → 90 %) and 2 % settling time. Ideal-form PID with the derivative on the measurement

@@ -16,7 +16,9 @@ const R = 8.314e-3; // Gas constant in kJ/(mol·K)
  * @reference ICH Q1A(R2) — Stability Testing of New Drug Substances and Products
  * @reference Labuza, T.P. "Shelf Life Dating of Foods" (1982)
  *
- * @returns `r2` is `null` when every temperature degrades at the same rate
+ * @returns `r2` is `null` when every temperature degrades at the same rate. `arrheniusLine` is the fitted
+ *   ln(k) = intercept + slope / T (T in kelvin; slope = −Ea / R) and `storageRateConstant` is k read off it
+ *   at `storageTemp` — what a plot of the extrapolation needs
  * @throws {RangeError} shelfLifeCriterion is not greater than 0; storageTemp or a data point
  *   temperature is at or below absolute zero; fewer than 2 temperatures show a rising degradation
  *   (there is no Arrhenius line to extrapolate); or the extrapolation is not representable
@@ -133,6 +135,8 @@ export function stabilityStudy(input: StabilityStudyInput): StabilityStudyResult
     q10: roundTo(q10, 2),
     predictedShelfLife: roundTo(predictedShelfLife, 1),
     rateConstants,
+    arrheniusLine: { slope: roundTo(slope, 2), intercept: roundTo(intercept, 4) },
+    storageRateConstant: roundTo(kStorage, 10),
     r2: r2 === null ? null : roundTo(r2, 4),
     accelerationFactor: roundTo(accelerationFactor, 2),
   };

@@ -203,3 +203,30 @@ describe('stabilityStudy coded refusals', () => {
     expect(() => stabilityStudy({ dataPoints: [{ temperature: 30, time: 1, degradation: 1 }, { temperature: -300, time: 1, degradation: 2 }], shelfLifeCriterion: 10, storageTemp: 25 })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'dataPoints[1].temperature', exclusive_min: -273.15, got: -300 }));
   });
 });
+
+describe('stabilityStudy Arrhenius line', () => {
+  // Data generated from a known Arrhenius law: k = A·exp(−Ea/(R·T)) with Ea = 80 kJ/mol and ln A = 25
+  // (k per month). The fit must hand the law back: slope = −Ea/R, intercept = ln A, and the rate read at
+  // the storage temperature must be the law's own value there.
+  const R = 8.314e-3;
+  const EA = 80;
+  const LN_A = 25;
+  const law = (c: number) => Math.exp(LN_A - EA / (R * (c + 273.15)));
+  const dataPoints = [40, 50, 60].flatMap((temperature) =>
+    [1, 2, 4].map((time) => ({ temperature, time, degradation: law(temperature) * time })),
+  );
+
+  it('returns the fitted line of ln(k) against 1/T', () => {
+    const r = stabilityStudy({ dataPoints, shelfLifeCriterion: 10, storageTemp: 25 });
+    expect(r.arrheniusLine.slope).toBeCloseTo(-EA / R, -1); // −9622.9 K, rate constants are rounded to 6 dp
+    expect(r.arrheniusLine.intercept).toBeCloseTo(LN_A, 1);
+    expect(r.activationEnergy).toBeCloseTo(EA, 0);
+  });
+
+  it('returns the rate constant at the storage temperature', () => {
+    const r = stabilityStudy({ dataPoints, shelfLifeCriterion: 10, storageTemp: 25 });
+    expect(r.storageRateConstant).toBeCloseTo(law(25), 4);
+    // the shelf life is the criterion over that rate
+    expect(r.predictedShelfLife / (10 / r.storageRateConstant)).toBeCloseTo(1, 3);
+  });
+});
