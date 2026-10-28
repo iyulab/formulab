@@ -24,15 +24,19 @@ import { normalCDF, normalInvCDF } from '../math.js';
  * @reference Montgomery, D. C. (2019). "Introduction to Statistical Quality Control", 8th Edition,
  *   §8.3 — process fallout of a normal process from its capability ratio.
  *
- * @throws {RangeError} Cpk must be a non-negative number
+ * A negative Cpk is a measured result — the mean lies beyond a specification limit — and rates 10
+ * like any Cpk under the top row's limit; its `ppm` is capped at 1,000,000 (every part
+ * nonconforming), where the formula would pass 1.
+ *
+ * @throws {RangeError} Cpk must be a finite number
  */
 export function cpkToOccurrence(input: CpkToOccurrenceInput): CpkToOccurrenceResult {
   requireFinite('cpkToOccurrence', input);
   const { cpk } = input;
 
-  if (!Number.isFinite(cpk) || cpk < 0) {
-    throw inputRangeError('Cpk must be a non-negative number', {
-      code: 'parameter_out_of_range', parameter: 'cpk', min: 0, got: cpk,
+  if (!Number.isFinite(cpk)) {
+    throw inputRangeError('Cpk must be a finite number', {
+      code: 'parameter_out_of_range', parameter: 'cpk', got: cpk,
     });
   }
 
@@ -42,7 +46,7 @@ export function cpkToOccurrence(input: CpkToOccurrenceInput): CpkToOccurrenceRes
     occurrence: row.occurrence,
     description: row.description,
     cpkRange: row.cpkRange,
-    ppm: roundTo(2 * normalCDF(-3 * cpk) * 1e6, 4),
+    ppm: roundTo(Math.min(2 * normalCDF(-3 * cpk), 1) * 1e6, 4),
   };
 }
 

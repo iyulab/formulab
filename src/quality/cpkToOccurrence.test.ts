@@ -98,8 +98,18 @@ describe('cpkToOccurrence', () => {
   });
 
   describe('validation', () => {
-    it('should throw for negative cpk', () => {
-      expect(() => cpkToOccurrence({ cpk: -0.5 })).toThrow(RangeError);
+    it('rates a negative Cpk (mean beyond a limit) at the top row, ppm capped at 1e6', () => {
+      for (const cpk of [-0.2, -0.5, -3, -1e6]) {
+        const r = cpkToOccurrence({ cpk });
+        expect(r.occurrence).toBe(10);
+        expect(r.description).toBe('Extremely high');
+        expect(r.ppm).toBe(1_000_000);
+      }
+    });
+
+    it('keeps -0 and the top-row boundary on the top row', () => {
+      expect(cpkToOccurrence({ cpk: -0 }).occurrence).toBe(10);
+      expect(cpkToOccurrence({ cpk: -0 }).ppm).toBe(1_000_000);
     });
 
     it('should throw for NaN', () => {

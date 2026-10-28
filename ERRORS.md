@@ -67,7 +67,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `taktTime()` | `throw` | availableTime or demand ≤ 0 or non-finite |
 | `aql()` | `throw` | lotSize ≤ 0; negative aqlLevel → '-' zero-plan result (does not throw) |
 | `actionPriority()` | `throw` | severity/occurrence/detection outside 1–10 or non-finite |
-| `cpkToOccurrence()` | `throw` | cpk negative or non-finite |
+| `cpkToOccurrence()` | `throw` | cpk non-finite. A negative Cpk is a measured result (the mean is beyond a limit): rated 10, ppm capped at 1,000,000 |
 | `nelsonRules()` | `throw` | empty values, sigma ≤ 0, non-finite centerLine |
 | `downtime()` | `throw` | any input < 0 |
 | `dpmo()` | `throw` | defects < 0, units ≤ 0, opportunities ≤ 0, defects > units × opportunities |

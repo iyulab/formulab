@@ -518,14 +518,14 @@ export interface ActionPriorityResult {
  * Cpk to Occurrence Mapping Types
  */
 export interface CpkToOccurrenceInput {
-  cpk: number;  // >= 0
+  cpk: number;  // finite; negative = the mean is beyond a specification limit
 }
 
 export interface CpkToOccurrenceResult {
   occurrence: number;   // 2-10 (1 is reserved for causes a prevention control rules out)
   description: string;  // the handbook's occurrence category, e.g. 'High'
   cpkRange: string;     // Cpk band of this rating, e.g. '0.86 - 1.03'
-  ppm: number;          // expected nonconforming parts per million, 2·Φ(−3·Cpk)·10⁶
+  ppm: number;          // expected nonconforming parts per million, 2·Φ(−3·Cpk)·10⁶, at most 10⁶
 }
 
 /**
