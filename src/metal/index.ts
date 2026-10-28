@@ -101,6 +101,9 @@ export type {
   VibrationInput,
   FrequencyMode,
   VibrationResult,
+  BeamModeShapeInput,
+  BeamModeShapePoint,
+  BeamModeShapeResult,
   // Weld Heat
   WeldProcess,
   WeldBaseMetal,
@@ -180,6 +183,7 @@ export { tap } from './tap.js';
 export { thread, getMetricSizes, getUnifiedSizes } from './thread.js';
 export { tolerance, ISO286_SIZE_RANGES } from './tolerance.js';
 export { vibration } from './vibration.js';
+export { beamModeShape } from './beamModeShape.js';
 export { weldHeat } from './weldHeat.js';
 export { welding } from './welding.js';
 export { weldStrength } from './weldStrength.js';

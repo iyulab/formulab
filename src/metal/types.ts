@@ -656,6 +656,25 @@ export interface VibrationResult {
 }
 
 /**
+ * Beam Mode Shape Types — the curve behind a transverse natural frequency of `vibration()`.
+ */
+export interface BeamModeShapeInput {
+  system: 'cantilever' | 'simplySupported';
+  mode: number;                // integer 1-10
+}
+
+export interface BeamModeShapePoint {
+  position: number;            // x/L, 0 = the clamped / left end
+  amplitude: number;           // relative; the largest magnitude over the beam is 1
+}
+
+export interface BeamModeShapeResult {
+  characteristicValue: number; // λ_n of the frequency equation (f = λ²/(2πL²)·√(EI/ρA))
+  nodes: number[];             // x/L of the interior points that do not move (empty for mode 1 of a cantilever)
+  points: BeamModeShapePoint[];
+}
+
+/**
  * Weld Heat Types
  */
 export type WeldProcess = 'smaw' | 'gmaw' | 'gtaw' | 'saw';

@@ -108,6 +108,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `thread()` | `throw` | Unknown size |
 | `tolerance()` | `throw` | Nominal size out of range, unknown IT grade, unknown deviation letter |
 | `vibration()` | `throw` | Non-positive system/geometry field (k, m, length, width, height, diameter, outer/inner diameter, disk mass/radius); custom youngsModulus/density/shearModulus ≤ 0; innerDiameter ≥ outerDiameter |
+| `beamModeShape()` | `throw` | system other than cantilever / simplySupported; mode not an integer from 1 to 10; count not an integer ≥ 2 |
 | `weldHeat()` | `throw` | voltage ≤ 0, current ≤ 0, travelSpeed ≤ 0, thickness ≤ 0 |
 | `welding()` | `throw` | thickness ≤ 0 |
 | `weldStrength()` | `throw` | legSize ≤ 0, weldLength ≤ 0, weldCount < 1, appliedLoad < 0 |

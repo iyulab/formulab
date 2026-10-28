@@ -13,7 +13,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **213 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **214 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -31,7 +31,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 | Domain | Functions | Golden Tests | Key References |
 |--------|-----------|-------------|----------------|
 | Quality | 23 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-3, ISO 7870-5 |
-| Metal | 34 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
+| Metal | 35 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
 | Logistics | 20 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
 | Chemical | 13 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
@@ -243,6 +243,7 @@ import { metalWeight, bendAllowance, cutting, bearing } from 'formulab/metal';
 | `tolerance()` | ISO tolerance (IT grades) |
 | `fit()` | ISO 286 hole/shaft fit — clearance, interference, fit class |
 | `vibration()` | Natural frequency analysis |
+| `beamModeShape()` | Mode shape of a cantilever or simply supported beam (curve over the length, nodes, characteristic value) |
 | `weldHeat()` | Weld heat input calculation |
 | `welding()` | Welding parameters |
 | `weldStrength()` | Fillet weld strength / capacity (AISC ASD) |

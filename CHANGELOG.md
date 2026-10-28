@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`metal/beamModeShape()`** — the mode shape behind a transverse natural frequency of `vibration()`: the curve over the
+  length (`position` = x/L, `amplitude` scaled to a peak of 1, free tip / first lobe positive), the interior `nodes` and
+  the `characteristicValue` λ of the frequency equation, for a cantilever (the roots of `1 + cos λ · cosh λ = 0`
+  solved to machine precision, shape written in a form that stays accurate in high modes) or a simply supported beam.
+  Modes 1 to 10; `count` sets the number of samples (default 101). The shape depends only on the supports and the mode,
+  not on material, section or length.
+
 ### Fixed
 
 - **`quality/cpkToOccurrence()` accepts a negative Cpk** — it threw "Cpk must be a non-negative number", but a negative Cpk
