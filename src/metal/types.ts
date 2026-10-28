@@ -433,10 +433,6 @@ export interface PressFitInput {
   hubOuterDiameter: number;   // mm
   contactLength: number;      // mm
   youngsModulus: number;      // GPa
-  poissonRatio: number;       // does NOT affect the result: for the same-material,
-                              // solid-shaft model the nu terms cancel (see pressFit
-                              // JSDoc). Retained for the material spec and the
-                              // deferred dissimilar-material model.
   frictionCoefficient: number;
 }
 

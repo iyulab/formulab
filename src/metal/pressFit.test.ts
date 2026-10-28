@@ -10,7 +10,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200, // GPa
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -26,7 +25,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -40,7 +38,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -50,7 +47,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -66,7 +62,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -81,7 +76,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 20,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -91,7 +85,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 50,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -107,7 +100,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -123,7 +115,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -137,7 +128,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -153,7 +143,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       })).toThrow();
     });
@@ -165,7 +154,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50, // Equal to shaft
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       })).toThrow(RangeError);
     });
@@ -177,7 +165,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 50,
         contactLength: 30,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -194,7 +181,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 55,
         contactLength: 15,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.12,
       });
 
@@ -209,7 +195,6 @@ describe('pressFit', () => {
         hubOuterDiameter: 80,
         contactLength: 50,
         youngsModulus: 200,
-        poissonRatio: 0.3,
         frictionCoefficient: 0.15,
       });
 
@@ -243,7 +228,6 @@ describe('pressFit', () => {
       hubOuterDiameter: 100,
       contactLength: 50,
       youngsModulus: 210,
-      poissonRatio: 0.3,
       frictionCoefficient: 0.15,
     };
 
@@ -257,10 +241,11 @@ describe('pressFit', () => {
       expect(result.holdingTorque).toBeCloseTo(1160, -1); // within ~5 N*m
     });
 
-    it('should be independent of Poisson ratio (nu cancels for same-material solid shaft)', () => {
-      const withLowNu = pressFit({ ...sample, poissonRatio: 0.1 });
-      const withHighNu = pressFit({ ...sample, poissonRatio: 0.45 });
-      expect(withLowNu.interfacePressure).toBe(withHighNu.interfacePressure);
+    it('should not read a Poisson ratio a runtime caller still passes (nu cancels for same-material solid shaft)', () => {
+      const withLowNu = pressFit({ ...sample, poissonRatio: 0.1 } as typeof sample);
+      const withHighNu = pressFit({ ...sample, poissonRatio: 0.45 } as typeof sample);
+      expect(withLowNu).toEqual(pressFit(sample));
+      expect(withHighNu).toEqual(pressFit(sample));
     });
   });
 });
@@ -269,7 +254,7 @@ describe('pressFit refusals carry their facts', () => {
   it('bounds the hub outer diameter by the larger of shaft and hole', () => {
     expect(() => pressFit({
       shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 25, contactLength: 30,
-      youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15,
+      youngsModulus: 200, frictionCoefficient: 0.15,
     })).toThrow(expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'hubOuterDiameter', exclusive_min: 25.05, got: 25 }));
   });
 });

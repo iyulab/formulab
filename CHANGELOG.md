@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`pressFit()` no longer takes `poissonRatio`** (breaking, 0.x) — for the same-material, solid-shaft model the two Poisson terms
+  cancel, so the interface pressure and every derived stress never depended on it; the field was accepted and ignored, and
+  `requireFinite` still refused a call where it was blank. A caller that shows the field (a form) offered an input that changes
+  nothing. Migration: delete the property from the call; a runtime caller that still passes it is unaffected. A dissimilar-material
+  or hollow-shaft model would bring it back together with a second modulus.
+
 - **Documentation: the edition each standard-backed function follows** — `thermalComfort()` follows ISO 7730:2005 (ISO 7730:2025 is
   current and has not been checked against it) and `aql()` follows the ISO 2859-1:1999 tables (ISO 2859-1:2026 replaced them in
   January 2026 and has not been checked against). Behaviour is unchanged.

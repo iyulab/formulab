@@ -26,9 +26,8 @@ import { inputRangeError } from '../errors.js';
  *
  * A consequence of the nu cancellation: for this same-material, solid-shaft model
  * the interface pressure and every derived stress are **independent of Poisson's
- * ratio**. `input.poissonRatio` is therefore accepted (it belongs to the material
- * spec and the deferred dissimilar-material model will need it) but intentionally
- * not read here — changing it does not change the result.
+ * ratio**, so it is not an input. A dissimilar-material or hollow-shaft model would
+ * need it (with a second modulus) and would add it back together with those fields.
  *
  * Reference: Shigley's Mechanical Engineering Design
  *
@@ -37,8 +36,6 @@ import { inputRangeError } from '../errors.js';
  *   and holeDiameter (no hub wall)
  */
 export function pressFit(input: PressFitInput): PressFitResult {
-  // Note: poissonRatio is deliberately not destructured — see JSDoc (nu cancels
-  // out of every output for the same-material, solid-shaft model).
   requireFinite('pressFit', input);
   const {
     shaftDiameter,

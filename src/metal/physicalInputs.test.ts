@@ -44,13 +44,13 @@ describe('metal: physical input domains', () => {
   });
 
   it('pressFit refuses a non-positive Young\'s modulus or friction coefficient', () => {
-    expect(() => pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: -200, poissonRatio: 0.3, frictionCoefficient: 0.15 })).toThrow(RangeError);
-    expect(() => pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0 })).toThrow(RangeError);
-    expect(() => pressFit({ shaftDiameter: -25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15 })).toThrow(RangeError);
+    expect(() => pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: -200, frictionCoefficient: 0.15 })).toThrow(RangeError);
+    expect(() => pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, frictionCoefficient: 0 })).toThrow(RangeError);
+    expect(() => pressFit({ shaftDiameter: -25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, frictionCoefficient: 0.15 })).toThrow(RangeError);
     // No hub wall: the hub OD does not clear the shaft / the bore
-    expect(() => pressFit({ shaftDiameter: 50, holeDiameter: 49.95, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15 })).toThrow(RangeError);
-    expect(() => pressFit({ shaftDiameter: 24.95, holeDiameter: 25, hubOuterDiameter: 24.98, contactLength: 30, youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15 })).toThrow(RangeError);
-    const r = pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, poissonRatio: 0.3, frictionCoefficient: 0.15 });
+    expect(() => pressFit({ shaftDiameter: 50, holeDiameter: 49.95, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, frictionCoefficient: 0.15 })).toThrow(RangeError);
+    expect(() => pressFit({ shaftDiameter: 24.95, holeDiameter: 25, hubOuterDiameter: 24.98, contactLength: 30, youngsModulus: 200, frictionCoefficient: 0.15 })).toThrow(RangeError);
+    const r = pressFit({ shaftDiameter: 25.05, holeDiameter: 25, hubOuterDiameter: 50, contactLength: 30, youngsModulus: 200, frictionCoefficient: 0.15 });
     expect(r.interference).toBeCloseTo(0.05, 3);
     expect(r.assemblyForce).toBeGreaterThan(0);
   });

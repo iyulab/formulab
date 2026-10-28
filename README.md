@@ -84,7 +84,7 @@ The following functions include tests verified against published reference value
 | `flangeSpec()` | ASME B16.5 | Class 150/300/600 flange dimensions |
 | `pipeSpec()` | ASME B36.10 | SCH40/80/160 wall thickness |
 | `awgProperties()` | ANSI/AWG | AWG 0-40 diameter, resistance |
-| `pressFit()` | Shigley's Mechanical Engineering Design | Same-material solid-shaft interface pressure (39.36 MPa), nu-independence |
+| `pressFit()` | Shigley's Mechanical Engineering Design | Same-material solid-shaft interface pressure (39.36 MPa); Poisson's ratio is not an input (it cancels) |
 | `spring()` | Shigley's Mechanical Engineering Design | Spring rate (Eq. 10-9), Wahl factor (Eq. 10-5), corrected shear stress (Eq. 10-7) |
 | `weldStrength()` | AISC 360 ASD / AWS D1.1 | Equal-leg fillet: throat 0.707·leg, allowable shear 0.30·FEXX (E70=144.9 MPa), capacity/utilization |
 | `pid()` | Ziegler-Nichols (1942), Cohen-Coon (1953) | Cohen-Coon P/PI/PID gains at r=L/T=0.1 (Kp, Ti, Td, derived Ki/Kd) against the published coefficient table |
