@@ -254,6 +254,7 @@ fields" rule; an execution-based NaN audit must allowlist it.
 | `cbm()` | `throw` | length, width, height or quantity ≤ 0 |
 | `chargeableWeight()` | `throw` | volume ≤ 0, actualWeight < 0, unknown mode |
 | `containerFit()` | `throw` | cargo or container dimension ≤ 0; cargo weight, maxPayload or maxStackWeight < 0; maxLayers not a whole number ≥ 1 (`parameter_out_of_range`). A box larger than the container in every orientation fits 0 times, and a weight limit below one unit loads 0 — real answers (`limitedBy` says which), not sentinels |
+| `boxGridLayout()` | `throw` | area or box length/width ≤ 0 or non-finite (`parameter_out_of_range`, `parameter` `area.length` … `box.width`). A box larger than the area gives 0 columns or rows and no placements; above 5,000 boxes the placements are left out and `placementsOmitted` is true — the counts stay exact |
 | `getContainerSpec()` | `throw` | unknown container type |
 | `eoq()` | `throw` | annualDemand, orderCost or holdingCost ≤ 0 (NaN included) |
 | `eoqCostCurve()` | `throw` | an `eoq()` input invalid, minQuantity ≤ 0, maxQuantity ≤ minQuantity, points not a whole number ≥ 2 |

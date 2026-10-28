@@ -63,6 +63,32 @@ export interface BoxOrientation {
   height: number;
 }
 
+/**
+ * Box Grid Layout Types — where the boxes of one layer sit.
+ */
+export interface BoxGridLayoutInput {
+  /** The floor the layer stands on (a pallet deck or a container floor), one length unit throughout. */
+  area: { length: number; width: number };
+  /** One box's footprint in the orientation to draw. */
+  box: { length: number; width: number };
+}
+
+export interface BoxGridPlacement {
+  x: number;      // along the area's length, from the grid's corner
+  y: number;      // along the area's width, from the grid's corner
+  length: number;
+  width: number;
+}
+
+export interface BoxGridLayoutResult {
+  columns: number;               // boxes along the length
+  rows: number;                  // boxes along the width
+  boxes: BoxGridPlacement[];     // columns × rows placements, length direction first; empty when omitted
+  unusedLength: number;          // strip left along the far end of the length
+  unusedWidth: number;           // strip left along the far side of the width
+  placementsOmitted: boolean;    // true when columns × rows exceeds 5,000 and boxes is left empty
+}
+
 /** What stopped the load: the container's space, the layer count, the column weight, or the container's payload. */
 export type LoadLimit = 'space' | 'max_layers' | 'stack_weight' | 'payload';
 

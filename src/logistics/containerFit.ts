@@ -23,6 +23,15 @@ export function cargoOrientations(l: number, w: number, h: number, rotation: Rot
 }
 
 /**
+ * The boxes of one layer in a row-and-column grid: how many fit along each side. The single source of
+ * `unitsPerLayer` / `boxesPerLayer` — `containerFit()` and `palletStack()` count with it and
+ * `boxGridLayout()` places boxes with it, so a drawn layer and the reported count cannot disagree.
+ */
+export function gridCounts(areaLength: number, areaWidth: number, boxLength: number, boxWidth: number): { columns: number; rows: number } {
+  return { columns: Math.floor(areaLength / boxLength), rows: Math.floor(areaWidth / boxWidth) };
+}
+
+/**
  * Every listed dimension must be greater than 0 — the layout divides by it. The refusal names the first
  * one that is not (`cargo.height`, `pallet.width`, …); the message names the group.
  */
@@ -91,7 +100,8 @@ export function containerFit(input: ContainerFitInput): ContainerFitResult {
   for (const orient of cargoOrientations(cargo.length, cargo.width, cargo.height, rotation)) {
     if (orient.length > container.length || orient.width > container.width || orient.height > container.height) continue;
 
-    const unitsPerLayer = Math.floor(container.length / orient.length) * Math.floor(container.width / orient.width);
+    const grid = gridCounts(container.length, container.width, orient.length, orient.width);
+    const unitsPerLayer = grid.columns * grid.rows;
     const layersBySpace = Math.floor(container.height / orient.height);
     const layersByCount = Math.min(layersBySpace, maxLayers ?? Infinity);
     const layers = Math.min(layersByCount, layersByWeight);

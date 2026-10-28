@@ -1,7 +1,7 @@
 import type { PalletStackInput, PalletStackResult, BoxOrientation } from './types.js';
 import { requireFinite, roundTo } from '../utils.js';
 import { inputRangeError } from '../errors.js';
-import { cargoOrientations, requirePositiveDimensions } from './containerFit.js';
+import { cargoOrientations, gridCounts, requirePositiveDimensions } from './containerFit.js';
 
 /**
  * Calculate optimal pallet stacking configuration
@@ -54,7 +54,8 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
   for (const orient of cargoOrientations(box.length, box.width, box.height, rotation)) {
     if (orient.length > pallet.length || orient.width > pallet.width || orient.height > maxHeight) continue;
 
-    const boxesPerLayer = Math.floor(pallet.length / orient.length) * Math.floor(pallet.width / orient.width);
+    const grid = gridCounts(pallet.length, pallet.width, orient.length, orient.width);
+    const boxesPerLayer = grid.columns * grid.rows;
     const layers = Math.floor(maxHeight / orient.height);
     const stacked = boxesPerLayer * layers;
     const totalBoxes = Math.min(stacked, boxesByWeight);

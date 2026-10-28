@@ -13,7 +13,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 
 ## Features
 
-- **214 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
+- **215 industrial calculations + 8 type guards** — OEE, Cpk, SPC control charts, Gage R&R, Weibull, metal weight, CNC machining, GD&T, pipe flow, CBM, NIOSH lifting, PMV/PPD, arc flash, battery SOH, GHG emissions, PID tuning, and more
 - **15 specialized domains** — Quality, Metal, Chemical, Electronics, Construction, Automotive, Logistics, Energy, Safety, Food, Utility, Battery, Environmental, Machining, Industrial Engineering
 - **Zero dependencies** — Lightweight and fast
 - **TypeScript first** — Full type definitions included
@@ -32,7 +32,7 @@ A comprehensive collection of engineering formulas and calculations for manufact
 |--------|-----------|-------------|----------------|
 | Quality | 23 | oee, cpk, controlChart, gageRR | ISO 22400-2, AIAG/ASTM E2587, JIPM, AIAG MSA, ISO 7870-3, ISO 7870-5 |
 | Metal | 35 | metalWeight, flangeSpec, pipeSpec, pressFit, spring, weldStrength, tolerance, welding | Machinery's Handbook, ASME B36.10/B16.5, ISO 286, AWS A5 series |
-| Logistics | 20 | cbm | Physical formula |
+| Logistics | 21 | cbm | Physical formula |
 | Safety | 14 | nioshLifting | NIOSH 94-110, ISO 7730, IEEE 1584, OSHA |
 | Chemical | 13 | pid, reliefValve | Darcy-Weisbach, Fourier, API 520, ISA |
 | Electronics | 12 | awgProperties, resistorDecode | IPC-2221, IEC 60062 |
@@ -357,6 +357,7 @@ import { cbm, eoq, safetyStock, kanban, inventoryTurnover, abcAnalysis } from 'f
 | `cbm()` | Cubic meter calculation |
 | `chargeableWeight()` | Chargeable weight by freight mode (air · express · ocean W/M · truck) |
 | `containerFit()` | Container loading by space, column weight and payload, with utilization |
+| `boxGridLayout()` | Where the boxes of one layer sit on a pallet deck or container floor — grid size, placements, unused strips |
 | `dimWeight()` | Dimensional weight |
 | `eoq()` | Economic Order Quantity |
 | `eoqCostCurve()` | Annual ordering / holding / total cost across order quantities |
