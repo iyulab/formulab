@@ -68,7 +68,7 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
 
   if (best === null) {
     return {
-      boxesPerLayer: 0, layers: 0, totalBoxes: 0,
+      boxesPerLayer: 0, layers: 0, totalBoxes: 0, loadedLayers: 0,
       bestOrientation: { length: box.length, width: box.width, height: box.height },
       stackHeight: 0, loadedHeight: deckHeight, totalWeight: roundTo(palletWeight, 3), limitedBy: 'space', volumeUtilization: 0,
     };
@@ -82,6 +82,7 @@ export function palletStack(input: PalletStackInput): PalletStackResult {
     boxesPerLayer,
     layers,
     totalBoxes,
+    loadedLayers,
     bestOrientation: orient,
     stackHeight: loadedLayers * orient.height,
     loadedHeight: deckHeight + loadedLayers * orient.height,

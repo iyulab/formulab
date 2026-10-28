@@ -153,6 +153,17 @@ describe('containerFit weight limits', () => {
     expect(r).toMatchObject({ layers: 4, totalUnits: 50, totalWeight: 1000, limitedBy: 'payload' });
   });
 
+  it('counts the layers that hold a unit: a payload limit stops mid-layer', () => {
+    const full = containerFit({ container, cargo, rotation: 'fixed' });
+    expect(full.loadedLayers).toBe(full.layers);
+    const r = containerFit({ container, cargo, rotation: 'fixed', maxPayload: 1000 });
+    // 50 units, 45 to a layer: one full layer and the second one partly filled
+    expect(r.unitsPerLayer).toBe(45);
+    expect(r.loadedLayers).toBe(2);
+    expect(containerFit({ container, cargo, rotation: 'fixed', maxPayload: 900 }).loadedLayers).toBe(1);
+    expect(containerFit({ container, cargo, rotation: 'fixed', maxStackWeight: 15 }).loadedLayers).toBe(0);
+  });
+
   it('says a column limit below one unit empties the container', () => {
     const r = containerFit({ container, cargo, rotation: 'fixed', maxStackWeight: 15 });
     expect(r).toMatchObject({ layers: 0, totalUnits: 0, totalWeight: 0, limitedBy: 'stack_weight', volumeUtilization: 0 });

@@ -98,6 +98,8 @@ export interface ContainerFitResult {
   layers: number;
   /** Units loaded — `unitsPerLayer × layers`, unless `maxPayload` allows fewer. */
   totalUnits: number;
+  /** Layers that hold a unit — `layers`, or fewer when `maxPayload` stops mid-way; the last one is partly filled when `totalUnits` is not a whole number of layers. */
+  loadedLayers: number;
   bestOrientation: BoxOrientation;
   /** kg — `totalUnits × cargo.weight`. */
   totalWeight: number;
@@ -185,6 +187,8 @@ export interface PalletStackResult {
   layers: number;
   /** Boxes stacked — `boxesPerLayer × layers`, unless `maxWeight` allows fewer. */
   totalBoxes: number;
+  /** Layers that hold a box — `layers`, or fewer when `maxWeight` stops mid-way; the last one is partly filled when `totalBoxes` is not a whole number of layers. */
+  loadedLayers: number;
   bestOrientation: BoxOrientation;
   /** mm — height of the loaded stack: its layers, the last one partly filled when the weight limit stops mid-layer. */
   stackHeight: number;

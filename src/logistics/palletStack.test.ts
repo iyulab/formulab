@@ -244,6 +244,18 @@ describe('palletStack pallet weight', () => {
       .toMatchObject({ totalBoxes: 0, totalWeight: 25, limitedBy: 'weight' });
   });
 
+  it('counts the layers that hold a box: a weight limit stops mid-layer', () => {
+    const open = palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10 });
+    expect(open.loadedLayers).toBe(open.layers);
+    // 400 x 300 turned to 300 x 400 on 1200 x 800 is 8 to a layer; 10 kg boxes under 140 kg = 14 boxes: one full layer and six on a second
+    const limited = palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10, maxWeight: 140 });
+    expect(limited.boxesPerLayer).toBe(8);
+    expect(limited.totalBoxes).toBe(14);
+    expect(limited.loadedLayers).toBe(2);
+    expect(limited.stackHeight).toBe(2 * limited.bestOrientation.height);
+    expect(palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', boxWeight: 10, maxWeight: 20, palletWeight: 25 }).loadedLayers).toBe(0);
+  });
+
   it('refuses a negative pallet weight', () => {
     expect(() => palletStack({ pallet, box, maxHeight: 1000, rotation: 'layered', palletWeight: -1 })).toThrow(
       expect.objectContaining({ code: 'parameter_out_of_range', parameter: 'palletWeight', min: 0 }),

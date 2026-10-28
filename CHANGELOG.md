@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.76.0] - 2026-10-28
+
+### Added
+
+- **`loadedLayers` on `palletStack()` and `containerFit()`** — the layers that hold a unit: `layers`, or fewer when a weight limit
+  stops mid-way, the last one partly filled when the total is not a whole number of layers. `palletStack().stackHeight` and
+  `loadedHeight` were already built from it; a caller that draws the stack no longer re-derives it as `⌈total / perLayer⌉`.
+
 ## [0.75.0] - 2026-10-28
 
 ### Added

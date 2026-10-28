@@ -125,6 +125,7 @@ export function containerFit(input: ContainerFitInput): ContainerFitResult {
     unitsPerLayer,
     layers,
     totalUnits,
+    loadedLayers: unitsPerLayer > 0 ? Math.ceil(totalUnits / unitsPerLayer) : 0,
     bestOrientation: orient,
     totalWeight: roundTo(totalUnits * weight, 3),
     limitedBy,
