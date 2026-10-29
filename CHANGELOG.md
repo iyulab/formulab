@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.78.0] - 2026-10-29
+
 ### Added
 
 - **`conformityDecision()`** — the decision rule of a statement of conformity (ILAC-G8:09/2019 §4, JCGM 106:2012). Give the measured
